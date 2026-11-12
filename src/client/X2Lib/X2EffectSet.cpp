@@ -4,7 +4,7 @@
 
 
 
-#pragma DMLEE_NOTE( "effect set에 사운드 작업할 수 있게 기능 추가해야 함" )
+// Note: effect sets still need a way to play sounds.
 
 
 
@@ -669,6 +669,8 @@ void CX2EffectSet::OnFrameMove_CreateEffect( double fTime, float fElapsedTime )
 						}
 					}
 				} break;
+			default:
+				break;
 			}
 
 
@@ -794,6 +796,8 @@ void CX2EffectSet::OnFrameMove_CreateEffect( double fTime, float fElapsedTime )
 						pEffectSetInstance->m_vecpEffectInstance.push_back( pEffectInstance );
 					}
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -1196,6 +1200,8 @@ void CX2EffectSet::OnFrameMove_UpdateEffect()
 					}
 				}
 				break;
+			default:
+				break;
 			}
 
 			//{{kimhc // 2011-01-17 // 지정한 Bone의 메트릭스 값을 Trace 함 (chung 코드 참고)
@@ -1317,6 +1323,8 @@ void CX2EffectSet::OnFrameMove_UpdateEffect()
 							}
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -1443,6 +1451,8 @@ void CX2EffectSet::OnFrameMove_StartCameraShake()
 							pCameraShakeData->m_LookAtMoveRange.m_Min, pCameraShakeData->m_LookAtMoveRange.m_Max,
 							pCameraShakeData->m_bFixedLookVec );
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -1636,8 +1646,8 @@ CX2EffectSet::Handle CX2EffectSet::PlayEffectSetByPet( const wstring& wstrEffect
 
 
     EffectSetInstance* pEffectSetInstance = _CreateEffectSetInstance( pEffectSetData, tempPtr, NULL, NULL, CX2SquareUnitPtr(), pPet );
-    if ( pEffectSetInstance == NULL )
-        return INVALID_EFFECTSET_HANDLE;
+	if ( pEffectSetInstance == NULL )
+		return INVALID_EFFECTSET_HANDLE;
 
 	pEffectSetInstance->m_bHyper = false;
 	pEffectSetInstance->m_fPowerRate = -1.f;
@@ -1798,7 +1808,8 @@ bool CX2EffectSet::AddEffectSetTemplet_LUA()
 
 
 	// damageeffect, meshplayer, particle
-	int iEffectTableIndex = 0;
+	int iEffectTableIndex;	// split: a goto jumps over it
+	iEffectTableIndex = 0;
 	while( true == luaManager.BeginTable( "EFFECT", iEffectTableIndex ) )
 	{
 		EffectData* pEffectData = new EffectData;
@@ -1903,7 +1914,8 @@ bool CX2EffectSet::AddEffectSetTemplet_LUA()
 			//ASSERT( !"BONE_TRACE_TARGET_MESH is Do Not Use TRACE_MATRIX !!!" );
 		}
 
-		float fLimitDistance = -1.f;
+		float fLimitDistance;	// split: a goto jumps over it
+		fLimitDistance = -1.f;
 		LUA_GET_VALUE( luaManager,		"LIMIT_DISTANCE",				fLimitDistance,				-1.f	);
 		if( 0.f < fLimitDistance )
 		{
@@ -1936,6 +1948,8 @@ bool CX2EffectSet::AddEffectSetTemplet_LUA()
 				ASSERT( !pEffectData->m_bUseSubAttackListSet );	/// MeshPlayer만 사용가능
 				ASSERT( !pEffectData->m_bBoneTraceTargetMesh );
 			} break;
+		default:
+			break;
 		}
 
 
@@ -1951,7 +1965,8 @@ effect_error_proc:
 	}
 
 	// camera shake
-	int iCameraShakeTableIndex = 0;
+	int iCameraShakeTableIndex;	// split: a goto jumps over it
+	iCameraShakeTableIndex = 0;
 	while( true == luaManager.BeginTable( "CAMERA_SHAKE", iCameraShakeTableIndex ) )
 	{
 		CameraShakeData* pCameraShakeData = new CameraShakeData;
@@ -1963,7 +1978,8 @@ effect_error_proc:
 		LUA_GET_VALUE( luaManager,		"START_TIME",				pCameraShakeData->m_fStartAnimTime,				0.f		);
 
 		/// 카메라 크래시 발생 거리제한
-		int iLimitDistance = 0;
+		int iLimitDistance;	// split: a goto jumps over it
+		iLimitDistance = 0;
 		LUA_GET_VALUE( luaManager,		"LIMIT_DISTANCE",			iLimitDistance,			0		);
 		if ( IGNORE_DISTANCE == iLimitDistance )	//ignore인 경우에 해당 값을 그대로 대입
 			pCameraShakeData->m_iLimitDistanceSq = IGNORE_DISTANCE;
@@ -2189,16 +2205,16 @@ CX2EffectSet::EffectSetInstance::EffectSetInstance( EffectSetData* pEffectSetDat
 , m_fElapsedTime( 0.f )
 , m_bUseAnimationTiming( true )
 , m_iCurrDeleteShakeCount( 0 )
+, m_bCreateEffectSetTraceUnit( false )
+, m_bTraceUnitDieDeleteEffectSet( true )
 , m_pPet( pPet )
 , m_vLocalRotateDegree( D3DXVECTOR3(0.f, 0.f, 0.f) )
-, m_eTargetMeshEffectType(ET_INVALID)
 , m_hTargetMesh ( INVALID_MESH_INSTANCE_HANDLE )
+, m_eTargetMeshEffectType(ET_INVALID)
 , m_bIsTargetMesh( false )
 , m_bIsTargetMeshRight( false )
 , m_vecTargetMeshDirVector( D3DXVECTOR3(1.f, 0.f, 0.f) )
 , m_vecTargetMeshZVector( D3DXVECTOR3(1.f, 0.f, 0.f) )
-, m_bCreateEffectSetTraceUnit( false )
-, m_bTraceUnitDieDeleteEffectSet( true )
 //, m_hSeqStickShake( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_vBoneTraceTargetMeshScale( 1.f, 1.f, 1.f )
 {
@@ -2418,6 +2434,8 @@ D3DXVECTOR3 CX2EffectSet::EffectSetInstance::GetEffectPosition( EffectData* pEff
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 	return vPos;
@@ -2566,6 +2584,8 @@ D3DXVECTOR3 CX2EffectSet::EffectSetInstance::GetUnitRotation( EffectData* pEffec
 				return m_pPet->GetDirDegree();
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return vRotation;
@@ -2606,6 +2626,8 @@ bool CX2EffectSet::EffectSetInstance::IsUnitRight()
 				return m_pSquareUnit->GetIsRight();
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -3197,6 +3219,8 @@ void CX2EffectSet::EffectSetInstance::SetPos( IN const D3DXVECTOR3& vOffsetPos_ 
 					}
 				}
 			}
+			break;
+		default:
 			break;
 		}
 	}

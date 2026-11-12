@@ -45,18 +45,18 @@ class CKTDGLensFlare : public CKTDGObject
 	private:
 		//CKTDGLensFlare() : CKTDGObject( NULL ) { ASSERT( !"invalid" ); }
 		CKTDGLensFlare( HWND hWnd,
-						WCHAR* pHaloTex,
-						WCHAR* pFlareTex1,
-						WCHAR* pFlareTex2,
-						WCHAR* pFlareTex3 );
+						const WCHAR* pHaloTex,
+						const WCHAR* pFlareTex1,
+						const WCHAR* pFlareTex2,
+						const WCHAR* pFlareTex3 );
 		~CKTDGLensFlare(void);
 
 	public:
 		static CKTDGLensFlare* CreateLensFlare( HWND hWnd,
-			WCHAR* pHaloTex,
-			WCHAR* pFlareTex1,
-			WCHAR* pFlareTex2,
-			WCHAR* pFlareTex3 )
+			const WCHAR* pHaloTex,
+			const WCHAR* pFlareTex1,
+			const WCHAR* pFlareTex2,
+			const WCHAR* pFlareTex3 )
 		{
 			return new CKTDGLensFlare( hWnd, pHaloTex, pFlareTex1, pFlareTex2, pFlareTex3 );
 		}

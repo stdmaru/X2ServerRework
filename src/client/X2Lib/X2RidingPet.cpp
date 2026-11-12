@@ -15,12 +15,12 @@
 	@date  : 2013/03/27
 */
 CX2RidingPet::CX2RidingPet(void)
-	: m_wstrMotionName( L"" ), m_wstrChangeTex( L"" ), m_wstrAniTex( L"" ), m_wstrRidingMotion( L"" )
-	, m_pMotion( NULL ), m_pAniXET( NULL ), m_pChangeXET( NULL )
-	, m_bInit( false ), m_bMine( false ), m_bLoaded( false ), m_bSetData( false ), m_bInitPos( false ), m_bForceColor( false )
-	, m_bForceColorChange( false ), m_bUnderWaterHead( false ), m_bIgnoreLineSpeed( false ), m_bGame( false )
-	, m_fScale( 1.f ), m_fElapsedTime( 0.f ), m_fNowStateTimer( 0.f ), m_cColor( 0.f, 0.f, 0.f, 0.f )
-	, m_cLineUnitColor( 0.f, 0.f, 0.f, 0.f )
+	: m_bForceColor( false ), m_bForceColorChange( false ), m_bGame( false ), m_bLoaded( false )
+	, m_bMine( false ), m_bIgnoreLineSpeed( false ), m_bInit( false )
+	, m_bInitPos( false ), m_bSetData( false ), m_bUnderWaterHead( false ), m_wstrAniTex( L"" ), m_wstrChangeTex( L"" ), m_wstrMotionName( L"" )
+	, m_wstrRidingMotion( L"" ), m_pMotion( NULL ), m_pAniXET( NULL ), m_pChangeXET( NULL )
+	, m_cColor( 0.f, 0.f, 0.f, 0.f ), m_cLineUnitColor( 0.f, 0.f, 0.f, 0.f ), m_fElapsedTime( 0.f ), m_fNowStateTimer( 0.f )
+	, m_fScale( 1.f )
 {
 	m_SyncData.Init();
 	m_ConditionData.Init();

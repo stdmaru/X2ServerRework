@@ -5,7 +5,7 @@
 #include "./X2UIDragable.h"
 
 
-CX2UIDragable::CX2UIDragable( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIDragable::CX2UIDragable( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2ItemSlotManager( pNowStage, NULL )
 //: CX2ItemSlotManager( pNowStage, pFileName )
 {
@@ -25,7 +25,7 @@ HRESULT CX2UIDragable::OnFrameMove( double fTime, float fElapsedTime )
 }
 
 
-bool CX2UIDragable::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIDragable::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	switch( uMsg )
 	{
@@ -62,9 +62,6 @@ bool CX2UIDragable::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 
 	case WM_RBUTTONDOWN:
 		{
-			POINT mousePoint = { short(LOWORD(lParam)), short(HIWORD(lParam)) };
-			D3DXVECTOR2 mousePos = D3DXVECTOR2( (float)mousePoint.x, (float)mousePoint.y );
-
 			SetNowDragItemReturn();
 		}
 		break;
@@ -119,7 +116,6 @@ bool CX2UIDragable::MouseUp( D3DXVECTOR2 mousePos )
 	// 해당 다이얼로그에 슬롯이 있는 경우
 	if ( *m_pSlotBeforeDragging != NULL )
 	{
-		CX2SlotItem* pSlotItem = (CX2SlotItem*) *m_pSlotBeforeDragging;
 
 		// 해당 다이얼로그에 뭔가 드래그 되었다는 신호를 보낸다
 		OnDropAnyItem( mousePos );

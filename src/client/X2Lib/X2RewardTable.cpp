@@ -153,7 +153,7 @@ void CX2RewardTable::GetRewardInfo( IN int iRewardType, IN const std::vector< KP
 	}
 }
 
-void CX2RewardTable::MakeSystemLetterTitle( const std::wstring& wstrNickName, KPostItemTitleInfo& kPostTitle )
+void CX2RewardTable::MakeSystemLetterTitle( const std::wstring& /*wstrNickName*/, KPostItemTitleInfo& kPostTitle )
 {
 	switch( kPostTitle.m_cScriptType )
 	{

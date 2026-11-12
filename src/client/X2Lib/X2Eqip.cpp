@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "./X2Eqip.h"
-#include "boost_kog_extension.h"
 
 
 // constructor
@@ -23,9 +22,6 @@ CX2Eqip::CX2Eqip( CX2Item* pItem, CKTDGXSkinAnimPtr pUnitXSkinAnim, int enchantL
         후에, 포인터의 read/write가 atomic하다는 보장이 되지 않으면, 로드된 리소스 객체가 유효valid
         한지를 판단하기 위해 별도의 bool변수를 사용해야 할 것이다.
         - jintaeks on 2008-12-15, 10:59 */
-	static_assert( sizeof(CKTDGXSkinAnim*) == sizeof(int) , "");
-	static_assert( sizeof(CKTDXDeviceXSkinMesh*) == sizeof(int) , "");
-	static_assert( sizeof(CKTDXDeviceXMesh*) == sizeof(int) , "");
 //}} seojt // 2008-12-15, 10:56
 
 
@@ -124,14 +120,14 @@ CX2Eqip::CX2Eqip( CX2Item* pItem, CKTDGXSkinAnimPtr pUnitXSkinAnim, int enchantL
         ) // 공용 아이템
 	{
         const wchar_t* pCIMName = m_pItemTemplet->GetCommonItemModelName( eUnitType );
-        if ( pCIMName[0] != NULL )
+        if ( pCIMName[0] != L'\0' )
         {
 			bCommonItem = true;
 			m_ModelName[0] = pCIMName;
 
 			// 오현빈 // 공용 아이템 XET 적용 되도록 추가
 			const wchar_t* pCIMXetName = m_pItemTemplet->GetCommonItemXETName( eUnitType );
-			if( pCIMXetName[0] != NULL )
+			if( pCIMXetName[0] != L'\0' )
 				m_ChangeTexName = pCIMXetName;
 			else
 				m_ChangeTexName = m_pItemTemplet->GetTextureChangeXETName();
@@ -338,14 +334,14 @@ void    CX2Eqip::NotifyShowObjectChanged()
 
 
 // OnFrameMove 에서 RenderParam 세팅을 분리하여 OnFrameMove 이전에 실행하도록 수정
-HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRenderer::RenderParam* pRenderParam )
+HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRenderer::RenderParam* pRenderParam )
 {
 	if( m_pItemTemplet == NULL )
 		return E_FAIL;
     DWORD   dwItemID = m_pItemTemplet->GetItemID();
 
-    if ( pRenderParam == NULL )
-        return S_OK;
+	if ( pRenderParam == NULL )
+		return S_OK;
 
 	for( int i=0; i< CX2Item::MAX_MODEL_COUNT_A_ITEM ; i++ )
 	{
@@ -483,7 +479,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					//{{ kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_REAL_COLOR;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -493,7 +489,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( CARTOON_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_CARTOON;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -503,7 +499,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					// JHKang / 2012.8.29 / 알파 값 처리할 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -515,7 +511,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -532,7 +528,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 						bool bAllAlphaBlend = false;
 						for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 						{
-							if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
+							if( static_cast<DWORD>( ALL_ALPHA_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 							{
 								bAllAlphaBlend = true;
 								break;
@@ -625,7 +621,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					//{{ kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_REAL_COLOR;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -635,7 +631,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( CARTOON_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_CARTOON;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -645,7 +641,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					// JHKang / 2012.8.29 / 알파 값 처리할 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -657,7 +653,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -673,7 +669,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 						bool bAllAlphaBlend = false;
 						for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 						{
-							if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
+							if( static_cast<DWORD>( ALL_ALPHA_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 							{
 								bAllAlphaBlend = true;
 								break;
@@ -726,7 +722,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 				{
 					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( CARTOON_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							m_AttatchNormalRenderParam.renderType = CKTDGXRenderer::RT_CARTOON;
 							m_AttatchNormalRenderParam.fOutLineWide= 0.0f;
@@ -738,7 +734,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					bool bAlphaBlend = false;
 					for( int i=0; i<std::ssize( ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALPHA_BLEND_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALPHA_BLEND_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAlphaBlend = true;
 							break;
@@ -763,7 +759,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					bool bAlphaBlend = false;
 					for( int i=0; i<std::ssize( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAlphaBlend = true;
 							break;
@@ -789,7 +785,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					bool bDestAlphaBlend = false;
 					for( int i=0; i<std::ssize( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bDestAlphaBlend = true;
 							break;
@@ -810,7 +806,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					bool bAllAlphaBlend = false;
 					for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALL_ALPHA_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAllAlphaBlend = true;
 							break;
@@ -834,7 +830,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					bool bAlphaCullNone = false;
 					for( int i=0; i<std::ssize( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAlphaCullNone = true;
 							break;
@@ -858,6 +854,8 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 			} break;
 
+		default:
+			break;
 		} // switch
 	} // for
 
@@ -948,8 +946,8 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 	if( m_pItemTemplet == NULL )
 		return E_FAIL;
 
-    if ( !GetShowObject() )
-        return E_FAIL;
+	if ( !GetShowObject() )
+		return E_FAIL;
 
 //}} robobeg : 2008-10-21
 
@@ -1042,7 +1040,6 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 				{
 					if( NULL != m_pNormalXSkinAnim[i] )
 					{
-						CKTDGXRenderer::RenderParam* pEqipRenderParam = m_pNormalXSkinAnim[i]->GetRenderParam();
 						D3DXMATRIX localMove, matTrans, matRot, matScale;
 
 						CX2Unit::UNIT_TYPE unitType = m_pOwnerUnit->GetType();
@@ -1069,7 +1066,6 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 
 					if( NULL != m_pHyperXSkinAnim[i] && m_bHyperMode == true && m_bCanHyperMode == true )
 					{
-						CKTDGXRenderer::RenderParam* pEqipRenderParam = m_pHyperXSkinAnim[i]->GetRenderParam();
 						D3DXMATRIX localMove, matTrans, matRot, matScale;
 
 						CX2Unit::UNIT_TYPE unitType = m_pOwnerUnit->GetType();
@@ -1126,6 +1122,8 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1234,6 +1232,8 @@ RENDER_HINT   CX2Eqip::OnFrameRender_Prepare()
 			}
 		}
 		break;
+    default:
+    	break;
     }//switch
 
     return RENDER_HINT_NORENDER;
@@ -1367,6 +1367,8 @@ void    CX2Eqip::OnFrameRender_Draw()
 						pSubEquip->OnFrameRender_Draw();
 				}
 			}
+			break;
+		default:
 			break;
 		} // switch
 	} // for
@@ -1676,11 +1678,11 @@ void CX2Eqip::_UpdateSkin(int iIndex_)
 		switch( m_iXSkinModelAttachment )
 		{
 		case 1:
-            if ( m_pUnitXSkinAnim != NULL )
+			if ( m_pUnitXSkinAnim != NULL )
 			m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
 			break;
 		case 2:
-            if ( m_pUnitXSkinAnim != NULL )
+			if ( m_pUnitXSkinAnim != NULL )
 			m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
 			break;
 		}
@@ -1695,8 +1697,9 @@ void CX2Eqip::_UpdateSkin(int iIndex_)
 			case 2:
 				break;
 			case 1:
-                if ( m_pUnitXSkinAnim != NULL )
-				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+				if ( m_pUnitXSkinAnim != NULL )
+					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+				[[fallthrough]];
 
 
 			default:
@@ -1715,8 +1718,9 @@ void CX2Eqip::_UpdateSkin(int iIndex_)
 			case 1:
 				break;
 			case 2:
-                if ( m_pUnitXSkinAnim != NULL )
-				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+				if ( m_pUnitXSkinAnim != NULL )
+					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+				[[fallthrough]];
 
 			default:
                 if ( m_pUnitXSkinAnim != NULL )
@@ -1759,11 +1763,11 @@ void CX2Eqip::_UpdateSkin()
 			switch( m_iXSkinModelAttachment )
 			{
 			case 1:
-                if ( m_pUnitXSkinAnim != NULL )
+				if ( m_pUnitXSkinAnim != NULL )
 				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
 				break;
 			case 2:
-                if ( m_pUnitXSkinAnim != NULL )
+				if ( m_pUnitXSkinAnim != NULL )
 				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
 				break;
 			}
@@ -1778,11 +1782,12 @@ void CX2Eqip::_UpdateSkin()
 				case 2:
 					break;
 				case 1:
-                    if ( m_pUnitXSkinAnim != NULL )
-					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+					if ( m_pUnitXSkinAnim != NULL )
+						m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+					[[fallthrough]];
 
 				default:
-                    if ( m_pUnitXSkinAnim != NULL )
+					if ( m_pUnitXSkinAnim != NULL )
 					m_pUnitXSkinAnim->AddModelXSkinMesh( m_pHyperXSkinModel[i], m_pHyperAniXET, NULL, m_pHyperTexChangeXET );
 					m_iXSkinModelAttachment = 2;
 				}
@@ -1794,11 +1799,12 @@ void CX2Eqip::_UpdateSkin()
 				case 1:
 					break;
 				case 2:
-                    if ( m_pUnitXSkinAnim != NULL )
-					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+					if ( m_pUnitXSkinAnim != NULL )
+						m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+					[[fallthrough]];
 
 				default:
-                    if ( m_pUnitXSkinAnim != NULL )
+					if ( m_pUnitXSkinAnim != NULL )
 					m_pUnitXSkinAnim->AddModelXSkinMesh( m_pNormalXSkinModel[i], m_pNormalAniXET, NULL, m_pNormalTexChangeXET );
 					if( NULL != m_pNormalXSkinModel[i] )
 						m_iXSkinModelAttachment = 1;
@@ -2147,7 +2153,7 @@ void CX2Eqip::InitAttatchAnim()
 				}
 				else
 				{
-					if( m_pItemTemplet->GetAttachFrameName(i)[0] != NULL )
+					if( m_pItemTemplet->GetAttachFrameName(i)[0] != L'\0' )
 					{
 			        	pFrame =
                         ( m_pUnitXSkinAnim != NULL ) ? m_pUnitXSkinAnim->GetCloneFrame( m_pItemTemplet->GetAttachFrameName(i) ) : NULL;
@@ -2330,7 +2336,7 @@ void CX2Eqip::InitAttatchNormal()
 				}
 				else
 				{
-					if( m_pItemTemplet->GetAttachFrameName(i)[0] != NULL )
+					if( m_pItemTemplet->GetAttachFrameName(i)[0] != L'\0' )
 					{
 						pFrame = ( m_pUnitXSkinAnim != NULL ) ? m_pUnitXSkinAnim->GetCloneFrame( m_pItemTemplet->GetAttachFrameName(i) ) : NULL;
 						if( NULL != pFrame )
@@ -2567,6 +2573,8 @@ void    CX2Eqip::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 			case CX2Item::UT_ATTACH_NORMAL:
 				g_pKTDXApp->GetDeviceManager()->AppendXMesh( listInOut_, name );
 				break;
+			default:
+				break;
 			}
 		}
 	} // for(j)
@@ -2602,6 +2610,8 @@ void    CX2Eqip::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 				case CX2Item::UT_ATTACH_NORMAL:
 					g_pKTDXApp->GetDeviceManager()->AppendXMesh( listInOut_, name );
 					break;
+				default:
+					break;
 				}
 			}
 		} // for(j)
@@ -2622,6 +2632,8 @@ void    CX2Eqip::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 		AppendAttachedToDeviceList( listInOut_ );
 		break;
 	case CX2Item::UT_ATTACH_NORMAL:
+		break;
+	default:
 		break;
 	}//switch
 }//CX2Eqip::AppendToDeviceList()
@@ -2650,6 +2662,8 @@ void CX2Eqip::EquipResourceLoad()
 
 	case CX2Item::UT_ATTACH_NORMAL:
 		InitAttatchNormal();
+		break;
+	default:
 		break;
 	}
 
@@ -2712,6 +2726,8 @@ void	CX2Eqip::AppendAttachedToDeviceList( CKTDXDeviceDataList& listInOut_ ) cons
 			}
 
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3058,6 +3074,8 @@ void CX2Eqip::LoadAttached()
 			}
 
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3194,7 +3212,7 @@ void CX2Eqip::LoadAttached()
 		m_vecpAttachedParticle.clear();
 	}
 
-	void CX2Eqip::AttachedParticleGroup::OnFrameMove( double fTime, float fElapsedTime )
+	void CX2Eqip::AttachedParticleGroup::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 	{
 		for( UINT i=0; i< m_vecpAttachedParticle.size(); i++ )
 		{

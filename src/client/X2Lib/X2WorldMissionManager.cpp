@@ -9,6 +9,7 @@ CX2WorldMissionManager::CX2WorldMissionManager()
 , m_usRemainTimeWorldBuff( 0 )
 , m_usWorldBuffStepNum( 0 )
 //, m_bIsEXPBonus( false )
+, m_iRemainTimeMissionStart( -1 )
 , m_pUIWorldMission( NULL )
 , m_pTextureDefenceDungeonMiniMap( NULL )
 , m_pUVDefenceDungeonMiniMap( NULL )
@@ -16,7 +17,6 @@ CX2WorldMissionManager::CX2WorldMissionManager()
 , m_iNumOfCrystals( 0 )
 , m_pWorldBuffDragonBreath( NULL )
 , m_pWorldBuffElBless( NULL )
-, m_iRemainTimeMissionStart( -1 )
 , m_iNowDefenceDungeonLevel( -1 )	//현재 어둠의 문 난이도
 // , MAGIC_X_LEFT( 0 )
 // , MAGIC_X_RIGHT( 0 )
@@ -72,16 +72,8 @@ void CX2WorldMissionManager::RenderMiniMapTexture( CKTDXDeviceRenderTargetTextur
 
 	KTDXPROFILE_BEGIN( "MAP_DRAW" );
 
-	const int MAGIC_X_LEFT = -5869;
-	const int MAGIC_X_RIGHT = 5869;
-	const int MAGIC_Z_UP = 1669;
-	const int MAGIC_Z_DOWN = -5187;
 
-	const int MAGIC_POS_X = 785;
-	const int MAGIC_POS_Y = 1;
 
-	const int MAGIC_WIDTH = 180;
-	const int MAGIC_HEIGHT = 65;
 
 	//지형 변경으로 인한 미니맵 아이콘 이동 경로 수정
 	const float	fIncreaseDegree			   = 1.34f;		//시작 위치 각도 연동
@@ -130,7 +122,6 @@ void CX2WorldMissionManager::RenderMiniMapTexture( CKTDXDeviceRenderTargetTextur
 	CKTDXDeviceTexture* pTextureMyUnit  = g_pKTDXApp->GetDeviceManager()->OpenTexture( L"MiniMap_Char_My.dds" );
 	CKTDXDeviceTexture* pTexturePartyUnit  = g_pKTDXApp->GetDeviceManager()->OpenTexture( L"MiniMap_Char_Party.dds" );
 
-	int MAGIC_PLAYER_WIDTH = 350;
 
 	// 유닛 위치 그리기
 	CX2GUUser* pMyUnit = g_pX2Game->GetMyUnit();
@@ -296,7 +287,7 @@ bool CX2WorldMissionManager::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wPa
 	return false;
 }
 
-HRESULT CX2WorldMissionManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2WorldMissionManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if( true == IsActiveDefenceDungeon() )
 	{
@@ -342,7 +333,7 @@ HRESULT CX2WorldMissionManager::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool	CX2WorldMissionManager::Handler_EGS_WORLD_MISSION_UPDATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool	CX2WorldMissionManager::Handler_EGS_WORLD_MISSION_UPDATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_WORLD_MISSION_UPDATE_NOT kEvent;
@@ -447,7 +438,7 @@ bool	CX2WorldMissionManager::Handler_EGS_WORLD_MISSION_UPDATE_NOT( HWND hWnd, UI
 	@brief : 디펜스던전 컨텐츠의 월드버프 패킷에 대한 핸들러
 	@return : bool
 */
-bool CX2WorldMissionManager::Handler_EGS_UPDATE_WORLD_BUFF_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2WorldMissionManager::Handler_EGS_UPDATE_WORLD_BUFF_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_WORLD_BUFF_NOT kEvent;
@@ -517,7 +508,7 @@ bool CX2WorldMissionManager::GetDragonBreathEnchantStatIncreased( OUT const CX2S
 	}
 }
 
-const int CX2WorldMissionManager::GetDragonBreathAnimSpeedRateIncreased() const
+int CX2WorldMissionManager::GetDragonBreathAnimSpeedRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffDragonBreath )
 		return 0;
@@ -525,7 +516,7 @@ const int CX2WorldMissionManager::GetDragonBreathAnimSpeedRateIncreased() const
 		return m_pWorldBuffDragonBreath->m_iAnimSpeedRateIncreased;
 }
 
-const float CX2WorldMissionManager::GetDragonBreathAttackStatRateIncreased() const
+float CX2WorldMissionManager::GetDragonBreathAttackStatRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffDragonBreath )
 		return 0.0f;
@@ -538,7 +529,7 @@ const float CX2WorldMissionManager::GetDragonBreathAttackStatRateIncreased() con
 	@param : CX2EnchantItem::ENCHANT_TYPE eType (수치를 알고싶은 인첸트 타입)
 	@return : const float (해당 인첸트 타입의 수치 값)
 */
-const float CX2WorldMissionManager::GetEnchantStatFromDrgonBreath( int iEnchantType ) const
+float CX2WorldMissionManager::GetEnchantStatFromDrgonBreath( int iEnchantType ) const
 {
 	// 이 함수를 콜 하는 상위 함수에서 m_pWorldBuffDragonBreath에 대하여
 	// NULL Check를 해야 함
@@ -575,7 +566,7 @@ const float CX2WorldMissionManager::GetEnchantStatFromDrgonBreath( int iEnchantT
 
 }
 
-const int CX2WorldMissionManager::GetElBlessCriticalRateIncreased() const
+int CX2WorldMissionManager::GetElBlessCriticalRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffElBless )
 		return 0;
@@ -583,7 +574,7 @@ const int CX2WorldMissionManager::GetElBlessCriticalRateIncreased() const
 		return m_pWorldBuffElBless->m_iCriticalRateIncreased;
 }
 
-const float CX2WorldMissionManager::GetElBlessDefenceStatRateIncreased() const
+float CX2WorldMissionManager::GetElBlessDefenceStatRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffElBless )
 		return 0.0f;

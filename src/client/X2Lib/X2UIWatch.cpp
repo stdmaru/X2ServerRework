@@ -103,7 +103,7 @@ HRESULT CX2UIWatch::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UIWatch::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIWatch::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDLGWatch ) )
@@ -190,7 +190,7 @@ bool CX2UIWatch::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return bFlag;
 }
 
-bool CX2UIWatch::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIWatch::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 
 	switch(wParam)
@@ -317,8 +317,8 @@ bool CX2UIWatch::OpenDialog(UidType uid)
 
 	// 레벨
 	CKTDGUIStatic* pStaticUserLv = (CKTDGUIStatic*)m_pDLGWatch->GetControl( L"g_pStaticLv" );
-	//wsprintf( buff, L"%d", pUnitData->m_Level );
-	StringCchPrintf( buff, 256, L"%d", pUnitData->m_Level );
+	//wsprintf( buff, L"%d", static_cast<int>( pUnitData->m_Level ) );
+	StringCchPrintf( buff, 256, L"%d", static_cast<int>( pUnitData->m_Level ) );
 	pStaticUserLv->GetString(0)->msg = buff;
 
 	// 전적
@@ -627,7 +627,6 @@ void CX2UIWatch::UnitHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 
 
 
@@ -734,7 +733,7 @@ void CX2UIWatch::UnitHandling( double fTime, float fElapsedTime )
 
 		m_pUnitViewerUI->OnFrameMove( fTime, fElapsedTime );
 
-		if ( NULL != m_pUnitViewerUI->GetXSkinAnim() && m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		if ( NULL != m_pUnitViewerUI->GetXSkinAnim() && m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			m_pUnitViewerUI->PlayByMotionType( CX2UnitViewerUI::UVUMT_WAIT );
 		}
@@ -1077,7 +1076,6 @@ std::wstring CX2UIWatch::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool
 			CX2Item::KItemFormatStatData kCalculateStat;
 			g_pData->GetItemStatCalculator().CalculateItemStat(kCalculateStat, pkItemTemplet, eUnitType, eUnitClass );
 
-			const CX2Item::KItemFormatStatData& kTempletStat = kCalculateStat;
 
 
 			// 물리 공격력
@@ -1345,7 +1343,7 @@ std::wstring CX2UIWatch::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool
 					vecNormalAndRandomSocketOption.insert( vecNormalAndRandomSocketOption.end(), vecNormalSocketOption.begin(), vecNormalSocketOption.end() );
 
 					// 소켓 레벨 얻기
-					const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : m_pTargetUnit->GetUnitData().m_Level;
+					const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : static_cast<int>( m_pTargetUnit->GetUnitData().m_Level );
 
 					// 소켓 설명 얻기
 					if( true == bHasRandomSocket )
@@ -1387,7 +1385,7 @@ std::wstring CX2UIWatch::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool
 
 		//{{ megagame : 박교현 : [2010-04-18] (마우스 오른쪽 버튼으로 사용)
         const wchar_t* pwszDescription = pkItemTemplet->GetDescription();
-		if ( pwszDescription[0] != NULL )
+		if ( pwszDescription[0] != L'\0' )
 		{
 			//wsprintf( buff, L"\n\n%s", pkItemTemplet->m_Description.c_str() );
 			StringCchPrintf( buff, 512, L"\n\n%s", pwszDescription );

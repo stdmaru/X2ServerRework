@@ -1,7 +1,6 @@
-#include <stdafx.h>
+#include "stdafx.h"
 
 
-#include <boost/scoped_array.hpp>
 
 
 
@@ -31,7 +30,7 @@ bool    CX2ItemManager::KProxy::AddItemTemplet_LUA()
 
     DWORD   dwItemID = 0;
     std::wstring        wstrName;
-    CX2Item::ITEM_TYPE  eItemType;
+    [[maybe_unused]] CX2Item::ITEM_TYPE  eItemType;
 	LUA_GET_VALUE_RETURN(	luaManager, "m_ItemID",	dwItemID, 0, return false; );
 	LUA_GET_VALUE_RETURN(	luaManager, "m_Name", wstrName, L"", return false; );
 	LUA_GET_VALUE_RETURN_ENUM(	luaManager, "m_ItemType", eItemType, CX2Item::ITEM_TYPE, CX2Item::IT_NONE, return false; );
@@ -43,7 +42,6 @@ bool    CX2ItemManager::KProxy::AddItemTemplet_LUA()
 bool    CX2ItemManager::KProxy::AddSetItemData_LUA()
 {
     DWORD dwSetID = 0;
-	bool bCheckNew = false;
 
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
 
@@ -84,7 +82,6 @@ CX2ItemManager::KProxy2::KProxy2( const std::set<DWORD>& setItemIDs, const std::
     }
     {
         CX2Item::KItemFormatTemplet kDummy;
-        DWORD dwDummy = 0;
         for( DWORD dwItem = 0; dwItem != dwNumItem; ++dwItem )
         {
             m_kFileSerializer.AppendData( sizeof(CX2Item::KItemFormatTemplet), &kDummy );
@@ -96,7 +93,6 @@ CX2ItemManager::KProxy2::KProxy2( const std::set<DWORD>& setItemIDs, const std::
     }
     {
         CX2Item::KItemFormatSetItemData kDummy2;
-        DWORD dwDummy2 = 0;
         for( DWORD dwSetID = 0; dwSetID != dwNumSetIDs; ++dwSetID )
         {
             m_kFileSerializer.AppendData( sizeof(CX2Item::KItemFormatSetItemData), &kDummy2 );
@@ -107,8 +103,8 @@ CX2ItemManager::KProxy2::KProxy2( const std::set<DWORD>& setItemIDs, const std::
 
 DWORD   CX2ItemManager::KProxy2::AppendD3DXVECTOR3( const D3DXVECTOR3& v, bool bDefaultOne )
 {
-    if ( bDefaultOne == false && v.x == 0.f && v.y == 0.f && v.z == 0.f
-        || bDefaultOne == true && v.x == 1.f && v.y == 1.f && v.z == 1.f )
+    if ( (bDefaultOne == false && v.x == 0.f && v.y == 0.f && v.z == 0.f)
+        || (bDefaultOne == true && v.x == 1.f && v.y == 1.f && v.z == 1.f) )
         return  0;
     KD3DXVECTOR3OffsetMap::const_iterator iter = m_mapVectorOffset.find( v );
     if ( iter != m_mapVectorOffset.end() )
@@ -194,7 +190,6 @@ bool    CX2ItemManager::KProxy2::AddSetItemData_LUA()
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
 
     char aszError[MAX_PATH];
-    bool    bCheckNew = false;
     DWORD   dwSetID = 0;
 	LUA_GET_VALUE(	luaManager, "m_SetID",						dwSetID,					0	);
 	if ( dwSetID == 0 )
@@ -250,7 +245,6 @@ bool    CX2ItemManager::KProxy2::AddSetItemData_LUA()
         }
         else
         {
-            bCheckNew = true;
         }
     }
     KSetItemDataMap::iterator iter = m_mapSetItemDataMap.find( dwSetID );
@@ -406,10 +400,10 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 
 	/* 오현빈 // X2OPTIMIZE_ITEM_TEMPLET_PREPROCESSING주석 // 제가 이해한 내용을 바탕으로 작성 해서 틀린 내용 일 수 있습니다.
 	꼭 필요한 값이 아닐 경우(각 캐릭별 offset 등) 스크립트에 값이 기록 되어 있을 때만 메모리에 등록 시키기 위해
-	boost::scoped_array<CX2Item::KItemFormatType_OffsetOrValue>을 사용함.
+	std::unique_ptr<CX2Item::KItemFormatType_OffsetOrValue[]> is used.
 
 	여기서 등록시킨 값을 읽어올 때는 각 타입별로 Offset을 모두 더해주는 방식이기 때문에 순서가 변경되면 오동작 할 수 있음*/
-    boost::scoped_array<CX2Item::KItemFormatType_OffsetOrValue>
+    std::unique_ptr<CX2Item::KItemFormatType_OffsetOrValue[]>
         apExtra( new CX2Item::KItemFormatType_OffsetOrValue[ARRAY_SIZE( s_aszSmallName )*5+CX2Item::STT_END] );
     DWORD   dwNumExtra = 0;
     DWORD   dwItemID = 0;
@@ -555,7 +549,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
             sprintf_s( aszError, ARRAY_SIZE( aszError ), "ITEMID_%d: INVALID_UNITTYPE_%d", dwItemID, eUnitType );
             ErrorLogMsg( XEM_ERROR144, aszError );
         }//if
-        if ( false == ( eUnitClass >= CX2Unit::UNIT_TYPE(0) && eUnitClass < CX2Unit::UC_END ) )
+        if ( false == ( eUnitClass >= CX2Unit::UNIT_CLASS(0) && eUnitClass < CX2Unit::UC_END ) )
         {
             sprintf_s( aszError, ARRAY_SIZE( aszError ), "ITEMID_%d: INVALID_UNITCLASS_%d", dwItemID, eUnitClass );
             ErrorLogMsg( XEM_ERROR144, aszError );
@@ -1177,7 +1171,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 			    //}
 
                 ASSERT( ( mesh.m_dwOffset_Name & 0x800000000 ) == 0 );
-			    if( (int)wstrTemp.find( L"Jiggle_Bone" ) != std::wstring::npos ) // 찾았다
+			    if( static_cast<size_t>( (int)wstrTemp.find( L"Jiggle_Bone" ) ) != std::wstring::npos ) // 찾았다
 			    {
                     mesh.m_dwOffset_Name |= 0x80000000;
 			    }

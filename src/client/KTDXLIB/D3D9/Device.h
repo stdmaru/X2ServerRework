@@ -243,7 +243,9 @@ public:
     // Texture memory: the render backend does not report it, so a fixed 512 MB (the engine only reports the figure);
     // there is no managed pool to evict.
     UINT GetAvailableTextureMem() const;
-    void EvictManagedResources() {}
+    HRESULT EvictManagedResources() { return S_OK; }
+    // GDI dialogs over a fullscreen swap chain: the window is never exclusive fullscreen, so there is nothing to do.
+    HRESULT SetDialogBoxMode(BOOL) { return S_OK; }
 
     // Copies a system-memory texture's levels (its CPU copy) into a texture of the same size and format, as
     // IDirect3DDevice9::UpdateTexture: the levels both have, from the top.

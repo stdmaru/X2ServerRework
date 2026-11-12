@@ -430,8 +430,6 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 
 			CX2EmblemManager::ResetEmblemManager();
 
-			CX2MailLogManager::ResetMailLogManager();
-
 			CX2BossRaidManager::ResetBossRaidManager();
 
 			//드랍아이템 리소스
@@ -445,7 +443,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 //}} kimhc // 2010.3.10 //	광고노출도 초기화
 
 			//Handler_EGS_STATE_CHANGE_SERVER_SELECT_REQ();
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 
 
 #if !X2_DEV_TOOLS
@@ -696,7 +694,7 @@ void CX2StateLoading::DropItemLoading()
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_735 ), this );
 
 			g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );									// fix!! id 변경
-			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 		}
 
 		return false;
@@ -726,7 +724,7 @@ void CX2StateLoading::DropItemLoading()
 		return true;
 	}
 
-	bool CX2StateLoading::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2StateLoading::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 	{
 		KSerBuffer* pBuff = (KSerBuffer*)lParam;
 		KECH_VERIFY_ACCOUNT_ACK kEvent;
@@ -788,7 +786,7 @@ void CX2StateLoading::DropItemLoading()
 	}
 
 
-	bool CX2StateLoading::Handler_ECH_DISCONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2StateLoading::Handler_ECH_DISCONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 	{
 		if( g_pMain->DeleteServerPacket( ECH_DISCONNECT_ACK ) == true )
 		{

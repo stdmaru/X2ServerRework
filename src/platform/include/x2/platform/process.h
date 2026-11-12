@@ -72,6 +72,10 @@ bool CurrentProcessMemory(std::size_t& current, std::size_t& peak);
 // The machine's physical memory in bytes: installed (as the system sees it) and available now. False when unknown.
 bool PhysicalMemory(std::size_t& total, std::size_t& available);
 
+// A string that identifies this machine and stays the same across reboots: the MachineGuid on Windows, the
+// machine-id (systemd / D-Bus) elsewhere. Empty when the system has none.
+std::string MachineIdentity();
+
 // Sets (or, with an empty value, removes) a variable of this process's environment, which the children started from
 // then on inherit. Not thread-safe with other environment reads (getenv): call it before starting threads.
 void SetEnvironment(const std::string& name, const std::string& value);
@@ -84,5 +88,9 @@ std::string QuoteWindowsArgument(std::string_view arg);
 std::string QuoteCmdArgument(std::string_view arg);
 // Quoting for a POSIX shell (single quotes): the remote command of `ssh host <command>` is run by the remote shell.
 std::string QuoteShellArgument(std::string_view arg);
+
+// Opens a URL in the user's browser without waiting for it (ShellExecute "open" on Windows, xdg-open elsewhere).
+// False when it could not be started.
+bool OpenUrl(const std::wstring& url);
 
 } // namespace x2::platform

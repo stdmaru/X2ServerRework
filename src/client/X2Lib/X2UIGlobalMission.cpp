@@ -3,9 +3,9 @@
 #include "X2UIGlobalMission.h"
 
 CX2UIGlobalMission::CX2UIGlobalMission() :
-m_pDlgGlobalMissionDlg( NULL )
-, m_iNumOfNowClearCount( 0 )
+m_iNumOfNowClearCount( 0 )
 , m_iNumOfClearCount( 0 )
+, m_pDlgGlobalMissionDlg( NULL )
 {
 }
 
@@ -36,7 +36,7 @@ void CX2UIGlobalMission::SetShowGlobalMissionDlg( bool bShow )
 	}
 }
 
-bool CX2UIGlobalMission::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGlobalMission::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -78,14 +78,13 @@ void CX2UIGlobalMission::UpdateNumOfNowClearCount( int iNumOfNowClearCount )
 	pPictureGage->SetSizeX(fPercent * vGagebarSize.x);
 
 	CKTDGUIStatic* pStaticPiratePercent = static_cast<CKTDGUIStatic*>(m_pDlgGlobalMissionDlg->GetControl(L"PiratePercent"));
-	int iPercent = static_cast<int>(fPercent * 100.0f);
 
 	if( pStaticPiratePercent != NULL )
 	{
 		int iRemainCount = ( m_iNumOfNowClearCount > m_iNumOfClearCount ) ? 0 : ( m_iNumOfClearCount - m_iNumOfNowClearCount );
 		wstring wstrRemainCount = L"";
 		WCHAR wszRemainCount[10] = {0, };
-		_itow(iRemainCount, wszRemainCount, 10);
+		_itow_s(iRemainCount, wszRemainCount, 10);
 		wstrRemainCount = wszRemainCount;
 
 		pStaticPiratePercent->GetString(0)->msg = wstrRemainCount;

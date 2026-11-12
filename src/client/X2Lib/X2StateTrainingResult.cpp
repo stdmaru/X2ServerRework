@@ -53,7 +53,8 @@ HRESULT CX2StateTrainingResult::OnFrameMove( double fTime, float fElapsedTime )
 
 	if ( m_bUIAnimStart == false )
 	{
-		m_fStartWaitRemainTime =- fElapsedTime;
+		// The original wrote "=-" for "-=" (docs/original/bugs.md): the wait ends on the first frame.
+		m_fStartWaitRemainTime = -fElapsedTime;
 	}
 
 	if ( m_fStartWaitRemainTime <= 0.0f )
@@ -70,9 +71,6 @@ HRESULT CX2StateTrainingResult::OnFrameMove( double fTime, float fElapsedTime )
 		}
 
 		const int X2_MAGIC_MULTY_NUM = 3500;
-		const int X2_MAGIC_MULTY_NUM2 = 35;
-		const int X2_MAGIC_MULTY_NUM3 = 70000;
-		const int X2_MAGIC_MULTY_NUM4 = 350;
 
 
 		//{{ 2009.01.19 김태완 : 코드정리 elseif -> switch
@@ -249,7 +247,7 @@ HRESULT CX2StateTrainingResult::OnFrameMove( double fTime, float fElapsedTime )
 						if ( pStaticEXPBG->GetString(0) != NULL )
 						{
 							WCHAR buff[256] = {0};
-							swprintf( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
+							swprintf_s( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
 							pStaticEXPBG->GetString(0)->msg = buff;
 						}
 						/*

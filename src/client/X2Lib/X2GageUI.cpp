@@ -92,7 +92,7 @@ void CX2BossGageUI::SetBossGageTexture( const WCHAR* wszFaceTexName_, const WCHA
 	}
 }
 
-/*virtual*/ void CX2BossGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2BossGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	if ( GetShow() && null != m_optrGameUnit)
 	{
@@ -281,7 +281,6 @@ void CX2BossGageUI::SetBossGageTexture( const WCHAR* wszFaceTexName_, const WCHA
 				CKTDGUIControl::CPictureData* pLineNumber1		= pStatic_BossState->GetPicture(7);
 				if ( NULL != pLineNumber1 )
 				{
-					if ( usBarNumber >= 0 )
 					{
 						int iNumOne = usBarNumber % 10;
 						SetNumberIcon( pLineNumber1, iNumOne );
@@ -502,8 +501,8 @@ void CX2SmallGageUI::DrawSmallGage()
 						NULL != g_pX2Game->GetMyUnit() )
 					{
 						if( ( NULL != g_pX2Room->GetMySlot() && g_pX2Room->GetMySlot()->m_bObserver == true ) ||
-							true == g_pX2Game->GetMyUnit()->GetCashItemAbility().m_bShowOppnentMP
-							&& g_pX2Game->GetMyUnit()->GetTeam() != m_optrGameUnit->GetTeam() )
+							(true == g_pX2Game->GetMyUnit()->GetCashItemAbility().m_bShowOppnentMP
+							&& g_pX2Game->GetMyUnit()->GetTeam() != m_optrGameUnit->GetTeam()) )
 						{
 							vOut.y += ( 5 * g_pKTDXApp->GetResolutionScaleY() );
 							DrawMpGage( vOut );
@@ -592,7 +591,7 @@ CX2MySmallGageUI::~CX2MySmallGageUI()
 	SetShow( false );
 }
 
-/*virtual*/ void CX2MySmallGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2MySmallGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	if ( null != m_optrGameUnit )
 	{
@@ -666,7 +665,7 @@ void CX2MySmallGageUI::UpdateAirGage()
 		WCHAR keyName[50];
 		ZeroMemory( keyName, sizeof(WCHAR) * ARRAY_SIZE( keyName ) );
 
-		wsprintf(keyName, L"AIR_%02d", iGage);
+		swprintf_s(keyName, L"AIR_%02d", iGage);
 		pStaticAir->GetPicture(0)->SetTex( L"DLG_AIR_GAGE.tga", keyName );
 	}
 }
@@ -1084,7 +1083,7 @@ CX2MyGageUI::CX2MyGageUI( CX2GageData* pGageData_, const CX2Unit::UNIT_CLASS eOw
 	}
 }
 
-/*virtual*/ void CX2MyGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2MyGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	if ( NULL == m_pDLGMyUnit )
 		return;
@@ -1145,6 +1144,8 @@ CX2MyGageUI::CX2MyGageUI( CX2GageData* pGageData_, const CX2Unit::UNIT_CLASS eOw
 					}
 				}
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -1471,7 +1472,7 @@ void CX2MyGageUI::UpdateInfoString()
 			const UINT uiStrSize = 8;
 			WCHAR buf[uiStrSize];
 			ZeroMemory( buf, sizeof(WCHAR) * uiStrSize );
-			StringCchPrintf( buf, uiStrSize, L"%d", kMyUnitData.m_Level );
+			StringCchPrintf( buf, uiStrSize, L"%d", static_cast<int>( kMyUnitData.m_Level ) );
 
 			pStaticText->GetString(0)->msg = L"Lv";
 			pStaticText->GetString(1)->msg = buf;
@@ -1566,7 +1567,7 @@ void CX2MyGageUI::UpdateBuffIcon()
 */
 void CX2MyGageUI::SetBuffIconGuideDesc()
 {
-	BOOST_FOREACH( BuffIcon BuffIconData ,m_vecBuffList )	/// ���� ����
+	for ( BuffIcon BuffIconData : m_vecBuffList )	/// ���� ����
 	{
 		if( -1 != BuffIconData.iBuffName )
 		{
@@ -1602,7 +1603,7 @@ void CX2MyGageUI::SetBuffIconGuideDesc()
 		}
 	}
 
-	BOOST_FOREACH( BuffIcon BuffIconData ,m_vecDebuffList )		/// ����� ����
+	for ( BuffIcon BuffIconData : m_vecDebuffList )		/// ����� ����
 	{
 		if( -1 != BuffIconData.iBuffName )
 		{
@@ -2530,7 +2531,7 @@ void CX2PartyMemberGageUI::SetLevelString( const UINT uiLevel_ )
 
 		 if ( NULL != pStaticLevel )
 		 {
-			 if( -1 == uiLevel_ )
+			 if( static_cast<UINT>( -1 ) == uiLevel_ )
 			 {	//������ -1�� �����Ǿ������� �Ⱥ����ֱ�( ����NPC)
 				 pStaticLevel->SetShow(false);
 				 return;
@@ -2622,7 +2623,7 @@ void CX2PartyMemberGageUI::SetPosition( const UINT uiPositionIndex_ )
 }
 
 
-/*virtual*/ void CX2PartyMemberGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2PartyMemberGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	ASSERT( NULL != m_pGageData );
 	if ( NULL != m_pGageData )
@@ -2693,6 +2694,8 @@ void CX2PartyMemberGageUI::SetPosition( const UINT uiPositionIndex_ )
 						}
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}
@@ -2846,7 +2849,6 @@ void CX2PartyMemberGageUI::UpdateBuffIcon()
 
 void CX2PartyMemberGageUI::SetShowRelationVoteButtons ( const bool bVote_, const bool bComplete_ )
 {
-	CX2GageManager * pGageManager = CX2GageManager::GetInstance();
 
 	if ( NULL != m_pButtonVotePlayer )
 	{
@@ -2964,7 +2966,7 @@ void CX2PVPPlayerGageUI::SetLevelString( const UINT uiLevel_ )
 
 		 if ( NULL != pStaticLevel )
 		 {
-			 if( -1 == uiLevel_ )
+			 if( static_cast<UINT>( -1 ) == uiLevel_ )
 			 {	//������ -1�� �����Ǿ������� �Ⱥ����ֱ�( ����NPC)
 				 pStaticLevel->SetShow(false);
 				 return;
@@ -3108,7 +3110,7 @@ void CX2PVPPlayerGageUI::SetPosition( const UINT uiPositionIndex_ )
 		m_pDlgBuffIcon->SetShow( bShow_ );
 }
 
-/*virtual*/ void CX2PVPPlayerGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2PVPPlayerGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	ASSERT( NULL != m_pGageData );
 	if ( NULL != m_pGageData )

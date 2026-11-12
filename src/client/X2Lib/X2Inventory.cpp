@@ -128,7 +128,8 @@ void CX2Inventory::SetShareBank( std::map< UidType, KInventoryItemInfo >& mapIte
 			}
 
 			//CX2Item::ItemData* pItemData = new CX2Item::ItemData( kInfo );
-			AddItem( static_cast< CX2Inventory::SORT_TYPE >( kInfo.m_cSlotCategory ), kInfo.m_sSlotID, CX2Item::ItemData( kInfo ) );
+			CX2Item::ItemData kItemData( kInfo );
+			AddItem( static_cast< CX2Inventory::SORT_TYPE >( kInfo.m_cSlotCategory ), kInfo.m_sSlotID, kItemData );
 		}
 	}
 }
@@ -155,7 +156,6 @@ void CX2Inventory::Reset( std::map< int, int >& mapInventorySlotSize,
 	std::map< UidType, KInventoryItemInfo >::iterator iT;
 	for ( iT = mapItem.begin(); iT != mapItem.end(); ++iT )
 	{
-		UidType iItemUID = (*iT).first;
 		KInventoryItemInfo& kInfo = (*iT).second;
 
 		RemoveItem( (CX2Inventory::SORT_TYPE) kInfo.m_cSlotCategory, kInfo.m_sSlotID );
@@ -372,7 +372,7 @@ int CX2Inventory::GetNumItemByTID( int itemTID, bool bExcludeEquipped /*= false*
 		const InvenSlotData* pInvenSlotData = iter->second;
 		if ( pInvenSlotData->m_pItem != NULL &&
 			pInvenSlotData->m_pItem->GetItemTemplet() &&
-			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == itemTID
+			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( itemTID )
             )
 		{
 			if( true == bExcludeEquipped &&
@@ -425,7 +425,7 @@ CX2Item* CX2Inventory::GetItemByTID( int itemTID, bool bIncludeBankType /* = fal
 		const InvenSlotData* pInvenSlotData = iter->second;
 		if ( pInvenSlotData->m_pItem != NULL &&
 			pInvenSlotData->m_pItem->GetItemTemplet() &&
-			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == itemTID
+			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( itemTID )
             )
 		{
 			//{{ kimhc // 2009-08-08 // SortType이 ST_BANK인 것을 찾을 것인가?
@@ -465,7 +465,7 @@ CX2Item* CX2Inventory::GetItem( UidType itemUID, bool bIncludeBankType /* = fals
 		if ( pInvenSlotData != NULL )
 		{
 			//{{ kimhc // 2009-08-08 // SortType이 ST_BANK인 것을 찾을 것인가?
-			if ( bIncludeBankType == true || pInvenSlotData->m_SortType	!= ST_BANK && pInvenSlotData->m_SortType != ST_SHARE_BANK )
+			if ( bIncludeBankType == true || (pInvenSlotData->m_SortType	!= ST_BANK && pInvenSlotData->m_SortType != ST_SHARE_BANK) )
 				pItem	= pInvenSlotData->m_pItem;
 			//}} kimhc // 2009-08-08 // SortType이 ST_BANK인 것을 찾을 것인가?
 
@@ -516,8 +516,8 @@ CX2Inventory::SORT_TYPE CX2Inventory::GetItemSortType( UidType itemUID ) const
 
 int CX2Inventory::GetUsedSlotNum( CX2Inventory::SORT_TYPE sortType ) const
 {
-    if ( false == ( sortType >= SORT_TYPE(0) && sortType < ST_END ) )
-        return 0;
+	if ( false == ( sortType >= SORT_TYPE(0) && sortType < ST_END ) )
+		return 0;
 
 	int slotCount = 0;
 
@@ -655,6 +655,8 @@ CX2Inventory::SORT_TYPE CX2Inventory::GetSortTypeByItemTemplet( const CX2ItemTem
 				sortType = ST_SPECIAL;
 			}
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -757,6 +759,8 @@ wstring	CX2Inventory::GetInvenSortTypeName( SORT_TYPE sortType ) const
 		}
 		break;
 
+	default:
+		break;
 	};
 
 	return invenSortTypeName;
@@ -789,7 +793,6 @@ CX2Item* CX2Inventory::GetEquippingItemByEquipPos( CX2Unit::EQIP_POSITION equipP
 }
 void CX2Inventory::GetItemIDAndNum( OUT set<int>& setItemPackage ) const
 {
-	int nCount = 0;
 	map<UidType,InvenSlotData*>::const_iterator iter;
 	for ( iter = m_ItemMapTotal.begin(); iter != m_ItemMapTotal.end(); ++iter )
 	{
@@ -847,7 +850,7 @@ bool CX2Inventory::CheckEquippingItem( int itemID, UidType itemUID /*= -1*/ ) co
                 && pInvenSlotData->m_pItem->GetItemTemplet() != NULL
                 )
 			{
-                if ( pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == itemID )
+                if ( pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( itemID ) )
 				{
 					if( itemUID < 0 || pInvenSlotData->m_pItem->GetUID() == itemUID )
 					return true;
@@ -1077,7 +1080,7 @@ void	CX2Inventory::RemovePCBangEquips()		// 현재 장착중인 아이템들 중
 		}
 	}
 
-	BOOST_TEST_FOREACH ( UidType, value, vecPCBangEquips )
+	for ( UidType value : vecPCBangEquips )
 	{
 		RemoveItem( value );
 	}
@@ -1104,7 +1107,7 @@ void	CX2Inventory::RemovePetInventory()
 		}
 	}
 
-	BOOST_TEST_FOREACH ( UidType, value, vecPetInventoryItems )
+	for ( UidType value : vecPetInventoryItems )
 	{
 		RemoveItem( value );
 	}
@@ -1170,7 +1173,7 @@ bool CX2Inventory::UpdateCategorySlotList( SORT_TYPE sortType, std::vector<UidTy
 }
 //}}
 
-bool CX2Inventory::IsNewItem( SORT_TYPE sortType, UidType iItemUID) const
+bool CX2Inventory::IsNewItem( SORT_TYPE /*sortType*/, UidType iItemUID) const
 {
 	if( true == m_SetNewItem.empty() )
 		return false;

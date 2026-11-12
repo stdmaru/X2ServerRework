@@ -203,8 +203,8 @@ HRESULT CX2UIManager::OnFrameMove( double fTime, float fElapsedTime )
 
 	if(m_pQuickSlot != NULL && m_pQuickSlot->GetShow()) m_pQuickSlot->OnFrameMove( fTime, fElapsedTime );
 	if(m_pCharInfo != NULL && m_pCharInfo->GetShow()) m_pCharInfo->OnFrameMove( fTime, fElapsedTime );
-	if(m_pInventory != NULL && m_pInventory->GetShow()
-		|| m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE
+	if((m_pInventory != NULL && m_pInventory->GetShow())
+		|| (m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE)
 		) m_pInventory->OnFrameMove( fTime, fElapsedTime );
 	if(m_pWatch != NULL && m_pWatch->GetShow()) m_pWatch->OnFrameMove(fTime, fElapsedTime );
 	if(m_pPersonalShop != NULL && m_pPersonalShop->GetShow()) m_pPersonalShop->OnFrameMove(fTime, fElapsedTime);
@@ -638,8 +638,8 @@ bool CX2UIManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		if(m_pInventory->UICustomEventProc(hWnd, uMsg, wParam, lParam) == true)
 			return true;
 	}
-	else if(m_pInventory != NULL && m_pInventory->GetDLGResolveItemResult() != NULL
-		|| m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE
+	else if( ( m_pInventory != NULL && m_pInventory->GetDLGResolveItemResult() != NULL )
+		|| (m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE)
 		)
 	{
 		// oasis907 : 김상윤 [2010.7.27] // 인벤토리창은 닫혔는데 큐브 결과창은 열린상태
@@ -780,7 +780,7 @@ bool CX2UIManager::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			return true;
 	}
 	// 2008.11.10 김태완 : 인벤토리 쪽 msg proc 추가
-	if(m_pInventory != NULL == true)
+	if(m_pInventory != NULL)
 	{
 		// 추후 다른 UI와 동시 처리될 수 있는지 확인하여 return값 결정한다.
 		if(m_pInventory->UIServerEventProc(hWnd, uMsg, wParam, lParam) == true)
@@ -1247,7 +1247,7 @@ bool CX2UIManager::ToggleUI(UI_MENU menuInx, bool forOpen, UidType arg)
 
 			if(forOpen)
 			{
-				if(arg != NULL)
+				if(arg != 0)
 				{
 					CloseAllNPCDlg();
 					m_pQuestNew->SetNPCID((CX2UnitManager::NPC_UNIT_ID)arg);
@@ -1505,7 +1505,7 @@ bool CX2UIManager::ToggleUI(UI_MENU menuInx, bool forOpen, UidType arg)
 		{
 			if(forOpen)
 			{
-				if(arg  == NULL)
+				if(arg  == 0)
 					return false;
 				if(m_pPersonalTrade == NULL)
 				{
@@ -2071,7 +2071,7 @@ void CX2UIManager::SetUILayerIndex(UI_MENU menuInx, bool bAdd /* true면 추가 
 		if(menu == menuInx)
 		{
 			// 추가(또는 최상단 설정)을 하려고 하는데 i가 제일 뒤면 현재 최상위인 다이얼로그다 : 재정렬 필요 없음.
-			if(i == m_vLayer.size() - 1 && true == bAdd)
+			if(static_cast<size_t>( i ) == m_vLayer.size() - 1 && true == bAdd)
 				return;
 			// 목표물을 원래 벡터에서 지워준다.
 			m_vLayer.erase( m_vLayer.begin() + i );
@@ -2822,7 +2822,7 @@ void CX2UIManager::Handler_EGS_WATCH_UNIT_REQ(UidType uid)
 	g_pMain->AddServerPacket( EGS_WATCH_UNIT_ACK );
 }
 
-bool CX2UIManager::Handler_EGS_WATCH_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIManager::Handler_EGS_WATCH_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_WATCH_UNIT_ACK kEvent;
@@ -2886,6 +2886,8 @@ bool CX2UIManager::PetInventoryOpenCondition()
 		{
 			return false;
 		} break;
+	default:
+		break;
 	}
 	//}}
 
@@ -2923,6 +2925,8 @@ bool CX2UIManager::PetInventoryForceOpenCondition()
 		{
 			return false;
 		} break;
+	default:
+		break;
 	}
 
 	for(int i=(int)UI_MENU_UPPER; i<(int)UI_MENU_END; i++)

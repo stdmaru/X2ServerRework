@@ -13,7 +13,7 @@ void CX2GageData::Gage::Increase( const float fIncrement, const float fMinimum /
 		fNow = fMinimum;
 
 }
-/*virtual*/ void CX2GageData::DetonationFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ void CX2GageData::DetonationFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// ���� ����
 	if( GetCanChargeMpForDetonation() == true )
@@ -122,7 +122,7 @@ bool CX2GageData::FlushForceDown()
 
 	WCHAR buf[100] = { 0, };
 
-	wsprintf( buf, L"NowForceDown: %d, MaxForceDown: %d\n", iNowForceDown, iMaxForceDown );
+	swprintf_s( buf, L"NowForceDown: %d, MaxForceDown: %d\n", iNowForceDown, iMaxForceDown );
 
 	DXUTTRACE( buf );
 
@@ -215,9 +215,6 @@ bool CX2GageData::FlushSoul( const float fFlushSoul_ )
 		kGamePlayStatus_.m_iCurMP			= max( static_cast<int>( 0 ), static_cast<int>( GetNowMp() ) );
 		kGamePlayStatus_.m_iMaxHP			= max( static_cast<int>( 0 ), static_cast<int>( GetMaxHp() ) );
 		kGamePlayStatus_.m_iMaxMP			= max( static_cast<int>( 0 ), static_cast<int>( GetMaxMp() ) );
-		kGamePlayStatus_.m_mapPetMP;		// ���� �� �غ���...
-		kGamePlayStatus_.m_mapQuickSlotCoolTime;	// �̰͵� ���� �� �غ���...
-		kGamePlayStatus_.m_mapSkillCoolTime;	// �̰͵� ������ �غ���.
 
 		return true;
 	}
@@ -227,13 +224,13 @@ bool CX2GageData::FlushSoul( const float fFlushSoul_ )
 
 /*virtual*/ void CX2GageData::SetMyPlayStatusFromPacket( IN const KGamePlayStatus& kGamePlayStatus_ )
 {
-	SetHyperModeCount( static_cast<const BYTE>( kGamePlayStatus_.m_cCurHyperCount ) );
-	SetMaxHp( static_cast<const float>( kGamePlayStatus_.m_iMaxHP ) );
-	SetMaxMp( static_cast<const float>( kGamePlayStatus_.m_iMaxMP ) );
-	SetNowHp( static_cast<const float>( kGamePlayStatus_.m_iCurHP ) );
-	SetNowMp( static_cast<const float>( kGamePlayStatus_.m_iCurMP ) );
+	SetHyperModeCount( static_cast<BYTE>( kGamePlayStatus_.m_cCurHyperCount ) );
+	SetMaxHp( static_cast<float>( kGamePlayStatus_.m_iMaxHP ) );
+	SetMaxMp( static_cast<float>( kGamePlayStatus_.m_iMaxMP ) );
+	SetNowHp( static_cast<float>( kGamePlayStatus_.m_iCurHP ) );
+	SetNowMp( static_cast<float>( kGamePlayStatus_.m_iCurMP ) );
 	SetMaxSoul( 100.0f );
-	SetNowSoul( static_cast<const float>( kGamePlayStatus_.m_iCurHyperGage ) );
+	SetNowSoul( static_cast<float>( kGamePlayStatus_.m_iCurHyperGage ) );
 
 }
 
@@ -866,7 +863,7 @@ void CX2AraGageData::CopyGageData( IN CX2GageData* pGageData_ )
 //#pragma endregion Ŭ����
 
 
-/*virtual*/ void CX2ElesisGageData::DetonationFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ void CX2ElesisGageData::DetonationFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// ���� ����
 	if( GetCanChargeMpForDetonation() == true )

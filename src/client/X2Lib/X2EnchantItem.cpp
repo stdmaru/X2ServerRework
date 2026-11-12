@@ -17,7 +17,7 @@ CX2EnchantItem::~CX2EnchantItem(void)
 
 }
 
-bool CX2EnchantItem::OpenScriptFile( WCHAR* pFileName )
+bool CX2EnchantItem::OpenScriptFile( const WCHAR* pFileName )
 {
 	lua_tinker::decl( g_pKTDXApp->GetLuaBinder()->GetLuaState(),  "g_pCX2EnchantItem", this );
 
@@ -279,6 +279,8 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetExtraDamageType( CX2Encha
 		{
 			return CX2DamageManager::EDT_ENCHANT_SNATCH;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -580,6 +582,8 @@ int CX2EnchantItem::GetItemID( ENCHANT_TYPE enchantType )
 		{
 			return ATI_UNKNOWN;
 		} break;
+	default:
+		break;
 	}
 
 	return 0;
@@ -787,7 +791,7 @@ wstring CX2EnchantItem::GetEnchantResistName( CX2DamageManager::EXTRA_DAMAGE_TYP
 		{
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT1 = CX2DamageManager::EDT_NONE;
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT2 = CX2DamageManager::EDT_NONE;
-			int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
+			[[maybe_unused]] int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
 
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT1 );
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT2 );
@@ -818,6 +822,8 @@ wstring CX2EnchantItem::GetEnchantResistName( CX2DamageManager::EXTRA_DAMAGE_TYP
 
 			return wstrName;
 		} break;
+	default:
+		break;
 	}
 
 	return GET_STRING( iStringIndex );
@@ -862,7 +868,7 @@ wstring CX2EnchantItem::GetEnchantResistToolTip( CX2DamageManager::EXTRA_DAMAGE_
 		{
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT1 = CX2DamageManager::EDT_NONE;
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT2 = CX2DamageManager::EDT_NONE;
-			int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
+			[[maybe_unused]] int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
 
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT1 );
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT2 );
@@ -893,6 +899,8 @@ wstring CX2EnchantItem::GetEnchantResistToolTip( CX2DamageManager::EXTRA_DAMAGE_
 
 			return wstrName;
 		} break;
+	default:
+		break;
 	}
 
 	return GET_STRING( iStringIndex );
@@ -1510,6 +1518,8 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetBaseExtraDamageType( CX2D
 		{
 			return (int)CX2EnchantItem::EAR_MASTER_VALUE;
 		} break;
+	default:
+		break;
 	}
 
 	return 0;
@@ -1543,8 +1553,12 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetBaseExtraDamageType( CX2D
 				{
 					return L"Elsword_SlashTrace_Texture_Poision.dds";
 				} break;
+			default:
+				break;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	ASSERT( "NOT GOOD" );

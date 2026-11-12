@@ -73,7 +73,7 @@ bool CX2InformerSkill::IsNowInfoChange()
 	return false;
 }
 
-void CX2InformerSkill::SetShow( bool bShow )
+void CX2InformerSkill::SetShow( bool /*bShow*/ )
 {
 	//CX2Informer::SetShow( bShow );
 	//if ( bShow == true )

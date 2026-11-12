@@ -92,7 +92,7 @@ public:
 		float					m_fTimeLeftForWaitingReply;
 
 	public:
-		TradeInviting( wstring& wstrInviteeName, float fTimeLeft, CKTDXStage* pNowStage );
+		TradeInviting( const wstring& wstrInviteeName, float fTimeLeft, CKTDXStage* pNowStage );
 		~TradeInviting();
 		void OnFrameMove( double fTime, float fElapsedTime );
 	};

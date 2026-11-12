@@ -236,7 +236,7 @@ void CX2UserListPopUp::NextPage()
 	}
 }
 
-bool CX2UserListPopUp::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UserListPopUp::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -272,7 +272,7 @@ bool CX2UserListPopUp::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return false;
 }
 
-bool CX2UserListPopUp::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UserListPopUp::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
@@ -282,9 +282,7 @@ void CX2UserListPopUp::OpenPopupMenu( bool bNotOpen )
 {
 	if ( m_bShow && bNotOpen != true )
 	{
-		if ( m_pDlgMenu->GetShow() )
-			m_bShow = m_bShow;
-		else
+		if ( !m_pDlgMenu->GetShow() )
 		{
 			m_bShow = false;
 			ClosePopupMenu();
@@ -432,7 +430,7 @@ const CX2Unit* CX2UserListPopUp::GetUnitByUserUid( const UidType uid_ )
 				if ( NULL != pGUUser )
 					return pGUUser->GetUnit();
 				else
-					NULL;
+					return NULL;
 			}
 		} break;
 

@@ -177,7 +177,7 @@ HRESULT CX2PVPGame::OnFrameRender()
 		if( KPVPChannelInfo::PCC_PLAY != g_pMain->GetPVPChannelClass( g_pMain->GetConnectedChannelID() ) )
 		{
 			WCHAR timeBuf[200] = {0,};
-			swprintf( timeBuf, L"%d", (int)GetRemainPlayTime() );
+			swprintf_s( timeBuf, L"%d", (int)GetRemainPlayTime() );
 			m_pFontForTime->OutTextXY( 516, 127, timeBuf, D3DXCOLOR(1,1,0,1), CKTDGFontManager::FS_SHELL, D3DXCOLOR(0,0,0,1), NULL, DT_CENTER );
 		}
 	}
@@ -269,7 +269,7 @@ bool CX2PVPGame::Handler_EGS_LEAVE_ROOM_NOT( KEGS_LEAVE_ROOM_NOT& kEGS_LEAVE_ROO
 		else
 		{
 			g_pMain->CreateStateChangeDLG( GET_STRING( 437 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 		}
 
 		CX2GageManager::GetInstance()->ClearPvpMemberUI();
@@ -302,7 +302,7 @@ bool CX2PVPGame::Handler_EGS_LEAVE_GAME_NOT( KEGS_LEAVE_GAME_NOT& kEGS_LEAVE_GAM
 		else
 		{
 			DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 		}
 
 		CX2GageManager::GetInstance()->ClearPvpMemberUI();
@@ -315,7 +315,7 @@ bool CX2PVPGame::Handler_EGS_LEAVE_GAME_NOT( KEGS_LEAVE_GAME_NOT& kEGS_LEAVE_GAM
 	return true;
 }
 
-bool CX2PVPGame::Handler_EGS_USER_UNIT_DIE_ACK( KEGS_USER_UNIT_DIE_ACK& kEGS_USER_UNIT_DIE_ACK )
+bool CX2PVPGame::Handler_EGS_USER_UNIT_DIE_ACK( KEGS_USER_UNIT_DIE_ACK& /*kEGS_USER_UNIT_DIE_ACK*/ )
 {
 	return true;
 }
@@ -370,7 +370,7 @@ bool CX2PVPGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( KEGS_STATE_CHANGE_RESULT_N
 	CX2Game::Handler_EGS_STATE_CHANGE_RESULT_NOT( kEGS_STATE_CHANGE_RESULT_NOT );
 	DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_RESULT, NULL, false" );
 	g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_441 ) );
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_RESULT, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_RESULT, 0, false );
 
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 	m_bEscape = false;

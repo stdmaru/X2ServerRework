@@ -198,7 +198,7 @@ void CX2RidingPetSkillSlot::UpdateRideOffSlotGuide()
 		CKTDGUISlot* pSlot = static_cast<CKTDGUISlot*>( m_pDlgSkillSlot->GetControl(L"SlotB3") );
 		if( NULL != pSlot )
 		{
-			bool IsSetKey = (0 == StrCmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
+			bool IsSetKey = (0 == wcscmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
 
 			if( true == IsSetKey )
 			{
@@ -242,7 +242,7 @@ void CX2RidingPetSkillSlot::SetSkillSlotCoolTime( IN UINT islotNum_, IN float fC
 //#pragma endregion
 
 //#pragma region UpdateSkillSlotCoolTime
-void CX2RidingPetSkillSlot::OnFrameMove( double fTime, float fElapsedTime )
+void CX2RidingPetSkillSlot::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	for ( int i = 0; i < 3; ++i )
 	{

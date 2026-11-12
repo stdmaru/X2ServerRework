@@ -197,7 +197,7 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_553 ) );
 			//g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
 
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 		}
 		else
 		{
@@ -216,7 +216,8 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 
 	if ( m_bUIAnimStart == false )
 	{
-		m_fStartWaitRemainTime =- fElapsedTime;
+		// The original wrote "=-" for "-=" (docs/original/bugs.md): the wait ends on the first frame.
+		m_fStartWaitRemainTime = -fElapsedTime;
 	}
 
 	if ( m_fStartWaitRemainTime <= 0.0f )
@@ -861,9 +862,9 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 							WCHAR staticResultRank[256] = {0};
 							WCHAR staticResultDesc[256] = {0};
 
-							wsprintf( staticResultUnit, L"Dungeon_Result_Other%d_Unit", otherUserNum );
-							wsprintf( staticResultRank, L"Dungeon_Result_Other%d_Rank", otherUserNum );
-							wsprintf( staticResultDesc, L"Dungeon_Result_Other%d_Desc", otherUserNum );
+							swprintf_s( staticResultUnit, L"Dungeon_Result_Other%d_Unit", otherUserNum );
+							swprintf_s( staticResultRank, L"Dungeon_Result_Other%d_Rank", otherUserNum );
+							swprintf_s( staticResultDesc, L"Dungeon_Result_Other%d_Desc", otherUserNum );
 
 
 
@@ -1246,7 +1247,7 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 								if ( pStaticEXPBG->GetString(0) != NULL )
 								{
 									WCHAR buff[256] = {0};
-									swprintf( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
+									swprintf_s( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
 									pStaticEXPBG->GetString(0)->msg = buff;
 								}
 								/*
@@ -1293,7 +1294,7 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 
 							/*
 							WCHAR edBuff[256] = {0};
-							wsprintf( edBuff, L"%d", (int)m_fED );
+							swprintf_s( edBuff, L"%d", (int)m_fED );
 							CKTDGUIStatic* pStaticED = (CKTDGUIStatic*)m_pDLGBack->GetControl( L"StaticReward_ED" );
 							pStaticED->GetString(0)->msg = edBuff;
 							*/
@@ -1303,13 +1304,11 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 					{
 						//////////////////////////////////////////////////////////////////////////
 						// At Next EXP Page
-						int playerNum = 0;
 						for ( int i = 0; i < g_pX2Room->GetSlotNum(); i++ )
 						{
 							CX2Room::SlotData* pSlotData = g_pX2Room->GetSlotData(i);
 							if ( pSlotData != NULL && pSlotData->m_pUnit != NULL )
 							{
-								playerNum++;
 							}
 						}
 
@@ -1581,7 +1580,6 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 											// 해당 Player 의 사진이 없으면 뿌리지 않는다.
 											if ( pStaticPartyRank != NULL && pStaticPartyRank->GetPicture( static_cast <int> ( iOtherUserNum ) ) != NULL )
 											{
-												D3DXVECTOR2 PicturePos = pStaticPartyRank->GetPicture( static_cast <int> ( iOtherUserNum ) )->GetPos();
 												D3DXVECTOR2 vecCenterPos = pStaticPartyRank->GetPicture( iOtherUserNum )->GetPos();
 												D3DXVECTOR2 vecPictureSize = pStaticPartyRank->GetPicture( iOtherUserNum )->GetSize();
 												D3DXVECTOR2 vecLeftTopPos = vecCenterPos;
@@ -1727,7 +1725,7 @@ bool CX2StateDungeonResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPar
 				DialogLog("XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false");
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_553 ) );
 				//g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 
 			}
 			break;
@@ -1737,7 +1735,7 @@ bool CX2StateDungeonResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPar
 				CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>( lParam );
 				if ( NULL != pControl )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 					if( true == g_pMain->GetIsPlayingTutorial() )
 					{
@@ -1758,7 +1756,7 @@ bool CX2StateDungeonResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPar
 			{
 				CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>( lParam );
 				if ( NULL != pControl )
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			} break;
 
@@ -1873,7 +1871,7 @@ bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_REQ()
 	return true;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK Start" );
 
@@ -1901,7 +1899,7 @@ bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg
 	return false;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT Start" );
 
@@ -1960,7 +1958,7 @@ bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_REQ( int boxNum )
 	return true;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1978,7 +1976,7 @@ bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_ACK( HWND hWnd, UINT u
 	return false;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_REWARD_BOX_NOT kEvent;
@@ -2032,7 +2030,7 @@ bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_NOT( HWND hWnd, UINT u
 
 }
 
-bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_SELECT_REWARD_BOX_ACK kEvent;
@@ -2053,7 +2051,7 @@ bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WP
 	return false;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -2063,7 +2061,7 @@ bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WP
 	return g_pX2Room->Handler_EGS_LEAVE_ROOM_NOT( kEvent );
 }
 
-bool CX2StateDungeonResult::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -2226,8 +2224,8 @@ bool CX2StateDungeonResult::InitUI()
 			pStaticDungeonPictrue->GetString(0)->color	= diffColor;
 			pStaticDungeonPictrue->GetString(0)->msg	= wstrBuff;
 
-			int requireLevel = 0;
-			const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
+			[[maybe_unused]] int requireLevel = 0;
+			const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + static_cast<int>( g_pData->GetDungeonRoom()->GetDifficulty() ) ) );
 			if ( pDungeonData != NULL )
 				requireLevel = pDungeonData->m_MinLevel;
 
@@ -2624,8 +2622,8 @@ bool CX2StateDungeonResult::InitUI()
 				CKTDGUIStatic* pStaticOtherDesc = (CKTDGUIStatic*)m_pDLGBack->GetControl( staticResultDesc );
 				pStaticOtherDesc->SetShow( true );
 				WCHAR unitDescBuff[1024] = {0};
-				StringCchPrintf( unitDescBuff, 1024, L"LV.%d ", pSlotData->m_pUnit->GetUnitData().m_Level );
-				//wsprintf( unitDescBuff, L"LV.%d ", pSlotData->m_pUnit->GetUnitData().m_Level );
+				StringCchPrintf( unitDescBuff, 1024, L"LV.%d ", static_cast<int>( pSlotData->m_pUnit->GetUnitData().m_Level ) );
+				//wsprintf( unitDescBuff, L"LV.%d ", static_cast<int>( pSlotData->m_pUnit->GetUnitData().m_Level ) );
 				pStaticOtherDesc->GetString(0)->msg = unitDescBuff;
 
 				CKTDGUIStatic* pStaticOtherID = (CKTDGUIStatic*)m_pDLGBack->GetControl( staticResultID );
@@ -2738,7 +2736,7 @@ void CX2StateDungeonResult::ShowBonusEXPEvent( CX2StateDungeonResult::BonusEXPTy
 	}
 }
 
-void CX2StateDungeonResult::PicCharFrameMove( double fTime, float fElapsedTime )
+void CX2StateDungeonResult::PicCharFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if ( m_pPicCharScore != NULL )
 		m_pPicCharScore->OnFrameMove( fElapsedTime );
@@ -2803,11 +2801,11 @@ void CX2StateDungeonResult::PicCharDrawText()
 			WCHAR buff[256] = {0};
 			if ( m_fBonusEXP == 0 )
 			{
-			wsprintf( buff, L"0" );
+			swprintf_s( buff, L"0" );
 			}
 			else
 			{
-			wsprintf( buff, L"+%d", (int)m_fBonusEXP );
+			swprintf_s( buff, L"+%d", (int)m_fBonusEXP );
 			}
 
 			m_pPicCharScore->DrawText( buff, D3DXVECTOR3(948,582,0), D3DXVECTOR3(1,0,0), CKTDGPicChar::AT_RIGHT, 0.00f );

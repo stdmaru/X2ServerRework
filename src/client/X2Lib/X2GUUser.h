@@ -668,7 +668,7 @@ public:
 			SkillCutIn( const std::wstring& fileName_)
 				: fileName( fileName_ )
 				, vSize( D3DXVECTOR2(512.f,512.f) )
-				, vPosition( D3DXVECTOR2(256.f,512.f) )
+				, vPosition( D3DXVECTOR3(256.f,512.f,0.f) )
 			{
 			}
 		};

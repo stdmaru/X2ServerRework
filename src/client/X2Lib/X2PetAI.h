@@ -110,7 +110,7 @@ public:
 
 public:
 	CX2PETAI( CX2PET* pPet );
-	~CX2PETAI(void);
+	virtual ~CX2PETAI(void);
 
 	virtual void OnFrameMove( double fTime, float fElapsedTime );
 	virtual void LoadAIDataFromLUA( KLuaManager& luaManager );

@@ -321,8 +321,6 @@ private:
 	int										m_iEstimatedTime;
 	float									m_fWaitPvpTime;
 
-	CX2LocationManager::LOCAL_MAP_ID	m_ePartyListLocalMapID;		// 파티리스트 창에 보일 파티리스트가 속한 지역 ID
-	int									m_iPartyListDungeonID;		// 파티리스트에서 선택된 던전 ID
 
 	int									m_iPartyListPageNumber;		// [1,x]
 	int									m_iMaxPartyListPageNumber;	//
@@ -334,7 +332,6 @@ private:
 	CKTDXTimer							m_timerPartyListRefresh;
 
 	CX2LocalMapUI*						m_pLocalMapUI;
-	int									m_iNoviceGuideStep;
 
 	float								m_fElapsedTime;				// 파티갱신 쿨타임
 

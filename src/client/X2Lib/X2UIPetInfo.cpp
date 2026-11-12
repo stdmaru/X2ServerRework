@@ -3,25 +3,25 @@
 #include "./X2UIPetInfo.h"
 #include "./X2NPCUnitViewerUI.h"
 
-CX2UIPetInfo::CX2UIPetInfo( CKTDXStage* pNowStage ) :
+CX2UIPetInfo::CX2UIPetInfo( CKTDXStage* /*pNowStage*/ ) :
 m_bShow(false),
 m_MovedPosition(0,0),						// D3DXVECTOR2
 m_DLGPosition(0,0),							// D3DXVECTOR2
 m_DLGSize(0,0),								// D3DXVECTOR2
-m_pNPCViewerUI( NULL ),
 m_pDLGUIPetList(NULL),
 m_pDLGUIPetInfo(NULL),
 m_pDLGUIPetDetail(NULL),
+m_pNPCViewerUI( NULL ),
+m_UseItemUID(0),
 m_fRemainRotY(0.0f),
 m_fMouseSensitivity(0.01f),
-m_bRotateReturn(true),
-m_UnitClickPos(100,220),				// D3DXVECTOR2
-m_UnitClickSize(240,150),			// D3DXVECTOR2
-m_bUnitClicked(false)
-,m_UseItemUID(0)
+m_bRotateReturn(true),				// D3DXVECTOR2
+m_UnitClickPos(100,220),			// D3DXVECTOR2
+m_UnitClickSize(240,150)
+,m_bUnitClicked(false)
+,m_pDLGUIRidingPetReleasePopup( NULL )
 ,m_pRidingPetViewerUI( NULL )
 ,m_iSelectButtonIndex( -1 )
-,m_pDLGUIRidingPetReleasePopup( NULL )
 ,m_fListStaminaUpdateCooltime(5.0f)
 {
 	m_pDLGUIPetList = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_Pet_List.lua" );
@@ -92,7 +92,7 @@ m_bUnitClicked(false)
 	}
 
 	//탑승 버튼 툴팁
-	bool IsSetKey = (0 == StrCmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
+	bool IsSetKey = (0 == wcscmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
 	UpdateRidingButtonGuideDesc( IsSetKey );
 
 	m_eKindRideButton = BUTTON_RIDE_ON;
@@ -221,7 +221,6 @@ void CX2UIPetInfo::UnitHandling( CX2NPCUnitViewerUI* pViewerUI, CKTDGUIDialogTyp
 			}
 			else
 			{
-				D3DXVECTOR3 rot = pViewerUI->GetMatrix().GetRotate();
 
 
 
@@ -445,7 +444,7 @@ HRESULT CX2UIPetInfo::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UIPetInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	bool bFlag = false;
 
@@ -496,7 +495,7 @@ bool CX2UIPetInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 		break;
 	}
 
-	if( m_pDLGUIPetInfo != NULL && m_pDLGUIPetInfo->GetShow() == true
+	if( (m_pDLGUIPetInfo != NULL && m_pDLGUIPetInfo->GetShow() == true)
 		|| ( m_pDLGUIRidingPetInfo != NULL && m_pDLGUIRidingPetInfo->GetShow() == true )
 		)
 	{
@@ -540,7 +539,7 @@ bool CX2UIPetInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 }
 
 
-bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -633,7 +632,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			g_pData->GetPetManager()->Handler_EGS_PET_EVOLUTION_REQ( m_ViewPetUid );
 		}
@@ -688,7 +687,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			g_pData->GetUIManager()->GetUIInventory()->Handler_EGS_USE_ITEM_IN_INVENTORY_REQ(m_UseItemUID, m_ViewPetUid);
 			m_UseItemUID = 0;
 		}
@@ -699,7 +698,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			//마을이 아니면 채팅 로그 추가
 			if( g_pX2Game != NULL && g_pMain->GetNowStateID() != CX2Main::XS_BATTLE_FIELD )
@@ -847,7 +846,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			if(m_pDLGUIRidingPetReleasePopup != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 				m_pDLGUIRidingPetReleasePopup = NULL;
 			}
 			m_pDLGUIRidingPetReleasePopup =
@@ -867,11 +866,11 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 				if( NULL != pIMEEditBox )
 				{
 					wstring wstrMessage = pIMEEditBox->GetText();
-					if( 0 == StrCmp(wstrMessage.c_str(), GET_STRING(STR_ID_24517)) )
+					if( 0 == wcscmp(wstrMessage.c_str(), GET_STRING(STR_ID_24517)) )
 					{
 						m_eTabSelect = RIDING_PET_TAB_SELECT;
 						CX2RidingPetManager::GetInstance()->Handler_EGS_RELEASE_RIDING_PET_REQ( m_ViewRidingPetUid );
-						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 						m_pDLGUIRidingPetReleasePopup = NULL;
 					}
 					else
@@ -890,7 +889,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			if(m_pDLGUIRidingPetReleasePopup != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 				m_pDLGUIRidingPetReleasePopup = NULL;
 			}
 		}
@@ -1017,7 +1016,7 @@ void CX2UIPetInfo::SetShow(bool val, UidType eTab)
 	{
 		g_pData->GetUIManager()->UIOpened(CX2UIManager::UI_MENU_PET_LIST);
 
-		if( eTab == NULL )
+		if( eTab == 0 )
 		{
 			if( g_pData->GetPetManager()->GetMyPet() != NULL )
 			{
@@ -1083,7 +1082,7 @@ void CX2UIPetInfo::SetShow(bool val, UidType eTab)
 		m_pDLGUIRidingPetList->SetShowEnable( false, false );
 		if(m_pDLGUIRidingPetReleasePopup != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 			m_pDLGUIRidingPetReleasePopup = NULL;
 		}
 
@@ -1122,7 +1121,7 @@ void CX2UIPetInfo::Handler_EGS_GET_PET_LIST_REQ( UINT iViewPage )
 	return;
 }
 
-bool CX2UIPetInfo::Handler_EGS_GET_PET_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::Handler_EGS_GET_PET_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_PET_LIST_ACK kEvent;
@@ -1344,7 +1343,7 @@ void CX2UIPetInfo::UpdatePetList()
 	for(UINT i=0; i<m_vecPetList.size(); ++i)
 	{
 		KPetInfo kPetInfo = m_vecPetList[i];
-		CX2PetManager::PetTemplet *pTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)kPetInfo.m_iPetID );
+		[[maybe_unused]] CX2PetManager::PetTemplet *pTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)kPetInfo.m_iPetID );
 
 		char petLv = kPetInfo.m_cEvolutionStep;
 		wstring petName = kPetInfo.m_wstrPetName;
@@ -2263,7 +2262,7 @@ bool CX2UIPetInfo::Select_Button( LPARAM lParam )
 		{
 			std::vector< CX2RidingPetManager::sRidingPetInfo > vecRidingPetList;
 			CX2RidingPetManager::GetInstance()->GetRidingPetList( vecRidingPetList );
-			offsetIndex = min( offsetIndex, vecRidingPetList.size() - 1 );
+			offsetIndex = min( offsetIndex, static_cast<UINT>( vecRidingPetList.size() - 1 ) );
 			m_ViewRidingPetUid = vecRidingPetList[offsetIndex].m_iRidingPetUID;
 			bSelectButton = true;
 		}
@@ -2534,13 +2533,13 @@ void CX2UIPetInfo::UpdateStamina_List()
 		int staticIndex = 0;
 		UINT minIndex = ( 6 * ( m_iNowPageRiding - 1 ) );
 		UINT maxIndex = ( 6 * m_iNowPageRiding ) - 1;
-		maxIndex = min( maxIndex, vecRidingPetList.size() - 1 );
+		maxIndex = min( maxIndex, static_cast<UINT>( vecRidingPetList.size() - 1 ) );
 
 		CX2RidingPetManager::RidingPetTemplet *pTemplet = NULL;
 		float fMaxStamina = 120.f;
 		float fEnableStamina = CX2RidingPetManager::GetInstance()->GetEnableStamina();
 
-		for( minIndex; minIndex <= maxIndex; ++minIndex )
+		for( ; minIndex <= maxIndex; ++minIndex )
 		{
 			StringCchPrintf( cControlName, 30, L"Pet_List_Stamina%d", staticIndex );
 			if( vecRidingPetList[minIndex].m_fStamina < fEnableStamina )
@@ -2566,7 +2565,7 @@ void CX2UIPetInfo::UpdateStamina_List()
 
 		}
 
-		for( staticIndex; staticIndex < 6; ++staticIndex )
+		for( ; staticIndex < 6; ++staticIndex )
 		{
 			StringCchPrintf( cControlName, 30, L"Pet_List_Stamina%d", staticIndex );
 
@@ -2597,9 +2596,9 @@ void CX2UIPetInfo::UpdatePeriod_List()
 		m_iMaxPageRiding = static_cast<int>( ceil( vecRidingPetList.size() / 6.f ) );
 		m_iMaxPageRiding = max( 1, m_iMaxPageRiding );
 
-		UINT iMin,iMax,iRow = 0;
+		UINT iMin,iMax;
 		iMin = 6 * ( m_iNowPageRiding - 1 );
-		iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), vecRidingPetList.size() );
+		iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), static_cast<UINT>( vecRidingPetList.size() ) );
 
 		int day,hour,minute,index=0;
 		CTime DestroyTime;
@@ -2667,7 +2666,7 @@ void CX2UIPetInfo::UpdatePeriod_List()
 			++index;
 		}
 
-		for(index; index < 6; ++index)
+		for(; index < 6; ++index)
 		{
 			StringCchPrintf( wcharName, 30, L"Pet_List_period%d", index );
 			pStaticPeriod = static_cast<CKTDGUIStatic*>( m_pDLGUIRidingPetList->GetControl(wcharName) );
@@ -2879,7 +2878,7 @@ void CX2UIPetInfo::ViewRidingPetList( int iPage )
 
 	UINT iMin,iMax,iRow = 0;
 	iMin = 6 * ( m_iNowPageRiding - 1 );
-	iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), vecRidingPetList.size() );
+	iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), static_cast<UINT>( vecRidingPetList.size() ) );
 	for( i = iMin; i < iMax; ++i )
 	{
 		SetRidingPetRow( iRow, vecRidingPetList[i].m_usRindingPetID, vecRidingPetList[i].m_fStamina );
@@ -2905,7 +2904,7 @@ void CX2UIPetInfo::Handler_EGS_GET_RIDING_PET_LIST_REQ( UINT iViewPage )
 	g_pMain->AddServerPacket( EGS_GET_RIDING_PET_LIST_ACK, 60.f );
 }
 
-bool CX2UIPetInfo::Handler_EGS_GET_RIDING_PET_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::Handler_EGS_GET_RIDING_PET_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_GET_RIDING_PET_LIST_ACK kEvent;
@@ -3004,7 +3003,7 @@ void CX2UIPetInfo::SelectKindRideButton( KIND_OF_RIDE_BUTTON  _select, bool _ena
 	}
 }
 
-const bool CX2UIPetInfo::GetShowRPInfo()
+bool CX2UIPetInfo::GetShowRPInfo()
 {
 	if( NULL != m_pDLGUIRidingPetInfo )
 		return m_pDLGUIRidingPetInfo->GetShow();
@@ -3012,7 +3011,7 @@ const bool CX2UIPetInfo::GetShowRPInfo()
 		return false;
 }
 
-const bool CX2UIPetInfo::GetShowRPList()
+bool CX2UIPetInfo::GetShowRPList()
 {
 	if( NULL != m_pDLGUIRidingPetList )
 		return m_pDLGUIRidingPetList->GetShow();

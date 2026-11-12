@@ -7,47 +7,43 @@
 
 
 CX2DungeonGame::CX2DungeonGame(void) :
-m_pDungeonRoom( NULL ),
-m_pDungeon( NULL ),
-m_WinTeam( CX2Room::TN_NONE ),
-m_bGoNextPacketSended( false ),
-m_bShowClear( false ),
-m_fClearEffDelayTime( 0.f ),
-m_fDungeonClearLimitTimeOut( 0.f ),
-m_bDungeonClearLimitTimeOut( false ),
-m_bShowDungeonClearLimitTimeOut( false ),	// 초기화 안 해 주던 버그 수정 by 박진웅
-m_bCountTimeLeftAfterSubStageOpen( false ),
-m_fTimeLeftAfterSubStageOpen( 0.f ),
-m_pFontForTime( NULL ),
-m_bIsSendSkipContinueNot( false ),
-m_bIsThereTutorialMsg( false ),
-m_pFontForTutorialMsg( NULL ),
-m_wstrTutorialMsg( L"" ),
-m_fTimeLeftForTutorialMessage( 0.f ),
-m_coTutorialMsg( D3DXCOLOR(1,1,1,1) ),
-m_coTutorialMsgIncrement( D3DXCOLOR(-0.04f, -0.04f, -0.04f, 0.f) ),
-m_iTutorialMsgFlashCount( 0 ),
-m_bShowTutorialUI( false ),
-m_bEnableRemainTime( false ),
-m_fRemainPlayTime( 0.f ),
-m_bStartRealTraining( false ),
-m_pTrainingGameUI( NULL ),
-m_bShowDungeonRemainTime( false ),
-m_bShowDungeonPlayTimeForQuest( false ),
-m_bHideDungeonPlayTimeAfterLoading( false ),
-//m_ReservedPacket;
-//m_StopContinueAlarmText[256];
-//m_TimerManyPurpose1;
-//m_TimerManyPurpose2;
-m_pMonsterIndicator( NULL ),
-m_pDamageDataForDungeonTimeOut( NULL ),
-m_bKilledBoss( false ),
-m_hBossName(INVALID_PARTICLE_SEQUENCE_HANDLE)
+  m_pDungeonRoom( NULL )
+, m_pDungeon( NULL )
+, m_WinTeam( CX2Room::TN_NONE )
+, m_bGoNextPacketSended( false )
+, m_bShowClear( false )
+, m_fClearEffDelayTime( 0.f )
+, m_bShowDungeonClearLimitTimeOut( false )	// once left uninitialized (a KOG fix)
+, m_fDungeonClearLimitTimeOut( 0.f )
+, m_bDungeonClearLimitTimeOut( false )
+, m_pDamageDataForDungeonTimeOut( NULL )
+, m_bCountTimeLeftAfterSubStageOpen( false )
+, m_fTimeLeftAfterSubStageOpen( 0.f )
+, m_pFontForTime( NULL )
+, m_bIsSendSkipContinueNot( false )
+, m_bIsThereTutorialMsg( false )
+, m_pFontForTutorialMsg( NULL )
+, m_wstrTutorialMsg( L"" )
+, m_fTimeLeftForTutorialMessage( 0.f )
+, m_coTutorialMsg( D3DXCOLOR(1,1,1,1) )
+, m_coTutorialMsgIncrement( D3DXCOLOR(-0.04f, -0.04f, -0.04f, 0.f) )
+, m_iTutorialMsgFlashCount( 0 )
+, m_bShowTutorialUI( false )
+, m_bEnableRemainTime( false )
+, m_fRemainPlayTime( 0.f )
+, m_bStartRealTraining( false )
+, m_pTrainingGameUI( NULL )
+, m_bShowDungeonRemainTime( false )
+, m_bShowDungeonPlayTimeForQuest( false )
+, m_bHideDungeonPlayTimeAfterLoading( false )
+, m_bShowStageReaminTime( false )
+, m_pMonsterIndicator( NULL )
+, m_bKilledBoss( false )
+, m_hBossName(INVALID_PARTICLE_SEQUENCE_HANDLE)
 , m_iDefenceDungeonWaveID( -1 )		// 어둠의 문 서브스테이지( Wave )
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 , m_bEscape( true )
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-, m_bShowStageReaminTime( false )
 {
 	// super class member init
 	m_GameType = GT_DUNGEON;
@@ -264,7 +260,7 @@ HRESULT CX2DungeonGame::OnFrameRender()
 		{
 			// 던전 substage 진행 경고 남은 시간
 			WCHAR timeBuf[200] = {0,};
-			swprintf( timeBuf, L"%d", (int)m_fTimeLeftAfterSubStageOpen );
+			swprintf_s( timeBuf, L"%d", (int)m_fTimeLeftAfterSubStageOpen );
 			m_pFontForTime->OutTextXY( 512, 100, timeBuf, D3DXCOLOR(1,0.6f,0,1),
 									CKTDGFontManager::FS_SHELL, D3DXCOLOR(0,0,0,1), NULL, DT_CENTER );
 		}
@@ -542,7 +538,7 @@ void CX2DungeonGame::GameStart()
 	if(pFieldComeBackUser != NULL)
 	{
 		pFieldComeBackUser->SetShow( false );
-		if ( NULL != g_pData->GetPremiumBuffManager() && true == g_pData->GetPremiumBuffManager()->IsComeBackUser() || true == g_pData->GetPremiumBuffManager()->IsComeBackUserInParty() )
+		if ( NULL != g_pData->GetPremiumBuffManager() && ( true == g_pData->GetPremiumBuffManager()->IsComeBackUser() || true == g_pData->GetPremiumBuffManager()->IsComeBackUserInParty() ) )
 		{
 			pFieldComeBackUser->SetShow( true );
 		}
@@ -765,8 +761,8 @@ void CX2DungeonGame::StageStart()
 	KOGGamePerformanceCheck::GetInstance()->Resume();
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 
-    if ( g_pData->GetGameUDP() != NULL )
-        g_pData->GetGameUDP()->RemoveAllPendingPingSends();
+	if ( g_pData->GetGameUDP() != NULL )
+		g_pData->GetGameUDP()->RemoveAllPendingPingSends();
 
 	if( NULL != m_pDungeon && NULL != m_pDungeon->GetDungeonData() &&
 		m_pDungeon->GetDungeonData()->m_bShowStageTime == true )
@@ -794,7 +790,6 @@ void CX2DungeonGame::SubStageOpen( int subStageNum )
 
 	CX2DungeonSubStage* pCX2DungeonSubStage				= m_pDungeon->GetNowStage()->CreateSubStage( subStageNum );
 
-	CX2DungeonSubStage::SubStageData* pSubStageData		= pCX2DungeonSubStage->GetSubStageData();
 	CX2DungeonSubStage* pBeforeSubStage					= m_pDungeon->GetNowStage()->GetBeforeSubStage();
 
 	if( pBeforeSubStage != NULL )
@@ -1021,6 +1016,8 @@ void CX2DungeonGame::SubStageStart()
 						}
 					}
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -1071,8 +1068,8 @@ void CX2DungeonGame::SubStageStart()
 	KOGGamePerformanceCheck::GetInstance()->Resume();
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 
-    if ( g_pData->GetGameUDP() != NULL )
-        g_pData->GetGameUDP()->RemoveAllPendingPingSends();
+	if ( g_pData->GetGameUDP() != NULL )
+		g_pData->GetGameUDP()->RemoveAllPendingPingSends();
 
 	if( NULL != GetMyUnit() && GetMyUnit()->GetUnitType() == CX2Unit::UT_ADD )
 	{
@@ -1094,7 +1091,7 @@ void CX2DungeonGame::SubStageStart()
 
 void CX2DungeonGame::DungeonLoading(bool bIsNpcLoad)
 {
-	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID)(m_pDungeonRoom->GetDungeonID() + m_pDungeonRoom->GetDifficulty());
+	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID)(m_pDungeonRoom->GetDungeonID() + static_cast<int>( m_pDungeonRoom->GetDifficulty() ));
 	SAFE_DELETE( m_pDungeon );
 	m_pDungeon = g_pData->GetDungeonManager()->CreateDungeon( dungeonID, bIsNpcLoad );
 
@@ -1758,7 +1755,7 @@ bool CX2DungeonGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( KEGS_STATE_CHANGE_RESU
 
 	DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_RESULT, NULL, false" );
 	g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_135 ) );
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_RESULT, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_RESULT, 0, false );
 
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 	m_bEscape = false;
@@ -1820,6 +1817,8 @@ bool CX2DungeonGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( KEGS_STATE_CHANGE_RESU
 					g_pInstanceData->SetDungeonLoungeWorldID( m_pDungeon->GetNowStage()->GetStageData()->m_WorldID );
 				}
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -1904,7 +1903,7 @@ void CX2DungeonGame::TextOutTutorial_LUA( int nMsg, float fTime )
 				CanNotInputAndDisalbeNPCAI(true);
 			}
 
-			if( true == pCX2GUNPC->GetFocusCamera() && pCX2GUNPC->GetStartState() == (int)pCX2GUNPC->GetGameUnitState()
+			if( (true == pCX2GUNPC->GetFocusCamera() && pCX2GUNPC->GetStartState() == (int)pCX2GUNPC->GetGameUnitState())
 				|| true == pCX2GUNPC->GetFocusCameraAtCurrentState() )
 			{
 				if( true == pCX2GUNPC->GetApplyCinematicUI() && true == g_pMain->IsInheritStateMenu())
@@ -1957,7 +1956,7 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_EFFECT_REMAINING_TIME_NOT( KEGS_DUNGEON
 	return true;
 }
 
-bool CX2DungeonGame::Handler_EGS_DUNGEON_EFFECT_TIME_OUT_NOT( KEGS_DUNGEON_EFFECT_TIME_OUT_NOT& kEGS_DUNGEON_EFFECT_TIME_OUT_NOT )
+bool CX2DungeonGame::Handler_EGS_DUNGEON_EFFECT_TIME_OUT_NOT( KEGS_DUNGEON_EFFECT_TIME_OUT_NOT& /*kEGS_DUNGEON_EFFECT_TIME_OUT_NOT*/ )
 {
 	if( NULL != g_pData->GetDungeonRoom() )
 	{
@@ -2020,7 +2019,7 @@ void CX2DungeonGame::CreateDamageDataForDungeonTimeOut()
 
 
 
-void CX2DungeonGame::DungeonTimeOutFrameMove( double fTime, float fElapsedTime )
+void CX2DungeonGame::DungeonTimeOutFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// oasis907 : 김상윤 [2010.5.6] // 타이머 관련
 	if( m_bShowDungeonClearLimitTimeOut == true )
@@ -2056,7 +2055,7 @@ void CX2DungeonGame::DungeonTimeOutFrameMove( double fTime, float fElapsedTime )
 }
 //}} oasis907 : 김상윤 [2010.4.26] //
 
-void CX2DungeonGame::CountTimeSubStageFrameMove( double fTime, float fElapsedTime )
+void CX2DungeonGame::CountTimeSubStageFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( true == m_bCountTimeLeftAfterSubStageOpen )
 	{
@@ -2086,7 +2085,7 @@ void CX2DungeonGame::CountTimeSubStageFrameMove( double fTime, float fElapsedTim
 	}
 }
 
-void CX2DungeonGame::TutorialFrameMove( double fTime, float fElapsedTime )
+void CX2DungeonGame::TutorialFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( true == g_pMain->GetIsPlayingTutorial() )
 	{
@@ -2230,7 +2229,7 @@ bool CX2DungeonGame::DetermineShowDungeonPlayTime()
 				std::set<SEnum::DUNGEON_ID>::iterator sit = pSubQuestTemplet->m_ClearCondition.m_setDungeonID.begin();
 				for( ; sit != pSubQuestTemplet->m_ClearCondition.m_setDungeonID.end(); ++sit)
 				{
-					if( ((*sit) - g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty)  == g_pData->GetDungeonRoom()->GetDungeonID() )
+					if( ((*sit) - static_cast<int>( g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty ))  == g_pData->GetDungeonRoom()->GetDungeonID() )
 					{
 						if( CX2Dungeon::DT_SECRET == g_pData->GetDungeonManager()->GetDungeonType( (int) g_pData->GetDungeonRoom()->GetDungeonID() ) )
 						{
@@ -2522,7 +2521,7 @@ int	CX2DungeonGame::GetDungeonType()
 	}
 	//}} 허상형 : [2011/3/4/] //	월드 미션
 
-	void CX2DungeonGame::CloseDungeonName( float fTime )
+	void CX2DungeonGame::CloseDungeonName( float /*fTime*/ )
 	{
 		m_pDLGTitle->Move(m_pDLGTitle->GetPos(), D3DXCOLOR(1.f, 1.f, 1.f, 0.f), 0.75f, true);
 	}
@@ -2630,7 +2629,7 @@ void CX2DungeonGame::ResurrectOtherUser()
 
 
 
-bool CX2DungeonGame::Handler_EGS_BAD_ATTITUDE_USER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2DungeonGame::Handler_EGS_BAD_ATTITUDE_USER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);	// lParam 을 KSerBuffer 로
 	KEGS_BAD_ATTITUDE_USER_NOT kEvent;

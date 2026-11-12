@@ -329,7 +329,6 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	case UPLCM_JOIN_ROOM:
 		{
 			CKTDGUIButton* pJoinButton	= (CKTDGUIButton*)lParam;
-			CKTDGUIDialogType pDialog		= pJoinButton->GetDialog();
 
 			int simpleRoomIndex = -1;
 
@@ -416,7 +415,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 			{
 			case CX2PVPRoom::PGT_TEAM_DEATH:
 				{
-					if( m_KillCountForCreateRoomIndex >= ARRAY_SIZE( TEAM_DEATH_PVP_KILL_COUNT )-1 )
+					if( static_cast<size_t>( m_KillCountForCreateRoomIndex ) >= ARRAY_SIZE( TEAM_DEATH_PVP_KILL_COUNT )-1 )
 					{
 						m_KillCountForCreateRoomIndex = ARRAY_SIZE( TEAM_DEATH_PVP_KILL_COUNT )-1;
 					}
@@ -428,7 +427,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			case CX2PVPRoom::PGT_SURVIVAL:
 				{
-					if( m_KillCountForCreateRoomIndex >= ARRAY_SIZE( SURVIVAL_PVP_KILL_COUNT )-1 )
+					if( static_cast<size_t>( m_KillCountForCreateRoomIndex ) >= ARRAY_SIZE( SURVIVAL_PVP_KILL_COUNT )-1 )
 					{
 						m_KillCountForCreateRoomIndex = ARRAY_SIZE( SURVIVAL_PVP_KILL_COUNT )-1;
 					}
@@ -499,7 +498,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 			{
 			case CX2PVPRoom::PGT_TEAM:
 				{
-					if( m_PlayTimeForCreateRoomIndex >= ARRAY_SIZE( TEAM_PVP_PLAY_TIME )-1 )
+					if( static_cast<size_t>( m_PlayTimeForCreateRoomIndex ) >= ARRAY_SIZE( TEAM_PVP_PLAY_TIME )-1 )
 					{
 						m_PlayTimeForCreateRoomIndex = ARRAY_SIZE( TEAM_PVP_PLAY_TIME )-1;
 					}
@@ -512,7 +511,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			case CX2PVPRoom::PGT_TEAM_DEATH:
 				{
-					if( m_PlayTimeForCreateRoomIndex >= ARRAY_SIZE( TEAM_DEATH_PVP_PLAY_TIME )-1 )
+					if( static_cast<size_t>( m_PlayTimeForCreateRoomIndex ) >= ARRAY_SIZE( TEAM_DEATH_PVP_PLAY_TIME )-1 )
 					{
 						m_PlayTimeForCreateRoomIndex = ARRAY_SIZE( TEAM_DEATH_PVP_PLAY_TIME )-1;
 					}
@@ -524,7 +523,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			case CX2PVPRoom::PGT_SURVIVAL:
 				{
-					if( m_PlayTimeForCreateRoomIndex >= ARRAY_SIZE( SURVIVAL_PVP_PLAY_TIME )-1 )
+					if( static_cast<size_t>( m_PlayTimeForCreateRoomIndex ) >= ARRAY_SIZE( SURVIVAL_PVP_PLAY_TIME )-1 )
 					{
 						m_PlayTimeForCreateRoomIndex = ARRAY_SIZE( SURVIVAL_PVP_PLAY_TIME )-1;
 					}
@@ -741,7 +740,7 @@ bool CX2StatePvPLobby::Handler_EGS_ROOM_LIST_REQ( int pageNum )
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_ROOM_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ROOM_LIST_ACK kEvent;
@@ -805,7 +804,7 @@ bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_REQ()
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_ROOM_ACK kEvent;
@@ -833,7 +832,7 @@ bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 
 			return true;
 		}
@@ -872,7 +871,7 @@ bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_REQ( UidType roomUid, bool bIsObser
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_ACK kEvent;
@@ -908,7 +907,7 @@ bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM w
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 
 			return true;
 		}
@@ -988,7 +987,7 @@ bool CX2StatePvPLobby::Handler_EGS_CHANGE_PVP_ROOM_LIST_REQ( UINT channelID )
 }
 
 
-bool CX2StatePvPLobby::Handler_EGS_CHANGE_PVP_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_CHANGE_PVP_ROOM_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ROOM_LIST_ACK kEvent;
@@ -1485,6 +1484,8 @@ void CX2StatePvPLobby::SelectGametypeOnCreateRoomDLG(CX2PVPRoom::PVP_GAME_TYPE G
 				}
 			}
 			break;
+		default:
+			break;
 		}
 
 		WCHAR buff[256] = {0};
@@ -1541,6 +1542,8 @@ float CX2StatePvPLobby::GetPlayTimeForCreateRoom( CX2PVPRoom::PVP_GAME_TYPE eGam
 		{
 			return (float) SURVIVAL_PVP_PLAY_TIME[ m_PlayTimeForCreateRoomIndex ];
 		} break;
+	default:
+		break;
 	}
 
 	return 1.f;
@@ -1573,6 +1576,8 @@ int CX2StatePvPLobby::GetKillCountForCreateRoom( CX2PVPRoom::PVP_GAME_TYPE eGame
 		{
 			return SURVIVAL_PVP_KILL_COUNT[ m_KillCountForCreateRoomIndex ];
 		} break;
+	default:
+		break;
 	}
 
 	return 1;
@@ -1776,7 +1781,7 @@ bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_REQ( CX2PVPRoom::PVP_GAME_TYPE gam
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_ACK kEvent;
@@ -1803,7 +1808,7 @@ bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND hWnd, UINT uMsg, WPARAM 
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 
 			return true;
 		}
@@ -1885,6 +1890,8 @@ bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND hWnd, UINT uMsg, WPARAM 
 
 					}
 				}
+				break;
+			default:
 				break;
 			}
 

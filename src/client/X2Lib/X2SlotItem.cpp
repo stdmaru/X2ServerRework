@@ -86,7 +86,7 @@ bool CX2SlotItem::CreateItemUI( CX2Item* pItem, int itemQuantity /* = -1 */ )
 	// 아이템 이미지
 	CKTDGUIControl::CPictureData* pPicture = new CKTDGUIControl::CPictureData();
     const wchar_t* pwszShopImage = pItem->GetItemTemplet()->GetShopImage();
-    if ( pwszShopImage[0]	 != NULL &&
+    if ( pwszShopImage[0]	 != L'\0' &&
 		g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
 	{
 		pPicture->SetTex( pwszShopImage );
@@ -300,6 +300,8 @@ bool CX2SlotItem::CreateItemUI(
 			    }
 			    //}} 허상형 : [2009/7/29] //	조건에 pItemTemplet->m_bNoEquip == false 추가. 착용불가 아이템은 밝게 표시하게 하기 위함
 		    }
+        default:
+        	break;
         }//switch
 
 	}
@@ -476,7 +478,7 @@ bool CX2SlotItem::ResetItemUI( CX2Item* pItem )
 		if ( pPicture != NULL )
 		{
             const wchar_t* pwszShopImage = pItem->GetItemTemplet()->GetShopImage();
-			if ( pwszShopImage[0] != NULL && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
+			if ( pwszShopImage[0] != L'\0' && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
 			{
 				pPicture->SetTex( pwszShopImage );
 			}
@@ -573,7 +575,7 @@ bool CX2SlotItem::ResetItemUI( CX2Item* pItem )
 			/*if ( m_KBillOrderInfo.m_kBillProductInfo.r m_byteIsRead == 0 && m_KBillOrderInfo.m_kBillProductInfo.m_bEnableGift == 1 )
 			{
 
-				CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 2 );
+				CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 2 );
 				if ( pPicture != NULL )
 				{
 					pPicture->SetShow( true );
@@ -596,7 +598,7 @@ bool CX2SlotItem::ResetItemUI( CX2Item* pItem )
 			}
 			else
 			{
-				CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 2 );
+				CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 2 );
 				if ( pPicture != NULL )
 				{
 					pPicture->SetShow( false );
@@ -606,7 +608,7 @@ bool CX2SlotItem::ResetItemUI( CX2Item* pItem )
 
 			if ( !m_KBillOrderInfo.m_wstrSenderNickName.empty() )
 			{
-				CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 2 );
+				CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 2 );
 				if ( pPicture != NULL )
 				{
 					pPicture->SetShow( true );
@@ -617,15 +619,15 @@ bool CX2SlotItem::ResetItemUI( CX2Item* pItem )
 				else
 				{
 					CKTDGUIControl::CPictureData* pPictureRibbon = new CKTDGUIControl::CPictureData();
-					pPicture->SetTex( L"DLG_Common_New_Texture57.tga", L"Gift_Small_Slot_Ribbon" );
-					pPicture->SetPoint();
-					pPicture->SetPos( D3DXVECTOR2( -1, -1 ) );
+					pPictureRibbon->SetTex( L"DLG_Common_New_Texture57.tga", L"Gift_Small_Slot_Ribbon" );
+					pPictureRibbon->SetPoint();
+					pPictureRibbon->SetPos( D3DXVECTOR2( -1, -1 ) );
 					pStaticRoot->AddPicture( pPictureRibbon );
 				}
 			}
 			else
 			{
-				CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 2 );
+				CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 2 );
 				if ( pPicture != NULL )
 				{
 					pPicture->SetShow( false );
@@ -720,7 +722,7 @@ bool CX2SlotItem::ResetItemUI( int itemID, int itemQuantity, bool bUseImpossible
 	if ( pPicture != NULL )
 	{
         const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-		if ( pwszShopImage[0] != NULL && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
+		if ( pwszShopImage[0] != L'\0' && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
 		{
 			pPicture->SetTex( pwszShopImage );
 		}
@@ -812,7 +814,7 @@ bool CX2SlotItem::ResetItemUI( int itemID, int itemQuantity, bool bUseImpossible
 		if ( m_KNXBTOrderInfo.m_byteIsRead == 0 && m_KNXBTOrderInfo.m_byteIsPresent == 1 )
 		{
 
-			CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 2 );
+			CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 2 );
 			if ( pPicture != NULL )
 			{
 				pPicture->SetShow( true );
@@ -835,7 +837,7 @@ bool CX2SlotItem::ResetItemUI( int itemID, int itemQuantity, bool bUseImpossible
 		}
 		else
 		{
-			CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 2 );
+			CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 2 );
 			if ( pPicture != NULL )
 			{
 				pPicture->SetShow( false );
@@ -845,7 +847,7 @@ bool CX2SlotItem::ResetItemUI( int itemID, int itemQuantity, bool bUseImpossible
 
 		if ( !m_KBillOrderInfo.m_wstrSenderNickName.empty() )
 		{
-			CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 3 );
+			CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 3 );
 			if ( pPicture != NULL )
 			{
 				pPicture->SetShow( true );
@@ -857,17 +859,17 @@ bool CX2SlotItem::ResetItemUI( int itemID, int itemQuantity, bool bUseImpossible
 			else
 			{
 				CKTDGUIControl::CPictureData* pPictureRibbon = new CKTDGUIControl::CPictureData();
-				pPicture->SetTex( L"DLG_Common_New_Texture57.tga", L"Gift_Small_Slot_Ribbon" );
+				pPictureRibbon->SetTex( L"DLG_Common_New_Texture57.tga", L"Gift_Small_Slot_Ribbon" );
 
 
 				pStaticRoot->AddPicture( pPictureRibbon );
-				pPicture->SetPoint();
-				pPicture->SetPos( D3DXVECTOR2( -1, -1 ) );
+				pPictureRibbon->SetPoint();
+				pPictureRibbon->SetPos( D3DXVECTOR2( -1, -1 ) );
 			}
 		}
 		else
 		{
-			CKTDGUIControl::CPictureData* pPicture = pPicture = pStaticRoot->GetPicture( 2 );
+			CKTDGUIControl::CPictureData* pPicture = pStaticRoot->GetPicture( 2 );
 			if ( pPicture != NULL )
 			{
 				pPicture->SetShow( false );

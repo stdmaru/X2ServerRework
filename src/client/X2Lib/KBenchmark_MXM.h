@@ -861,13 +861,12 @@ namespace KBenchMark_MXM
 
 	  static char time_buffer[TIME_SIZE];
 	  struct tm t;
-	  size_t len;
 	  std::time_t now;
 
 	  now = std::time ( NULL );
 	  localtime_s (&t, &now );
 
-	  len = std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", &t );
+	  std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", &t );
 
 	  std::cout << time_buffer << "\n";
 

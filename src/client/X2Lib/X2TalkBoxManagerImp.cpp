@@ -138,7 +138,7 @@ CX2TalkBoxManagerImp::~CX2TalkBoxManagerImp(void)
 //#endif
 }
 
-bool CX2TalkBoxManagerImp::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TalkBoxManagerImp::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	switch( uMsg )
 	{
@@ -155,7 +155,7 @@ bool CX2TalkBoxManagerImp::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return false;
 }
 
-HRESULT CX2TalkBoxManagerImp::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2TalkBoxManagerImp::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -291,8 +291,6 @@ HRESULT CX2TalkBoxManagerImp::OnFrameRender()
 	KTDXPROFILE();
 
 	//float boxWidth = 186;
-	float boxBottomHeight = 39;
-	float boxUpperHeight = 13;
 	//float boxCenterHeight = 53;
 
 	KD3DBEGIN()
@@ -312,7 +310,6 @@ HRESULT CX2TalkBoxManagerImp::OnFrameRender()
 	CKTDGStateManager::PushSamplerState( 1, D3DSAMP_ADDRESSV,  D3DTADDRESS_MIRROR );
 
 
-	int incSize = m_FontHeight;
 
 	//{{ robobeg : 2008-10-24
 	//g_pKTDXApp->SetNULLTexture( 0 );
@@ -526,7 +523,7 @@ void CX2TalkBoxManagerImp::SetPos( UidType unitUID, D3DXVECTOR2 pos, int boxType
 	}
 }
 
-void CX2TalkBoxManagerImp::SetPos( int talkBoxID, D3DXVECTOR2 pos, int boxType, bool bTraceUnit /* = false */ , CX2GameUnit::GAME_UNIT_TYPE gameUnitType /* = CX2GameUnit::GUT_USER */ )
+void CX2TalkBoxManagerImp::SetPos( int talkBoxID, D3DXVECTOR2 pos, int boxType, bool /*bTraceUnit*/ /* = false */ , CX2GameUnit::GAME_UNIT_TYPE /*gameUnitType*/ /* = CX2GameUnit::GUT_USER */ )
 {
 	for ( int i = 0; i < (int)m_TalkBoxList.size(); i++ )
 	{
@@ -600,6 +597,8 @@ bool CX2TalkBoxManagerImp::CheckMousePointInTalkbox( D3DXVECTOR2 mousePos, UidTy
 				_pos.x = _pos.x - fCenterWidthScaled * fTipLerpCoeff - fCornerWidthScaled;
 				_pos.y = _pos.y + 3.f * fCornerHeightScaled + fCenterHeightScaled;
 			}
+			break;
+		default:
 			break;
 		}
 
@@ -722,7 +721,7 @@ void CX2TalkBoxManagerImp::DrawBalloon( int iType, float fX, float fY, float fCe
 }
 
 void CX2TalkBoxManagerImp::DrawTalkBoxEffect( int iType, float fX, float fY, float fCenterWidth, float fCenterHeight, float fWidthScale,
-	float fHeightScale, float fTipLerpCoeff, D3DXCOLOR backTexColor, wstring backTexName )
+	float fHeightScale, float /*fTipLerpCoeff*/, D3DXCOLOR backTexColor, wstring backTexName )
 {
 	KTDXPROFILE();
 
@@ -749,7 +748,7 @@ void CX2TalkBoxManagerImp::DrawTalkBoxEffect( int iType, float fX, float fY, flo
 	//}} robobeg : 2008-10-24
 }
 
-void CX2TalkBoxManagerImp::DrawTalkBoxEffectInnerFrame ( int iType, float _fX, float _fY, float fX, float fY, float fCenterWidth, float fCenterHeight,
+void CX2TalkBoxManagerImp::DrawTalkBoxEffectInnerFrame ( int /*iType*/, float _fX, float _fY, float /*fX*/, float /*fY*/, float fCenterWidth, float fCenterHeight,
 	float fWidthScale, float fHeightScale, D3DXCOLOR backTexColor )
 {
 	KTDXPROFILE();
@@ -874,14 +873,12 @@ void CX2TalkBoxManagerImp::DrawBalloonBodyAndTip( int iType, float _fX, float _f
 }
 
 // 말풍선의 뾰족한 부분을 뾰족한 부분의 시작점(fX, fY)를 중심으로 그린다
-void CX2TalkBoxManagerImp::SetBalloonTip( DRAWFACE_RHW_VERTEX aFaces[4], int iType, float fX, float fY, float fCenterWidth, float fCenterHeight,
+void CX2TalkBoxManagerImp::SetBalloonTip( DRAWFACE_RHW_VERTEX aFaces[4], int iType, float fX, float fY, float /*fCenterWidth*/, float /*fCenterHeight*/,
 										  float fWidthScale, float fHeightScale, D3DXCOLOR backTexColor )
 {
 	KTDXPROFILE();
 
 
-	const float MAGIC_TEX_BLOCK_WIDTH  = 85.f / 512.f;
-	const float MAGIC_TEX_BLOCK_HEIGHT = 85.f / 512.f;
 
 	const float fCornerWidthScaled  = m_fTalkBoxCornerWidth  * fWidthScale;
 	const float fCornerHeightScaled = m_fTalkBoxCornerHeight * fHeightScale;
@@ -1497,9 +1494,7 @@ void CX2TalkBoxManagerImp::InitTalkBox( TalkBox& talkBox )
 	{
 		const float fCenterWidth  = talkBox.m_vTalkBoxSize.x - m_fMarginLeft - m_fMarginLeft;
 		const float fCenterHeight = talkBox.m_vTalkBoxSize.y - m_fMarginTop - m_fMarginTop;
-		const float fCornerWidth  = m_fMarginLeft;
 		const float fCornerHeight = m_fMarginTop;
-		const float fCornerWidthScaled  = fCornerWidth * talkBox.m_vTalkBoxSizeScale.x;
 		const float fCornerHeightScaled = fCornerHeight * talkBox.m_vTalkBoxSizeScale.y;
 		const float fCenterWidthScaled  = fCenterWidth * talkBox.m_vTalkBoxSizeScale.x;
 		const float fCenterHeightScaled = fCenterHeight * talkBox.m_vTalkBoxSizeScale.y;
@@ -1527,7 +1522,6 @@ void CX2TalkBoxManagerImp::InitTalkBox( TalkBox& talkBox )
 
 void CX2TalkBoxManagerImp::ResetTalkBox( TalkBox& talkBox )
 {
-	int index = -1;
 
 	switch( talkBox.m_TalkBoxType )
 	{
@@ -1566,28 +1560,6 @@ void CX2TalkBoxManagerImp::ResetTalkBox( TalkBox& talkBox )
 	}
 	else
 	{
-		const float fCenterWidth  = talkBox.m_vTalkBoxSize.x - m_fMarginLeft - m_fMarginLeft;
-		const float fCenterHeight = talkBox.m_vTalkBoxSize.y - m_fMarginTop - m_fMarginTop;
-		const float fCornerWidth  = m_fMarginLeft;
-		const float fCornerHeight = m_fMarginTop;
-		const float fCornerWidthScaled  = fCornerWidth * talkBox.m_vTalkBoxSizeScale.x;
-		const float fCornerHeightScaled = fCornerHeight * talkBox.m_vTalkBoxSizeScale.y;
-		const float fCenterWidthScaled  = fCenterWidth * talkBox.m_vTalkBoxSizeScale.x;
-		const float fCenterHeightScaled = fCenterHeight * talkBox.m_vTalkBoxSizeScale.y;
-
-		D3DXVECTOR2 pos = D3DXVECTOR2( 0, 0 );
-
-		if ( talkBox.m_TalkBoxType == TBT_FROM_DOWN_LEFT || talkBox.m_TalkBoxType == TBT_FROM_DOWN_RIGHT )
-		{
-			pos.x = talkBox.m_vPos.x - fCenterWidthScaled * talkBox.m_fTalkBoxTipLerpCoef;
-			pos.y = talkBox.m_vPos.y - fCenterHeightScaled - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY(); // ??????
-		}
-		else
-		{
-			pos.x = talkBox.m_vPos.x - fCenterWidthScaled * talkBox.m_fTalkBoxTipLerpCoef;
-			pos.y = talkBox.m_vPos.y + (fCornerHeight * 3 / g_pKTDXApp->GetResolutionScaleY());
-		}
-
 		talkBox.ResetFontPos( m_pFont, m_fMarginLeft, m_fMarginTop );
 	}
 }
@@ -1763,9 +1735,7 @@ void CX2TalkBoxManagerImp::TalkBox::ResetFontPos( CKTDGFontManager::CUKFont* pKT
 	// 이부분 전체 fix!!
 	const float fCenterWidth  = m_vTalkBoxSize.x - fMarginLeft - fMarginLeft;
 	const float fCenterHeight = m_vTalkBoxSize.y - fMarginTop - fMarginTop;
-	const float fCornerWidth  = fMarginLeft;
 	const float fCornerHeight = fMarginTop;
-	const float fCornerWidthScaled  = fCornerWidth * m_vTalkBoxSizeScale.x;
 	const float fCornerHeightScaled = fCornerHeight * m_vTalkBoxSizeScale.y;
 	const float fCenterWidthScaled  = fCenterWidth * m_vTalkBoxSizeScale.x;
 	const float fCenterHeightScaled = fCenterHeight * m_vTalkBoxSizeScale.y;
@@ -1807,13 +1777,13 @@ void CX2TalkBoxManagerImp::TalkBox::ResetFontPos( CKTDGFontManager::CUKFont* pKT
 				{
 				//fix!!
 				//pArticle->pos.x = pos.x - fCornerWidthScaled;
-				//pArticle->pos.y = pos.y + fCenterHeightScaled * m_fTalkBoxTipLerpCoef ; - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY(); // ??????/
+				//pArticle->pos.y = pos.y + fCenterHeightScaled * m_fTalkBoxTipLerpCoef ; - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY();
 				} break;
 
 				case TBT_FROM_RIGHT:
 				{
 				//pArticle->pos.x = pos.x - fCenterWidthScaled * m_fTalkBoxTipLerpCoef;
-				//pArticle->pos.y = pos.y + fCenterHeightScaled - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY(); // ??????/
+				//pArticle->pos.y = pos.y + fCenterHeightScaled - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY();
 				} break;
 				*/
 			}

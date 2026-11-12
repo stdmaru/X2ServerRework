@@ -382,7 +382,7 @@ bool CX2QuestManager::AddAccountQuestDate_LUA()
 	LUA_GET_VALUE(	luaManager, "AccountQuestID",	iAccountQuestID, -1 );
 	LUA_GET_VALUE(	luaManager, "DayOfWeek",		iDayOfWeek, -1 );
 
-	if( -1 == iAccountQuestID || -1 == iDayOfWeek )
+	if( -1 == iAccountQuestID || static_cast<UINT>( -1 ) == iDayOfWeek )
 		return false;
 
 	m_mapDayOfTheWeekQuestList[iAccountQuestID] = iDayOfWeek; // 요일별 퀘스트 요일 정보
@@ -924,6 +924,8 @@ bool CX2QuestManager::GetBoardStartQuestList(std::vector<int>& vecQuestID )
 			BoardVillageID = SEnum::VMI_SANDER;
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -1231,7 +1233,6 @@ bool CX2QuestManager::HasCompletableQuest()
 	map<int,QuestInst*>::iterator mit;
 	for( mit = m_mapUnitQuest.begin(); mit != m_mapUnitQuest.end(); mit++ )
 	{
-		int QuestID = mit->first;
 		CX2QuestManager::QuestInst* pQuestInst = (CX2QuestManager::QuestInst*) mit->second;
 		if(pQuestInst == NULL)
 			continue;
@@ -1537,7 +1538,6 @@ bool CX2QuestManager::LoadClearCondition( KLuaManager& luaManager, SubQuestTempl
 {
 	if( luaManager.BeginTable( "m_ClearCondition" ) == true )
 	{
-		int iDifficulty = -1;
 
 		switch( pSubQuestTemplet->m_eClearType )
 		{
@@ -3100,6 +3100,8 @@ wstring CX2QuestManager::MakeSubQuestString( bool bAuto, const CX2QuestManager::
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return wstrmQuestCond.str();
@@ -3437,6 +3439,8 @@ void CX2QuestManager::InsertCompletedVisitQuestID(QuestInst* pQuestInst)
 					}
 				}
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -3632,7 +3636,7 @@ bool CX2QuestManager::GetNeedToClearDungeonList( OUT map<SEnum::DUNGEON_ID, bool
 						{
 							if( NULL != g_pData && NULL != g_pData->GetDungeonManager() && NULL != g_pData->GetDungeonManager()->GetDungeonData(*sit) )
 							{	//난이도를 제외한 던전ID로 구별합니다.
-								int iExecptDiffucltyLevelDungeonID = *sit - g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty;
+								int iExecptDiffucltyLevelDungeonID = *sit - static_cast<int>( g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty );
 								mapGuideTarget_.insert( std::make_pair( static_cast<SEnum::DUNGEON_ID>(iExecptDiffucltyLevelDungeonID), bIsEpic) );
 							}
 						}

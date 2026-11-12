@@ -36,8 +36,6 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 		KTDXPROFILE();
 
 		//float boxWidth = 186;
-		float boxBottomHeight = 39;
-		float boxUpperHeight = 13;
 		//float boxCenterHeight = 53;
 
 		KD3DBEGIN()
@@ -57,7 +55,6 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 		CKTDGStateManager::PushSamplerState( 1, D3DSAMP_ADDRESSV,  D3DTADDRESS_MIRROR );
 
 
-		int incSize = m_FontHeight;
 
 		CKTDGStateManager::SetTexture( 0, NULL );
 
@@ -97,7 +94,7 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 
 // 말풍선의 뾰족한 끝을 중심(fX,fY)으로 말풍선 전체를 그린다
 void CX2TalkBoxManagerImpPartyLeader::DrawBalloon( int iType, float fX, float fY, float fCenterWidth, float fCenterHeight, float fWidthScale,
-											float fHeightScale, float fTipLerpCoeff, D3DXCOLOR backTexColor )
+											float fHeightScale, float fTipLerpCoeff, D3DXCOLOR /*backTexColor*/ )
 {
 	KTDXPROFILE();
 

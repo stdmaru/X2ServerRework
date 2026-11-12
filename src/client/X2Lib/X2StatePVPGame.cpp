@@ -1013,7 +1013,7 @@ bool CX2StatePVPGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 	case PGUCM_GAME_EXIT_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 
 			if ( g_pData->GetPVPRoom()->GetCanIntrude() == false )
@@ -1030,7 +1030,7 @@ bool CX2StatePVPGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 	case PGUCM_GAME_EXIT_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 		}
 		break;
@@ -1349,7 +1349,7 @@ void CX2StatePVPGame::UIFrameMove( double fTime, float fElapsedTime )
 	g_pData->GetUIManager()->ToggleUI(CX2UIManager::UI_SKILL_SLOT, true);
 }
 
-void CX2StatePVPGame::FrameMoveInPlayMode( double fTime, float fElapsedTime )
+void CX2StatePVPGame::FrameMoveInPlayMode( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if( m_bGameEnd == true )
 	{
@@ -1363,7 +1363,7 @@ void CX2StatePVPGame::FrameMoveInPlayMode( double fTime, float fElapsedTime )
 	}
 }
 
-void CX2StatePVPGame::RankBoxFrameMove( double fTime, float fElapsedTime )
+void CX2StatePVPGame::RankBoxFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	CX2PVPRoom* pPVPRoom = g_pData->GetPVPRoom();
 	if( NULL == pPVPRoom ||
@@ -1482,9 +1482,7 @@ void CX2StatePVPGame::RankBoxFrameMove( double fTime, float fElapsedTime )
 
 
 		// 화면에 출력, // team match, team death match이면 team으로 먼저 sorting하고, 그 다음 kill 수로 sorting
-		int iPrevOneKillCount = -1;
-		int iRank = 0, iCount = 0;
-		WCHAR szTemp[32] = L"";
+		[[maybe_unused]] int iRank = 0, iCount = 0;
 		for( UINT i=0; i<vecSlotSorted.size(); i++ )
 		{
 			KillData& killData = vecSlotSorted[i];
@@ -1637,7 +1635,7 @@ void CX2StatePVPGame::SortByKillCount( CX2PVPRoom* pPVPRoom, vector<KillData>& v
 
 
 //방 정보 변경 관련
-bool CX2StatePVPGame::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -1653,7 +1651,7 @@ bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_REQ( int leaveRoomReason /* = NetEr
 	return m_pPVPGame->Handler_EGS_LEAVE_ROOM_REQ( leaveRoomReason );
 }
 
-bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_ACK kEvent;
@@ -1676,7 +1674,7 @@ bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM w
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_437 ) );
 
 
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 			DialogLog( "  XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false  " );
 		}
 
@@ -1687,7 +1685,7 @@ bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-bool CX2StatePVPGame::Handler_EGS_GAME_LOADING_TIME_OUT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_GAME_LOADING_TIME_OUT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pMain->GetConnectedChannelID() == KPVPChannelInfo::PCC_OFFICIAL )
 	{
@@ -1701,13 +1699,13 @@ bool CX2StatePVPGame::Handler_EGS_GAME_LOADING_TIME_OUT_NOT( HWND hWnd, UINT uMs
 		g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_437 ) );
 
 
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 		DialogLog( "  XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false  " );
 	}
 	return true;
 }
 
-bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -1724,7 +1722,7 @@ bool CX2StatePVPGame::Handler_EGS_LEAVE_GAME_REQ()
 	return m_pPVPGame->Handler_EGS_LEAVE_GAME_REQ();
 }
 
-bool CX2StatePVPGame::Handler_EGS_LEAVE_GAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_LEAVE_GAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 	//게임중에 강제로 나갔을때...
@@ -1744,7 +1742,7 @@ bool CX2StatePVPGame::Handler_EGS_LEAVE_GAME_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-bool CX2StatePVPGame::Handler_EGS_LEAVE_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_LEAVE_GAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_GAME_NOT kEvent;
@@ -1758,7 +1756,7 @@ bool CX2StatePVPGame::Handler_EGS_LEAVE_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM w
 }
 
 
-bool CX2StatePVPGame::Handler_EGS_CHANGE_TEAM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CHANGE_TEAM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_TEAM_NOT kEvent;
@@ -1774,7 +1772,7 @@ bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_RESULT_REQ()
 	return m_pPVPGame->Handler_EGS_STATE_CHANGE_RESULT_REQ();
 }
 
-bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_RESULT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_RESULT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_RESULT_ACK kEvent;
@@ -1785,7 +1783,7 @@ bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_RESULT_ACK( HWND hWnd, UINT uMsg,
 	return m_pPVPGame->Handler_EGS_STATE_CHANGE_RESULT_ACK( kEvent );
 }
 
-bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_RESULT_NOT kEvent;
@@ -1820,7 +1818,7 @@ bool CX2StatePVPGame::GameLoadingReq( int percent )
 	return true;
 }
 
-bool CX2StatePVPGame::GameLoadingAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::GameLoadingAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -1836,7 +1834,7 @@ bool CX2StatePVPGame::GameLoadingAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 	return true;
 }
 
-bool CX2StatePVPGame::GameLoadingNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::GameLoadingNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GAME_LOADING_NOT kPacket;
@@ -2011,7 +2009,7 @@ bool CX2StatePVPGame::GameLoadingAllUnitOkNot()
 	return true;
 }
 
-bool CX2StatePVPGame::Handler_EGS_PLAY_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_PLAY_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PLAY_START_NOT kEvent;
@@ -2046,7 +2044,7 @@ bool CX2StatePVPGame::Handler_EGS_PLAY_START_NOT( HWND hWnd, UINT uMsg, WPARAM w
 	return m_pPVPGame->Handler_EGS_PLAY_START_NOT( kEvent );
 }
 
-bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_INTRUDE_NOT kPacket;
@@ -2061,7 +2059,7 @@ bool CX2StatePVPGame::Handler_EGS_INTRUDE_START_REQ()
 	return m_pPVPGame->Handler_EGS_INTRUDE_START_REQ();
 }
 
-bool CX2StatePVPGame::Handler_EGS_INTRUDE_START_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_INTRUDE_START_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INTRUDE_START_ACK kPacket;
@@ -2071,7 +2069,7 @@ bool CX2StatePVPGame::Handler_EGS_INTRUDE_START_ACK( HWND hWnd, UINT uMsg, WPARA
 	return m_pPVPGame->Handler_EGS_INTRUDE_START_ACK( kPacket );
 }
 
-bool CX2StatePVPGame::Handler_EGS_INTRUDE_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_INTRUDE_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INTRUDE_START_NOT kPacket;
@@ -2090,7 +2088,7 @@ bool CX2StatePVPGame::Handler_EGS_INTRUDE_START_NOT( HWND hWnd, UINT uMsg, WPARA
 }
 
 
-bool CX2StatePVPGame::CurrentKillScoreNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::CurrentKillScoreNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CURRENT_KILL_SCORE_NOT kPacket;
@@ -2117,7 +2115,7 @@ bool CX2StatePVPGame::CurrentKillScoreNot( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	return true;
 }
 
-bool CX2StatePVPGame::Handler_EGS_CURRENT_TEAM_KILL_SCORE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CURRENT_TEAM_KILL_SCORE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CURRENT_TEAM_KILL_SCORE_NOT kPacket;
@@ -2130,7 +2128,7 @@ bool CX2StatePVPGame::Handler_EGS_CURRENT_TEAM_KILL_SCORE_NOT( HWND hWnd, UINT u
 	return true;
 }
 
-bool CX2StatePVPGame::Handler_EGS_REMAINING_PLAY_TIME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_REMAINING_PLAY_TIME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REMAINING_PLAY_TIME_NOT kEvent;
@@ -2163,7 +2161,7 @@ bool CX2StatePVPGame::PlayTimeOutNot()
 	return true;
 }
 
-bool CX2StatePVPGame::MyUserUnitInfoToServerAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam  )
+bool CX2StatePVPGame::MyUserUnitInfoToServerAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam  )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -2191,7 +2189,7 @@ bool CX2StatePVPGame::UserUnitRebirthPosReq( int startPosIndex )
 	return true;
 }
 
-bool CX2StatePVPGame::UserUnitRebirthPosAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::UserUnitRebirthPosAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	//KSerBuffer* pBuff = (KSerBuffer*)lParam;
 
@@ -2203,17 +2201,17 @@ bool CX2StatePVPGame::UserUnitRebirthPosAck( HWND hWnd, UINT uMsg, WPARAM wParam
 	return true;
 }
 
-bool CX2StatePVPGame::UserUnitRebirthReq( UidType unitUID )
+bool CX2StatePVPGame::UserUnitRebirthReq( UidType /*unitUID*/ )
 {
 	return true;
 }
 
-bool CX2StatePVPGame::UserUnitRebirthAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::UserUnitRebirthAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return true;
 }
 
-bool CX2StatePVPGame::UserUnitRebirthNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::UserUnitRebirthNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_UNIT_RE_BIRTH_NOT kEvent;
@@ -2225,7 +2223,7 @@ bool CX2StatePVPGame::UserUnitRebirthNot( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return true;
 }
 
-/*virtual*/ bool CX2StatePVPGame::Handler_EGS_USER_UNIT_DIE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StatePVPGame::Handler_EGS_USER_UNIT_DIE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_UNIT_DIE_ACK kEvent;
@@ -2259,7 +2257,7 @@ bool CX2StatePVPGame::UserUnitRebirthNot( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return true;
 }
 
-/*virtual*/ bool CX2StatePVPGame::Handler_EGS_USER_UNIT_DIE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StatePVPGame::Handler_EGS_USER_UNIT_DIE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_UNIT_DIE_NOT kEvent;
@@ -2285,7 +2283,7 @@ bool CX2StatePVPGame::UserUnitRebirthNot( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return true;
 }
 
-/*virtual*/ bool CX2StatePVPGame::Handler_EGS_USER_UNIT_DIE_COMPLETE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StatePVPGame::Handler_EGS_USER_UNIT_DIE_COMPLETE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_UNIT_DIE_COMPLETE_NOT kEvent;
@@ -2297,7 +2295,7 @@ bool CX2StatePVPGame::UserUnitRebirthNot( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return true;
 }
 
-bool CX2StatePVPGame::Handler_EGS_END_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_END_GAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_GAME_NOT kEvent;
@@ -2342,7 +2340,7 @@ bool CX2StatePVPGame::Handler_EGS_END_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wPa
 //	return m_pPVPGame->Handler_EGS_END_GAME_PVP_TEAM_DEATH_RESULT_DATA_NOT( kEvent );
 //}
 
-bool CX2StatePVPGame::Handler_EGS_END_GAME_PVP_RESULT_DATA_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_END_GAME_PVP_RESULT_DATA_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_GAME_PVP_RESULT_DATA_NOT kEvent;
@@ -2357,7 +2355,7 @@ bool CX2StatePVPGame::Handler_EGS_END_GAME_PVP_RESULT_DATA_NOT( HWND hWnd, UINT 
 	return m_pPVPGame->Handler_EGS_END_GAME_PVP_RESULT_DATA_NOT( kEvent );
 }
 
-bool CX2StatePVPGame::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_UNIT_INFO_NOT kEvent;
@@ -2396,7 +2394,7 @@ bool CX2StatePVPGame::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WP
 //	return m_pPVPGame->Handler_EGS_NOTIFY_MSG_NOT( kEvent );
 //}
 
-bool CX2StatePVPGame::Handler_EGS_ADD_ON_STAT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_ADD_ON_STAT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADD_ON_STAT_ACK kEvent;
@@ -2405,7 +2403,7 @@ bool CX2StatePVPGame::Handler_EGS_ADD_ON_STAT_ACK( HWND hWnd, UINT uMsg, WPARAM 
 	return m_pPVPGame->Handler_EGS_ADD_ON_STAT_ACK( kEvent );
 }
 
-bool CX2StatePVPGame::Handler_EGS_ADD_ON_STAT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_ADD_ON_STAT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADD_ON_STAT_NOT kEvent;
@@ -2414,7 +2412,7 @@ bool CX2StatePVPGame::Handler_EGS_ADD_ON_STAT_NOT( HWND hWnd, UINT uMsg, WPARAM 
 	return m_pPVPGame->Handler_EGS_ADD_ON_STAT_NOT( kEvent );
 }
 
-bool CX2StatePVPGame::Handler_EGS_CHANGE_PITIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CHANGE_PITIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_NOT kEvent;
@@ -2670,7 +2668,7 @@ void CX2StatePVPGame::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 				talkBox.m_BackTexColor		= coBackColor_;
 
 				talkBox.m_bUseOutLine		 = true;
-				if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+				if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 				{
 					talkBox.m_bUseOutLine = false;
 				}
@@ -2718,7 +2716,7 @@ void CX2StatePVPGame::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 	}
 }
 
-bool CX2StatePVPGame::Handler_EGS_CREATE_PVP_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CREATE_PVP_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_PVP_ITEM_ACK kEvent;
@@ -2741,7 +2739,7 @@ bool CX2StatePVPGame::Handler_EGS_CREATE_PVP_ITEM_ACK( HWND hWnd, UINT uMsg, WPA
 	return false;
 }
 
-bool CX2StatePVPGame::Handler_EGS_CREATE_PVP_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CREATE_PVP_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_PVP_ITEM_NOT kEvent;
@@ -2759,7 +2757,7 @@ bool CX2StatePVPGame::Handler_EGS_CREATE_PVP_ITEM_NOT( HWND hWnd, UINT uMsg, WPA
 	return true;
 }
 
-bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ITEM_NOT kEvent;
@@ -2773,7 +2771,7 @@ bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_NOT( HWND hWnd, UINT uMsg, WPA
 	return true;
 }
 
-bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_POS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_POS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ITEM_POS_ACK kEvent;
@@ -2786,7 +2784,7 @@ bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_POS_ACK( HWND hWnd, UINT uMsg,
 
 	return true;
 }
-bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_POS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CHANGE_PVP_ITEM_POS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ITEM_POS_NOT kEvent;
@@ -2811,7 +2809,7 @@ bool CX2StatePVPGame::Handler_EGS_PVP_NPC_UNIT_RE_BIRTH_POS_REQ( UidType iUid, i
 
 	return true;
 }
-bool CX2StatePVPGame::Handler_EGS_PVP_NPC_UNIT_RE_BIRTH_POS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_PVP_NPC_UNIT_RE_BIRTH_POS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PVP_NPC_UNIT_RE_BIRTH_POS_ACK kEvent;
@@ -2852,7 +2850,7 @@ bool CX2StatePVPGame::Handler_EGS_PVP_NPC_UNIT_INFO_TO_SERVER_REQ()
 
 	return true;
 }
-bool CX2StatePVPGame::Handler_EGS_PVP_NPC_UNIT_INFO_TO_SERVER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_PVP_NPC_UNIT_INFO_TO_SERVER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PVP_NPC_UNIT_INFO_TO_SERVER_ACK kPacket;
@@ -2874,7 +2872,7 @@ bool CX2StatePVPGame::Handler_EGS_PVP_NPC_UNIT_INFO_TO_SERVER_ACK( HWND hWnd, UI
 	@param : HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	@return : 패킷 처리에 성공한 경우 true, 실패한 경웨 false
 */
-bool CX2StatePVPGame::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPGame::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT kEvent;

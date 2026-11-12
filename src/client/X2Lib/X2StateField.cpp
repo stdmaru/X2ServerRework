@@ -28,9 +28,9 @@ static const CKTDGStateManager::KState s_akStates[] =
 
 CX2StateField::CX2StateField(void):
 m_TimerWaitingPortal(3.f),
-m_RenderStateID(s_akStates),
 m_TexDataMovingGageBG( L"DLG_LOADING_BAR.tga", L"LOADING_BG" ),
-m_TexDataMovingGage( L"DLG_LOADING_BAR.tga", L"LOADING_BAR" )
+m_TexDataMovingGage( L"DLG_LOADING_BAR.tga", L"LOADING_BAR" ),
+m_RenderStateID(s_akStates)
 , m_SumDelta( 0 )
 {
 	SetNowMovingToBattleField( false );
@@ -128,8 +128,6 @@ m_TexDataMovingGage( L"DLG_LOADING_BAR.tga", L"LOADING_BAR" )
 		g_pChatBox->HideChatEditBox();
 	}
 
-	if( g_pMain != NULL )
-		g_pMain->DllManagerReport();
 
 	g_pMain->SetIsPlayingFreeTraining(false);
 
@@ -786,7 +784,7 @@ bool CX2StateField::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	case FQ_PARTY_JOIN_REQ:
 		{
 			if(m_pDLGJoinParty != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, 0, false );
 			m_pDLGJoinParty = NULL;
 
 			ASSERT( !L"Party join Req" );
@@ -795,7 +793,7 @@ bool CX2StateField::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	case FQ_PARTY_JOIN_CANCEL:
 		{
 			if(m_pDLGJoinParty != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, 0, false );
 			m_pDLGJoinParty = NULL;
 			m_TalkBoxunitUID = 0;
 		}
@@ -939,7 +937,7 @@ bool CX2StateField::Handler_EGS_STATE_CHANGE_FIELD_REQ()
 	return true;
 }
 
-bool CX2StateField::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_FIELD_ACK kEvent;
@@ -1116,7 +1114,7 @@ bool CX2StateField::Handler_EGS_FIELD_LOADING_COMPLETE_REQ()
 }
 
 
-bool CX2StateField::Handler_EGS_FIELD_LOADING_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_FIELD_LOADING_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FIELD_LOADING_COMPLETE_ACK kEvent;
@@ -1204,7 +1202,7 @@ bool CX2StateField::Handler_EGS_FIELD_LOADING_COMPLETE_ACK( HWND hWnd, UINT uMsg
 //	return true;
 //}
 
-bool CX2StateField::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_USER_LIST_IN_SECTOR_NOT kEvent;
@@ -1224,7 +1222,7 @@ bool CX2StateField::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND hWnd, UINT 
 	return true;
 }
 
-bool CX2StateField::Handler_EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT kEvent;
@@ -1239,7 +1237,7 @@ bool CX2StateField::Handler_EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT( HWND hWnd, UINT 
 	return true;
 }
 
-bool CX2StateField::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT kEvent;
@@ -1277,7 +1275,7 @@ void CX2StateField::Handler_EGS_CREATE_TUTORIAL_ROOM_REQ(int iDungeonId)
 	g_pMain->AddServerPacket( EGS_CREATE_TUTORIAL_ROOM_ACK, 40.f );
 }
 
-bool CX2StateField::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_TUTORIAL_ROOM_ACK kEvent;
@@ -1302,7 +1300,7 @@ bool CX2StateField::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND hWnd, UINT uMsg, 
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_645 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, 0, false );
 
 			return true;
 		}
@@ -1314,7 +1312,7 @@ bool CX2StateField::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND hWnd, UINT uMsg, 
 	return false;
 }
 
-bool CX2StateField::Handler_EGS_JOIN_SQUARE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_JOIN_SQUARE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_SQUARE_ACK kEvent;
@@ -1435,7 +1433,7 @@ bool CX2StateField::Handler_EGS_LEAVE_ROOM_REQ()
 }
 
 // 파티원이 던전라운지에서 던전게이트로 혼자 빠져나갈 때 이 패킷을 받는다.
-bool CX2StateField::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -1474,7 +1472,7 @@ bool CX2StateField::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 	return true;
 }
 
-bool CX2StateField::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -1489,7 +1487,7 @@ bool CX2StateField::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wPa
 	return true;
 }
 
-bool CX2StateField::Handler_EGS_UPDATE_PARTY_UID_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_UPDATE_PARTY_UID_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_PARTY_UID_NOT kEvent;
@@ -1648,8 +1646,6 @@ void CX2StateField::DrawFace( const float fX_, const float fY_, const CKTDGUICon
 	float X2 = fX_ + fWidth_ * fWidthPercent_;
 	float Y2 = fY_ + fHeight_;
 
-	float UMax = 1.0f;
-	float VMax = 1.0f;
 
 	DRAWFACE_RHW_VERTEX vertex[4];
 	ZeroMemory( vertex, sizeof(DRAWFACE_RHW_VERTEX) * 4 );
@@ -1724,7 +1720,7 @@ void CX2StateField::CreateMovingSmallBar()
 		m_TexDataMovingGage.SetTextureUV();
 	}
 }
-bool CX2StateField::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( NULL != g_pKTDXApp->GetDGManager()->GetDialogManager()->GetFirstFrontModalDlg() )
 		return true;
@@ -1758,7 +1754,7 @@ bool CX2StateField::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 
 
-bool CX2StateField::Handler_EGS_TOGGLE_INVISIBLE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_TOGGLE_INVISIBLE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TOGGLE_INVISIBLE_NOT kEvent;
@@ -1781,7 +1777,7 @@ bool CX2StateField::Handler_EGS_TOGGLE_INVISIBLE_NOT( HWND hWnd, UINT uMsg, WPAR
 	@param		: 이벤트 메시지
 	@return		: 패킷 처리 여부
 */
-bool CX2StateField::Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateField::Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT kEvent;

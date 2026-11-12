@@ -41,3 +41,17 @@ function(x2_windows_icon target icon)
     target_sources(${target} PRIVATE "${rc}")
     set_property(SOURCE "${rc}" APPEND PROPERTY OBJECT_DEPENDS "${icon}")
 endfunction()
+
+# x2_embed_file(<target> <file> <symbol>): the file's bytes compiled into the target, as
+# `extern const unsigned char <symbol>[]` and `extern const std::size_t <symbol>_size` (a .cpp generated at configure
+# time; CMake configures again when the file changes). For the few files the original kept as executable resources.
+function(x2_embed_file target file symbol)
+    file(READ "${file}" hex HEX)
+    string(LENGTH "${hex}" length)
+    math(EXPR length "${length} / 2")
+    string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," bytes "${hex}")
+    set(out "${CMAKE_CURRENT_BINARY_DIR}/${symbol}.cpp")
+    file(CONFIGURE OUTPUT "${out}" CONTENT "#include <cstddef>\nextern const unsigned char ${symbol}[] = {${bytes}};\nextern const std::size_t ${symbol}_size = ${length};\n")
+    target_sources(${target} PRIVATE "${out}")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${file}")
+endfunction()

@@ -139,8 +139,8 @@ void    CX2GUNPC::KNonHostReaction::Init()
 
 /*static*/ bool CX2GUNPC::KNonHostReaction::_CheckCompatibleReactionCondition( float fSpeedX1, float fSpeedX2 )
 {
-    if ( fSpeedX1 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE
-        || fSpeedX1 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE )
+    if ( ( fSpeedX1 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE )
+        || ( fSpeedX1 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE ) )
         return false;
     return true;
 }
@@ -280,6 +280,8 @@ void    CX2GUNPC::KNonHostReaction::DoStateEndStart( bool bLocalUnit, const NPCF
                     m_cbufNonHostSimState.push_back( kSimState );
                 }//if.. else..
                 break;
+            default:
+            	break;
             }
         }
         else
@@ -380,7 +382,7 @@ void    CX2GUNPC::KNonHostReaction::UpdateNowStateStartSpeed( const NPCFrameData
 
 
 void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
-    NPCFrameData& m_NPCFrameData, PhysicParam& m_PhysicParam,
+    NPCFrameData& m_NPCFrameData, PhysicParam& /*m_PhysicParam*/,
     KCircularBuffer< NPCFrameSync >& m_cbufReceiveDynamicPacket,
     DWORD& m_dwLastProcessedFrameMoveCount, bool& bUpdatePositionBackup,
     float& fNowHP, float& fNowMP,
@@ -424,7 +426,8 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
             {
                 goto continue_common;
             }
-            bool bReactionState = xPT_UNIT_NPC_SYNC.ExtractReactionState();
+            bool bReactionState;	// split: a goto jumps over it
+            bReactionState = xPT_UNIT_NPC_SYNC.ExtractReactionState();
             if ( bReactionState == false )
             {
                 KCircularBuffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
@@ -466,8 +469,8 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
                     float   fSpeedY = halfToFloat( xPT_UNIT_NPC_SYNC.m_usNowSpeedY );
                     if ( fY + fUnitHeight < kSimState.m_v2ReactionYMinMax.x
                         || fY > kSimState.m_v2ReactionYMinMax.y
-                        || ( fSpeedY > 0.f && fY + fSpeedY * fTimeTolerance > kSimState.m_v2ReactionYMinMax.y
-                                || fSpeedY < 0.f && fY + fUnitHeight + fSpeedY * fTimeTolerance < kSimState.m_v2ReactionYMinMax.x ) )
+                        || ( (fSpeedY > 0.f && fY + fSpeedY * fTimeTolerance > kSimState.m_v2ReactionYMinMax.y)
+                                || (fSpeedY < 0.f && fY + fUnitHeight + fSpeedY * fTimeTolerance < kSimState.m_v2ReactionYMinMax.x) ) )
                     {
                         bBroken = true;
 //printf( "NPC State outofrange %S(%d)\n", GetStateNameByStateID( xPT_UNIT_NPC_SYNC.m_cNowState ).c_str(),
@@ -1162,8 +1165,8 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_RetrieveRelativePosInfo( bool 
                     break;
                 }
             }//if.. else..
-            if ( m_eNowStateReaction != REACTION_STATE_FIRST && m_eNowStateReaction != REACTION_STATE_CONTINUE
-                        || bMyUnit == true && m_eNowStateReaction == REACTION_STATE_CONTINUE )
+            if ( (m_eNowStateReaction != REACTION_STATE_FIRST && m_eNowStateReaction != REACTION_STATE_CONTINUE)
+                        || (bMyUnit == true && m_eNowStateReaction == REACTION_STATE_CONTINUE) )
             {
                 bReservePosReliable = true;
                 if ( iDirection != 0 )
@@ -1207,7 +1210,6 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
         int  iUserUnitSize = g_pX2Game->GetUserUnitListSize();
         ResetRelativePosAndTimers();
         ResetLocalRelativePosAndTimers();
-        D3DXVECTOR3 vPosFuture;
         D3DXVECTOR3 vDirVectorFromMeToOther;
         bool bCanPass = m_NPCFrameData.stateParam.bCanPassUnit;
         for( int i = 0; i < __min( iUserUnitSize, MAX_GAME_USER_UNIT_NUM ); i++ )
@@ -1258,7 +1260,6 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
     {
         D3DXVECTOR2 vMyUnitMinMaxY( m_NPCFrameData.syncData.position.y, m_NPCFrameData.syncData.position.y + fUnitHeight );
         int  iUserUnitSize = __min( g_pX2Game->GetUserUnitListSize(), MAX_GAME_USER_UNIT_NUM );
-        D3DXVECTOR3 vPosFuture;
         D3DXVECTOR3 vDirVectorFromMeToOther;
         for( int i = 0; i < iUserUnitSize; i++ )
         {
@@ -1291,7 +1292,6 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
                     vDirVectorFromMeToOther = vPosFuture - m_NPCFrameData.syncData.position;
                     vDirVectorFromMeToOther.y = 0.f;
                     int iHostDirection = GetRelativePos( i );
-                    int iDirection = 0;
                     float   fDotProduct = D3DXVec3Dot( &m_NPCFrameData.unitCondition.dirVector, &vDirVectorFromMeToOther );
                     if ( fDotProduct >= 0 )
                         iNewLocalDirection = 2;
@@ -4246,7 +4246,6 @@ void    CX2GUNPC::LoadStateData( StateData& nowStateData, InitData& OutInit_, KL
     nowStateData.m_vecTalkBox.resize( 0 );
 	if( luaManager_.BeginTable( "TALK_BOX" ) == true )
 	{
-		int iRate = 0;
 
 		index = 1;
         nowStateData.m_vecTalkBox.reserve( luaManager_.GetNumIndexedValues() );
@@ -5582,8 +5581,8 @@ void CX2GUNPC::DoFrameMove( bool bNoFrameMove )
 
     }//if
 
-    if ( GetNowStateID() == GUSI_DIE )
-        goto out_state_change;
+	if ( GetNowStateID() == GUSI_DIE )
+		goto out_state_change;
 
 	if( ( m_pidHostUID == 0 || m_pidHostUID != g_pX2Game->GetHostSlotUID() )
         || bLocalUnit == true )
@@ -5599,7 +5598,8 @@ void CX2GUNPC::DoFrameMove( bool bNoFrameMove )
         m_kNonHostReaction.ClearBuffNonHostSimState();
     }//if
 
-    bool    bUpdatePositionBackup = false;
+    bool bUpdatePositionBackup;	// split: a goto jumps over it
+    bUpdatePositionBackup = false;
 
 
     if ( bLocalUnit == false && m_kNonHostReaction.IsNowStateReaction_FIRST() == true )
@@ -6019,7 +6019,6 @@ HRESULT CX2GUNPC::OnFrameMove( double fTime, float fElapsedTime )
 
 	CX2GameUnit::OnFrameMove( fTime, fElapsedTime );
 
-	bool bTableOpen = false;
 
 	//m_pComboManager->OnFrameMove(fTime, fElapsedTime);
 
@@ -6204,7 +6203,7 @@ HRESULT CX2GUNPC::OnFrameMove( double fTime, float fElapsedTime )
 
 			WCHAR buf[100] = { 0, };
 
-			wsprintf( buf, L"NowForceDown: %d\n", iForceDown );
+			swprintf_s( buf, L"NowForceDown: %d\n", iForceDown );
 
 			DXUTTRACE( buf );
 		}
@@ -6298,7 +6297,7 @@ bool CX2GUNPC::StateChange_LUA( const char* stateName, bool bDirectChange )
 
 
 
-bool    CX2GUNPC::StateChangeForce( int state, bool bDirectChange )
+bool    CX2GUNPC::StateChangeForce( int state, bool /*bDirectChange*/ )
 {
     if ( false == ( state >= 0 && state < (int) m_vecStateRuntime.size() ) )
         return false;
@@ -6342,17 +6341,17 @@ void    CX2GUNPC::StateChangeToDieForce()
 
 
 
-int CX2GUNPC::StateChange_CheckOnly( int state, bool bDirectChange )
+int CX2GUNPC::StateChange_CheckOnly( int state, bool /*bDirectChange*/ )
 {
 	if( state <= 0 )
 		return 0;
 
-    if ( false == ( state >= 0 && state < (int) m_vecStateRuntime.size() ) )
-        return 0;
+	if ( false == ( state >= 0 && state < (int) m_vecStateRuntime.size() ) )
+		return 0;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return 0;
+	if ( GetNowStateID() == GUSI_DIE )
+		return 0;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 	if( GetNowHp() > 0.f ) // 죽은 몬스터의 경우에 석화나 얼음이 동작하지 않기 때문에 살아있는 몬스터에 대해서만 처리
@@ -6382,8 +6381,8 @@ bool CX2GUNPC::StateChange( int state, bool bDirectChange )
 		return false;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return false;
+	if ( GetNowStateID() == GUSI_DIE )
+		return false;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 	if( GetNowHp() > 0.f ) // 죽은 몬스터의 경우에 석화나 얼음이 동작하지 않기 때문에 살아있는 몬스터에 대해서만 처리
@@ -6411,9 +6410,9 @@ bool CX2GUNPC::StateChange( int state, bool bDirectChange )
 
 void CX2GUNPC::UnDoStateChange_Reaction()
 {
-    if ( m_NPCFrameData.unitCondition.nextState == GUSI_DIE
-        || m_kNonHostReaction.IsNextStateRection_NONE() == true )
-        return;
+	if ( m_NPCFrameData.unitCondition.nextState == GUSI_DIE
+		|| m_kNonHostReaction.IsNextStateRection_NONE() == true )
+		return;
 	m_NPCFrameData.unitCondition.nextState		= m_NPCFrameData.syncData.nowState;
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
     m_NPCFrameData.unitCondition.stateChangeParts.stateChangeNum	= m_NPCFrameData.syncData.stateChangeParts.stateChangeNum;
@@ -6432,8 +6431,8 @@ bool CX2GUNPC::StateChange_Reaction_FIRST( int state, int iAttackerUnitIndex, co
 		return false;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return false;
+	if ( GetNowStateID() == GUSI_DIE )
+		return false;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 
@@ -6482,8 +6481,8 @@ bool CX2GUNPC::StateChange_Reaction_Continue( int state, bool bWait )
 		return false;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return false;
+	if ( GetNowStateID() == GUSI_DIE )
+		return false;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 
@@ -6564,6 +6563,8 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				m_FlyCount++;
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -6796,6 +6797,8 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		{
 			return;
 		} break;
+	default:
+		break;
 	}
 
 	bool bRevenge = false;
@@ -7999,6 +8002,8 @@ void CX2GUNPC::LevelCorrectionExtraDamage( const CX2DamageManager::DamageData* p
 			//}} 허상형 : [2011/3/3/] //	월드 미션
 			iLevel = 1;
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -8025,7 +8030,7 @@ void CX2GUNPC::LevelCorrectionExtraDamage( const CX2DamageManager::DamageData* p
 			if ( null != pDamageData->optrDefenderGameUnit )
 				defencerLv = pDamageData->optrDefenderGameUnit->GetUnitLevel();
 
-			fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / CX2EnchantItem::EAR_MAX_VALUE));
+			fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE )));
 			if(fPureRate >= 1.f) // oasis907 : 김상윤 [2011.5.25] 스크립트 파싱시 디폴트 fRate는 1.f,
 			{					// 외부에서 Rate설정을 따로해주지 않으면 최대 Rate를 0.5로 한정
 				if( fRate > 0.5f )
@@ -8342,7 +8347,7 @@ void CX2GUNPC::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamageD
 	case CX2DamageManager::EDT_POISON_CLOUD:
 		{
 			const float MAGIC_POWER_RATE = 1.f;
-			CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
+			g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
 				pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition_LUA().y );
 
 			UpDownCrashCamera( 20.0f, 0.5f );
@@ -8660,7 +8665,7 @@ void CX2GUNPC::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamageD
 	case CX2DamageManager::EDT_CURSE_CLOUD:
 		{
 			const float MAGIC_POWER_RATE = 1.f;
-			CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
+			g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
 				pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition_LUA().y );
 
 			UpDownCrashCamera( 20.0f, 0.5f );
@@ -8980,8 +8985,8 @@ void CX2GUNPC::DoStateRage()
 void CX2GUNPC::DamageReact_Rage( CX2DamageManager::DamageData* pDamageData )
 {
     const StateData& nowStateData = GetNowStateData();
-    if ( NOWSTATE_FLAG( CANNOT_RAGE) == true )
-        return;
+	if ( NOWSTATE_FLAG( CANNOT_RAGE) == true )
+		return;
 
 	//{{ oasis907 : 김상윤 [2010.4.21] //
 	if( m_iRageHPPercent != 0)
@@ -9394,6 +9399,8 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 
 
 
+	default:
+		break;
 	}
 
 
@@ -9419,6 +9426,8 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 						{
                             SetIsRightNow( !m_NPCFrameData.syncData.bIsRight );
 						} break;
+					default:
+						break;
 					}
 				}
 			}
@@ -9451,6 +9460,8 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
                                 SetIsRightNow( !m_NPCFrameData.syncData.bIsRight );
 							} // if
 						} break;
+					default:
+						break;
 					} // switch
 				} // if
 
@@ -9486,12 +9497,16 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 								SetIsRightNow( !m_NPCFrameData.syncData.bIsRight );
 							} // if
 						} break;
+					default:
+						break;
 					} // switch
 				} // if
 			} // if
 		} break;
 
 
+	default:
+		break;
 	}
 
 
@@ -9885,10 +9900,10 @@ bool CX2GUNPC::GetIsFallDowning()
         return true;
 
     const StateData& nowStateData = GetNowStateData();
-    if ( NOWSTATE_FLAG( DAMAGE_DOWN ) == false )
-        return false;
-    if( GetIsDamageDown() == false)
-        return false;
+	if ( NOWSTATE_FLAG( DAMAGE_DOWN ) == false )
+		return false;
+	if( GetIsDamageDown() == false)
+		return false;
 
 	if( m_NPCFrameData.syncData.nowState == (char)m_CommonState.m_DownDamageLandFront
 		|| m_NPCFrameData.syncData.nowState == (char)m_CommonState.m_DownDamageLandBack )
@@ -10208,6 +10223,8 @@ void CX2GUNPC::DyingStart()
 										uidAttackerUID		= pNPCAI->GetAllyUnitUID();
 										eAttackerUnitType	= CX2GameUnit::GUT_USER;
 									} break;
+								default:
+									break;
 								}
 							}
 						}
@@ -10257,11 +10274,7 @@ void CX2GUNPC::DyingStart()
 		//g_pKTDXApp->SetFindHacking( true );
 
 		// 강제크래쉬
-		__asm
-		{
-			xor eax, eax
-			call eax
-		}
+		std::abort();
 	}
 
 
@@ -10365,7 +10378,6 @@ void CX2GUNPC::CommonStateStart()
 	KTDXPROFILE();
 
     const StateData& nowStateData = GetNowStateData();
-    int index = 0;
 
 	if ( NULL == m_pXSkinAnim )
 		return;
@@ -10532,8 +10544,8 @@ void CX2GUNPC::CommonStateStart()
 
     if ( NOWSTATE_FLAG( SET_ANIM_SPEED ) == true )
         m_fAnimSpeed = nowStateData.m_fSetAnimSpeedValue;
-    else
-        m_fAnimSpeed = m_fDefaultAnimSpeed;
+	else
+		m_fAnimSpeed = m_fDefaultAnimSpeed;
 
 
 	ResetAnimSpeed();
@@ -10741,7 +10753,6 @@ void CX2GUNPC::CommonStateStart()
         if ( nowStateData.m_bitsetFlags.test( iFlagIndex ) == true )
 	    {
             m_eSoundSetType = eSoundSetType;
-            int iFlagMode = 0;
 		    if ( 0.f < GetRemainHyperModeTime() && true == nowStateData.m_bitsetFlags.test( iFlagIndex + 1 ) )
             {
                 m_eSoundSetType = ESoundSetType( eSoundSetType + 1 );
@@ -10998,8 +11009,8 @@ void CX2GUNPC::CommonStateStart()
 	//{{ JHKang / 강정훈 / 2011/01/13 / 몬스터 State당 렌더링 방식 변경
     if ( NOWSTATE_FLAG( SET_RENDER_PARAM ) == true )
         m_RenderParam.renderType = nowStateData.m_eSetRenderParamValue;
-    else
-        m_RenderParam.renderType = m_BasicRenderType;
+	else
+		m_RenderParam.renderType = m_BasicRenderType;
 	m_RenderParam.fOutLineWide	= 1.7f;
 	if( g_pX2Game->GetWorld() != NULL )
 		m_RenderParam.lightPos	= g_pX2Game->GetWorld()->GetLightPos();
@@ -11147,7 +11158,6 @@ void CX2GUNPC::CommonFrameMoveHost()
 		{
 			m_TimerRandomSeedSync.restart();
 
-			const int MAGIC_NUMBER = 17;
 			m_NPCFrameData.syncData.m_usRandomTableIndex	= ( m_NPCFrameData.syncData.m_usRandomTableIndex + 1000 ) % CKTDXRandomNumbers::RANDOM_NUMBER_COUNT; // fix!! random number를 변경시키는 방식을 바꿔야??
 		}
 	}
@@ -12259,7 +12269,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					// oasis907 : 김상윤 [2010.10.5] // 속성 포이즌 이동속도 -> 속도 디버프로 변경
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
@@ -12272,7 +12282,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -12286,7 +12296,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -12615,7 +12625,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -12631,7 +12641,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -12647,7 +12657,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 					if ( fRunJumpSpeedRate > fApplySlowFact + fAlpha )
@@ -14247,16 +14257,13 @@ void CX2GUNPC::CommonFrameMove_Invincible()
 		SetAlphaObject( true );
 		m_RenderParam.bAlphaBlend = true;
 
-		bool bEnemyUnit = false;
 		float fAlphaLowerBound = 0.f;
 		if( g_pX2Room->GetMySlot()->GetTeamNum() == GetTeam() )
 		{
-			bEnemyUnit = false;
 			fAlphaLowerBound = m_Invisible.m_fAlphaLowerBound;
 		}
 		else
 		{
-			bEnemyUnit = true;
 			fAlphaLowerBound = m_Invisible.m_fMinAlpha;
 		}
 
@@ -14469,8 +14476,8 @@ void CX2GUNPC::CommonFrameMove_MindFlagParticle()
     const StateData& nowStateData = GetNowStateData();
 
 
-    if ( NOWSTATE_FLAG( USE_MIND_FLAG ) == false )
-        return;
+	if ( NOWSTATE_FLAG( USE_MIND_FLAG ) == false )
+		return;
 
 
 	D3DXVECTOR3 markerPos(0, 0, 0);
@@ -14806,7 +14813,7 @@ void    CX2GUNPC::CommonEventProcessNonHost()
 
 		case SCT_POSITIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y > 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y > 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE_OR_WAIT() == false )
                     {
@@ -14827,7 +14834,7 @@ void    CX2GUNPC::CommonEventProcessNonHost()
 
 		case SCT_NEGATIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y <= 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y <= 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE_OR_WAIT() == false )
                     {
@@ -15164,6 +15171,8 @@ void    CX2GUNPC::CommonEventProcessNonHost()
 				KTDXPROFILE_END();
             }
 			break;
+        default:
+        	break;
         }//switch
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -15413,7 +15422,7 @@ void CX2GUNPC::CommonEventProcess()
 
 		case SCT_POSITIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y > 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y > 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE() == false
                         && _IsReactionState( pEventProcessData->m_NextStateID ) == true )
@@ -15426,7 +15435,7 @@ void CX2GUNPC::CommonEventProcess()
 
 		case SCT_NEGATIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y <= 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y <= 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE() == false
                         && _IsReactionState( pEventProcessData->m_NextStateID ) == true )
@@ -15729,7 +15738,6 @@ void CX2GUNPC::CommonEventProcess()
 					continue;
 
                 bool bReactState = false;
-                bool bDamageReactState = false;
 
                 if( NULL == pEventProcessData->m_pConditionTableData )
                     break;
@@ -16671,8 +16679,8 @@ RENDER_HINT CX2GUNPC::OnFrameRender_Prepare()
         return RENDER_HINT_NORENDER;
 
     m_pXSkinAnim->SetInstantShow( false );
-    if ( !m_pXSkinAnim->GetShowObject() )
-        return RENDER_HINT_NORENDER;
+	if ( !m_pXSkinAnim->GetShowObject() )
+		return RENDER_HINT_NORENDER;
 
 	if( g_pMain->GetGameOption().GetOptionList().m_UnitDetail == CX2GameOption::OL_HIGH && g_pX2Game->GetWorld() != NULL && m_bFog == true)
 	{
@@ -17294,8 +17302,8 @@ void CX2GUNPC::PhysicProcess()
 			fBuoyancy = pLineData->m_fBuoyancy;
 		}
 
-		if( m_NPCFrameData.stateParam.bLandConnect == false && NULL == m_pAI
-		    || m_NPCFrameData.stateParam.bLandConnect == false && m_pAI != NULL && m_pAI->GetAIFlyNowState() == false
+		if( (m_NPCFrameData.stateParam.bLandConnect == false && NULL == m_pAI)
+		    || (m_NPCFrameData.stateParam.bLandConnect == false && m_pAI != NULL && m_pAI->GetAIFlyNowState() == false)
           )
 		{
             for( int i = 0; i < m_iFrameAccumCounter; i++ )
@@ -17325,17 +17333,13 @@ void CX2GUNPC::PhysicProcess()
 	//X이동
 	m_NPCFrameData.unitCondition.dirVector = pLineData->dirVector;
 
-	float fSlowFactor = 1.0f;
 	if( m_ExtraDamagePack.m_Slow.m_fTime > 0.0f )
 	{
-		fSlowFactor = 0.5f;
 	}
 
-	fSlowFactor *= m_PhysicParam.GetMoveSpeedPower();
 
 	if( pLineData != NULL && pLineData->m_bUnderWater == true && GetPos().y <= pLineData->m_fWaterHeight )
 	{
-		fSlowFactor *= pLineData->m_fResistance;
 	}
 
 	if( m_ExtraDamagePack.m_EnchantShock.m_fTime <= 0.f )
@@ -18081,6 +18085,8 @@ void CX2GUNPC::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 					SetAIEnable( false );
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -18137,6 +18143,8 @@ void CX2GUNPC::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 						//InitPosByLineData( pLineData->m_iTeleportLineIndex );
 						SetAIEnable( true );
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -18173,8 +18181,8 @@ bool    CX2GUNPC::GetMotionEnd()
 
 void    CX2GUNPC::ReceiveMiniSyncData( UidType uidUnitUID, DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_NPC_MINISYNC& kMiniSync )
 {
-    if ( m_bReceiveFirstSyncPacket == false )
-        return;
+	if ( m_bReceiveFirstSyncPacket == false )
+		return;
 	if( IsLocalUnit() == true )
 		return;
     if ( uidUnitUID == 0 || uidUnitUID != g_pX2Game->GetHostSlotUID() )
@@ -18369,8 +18377,8 @@ bool    CX2GUNPC::SendMiniSyncPacket( CX2FrameUDPPack& kFrameUDPPack )
         }//if
     }//if
 
-    if ( m_kNonHostReaction.UpdateLastSentMiniInfo( iTargetUnitIndex ) == 0 )
-        return false;
+	if ( m_kNonHostReaction.UpdateLastSentMiniInfo( iTargetUnitIndex ) == 0 )
+		return false;
 
 	KDYNAMIC_UNIT_NPC_MINISYNC kMiniSync;
 	kMiniSync.m_iUnitUID				= (int)m_UnitUID;
@@ -18622,8 +18630,8 @@ void CX2GUNPC::SendReserve( int iMaxCount )
 	KTDXPROFILE();
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( iMaxCount <= 0 )
-        return;
+	if ( iMaxCount <= 0 )
+		return;
 
 	m_iSendReserveCount = __max( m_iSendReserveCount, iMaxCount );
 //#else//SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -18645,7 +18653,7 @@ void CX2GUNPC::AnimStop()
 }
 
 
-float CX2GUNPC::GetCriticalPercent( BYTE byAttackType, float fExtraCritical )
+float CX2GUNPC::GetCriticalPercent( BYTE /*byAttackType*/, float fExtraCritical )
 {
 
 
@@ -18760,7 +18768,7 @@ float CX2GUNPC::GetEnchantResist( CX2EnchantItem::ENCHANT_TYPE enchantType )
 	{
 		if ( m_vecEnchantType[i] == enchantType )
 		{
-			fResistValue += CX2EnchantItem::EAR_VALUE_FOR_NPC;
+			fResistValue += static_cast<float>( CX2EnchantItem::EAR_VALUE_FOR_NPC );
 		}
 	}
 
@@ -19120,8 +19128,8 @@ void CX2GUNPC::RenderName()
 		return;
 
 
-    if( m_SpeedDyingFly > 0 && m_bDyingStart == true && GetNPCTemplet().m_ClassType == CX2UnitManager::NCT_BASIC && m_bDieFly == true )
-        return;
+	if( m_SpeedDyingFly > 0 && m_bDyingStart == true && GetNPCTemplet().m_ClassType == CX2UnitManager::NCT_BASIC && m_bDieFly == true )
+		return;
 
 	if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
 		return;
@@ -19181,33 +19189,6 @@ void CX2GUNPC::RenderName()
 #if X2_DEV_TOOLS
 	if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 	{
-// 		WCHAR* wDest = new WCHAR[1000];
-//
-// 		ZeroMemory( wDest, 1000 );
-// 		m_pAI->RenderStateParam( &wDest );
-// 		vPosName.y -= 20.0f;
-// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-
-		// 		ZeroMemory( wDest, 1000 );
-		// 		swprintf( wDest, L"LastTouchedIndex: %d", GetLastTouchLineIndex() );
-		// 		vPosName.y -= 20.0f;
-		// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-		// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-
-		// 		ZeroMemory( wDest, 1000 );
-		// 		m_pAI->RenderPatrolLineIndex( &wDest );
-		// 		vPosName.y -= 20.0f;
-		// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-		// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-		//
-		// 		ZeroMemory( wDest, 1000 );
-		// 		m_pAI->RenderPlayLineIndex( &wDest );
-		// 		vPosName.y -= 20.0f;
-		// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-		// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-
-		//delete wDest;
 		//vPosName = GetPos() + D3DXVECTOR3( 0, -100, 0 );
 
 		//*
@@ -19307,7 +19288,7 @@ bool CX2GUNPC::HasTarget()
 	return m_pAI->IsTargetAccquired();
 }
 
-void CX2GUNPC::ShowGateGuideFrameMove( double fTime, float fElapsedTime )
+void CX2GUNPC::ShowGateGuideFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if( this->GetGameUnitState() == CX2GameUnit::GUSI_DIE || this->GetNowHp() <= 0.f )
 		return;
@@ -19694,7 +19675,7 @@ BOOL CX2GUNPC::GetDirPos_LUA(D3DXVECTOR3 vPos)
 
 
 
-void CX2GUNPC::AttachParticle_LUA( bool bIsMajorParticle, char* particleSeqName, char* pBoneName, D3DXVECTOR3 vOffsetPos )
+void CX2GUNPC::AttachParticle_LUA( bool bIsMajorParticle, const char* particleSeqName, const char* pBoneName, D3DXVECTOR3 vOffsetPos )
 {
 	if( NULL == particleSeqName )
 		return;
@@ -19755,7 +19736,7 @@ void CX2GUNPC::SetLuaTargetingFunc( const string& val )
 	}
 }
 
-void CX2GUNPC::SetTargetUnitType( int val )
+void CX2GUNPC::SetTargetUnitType( int /*val*/ )
 {
 	wstringstream wstream;
 	wstream << L"SetTargetUnitType 사용 금지: ID: ";
@@ -19767,7 +19748,7 @@ void CX2GUNPC::SetTargetUnitType( int val )
 // 		m_pAI->SetTargetUnitType( (CX2GameUnit::GAME_UNIT_TYPE) val );
 }
 
-void CX2GUNPC::SetTargetUnitUID( UidType tartgetUID )
+void CX2GUNPC::SetTargetUnitUID( UidType /*tartgetUID*/ )
 {
 	wstringstream wstream;
 	wstream << L"SetTargetUnitUID 사용 금지: ID: ";
@@ -20062,7 +20043,6 @@ void CX2GUNPC::ActiveSkillShow_LUA( char* pBackFaceTexName, float fSizeX, float 
 
 void CX2GUNPC::ActiveSkillShow( const WCHAR* pBackFaceTexName, D3DXVECTOR2 size, D3DXVECTOR3 pos )
 {
-	CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 	if( GetIsRight() == true )
 	{
@@ -20352,13 +20332,13 @@ bool CX2GUNPC::IsRightTarget_LUA(CX2GUNPC *pStartNpc, D3DXVECTOR3 pos)
 		return false;
 
 	D3DXVECTOR3 vFinalDestDir = pos - pStartNpc->GetPos();
-	float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
+	[[maybe_unused]] float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
 	D3DXVec3Normalize( &vFinalDestDir, &vFinalDestDir );
 	const D3DXVECTOR3 vUpVec(0,1,0);
 	D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 	D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-	float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+	[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 	float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 	if( fIsRight > 0.f )
 		bRight = true;
@@ -20668,7 +20648,7 @@ int CX2GUNPC::GetStateIDByKeyword( const std::string& strKeyword )
 	std::map<string,char>::const_iterator iter;
 	for( iter = GetInitStateData().m_mapStateNameID.begin(); iter != GetInitStateData().m_mapStateNameID.end(); ++iter )
 	{
-		if( NULL != StrStrA( iter->first.c_str(), strKeyword.c_str()) )
+		if( NULL != strstr( iter->first.c_str(), strKeyword.c_str()) )
 		{
 			return iter->second;
 		}
@@ -21298,7 +21278,7 @@ void CX2GUNPC::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
 
 				if( pOwnerUnit->GetEqippedSkillMemo( CX2SkillTree::SMI_CHUNG_MEMO17 ) == true && GetRandomFloat(i + 3) <= 0.2f )
 				{
-					CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHUNG_MARK_OF_COMMANDER_SHELL_MEMO", fShellPowerRate, vShellStartPos, vRotateDegree, vRotateDegree,  GetLandPos().y, true, fRandReservTime );
+					[[maybe_unused]] CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHUNG_MARK_OF_COMMANDER_SHELL_MEMO", fShellPowerRate, vShellStartPos, vRotateDegree, vRotateDegree,  GetLandPos().y, true, fRandReservTime );
 				}
 				else
 				{
@@ -21364,7 +21344,7 @@ CX2GUUser* CX2GUNPC::GetNearestGUUser()
 		return NULL;
 }
 
-/*virtual*/ CX2GageUI* CX2GUNPC::CreateGageUI( const CX2GageData* pOwnerGageData_ )
+/*virtual*/ CX2GageUI* CX2GUNPC::CreateGageUI( const CX2GageData* /*pOwnerGageData_*/ )
 {
 	switch ( GetNPCTemplet().m_ClassType )
 	{
@@ -21835,8 +21815,8 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
 	const float fGameUnitYMax = fGameUnitYMin + pGameUnit_->GetUnitHeight( true );
 
     int iReliableDirection = iDirection;
-    if ( iReliableDirection != 1 && iReliableDirection != 2 )
-        iReliableDirection = iLocalDirection;
+	if ( iReliableDirection != 1 && iReliableDirection != 2 )
+		iReliableDirection = iLocalDirection;
 
 	if( (fGameUnitYMin >= vMyUnitMinMaxY_.x && fGameUnitYMin <= vMyUnitMinMaxY_.y) ||
 		(fGameUnitYMax >= vMyUnitMinMaxY_.x && fGameUnitYMax <= vMyUnitMinMaxY_.y) ||
@@ -21913,7 +21893,6 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
 		    }
             else
             {
-                D3DXVECTOR3 vMoveDir;
                 D3DXVECTOR3 vDirVectorFromMeToOther;
                 D3DXVECTOR3 vDirVectorFromAltToOther;
                 vDirVectorFromMeToOther = vPosFutureOtherGameUnit - vMyPos_;
@@ -21923,7 +21902,6 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
                 {
                     if ( D3DXVec3Dot( &m_NPCFrameData.unitCondition.dirVector, &vDirVectorFromMeToOther ) >= 0 )
                         return 1;
-                    float   fUnitHeight = GetUnitHeight( true );
                     float   fProjObjDistanceSq = D3DXVec3LengthSq( &vDirVectorFromMeToOther );
                     if ( vMyPos_ != m_NPCFrameData.syncData.position )
                     {
@@ -22010,7 +21988,6 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
                 {
                     if ( D3DXVec3Dot( &m_NPCFrameData.unitCondition.dirVector, &vDirVectorFromMeToOther ) <= 0 )
                         return 1;
-                    float   fUnitHeight = GetUnitHeight( true );
                     float   fProjObjDistanceSq = D3DXVec3LengthSq( &vDirVectorFromMeToOther );
                     if ( vMyPos_ != m_NPCFrameData.syncData.position )
                     {
@@ -22588,7 +22565,7 @@ void CX2GUNPC::FollowTargetUnitBone_FrameMove()
 		}
 	}
 }
-void CX2GUNPC::SetFollowTargetUnitBone( UidType iTargetUnitUID_, const CHAR* pTargetBoneName_, bool bIsUser_ )
+void CX2GUNPC::SetFollowTargetUnitBone( UidType iTargetUnitUID_, const CHAR* pTargetBoneName_, bool /*bIsUser_*/ )
 {
 	if( NULL == pTargetBoneName_ )
 		return;
@@ -22660,7 +22637,7 @@ void CX2GUNPC::CreateEltrionEvenlyLockonMissile()
 
 CX2DamageEffect::CEffect*	CX2GUNPC::GetDamageEffect_LUA( int index )
 {
-    if ( index < 0 || index >= ARRAY_SIZE( m_ahDamageEffect ) )
+    if ( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE( m_ahDamageEffect ) )
         return NULL;
     CX2DamageEffect::CEffect*   pEffect = g_pX2Game->GetDamageEffect()->GetInstance( m_ahDamageEffect[index] );
     if ( pEffect == NULL )
@@ -22670,7 +22647,7 @@ CX2DamageEffect::CEffect*	CX2GUNPC::GetDamageEffect_LUA( int index )
 
 void    CX2GUNPC::SetDamageEffect_LUA( int index, CX2DamageEffect::CEffect* val)
 {
-    if ( index < 0 || index >= ARRAY_SIZE( m_ahDamageEffect ) )
+    if ( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE( m_ahDamageEffect ) )
         return;
     if ( val == NULL || g_pX2Game->GetDamageEffect()->IsLiveInstance( val ) == false )
         m_ahDamageEffect[index] = INVALID_DAMAGE_EFFECT_HANDLE;
@@ -22680,7 +22657,7 @@ void    CX2GUNPC::SetDamageEffect_LUA( int index, CX2DamageEffect::CEffect* val)
 
 void    CX2GUNPC::ClearDamageEffect_LUA( int index )
 {
-    if ( index < 0 || index >= ARRAY_SIZE( m_ahDamageEffect ) )
+    if ( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE( m_ahDamageEffect ) )
         return;
     m_ahDamageEffect[index] = INVALID_DAMAGE_EFFECT_HANDLE;
 }
@@ -22908,7 +22885,6 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
 
     const InitStateData& initStateData = GetInitStateData();
     const StateData& nowStateData = GetNowStateData();
-    const StateRuntime& nowStateRuntime = GetNowStateRuntime();
 
     if ( NOWSTATE_FLAG( HINT_NO_PERFRAME_EVENT ) == false )
     {
@@ -22934,8 +22910,8 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
 		            m_NPCFrameData.unitCondition.fStop2Time <= 0.0f )
         {
             if ( m_cbufReceiveDynamicPacket.size() > 1
-                || m_cbufReceiveDynamicPacket.size() == 1
-                    && m_cbufReceiveDynamicPacket.front().m_bMiniSync == false )
+                || (m_cbufReceiveDynamicPacket.size() == 1
+                    && m_cbufReceiveDynamicPacket.front().m_bMiniSync == false) )
             {
 		        m_iFrameMoveIntervalCounter = iFrameMoveInterval;
                 return;
@@ -22956,8 +22932,8 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
 				|| g_pData->GetGameUDP()->GetRelayUIDs().empty() == false );
     if ( bHostSendPacket == true )
     {
-        if ( m_iSendReserveCount > 0 && ( m_bImmediate == true || g_pX2Game->IsPacketSendFrame() == true )
-            || m_kNonHostReaction.CheckLastSentMiniInfo() == true && g_pX2Game->IsPacketSendFrame() == true )
+        if ( (m_iSendReserveCount > 0 && ( m_bImmediate == true || g_pX2Game->IsPacketSendFrame() == true ))
+            || (m_kNonHostReaction.CheckLastSentMiniInfo() == true && g_pX2Game->IsPacketSendFrame() == true) )
         {
 		    m_iFrameMoveIntervalCounter = iFrameMoveInterval;
 		    return;
@@ -23119,8 +23095,8 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
         }
     }
 
-    if ( m_iFrameMoveIntervalCounter >= iFrameMoveInterval )
-        return;
+	if ( m_iFrameMoveIntervalCounter >= iFrameMoveInterval )
+		return;
 
 	// 가장 가까운 유저와의 거리는..?
 

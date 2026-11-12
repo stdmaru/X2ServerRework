@@ -6,30 +6,30 @@
 // item slot들을 구분하기 위해서 제조재료 slot은 CX2Slot::ST_MATERIAL로 되어있고, 제조결과 아이템 slot은 CX2Slot::ST_CASH_SHOP_MAIN_NEW로 되어있다.
 // GetSlotperPage를 이용해서 슬롯 개수를 구하고 있다 : X2Define에 있는 define 문은 쓰지 않고 있음.
 
-CX2UIManufacture::CX2UIManufacture( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIManufacture::CX2UIManufacture( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 // : CX2UIDragable( pNowStage, NULL )
 : CX2ItemSlotManager( pNowStage, NULL ),
 m_bShow(false),
-m_MovedPosition(0,0),					// D3DXVECTOR2
-m_DLGPosition(0,0),						// D3DXVECTOR2
-m_DLGSize(0,0),							// D3DXVECTOR2
+m_bWaitForManufactureResult(false),					// D3DXVECTOR2
+m_MovedPosition(0,0),						// D3DXVECTOR2
+m_DLGPosition(0,0),							// D3DXVECTOR2
+m_DLGSize(0,0),
 m_pDLGManufacture(NULL),
 m_pDLGManufactureResult(NULL),
-m_pDLGMakeQuery(NULL),
 //m_vecRecipeSlot.clear();
+m_pDLGMakeQuery(NULL),
 m_nNowPage(1),
 m_nMaxPage(1),
 m_bShowAllCharItem(false),
-m_SelectedRecipeID(0),
 //m_vecManufactureIDList[MT_END]
-m_NowItemCategory(MT_NONE)
+m_SelectedRecipeID(0)
 //{{ kimhc // 2009-11-23 // 제조 아이템 NPC 별로 가능하도록
-, m_iNowOpenHouseID(0)	// 현재 열린 제조 NPC의 HOUSE_ID
+, m_NowItemCategory(MT_NONE)	// 현재 열린 제조 NPC의 HOUSE_ID
 //}} kimhc // 2009-11-23 // 제조 아이템 NPC 별로 가능하도록
+, m_iNowOpenHouseID(0)
 , m_pDLGItemEnroll(NULL)
 , m_EnrollItemUid( 0 )
 , m_nQuantity( 1 )
-, m_bWaitForManufactureResult(false)
 {
 
 	m_vecRecipeSlot.clear();
@@ -83,7 +83,7 @@ HRESULT CX2UIManufacture::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UIManufacture::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIManufacture::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	bool bFlag = false;
 	switch( uMsg )
@@ -132,7 +132,6 @@ bool CX2UIManufacture::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			D3DXVECTOR2 mousePos = D3DXVECTOR2( (float)mousePoint.x, (float)mousePoint.y );
 			m_NowMousePos = mousePos;
 
-			CX2SlotItem* pSlotItem = (CX2SlotItem*)GetSlotInMousePos( mousePos );
 
 // 			if ( pSlotItem != NULL && pSlotItem->GetSlotType() == CX2Slot::ST_CASH_SHOP_MAIN_NEW )
 // 			{
@@ -178,7 +177,7 @@ bool CX2UIManufacture::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 //
 // }
 
-bool CX2UIManufacture::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIManufacture::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -340,7 +339,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	case UMCM_RESULT_CLOSE:
 		{
 			if ( m_pDLGManufactureResult != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGManufactureResult, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGManufactureResult, 0, false );
 
 			m_pDLGManufactureResult = NULL;
 		}
@@ -349,7 +348,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			if( m_pDLGMakeQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMakeQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMakeQuery, 0, false );
 				m_pDLGMakeQuery = NULL;
 			}
 			if(CheckCanMake(m_SelectedRecipeID, m_nQuantity))
@@ -407,7 +406,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			UpdateRegisterQuantityDLG(true);
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 			m_EnrollItemUid = 0;
@@ -419,7 +418,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	case UMCM_REGISTER_QUANTITY_CANCEL:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 			m_nQuantity = 1;		// 수량성 아이템을 버리는 Dialog Text 1로 고정
@@ -640,7 +639,7 @@ void CX2UIManufacture::GetManufactureList()
 					if ( false == IsPossibleUsedByMyCharacter(pItemTemplet) )
 					{
 						//{{ 허상형 : [2009/7/29] //	착용불능 장비일 경우 화면에 표시해준다.(헤니르의 시공 관련 수정)
-						if( true == pItemTemplet->GetNoEquip() != true )
+						if( false == pItemTemplet->GetNoEquip() )
 						{
 							continue;
 						}
@@ -998,7 +997,7 @@ bool CX2UIManufacture::Handler_EGS_ITEM_MANUFACTURE_REQ()
 }
 
 
-bool CX2UIManufacture::Handler_EGS_ITEM_MANUFACTURE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIManufacture::Handler_EGS_ITEM_MANUFACTURE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ITEM_MANUFACTURE_ACK kEvent;
@@ -1031,7 +1030,7 @@ bool CX2UIManufacture::Handler_EGS_ITEM_MANUFACTURE_ACK( HWND hWnd, UINT uMsg, W
 					if ( pStatic != NULL && pStatic->GetPicture(0) != NULL )
 					{
                         const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-						if ( pwszShopImage[0] != NULL )
+						if ( pwszShopImage[0] != L'\0' )
 							pStatic->GetPicture(0)->SetTex( pwszShopImage );
 						else
 							pStatic->GetPicture(0)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -1366,6 +1365,8 @@ wstring CX2UIManufacture::GetSlotItemDesc()
 									StringCchPrintfW( buff, ARRAY_SIZE(buff), GET_REPLACED_STRING( ( STR_ID_839, "I", STR_ID_29422 ) ) );
 								} break;
 
+							default:
+								break;
 							}
 						} break;
 
@@ -1595,7 +1596,7 @@ bool CX2UIManufacture::CheckIsQuantity( int manufactureID )
 	return false;
 }
 
-bool CX2UIManufacture::CheckCanMake( int manufactureID, int nQuantity)
+bool CX2UIManufacture::CheckCanMake( int /*manufactureID*/, int nQuantity)
 {
 	if ( CheckIsThereAllMaterial( m_SelectedRecipeID, nQuantity ) == false )
 	{
@@ -1645,7 +1646,6 @@ void CX2UIManufacture::OpenRegisterQuantityDLG()
 	m_pDLGItemEnroll->SetPos( g_pMain->GetWindowPos( D3DXVECTOR2(1024-865, 768-633), D3DXVECTOR2(53,62)) );
 
 	CKTDGUIStatic* pStaticPrice			= static_cast < CKTDGUIStatic* >( m_pDLGItemEnroll->GetControl( L"Static_Price" ) );
-	CKTDGUIStatic* pStaticEDMark		= static_cast < CKTDGUIStatic* >( m_pDLGItemEnroll->GetControl( L"Static_EDMark" ) );
 
 	// 제조 가격
 	CX2ItemManager::ManufactureData* pManufactureData = g_pData->GetItemManager()->GetManufactureData( m_SelectedRecipeID );
@@ -1698,7 +1698,7 @@ void CX2UIManufacture::UpdateRegisterQuantityDLG( bool bReadIME )
 		m_nQuantity = nMaxNum;
 
 	WCHAR buff[256] = {0};
-	_itow( m_nQuantity, buff, 10 );
+	_itow_s( m_nQuantity, buff, 10 );
 
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str() );

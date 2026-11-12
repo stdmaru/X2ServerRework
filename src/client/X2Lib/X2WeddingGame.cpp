@@ -2,21 +2,17 @@
 #include "./X2WeddingGame.h"
 
 CX2WeddingGame::CX2WeddingGame( UDPData* pUdpData, SEnum::WEDDING_HALL_TYPE eHallType, SEnum::WEDDING_OFFICIANT_TYPE eOfficiantType_ ):
-m_fOfficiantCameraTime( -1.f ),
-m_pWeddingManager( NULL ),
 m_pWorld( NULL ),
 m_pCamera( NULL ),
-m_pMajorParticle( NULL ),
-m_pMinorParticle( NULL ),
-m_pMajorXMeshPlayer( NULL ),
-m_pMinorXMeshPlayer( NULL ),
+m_fReserveTime(0.f),
 m_pFontForUnitName( NULL ),
 m_fP2PSendGap(0.f),
-m_fReserveTime(0.f),
-m_bFreeCamera(false),
 m_bEnableKeyProcess(true),
 m_bEnableCameraProcess(true),
+m_bFreeCamera(false),
 m_bLeaveWeddingGame(false),
+m_fOfficiantCameraTime( -1.f ),
+m_pWeddingManager( NULL ),
 m_iReturnStateID(CX2Main::XS_WEDDING_GAME),
 m_iWeddingHeroineNum( 0 ),
 m_iNessesaryHeroineNum( 2 )
@@ -683,7 +679,7 @@ void CX2WeddingGame::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 			talkBox.m_BackTexColor		= coBackColor_;
 
 			talkBox.m_bUseOutLine		 = true;
-			if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+			if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 			{
 				talkBox.m_bUseOutLine = false;
 			}
@@ -715,7 +711,7 @@ void CX2WeddingGame::PopOfficiantTalkBox( int iStrID_, const D3DXVECTOR3& vPos_,
 	talkBox.m_bUseOutLine		= true;
 	talkBox.m_vTalkBoxPosition  = vPos_;
 
-	if( outcolor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+	if( static_cast<DWORD>( outcolor_ ) == 0x00000000 )	// no outline color given: keep the text color
 	{
 		talkBox.m_bUseOutLine = false;
 	}
@@ -840,7 +836,7 @@ void CX2WeddingGame::PlayEffectSet_WeddingGame( const WCHAR* pEffectSetName_, co
 		} break;
 	case CX2WeddingBehavior::WEPT_BRIDE:
 		{
-			BOOST_FOREACH ( CX2SquareUnitPtr pUnitPtr, m_UserUnitList )
+			for ( CX2SquareUnitPtr pUnitPtr : m_UserUnitList )
 			{
 				if( null != pUnitPtr &&
 					SEnum::WS_BRIDE == pUnitPtr->GetWeddingStatus() )
@@ -852,7 +848,7 @@ void CX2WeddingGame::PlayEffectSet_WeddingGame( const WCHAR* pEffectSetName_, co
 		} break;
 	case CX2WeddingBehavior::WEPT_GROOM:
 		{
-			BOOST_FOREACH ( CX2SquareUnitPtr pUnitPtr, m_UserUnitList )
+			for ( CX2SquareUnitPtr pUnitPtr : m_UserUnitList )
 			{
 				if( null != pUnitPtr &&
 					SEnum::WS_GROOM == pUnitPtr->GetWeddingStatus() )
@@ -911,7 +907,7 @@ bool CX2WeddingGame::IsWeddingHeroineByUID( UidType uiUserUID ) const
 bool CX2WeddingGame::GetIsCanWeddingStart() const
 {
 	// 결혼식 주인공 접속 체크
-	if( m_iNessesaryHeroineNum != GetWeddingHeroineNum() )
+	if( static_cast<UINT>( m_iNessesaryHeroineNum ) != GetWeddingHeroineNum() )
 		return false;
 
 	return true;

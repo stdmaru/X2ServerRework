@@ -761,10 +761,6 @@ private:
 	std::map< int, int >                m_mapResolveResultInsertedItem;
 
 	// 소켓관련
-	UidType					m_SocketItemUID;
-	int						m_SocketSlotIndex;
-	bool					m_bSocketRareMagicStone;
-	bool					m_bSocketRemove;
 
 
 	float					m_fPlayTime;
@@ -806,7 +802,6 @@ private:
 	CKTDGUIDialogType		m_pDLGCubeOpenEffect;
 	float					m_fCubeOpenTime;
 	bool					m_bCubeJustOpen;
-	bool					m_bCubeOpen;
 	std::map< int, int >	m_mapCubeItemGet;
 	UidType					m_WarpItem;
 

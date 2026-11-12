@@ -3,7 +3,7 @@
 
 
 
-#include <boost/algorithm/string.hpp>
+#include "x2/platform/string.h"
 
 CX2ChatBox::CX2ChatBox( CX2State* pNowState ) :
 m_pStage( NULL ),
@@ -12,36 +12,36 @@ m_pDLGChatWindow( NULL ),
 m_pDLGChatWindowEditBox( NULL ),
 m_pDLGChatWindowHelper(NULL),
 m_eChatWindowMode( CWM_TOTAL ),
+m_eIMEEditWindowMode( CWM_TOTAL ),
+m_bPrevNativeLanguage( true ),
+m_iNowHistoryIndex( 0 ),
+m_bIsFirstOpenEditWindow( true ),
 m_bOpenChatWindow( true ),
 m_bChatWindowEnlarged( false),
+//m_AntiChatSpam;
 m_wstrPickedUserNickName( L"" ),
+//m_vecChatHelpString;
 m_iPickedUserUID( -1 ),
 m_fRefreshTime( 0.f ),
 m_bChatEnteredBefore( false ),
-//m_AntiChatSpam;
-m_wstrLastWhiperNickName( L"" ),
-//m_vecChatHelpString;
-m_bIsJustOpenChatEditBox( false ),
-m_bHideChatWindowFrame( false ),
-m_bOpenChatWindowButton( false ),
-m_bFocusChatEditBox( false )
+m_wstrLastWhiperNickName( L"" )
 
 //{{ 허상형 : [2009/7/14] //	초기화
 ,
+m_bIsJustOpenChatEditBox( false ),
+m_bHideChatWindowFrame( false ),
+m_bOpenChatWindowButton( false ),
+m_bFocusChatEditBox( false ),
 m_pDLGNasodScopeMessage( NULL ),
 m_pDLGNasodScopeMessageYesNo( NULL ),
-m_pDLGNasodScopeUserMenu( NULL ),
-m_pSelectedItemSlot( NULL ),
-m_wstrSenderName( L"" ),
-m_iMegaID( 0 ),
-m_iLastUsedMegaphoneTID( -1 )
+m_pDLGNasodScopeUserMenu( NULL )
 //}} 허상형 : [2009/7/14] //
 
 //{{ kimhc // 2010.3.10 //	채팅창 개편
-, m_eIMEEditWindowMode( CWM_TOTAL )
-, m_bPrevNativeLanguage( true )
-, m_iNowHistoryIndex( 0 )
-, m_bIsFirstOpenEditWindow( true )
+, m_pSelectedItemSlot( NULL )
+, m_wstrSenderName( L"" )
+, m_iLastUsedMegaphoneTID( -1 )
+, m_iMegaID( 0 )
 //}} kimhc // 2010.3.10 //	채팅창 개편
 , m_pDLGTabMenu(NULL)
 , m_ePopupWindowMode( CWM_TOTAL )
@@ -247,14 +247,14 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 				wstrFunction[13] = GET_STRING(STR_ID_30505);
 				wstrFunction[13] += L" ";
 
-				if(boost::iequals(wstrText, wstrFunction[2]) || boost::iequals(wstrText, wstrFunction[8]))
+				if(x2::platform::IEquals(wstrText, wstrFunction[2]) || x2::platform::IEquals(wstrText, wstrFunction[8]))
 				{
 					wstrText = wstrFunction[1];
 					wstrText += m_wstrLastWhiperNickName;
 					wstrText += L" ";
 					pEdit_Chat->SetText(wstrText.c_str());
 				}
-				else if(boost::iequals(wstrText, wstrFunction[3]) || boost::iequals(wstrText, wstrFunction[9]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[3]) || x2::platform::IEquals(wstrText, wstrFunction[9]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 					ChangeIMEEditBox( CWM_TOTAL );
@@ -263,7 +263,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[4]) || boost::iequals(wstrText, wstrFunction[10]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[4]) || x2::platform::IEquals(wstrText, wstrFunction[10]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 					ChangeIMEEditBox( CWM_PARTY );
@@ -272,7 +272,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[5]) || boost::iequals(wstrText, wstrFunction[11]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[5]) || x2::platform::IEquals(wstrText, wstrFunction[11]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 					ChangeIMEEditBox( CWM_GUILD );
@@ -281,7 +281,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[12]) || boost::iequals(wstrText, wstrFunction[13]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[12]) || x2::platform::IEquals(wstrText, wstrFunction[13]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 
@@ -306,7 +306,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 					}
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[0]) || boost::iequals(wstrText, wstrFunction[6]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[0]) || x2::platform::IEquals(wstrText, wstrFunction[6]))
 				{
   					switch( GetChatWindowMode() )
 					{
@@ -355,6 +355,8 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 								AddChatLog( m_vecChatHelpString[i].c_str(), KEGS_CHAT_REQ::CPT_RELATIONSHIP, D3DXCOLOR(0,1,0,1), L"#C00FF00", false );
 							}
 						} break;
+					default:
+						break;
 					}
 
 					pEdit_Chat->ClearText();
@@ -772,7 +774,7 @@ HRESULT CX2ChatBox::OnFrameRender()
 }
 
 
-bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	KTDXPROFILE();
 	switch ( wParam )
@@ -858,6 +860,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 						{
 							AddChatLog( GET_REPLACED_STRING( ( STR_ID_53, "i", ( int )m_AntiChatSpam.GetSpamBlockingTimeLeft() ) ), KEGS_CHAT_REQ::CPT_RELATIONSHIP, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
 						} break;
+					default:
+						break;
 					}
 					ClearShortCutKeyProcess();
 					return true;
@@ -895,6 +899,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 						{
 							AddChatLog( GET_REPLACED_STRING( ( STR_ID_55, "i", ( int )m_AntiChatSpam.GetNowSpamWarningCount() ) ), KEGS_CHAT_REQ::CPT_RELATIONSHIP, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
 						} break;
+					default:
+						break;
 					}
 					ClearShortCutKeyProcess();
 					return true;
@@ -950,7 +956,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			wstrFunction[13] = GET_STRING(STR_ID_30505);
 			wstrFunction[13] += L" ";
 
-			if(boost::iequals(wstrCmpMsg, wstrFunction[1]) || boost::iequals(wstrCmpMsg, wstrFunction[7]))
+			if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[1]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[7]))
 			{
 				int iIndexFirstSpace = 1;
 				iIndexFirstSpace = wstrChatMsg.find( L" ", iIndexFirstSpace );
@@ -963,7 +969,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 				int iIndexSecondSpace = 3;
 				iIndexSecondSpace = wstrChatMsg.find( L" ", iIndexSecondSpace );
 
-				if ( 3 == iIndexSecondSpace || std::wstring::npos == iIndexSecondSpace )
+				if ( 3 == iIndexSecondSpace || std::wstring::npos == static_cast<size_t>( iIndexSecondSpace ) )
 					return true;
 
 				wstrWhisperTargetNickName = wstrChatMsg.substr( iIndexFirstSpace+1, iIndexSecondSpace-iIndexFirstSpace-1 );
@@ -976,22 +982,22 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 					wstrChatMsg = wstrRealChatMsg;
 				}
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[3])  || boost::iequals(wstrCmpMsg, wstrFunction[9]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[3])  || x2::platform::IEquals(wstrCmpMsg, wstrFunction[9]))
 			{
 				ChangeIMEEditBox( CWM_TOTAL );
 				return true;
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[4]) || boost::iequals(wstrCmpMsg, wstrFunction[10]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[4]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[10]))
 			{
 				ChangeIMEEditBox( CWM_PARTY );
 				return true;
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[5]) || boost::iequals(wstrCmpMsg, wstrFunction[11]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[5]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[11]))
 			{
 				ChangeIMEEditBox( CWM_GUILD );
 				return true;
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[12]) || boost::iequals(wstrCmpMsg, wstrFunction[13]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[12]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[13]))
 			{
 				//{{ kimhc // 2010.3.10 //	채팅창 개편
 
@@ -1013,7 +1019,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 					}
 				}
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[0]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[0]))
 			{
 				switch( GetChatWindowMode() )
 				{
@@ -1067,6 +1073,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 							AddChatLog( m_vecChatHelpString[i].c_str(), KEGS_CHAT_REQ::CPT_RELATIONSHIP, D3DXCOLOR(0,1,0,1), L"#C00FF00", false );
 						}
 					} break;
+				default:
+					break;
 				}
 
 
@@ -1136,7 +1144,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								bIsSystemCommand = true;
 							}
 						}
-						else if(boost::iequals(wstrCommand, GET_STRING(STR_ID_4390)))				// 차단
+						else if(x2::platform::IEquals(wstrCommand, GET_STRING(STR_ID_4390)))				// 차단
 						{
 							wstring wstrTargetNickName = wstrChatMsg.substr( iIndexFirstSpace+1, wstrChatMsg.length() );
 							if( wstrTargetNickName.length() > 0 )
@@ -1149,7 +1157,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 							}
 
 						}
-						else if(boost::iequals(wstrCommand, GET_STRING(STR_ID_4391)))			// 차단해제
+						else if(x2::platform::IEquals(wstrCommand, GET_STRING(STR_ID_4391)))			// 차단해제
 						{
 							wstring wstrTargetNickName = wstrChatMsg.substr( iIndexFirstSpace+1, wstrChatMsg.length() );
 							if( wstrTargetNickName.length() > 0 )
@@ -1175,7 +1183,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								bIsSystemCommand = true;
 							}
 						}
-						else if(boost::iequals(wstrCommand, GET_STRING(STR_ID_4392)))			// 차단리스트
+						else if(x2::platform::IEquals(wstrCommand, GET_STRING(STR_ID_4392)))			// 차단리스트
 						{
 							wstring wstrColor = L"#CFF3F4D";							// 255, 63, 77
 							D3DXCOLOR coTextColor(1.f, 0.24705f, 0.30196f, 1.f);		// 255, 63, 77
@@ -1236,6 +1244,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 							{
 								Handler_EGS_CHAT_REQ( KEGS_CHAT_REQ::CPT_TOTAL, eRoomChatType, iWhisperTargetUID, wstrChatMsg );
 							} break;
+						default:
+							break;
 						}
 					}
 					else
@@ -1329,6 +1339,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								}
 
 							} break;
+						default:
+							break;
 						}
 					}
 					else
@@ -1365,6 +1377,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								{
 									Handler_EGS_CHAT_REQ( KEGS_CHAT_REQ::CPT_TOTAL, eRoomChatType, iWhisperTargetUID, wstrChatMsg );
 								} break;
+							default:
+								break;
 							}
 						}
 						else
@@ -1404,6 +1418,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								{
 									Handler_EGS_CHAT_REQ( KEGS_CHAT_REQ::CPT_TOTAL, eRoomChatType, iWhisperTargetUID, wstrChatMsg );
 								} break;
+							default:
+								break;
 							}
 						}
 						else
@@ -1448,6 +1464,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 									 NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 								Handler_EGS_CHAT_REQ( KEGS_CHAT_REQ::CPT_RELATIONSHIP, eRoomChatType, g_pData->GetRelationshipManager()->GetMyRelationshipInfo()->m_iRelationTargetUserUid, wstrChatMsg );
 							}
+							break;
+						default:
 							break;
 						}
 					}
@@ -1530,6 +1548,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 					case SEnum::RT_MARRIED :
 						ChangeChatWindowAndIMEEditBox( CWM_RELATION_MARRIED );
 						break;
+				default:
+					break;
 				}
 			}
 			return true;
@@ -1586,7 +1606,6 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			if( NULL != m_pDLGChatWindow )
 			{
 
-				CKTDGUIListBox* pListBox = GetCurrentChatbox();
 
 				CKTDGUIListBox* pListBox_All = (CKTDGUIListBox*) m_pDLGChatWindow->GetControl( L"ListBox_All" );
 				CKTDGUIListBox* pListBox_Party = (CKTDGUIListBox*) m_pDLGChatWindow->GetControl( L"ListBox_Party" );
@@ -1760,6 +1779,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								pStatic_Emotion->SetOffsetPos( offset );
 							}
 							break;
+						default:
+							break;
 						}
 					}
 				}
@@ -1838,6 +1859,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 			case SEnum::RT_MARRIED :
 				ChangeIMEEditBox( CWM_RELATION_MARRIED );
+				break;
+			default:
 				break;
 			}
 		}
@@ -1921,6 +1944,8 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 				case SEnum::RT_MARRIED :
 					ResetChatTabPopup( CX2ChatBox::CWM_RELATION_MARRIED );
+					break;
+				default:
 					break;
 				}
 			}
@@ -2202,7 +2227,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pDLGNasodScopeMessageYesNo = NULL;
 			return true;
@@ -2212,7 +2237,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pDLGNasodScopeMessageYesNo = NULL;
 			Handler_EGS_USE_MEGAPHONE_REQ();
@@ -2479,7 +2504,7 @@ bool CX2ChatBox::Handler_EGS_CHAT_REQ( KEGS_CHAT_REQ::CHAT_PACKET_TYPE eChatPack
 	return true;
 }
 
-bool CX2ChatBox::Handler_EGS_CHAT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::Handler_EGS_CHAT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAT_ACK kEvent;
@@ -2503,6 +2528,8 @@ bool CX2ChatBox::Handler_EGS_CHAT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 				AddChatLog( GET_STRING( STR_ID_58 ), KEGS_CHAT_REQ::CPT_PARTY, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
 			}
 			break;
+		default:
+			break;
 		}
 
 		return true;
@@ -2521,7 +2548,7 @@ bool CX2ChatBox::Handler_EGS_CHAT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 }
 
 
-bool CX2ChatBox::Handler_EGS_CHAT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::Handler_EGS_CHAT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAT_NOT kEvent;
@@ -2584,6 +2611,8 @@ bool CX2ChatBox::Handler_EGS_CHAT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 	bool bIsMyself = false;
@@ -2705,6 +2734,8 @@ bool CX2ChatBox::Handler_EGS_CHAT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 							wstrReceiverNickName = pCX2SquareUnit_Receiver->GetNickName();
 					}
 				} break;
+			default:
+				break;
 			}
 
 			if(wstrSenderNickName.empty() == true)
@@ -3020,7 +3051,7 @@ bool CX2ChatBox::Handler_EGS_NEW_BLACKLIST_USER_REQ( const wstring& wstrNickName
 	return true;
 }
 
-bool CX2ChatBox::Handler_EGS_NEW_BLACKLIST_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::Handler_EGS_NEW_BLACKLIST_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NEW_BLACKLIST_USER_ACK kEvent;
@@ -3061,7 +3092,7 @@ bool CX2ChatBox::Handler_EGS_DEL_BLACKLIST_USER_REQ( UidType unitUID )
 	return true;
 }
 
-bool CX2ChatBox::Handler_EGS_DEL_BLACKLIST_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::Handler_EGS_DEL_BLACKLIST_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DEL_BLACKLIST_USER_ACK kEvent;
@@ -3353,6 +3384,8 @@ void CX2ChatBox::UnHideChatWindowFrame()
 					if( pRadio_Relation_Married != NULL ) pRadio_Relation_Married->SetShowEnable( true, true );
 				}
 				break;
+		default:
+			break;
 		}
 	}
 
@@ -3476,7 +3509,7 @@ void CX2ChatBox::OpenChatWindow()
 	}
 }
 
-wstring CX2ChatBox::GetChatMessage( bool bClear /*= true */)
+wstring CX2ChatBox::GetChatMessage( bool /*bClear*/ /*= true */)
 {
 	wstring chatMsg = L"";
 	CKTDGUIIMEEditBox* pIMEEditBox = (CKTDGUIIMEEditBox*) m_pDLGChatWindowEditBox->GetControl( L"IMEEditBoxChatBox" );
@@ -3509,8 +3542,6 @@ void CX2ChatBox::AddChatLogObtain( const WCHAR* wszMsg, CHAT_OBTAIN_TYPE eObtain
 	const int CHAT_LINE_WIDTH = (int)vTemp.x;
 
 	// CKTDGUIListBox::HandleMouse에 있는 MAGIC_SHOW_TIME도 동일하게 수정해야
-	const float MAGIC_CHAT_SHOW_TIME = 50.0f;
-	const int MAX_LINE = 100;
 
 	int addRow = 0;
 	wstring chatContent = wszMsg;
@@ -3640,8 +3671,6 @@ void CX2ChatBox::AddChatLog( const WCHAR* wszMsg, KEGS_CHAT_REQ::CHAT_PACKET_TYP
 
 
 	// CKTDGUIListBox::HandleMouse에 있는 MAGIC_SHOW_TIME도 동일하게 수정해야
-	const float MAGIC_CHAT_SHOW_TIME = 50.0f;
-	const int MAX_LINE = 100;
 
 	switch( g_pMain->GetNowStateID() )
 	{
@@ -4070,7 +4099,6 @@ bool CX2ChatBox::MegaLineBreakAdd( wstring wstrText, int iTextWidth, CKTDGUIList
 
 	int iNowCharWidth = 0;
 	int iNowLineWidth = 0;
-	int iNowLineCount = 0;
 	int iNowCharIndex = 0;
 	wstring wstrColorCode = L"";
 	wstring wstrLineBuf = L"";
@@ -4119,7 +4147,6 @@ bool CX2ChatBox::MegaLineBreakAdd( wstring wstrText, int iTextWidth, CKTDGUIList
 					{
 						wstrLineBuf += wstrCharBuf;
 						wstrLineBuf += L"  ";
-						iNowLineCount++;
 						iNowLineWidth = 0;
 						bIsFirstCharOfLine = true;
 
@@ -4188,7 +4215,6 @@ bool CX2ChatBox::MegaLineBreakAdd( wstring wstrText, int iTextWidth, CKTDGUIList
 			pListBox->AddItem( wstrLineBuf.c_str(), NULL, m_iMegaID, m_wstrSenderName, bIsMyMessage );
 
 			wstrLineBuf = L"  #CFFAE00";
-			iNowLineCount++;
 			iNowLineWidth = 0;
 			bIsFirstCharOfLine = true;
 
@@ -4413,6 +4439,8 @@ void CX2ChatBox::ChangeChatWindowAndIMEEditBox( CHAT_WINDOW_MODE eMode )
 					pRadio_RelationCouple->SetEnable( false );
 					pRadio_RelationCouple->SetShow( false );
 					break;
+				default:
+					break;
 				}
 			}
 
@@ -4449,6 +4477,8 @@ void CX2ChatBox::ChangeChatWindowAndIMEEditBox( CHAT_WINDOW_MODE eMode )
 
 		} break;
 		//}} 허상형 : [2009/7/17] //
+	default:
+		break;
 	}
 
 //{{ kimhc // 2010.3.10 //	채팅창 개편
@@ -4618,6 +4648,8 @@ UidType CX2ChatBox::GetWhisperChatTargetUID( const WCHAR* wszNickName, bool bPar
 
 			} break;
 
+		default:
+			break;
 		}
 	}
 
@@ -4676,6 +4708,8 @@ wstring CX2ChatBox::GetUnitNickName( UidType iUnitUID )
 			wstrNickName = g_pX2Room->GetSlotDataByUnitUID( iUnitUID )->m_pUnit->GetNickName();
 
 		} break;
+	default:
+		break;
 	}
 
 
@@ -4745,6 +4779,8 @@ UidType CX2ChatBox::GetUnitUIDByNickName( const WCHAR* wszNickName )
 			unitUID = g_pX2Room->GetSlotDataByNickName( wszNickName )->m_pUnit->GetUID();
 
 		} break;
+	default:
+		break;
 	}
 
 	return unitUID;
@@ -5424,7 +5460,7 @@ wstring CX2ChatBox::GetEmotionSound(CX2Unit::EMOTION_TYPE eId) const
 
 
 
-bool CX2ChatBox::PlayEmotionSound( CX2Unit::UNIT_TYPE eUnitType, CX2Unit::EMOTION_TYPE eEmotionID, const D3DXVECTOR3& vPos, bool b3DSound )
+bool CX2ChatBox::PlayEmotionSound( CX2Unit::UNIT_TYPE eUnitType, CX2Unit::EMOTION_TYPE eEmotionID, const D3DXVECTOR3& vPos, bool /*b3DSound*/ )
 {
 	wstring wstrEmotionSoundSuffix = GetEmotionSound(eEmotionID);
 	if( true == wstrEmotionSoundSuffix.empty() )
@@ -5544,7 +5580,7 @@ bool CX2ChatBox::ShowNasodMessageDlg( bool bEnable )	//	나소드 메가폰 메�
 	{
 		if(m_pDLGNasodScopeMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGNasodScopeMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGNasodScopeMessage, 0, false );
 			m_pDLGNasodScopeMessage = NULL;
 			//	선택된 아이템 슬롯 제거
 			SetItemSlot( NULL );
@@ -5614,7 +5650,7 @@ bool CX2ChatBox::Handler_EGS_USE_MEGAPHONE_REQ()
 	return false;
 }
 
-bool CX2ChatBox::Handler_EGS_USE_MEGAPHONE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::Handler_EGS_USE_MEGAPHONE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USE_MEGAPHONE_ACK kEvent;
@@ -5660,7 +5696,7 @@ bool CX2ChatBox::Handler_EGS_USE_MEGAPHONE_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 	return false;
 }
 
-bool CX2ChatBox::Handler_EGS_MEGAPHONE_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::Handler_EGS_MEGAPHONE_MESSAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MEGAPHONE_MESSAGE_NOT kEvent;
@@ -5701,6 +5737,8 @@ bool CX2ChatBox::Handler_EGS_MEGAPHONE_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM
 			return true;
 
 		} break;
+	default:
+		break;
 	}
 
 	return true;
@@ -5722,7 +5760,7 @@ bool CX2ChatBox::Handler_EGS_CHAT_OPTION_INFO_WRITE_REQ(BYTE cIndex, bool bVal)
 
 	return true;
 }
-bool CX2ChatBox::Handler_EGS_CHAT_OPTION_INFO_WRITE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ChatBox::Handler_EGS_CHAT_OPTION_INFO_WRITE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAT_OPTION_INFO_WRITE_ACK kEvent;
@@ -5752,7 +5790,7 @@ CX2ChatBox::AntiChatSpam::AntiChatSpam()
 	m_bSpamMessage = false;
 }
 
-void CX2ChatBox::AntiChatSpam::OnFrameMove( double fTime, float fElapsedTime )
+void CX2ChatBox::AntiChatSpam::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -5968,6 +6006,8 @@ CKTDGUIListBox* CX2ChatBox::GetCurrentChatbox()
 			pChatBox = (CKTDGUIListBox*) m_pDLGChatWindow->GetControl( L"ListBox_Relation" );
 		} break;
 
+	default:
+		break;
 	}
 
 	return pChatBox;
@@ -6253,6 +6293,8 @@ void CX2ChatBox::ChangeChatWindow( CHAT_WINDOW_MODE eMode )
 					pRadio_RelationCouple->SetChecked(false);
 					pRadio_RelationMarried->SetChecked(true);
 					break;
+				default:
+					break;
 				}
 			}
 
@@ -6262,6 +6304,8 @@ void CX2ChatBox::ChangeChatWindow( CHAT_WINDOW_MODE eMode )
 		} break;
 
 		//}} 허상형 : [2009/7/17] //
+	default:
+		break;
 	}
 
 	const float MAGIC_CHAT_SHOW_TIME = 50.0f;
@@ -6335,6 +6379,8 @@ void CX2ChatBox::ProcessChangeIMEEditWindowByTabKey()
 					case SEnum::RT_MARRIED :
 						eIMEEditWindowMode = CWM_RELATION_MARRIED;
 						break;
+					default:
+						break;
 					}
 				}
 				break;
@@ -6342,6 +6388,7 @@ void CX2ChatBox::ProcessChangeIMEEditWindowByTabKey()
 			case CWM_RELATION_COUPLE:
 			case CWM_RELATION_MARRIED:
 				eIMEEditWindowMode = CWM_TOTAL;
+				[[fallthrough]];
 
 
 			default:
@@ -6381,6 +6428,8 @@ void CX2ChatBox::ProcessChangeIMEEditWindowByTabKey()
 
 					case SEnum::RT_MARRIED :
 						eIMEEditWindowMode = CWM_RELATION_MARRIED;
+						break;
+					default:
 						break;
 					}
 				}
@@ -6545,7 +6594,6 @@ void CX2ChatBox::ProcessInputMsgWithUpKey()
 
 		ChangeHistoryIndex( true );
 
-		CKTDGUIIMEEditBox* pIMEEditBox = static_cast< CKTDGUIIMEEditBox* >( m_pDLGChatWindowEditBox->GetControl( L"IMEEditBoxChatBox" ) );
 		wstring wstrMsg = GetHistory();
 
 		SetChatEditText( wstrMsg.c_str() );
@@ -6567,7 +6615,6 @@ void CX2ChatBox::ProcessInputMsgWithDownKey()
 
 		ChangeHistoryIndex( false );
 
-		CKTDGUIIMEEditBox* pIMEEditBox = static_cast< CKTDGUIIMEEditBox* >( m_pDLGChatWindowEditBox->GetControl( L"IMEEditBoxChatBox" ) );
 		wstring wstrMsg = GetHistory();
 
 		SetChatEditText( wstrMsg.c_str() );
@@ -6656,6 +6703,8 @@ void CX2ChatBox::ResetChatTabPopup(CX2ChatBox::CHAT_WINDOW_MODE eChatWinMode)
 			case SEnum::RT_SOLO :
 				break;
 
+			default:
+				break;
 			}
 
 		}
@@ -6783,6 +6832,8 @@ void CX2ChatBox::ResetChatTabPopup(CX2ChatBox::CHAT_WINDOW_MODE eChatWinMode)
 						pStaticRelationCouple->SetShowEnable( false, false );
 						pStaticRelationMarried->SetOffsetPos(offset); //이미지
 						iBgHeight -= 16.f;
+						break;
+					default:
 						break;
 					}
 				}
@@ -6992,7 +7043,7 @@ void CX2ChatBox::SetCheckBoxData( CHAT_OPTION_INFO eChatOptionInfo )
 		Handler_EGS_CHAT_OPTION_INFO_WRITE_REQ(it->first, it->second);
 	}
 }
-const bool CX2ChatBox::GetDisplayObtainingED( CHAT_WINDOW_MODE eChatWindowMode )
+bool CX2ChatBox::GetDisplayObtainingED( CHAT_WINDOW_MODE eChatWindowMode )
 {
 	switch( eChatWindowMode )
 	{
@@ -7028,7 +7079,7 @@ const bool CX2ChatBox::GetDisplayObtainingED( CHAT_WINDOW_MODE eChatWindowMode )
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayObtainingEXP( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayObtainingEXP( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7063,7 +7114,7 @@ const bool CX2ChatBox::GetDisplayObtainingEXP( CHAT_WINDOW_MODE eChatWindowMode 
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplaySystem( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplaySystem( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7098,7 +7149,7 @@ const bool CX2ChatBox::GetDisplaySystem( CHAT_WINDOW_MODE eChatWindowMode /*= CH
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayNomal( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayNomal( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7112,7 +7163,7 @@ const bool CX2ChatBox::GetDisplayNomal( CHAT_WINDOW_MODE eChatWindowMode /*= CHA
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayParty( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayParty( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7131,7 +7182,7 @@ const bool CX2ChatBox::GetDisplayParty( CHAT_WINDOW_MODE eChatWindowMode /*= CHA
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayGuild( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayGuild( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7153,7 +7204,7 @@ const bool CX2ChatBox::GetDisplayGuild( CHAT_WINDOW_MODE eChatWindowMode /*= CHA
 
 
 
-const bool CX2ChatBox::GetDisplayRelation( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayRelation( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7182,7 +7233,7 @@ const bool CX2ChatBox::GetDisplayRelation( CHAT_WINDOW_MODE eChatWindowMode /*= 
 
 
 
-const bool CX2ChatBox::GetDisplayWhisper( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayWhisper( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{

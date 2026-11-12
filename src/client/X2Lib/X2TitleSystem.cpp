@@ -15,8 +15,8 @@ CX2TitleSystem::CX2TitleSystem( CKTDXStage* pNowState )
     m_pDlgTitle->SetShowEnable(false, false);
 
     CKTDGUIStatic *pStaticName = (CKTDGUIStatic*)m_pDlgTitle->GetControl(L"title_name");
-    if(pStaticName != NULL)
-        pStaticName->GetString(0)->msg = L"";
+	if(pStaticName != NULL)
+		pStaticName->GetString(0)->msg = L"";
 	CKTDGUIStatic *pStaticDesc = (CKTDGUIStatic*)m_pDlgTitle->GetControl(L"title_import");
 	if(pStaticDesc != NULL)
 		pStaticDesc->GetString(0)->msg = L"";
@@ -414,8 +414,8 @@ void CX2TitleSystem::ShowTitleDesc(TitleRecord* pData)
 	CKTDGUIListBox *pListboxMainTitle = (CKTDGUIListBox*)m_pDlgTitle->GetControl(L"MainTitle");
 	pListboxMainTitle->RemoveAllItems();
 
-    if(pData == NULL)
-        return;
+	if(pData == NULL)
+		return;
 
 	std::wstring wstrTitleID;
 	if ( g_pData != NULL //&& g_pData->GetMyUser() != NULL )

@@ -113,7 +113,7 @@ void CX2UIHeroMatch::InitUI()
 
 }
 
-bool CX2UIHeroMatch::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIHeroMatch::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	bool bFlag = false;
 
@@ -373,7 +373,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_LIST_REQ()
 	return true;
 }
 
-bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ADMIN_HERO_PVP_USER_LIST_ACK kEvent;
@@ -411,7 +411,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_LIST_ACK( HWND hWnd, UINT u
 }
 
 
-bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_ADD_REQ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_ADD_REQ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	KEGS_ADMIN_HERO_PVP_USER_ADD_REQ kPacket;
 
@@ -451,7 +451,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_ADD_REQ( HWND hWnd, UINT uM
 }
 
 
-bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_ADD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_ADD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ADMIN_HERO_PVP_USER_ADD_ACK kEvent;
@@ -519,7 +519,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_REMOVE_REQ()
 	return true;
 }
 
-bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_REMOVE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_REMOVE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ADMIN_HERO_PVP_USER_REMOVE_ACK kEvent;
@@ -535,7 +535,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_REMOVE_ACK( HWND hWnd, UINT
 		{
 			for( vitUser = m_vecUserList.begin(); vitUser != m_vecUserList.end(); )
 			{
-				if( 0 == StrCmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.c_str() ) )
+				if( 0 == wcscmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.c_str() ) )
 					vitUser = m_vecUserList.erase( vitUser );
 				else
 					++vitUser;
@@ -549,7 +549,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_REMOVE_ACK( HWND hWnd, UINT
 	return false;
 }
 
-bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_CONNECTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_CONNECTION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ADMIN_HERO_PVP_USER_CONNECTION_NOT kEvent;
@@ -575,7 +575,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_CONNECTION_NOT( HWND hWnd, 
 	{
 		for( UINT i = 0; i < eventSize; i++ )
 		{
-			if( 0 == StrCmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.m_wstrNickName.c_str() ) )
+			if( 0 == wcscmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.m_wstrNickName.c_str() ) )
 			{
 				IsCheck[i] = 2;
 

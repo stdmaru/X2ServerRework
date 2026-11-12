@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "x2/platform/process.h"
 #include "./X2SecurityPad.h"
 
 
@@ -403,13 +404,13 @@ void CX2SecurityPad::ShuffleNumber()
 }
 
 
-HRESULT CX2SecurityPad::OnFrameMove(double fTime, float fElapsedTime)
+HRESULT CX2SecurityPad::OnFrameMove(double /*fTime*/, float /*fElapsedTime*/)
 {
 
 
 	return S_OK;
 }
-bool CX2SecurityPad::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2SecurityPad::MsgProc(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	if(m_bShow == false)
 		return false;
@@ -601,12 +602,14 @@ void CX2SecurityPad::ProcessPassword()
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 	return;
 }
 
-bool CX2SecurityPad::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 
 	switch ( wParam )
@@ -764,7 +767,7 @@ bool CX2SecurityPad::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_REQ();
 		} break;
 	case SPUM_CHANGE_STATE_CHANGE_PASSWORD :
@@ -871,7 +874,7 @@ bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_REQ()
 	return true;
 }
 
-bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_SECURITY_AUTH_ACK kEvent;
@@ -890,7 +893,7 @@ bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_ACK( HWND hWnd, UINT uMsg, WPARAM
 		else // 한가지 경우 뿐이므로 일단 코드를 정하지 않습니다.
 		{
 			// 질문 설정용 홈페이지 띄워주기
-			ShellExecuteA( NULL, "open", kEvent.m_strSecondSecurityURL.c_str(), NULL, NULL, SW_SHOW );
+			x2::platform::OpenUrl( x2::platform::Utf8ToWide( kEvent.m_strSecondSecurityURL ) );
 			return true;
 		}
 	}
@@ -911,7 +914,7 @@ bool CX2SecurityPad::Handler_EGS_AUTH_SECOND_SECURITY_REQ()  // Phase Count 1
 	g_pMain->AddServerPacket( EGS_AUTH_SECOND_SECURITY_ACK);
 	return true;
 }
-bool CX2SecurityPad::Handler_EGS_AUTH_SECOND_SECURITY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_AUTH_SECOND_SECURITY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_AUTH_SECOND_SECURITY_ACK kEvent;
@@ -968,7 +971,7 @@ bool CX2SecurityPad::Handler_EGS_CREATE_SECOND_SECURITY_REQ()  // Phase Count 2
 
 	return true;
 }
-bool CX2SecurityPad::Handler_EGS_CREATE_SECOND_SECURITY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_CREATE_SECOND_SECURITY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_SECOND_SECURITY_ACK kEvent;
@@ -1010,7 +1013,7 @@ bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_REQ()  // Phase Count 1
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_SECOND_SECURITY_ACK kEvent;
@@ -1041,7 +1044,7 @@ bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_REQ()  // Phase C
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_SECOND_SECURITY_VERIFY_ACK kEvent;
@@ -1083,7 +1086,7 @@ bool CX2SecurityPad::Handler_EGS_COMPARE_SECOND_SECURITY_PW_REQ() // Phase Count
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_COMPARE_SECOND_SECURITY_PW_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_COMPARE_SECOND_SECURITY_PW_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_COMPARE_SECOND_SECURITY_PW_ACK kEvent;
@@ -1124,7 +1127,7 @@ bool CX2SecurityPad::Handler_EGS_CHANGE_SECOND_SECURITY_PW_REQ() // Phase Count 
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_CHANGE_SECOND_SECURITY_PW_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_CHANGE_SECOND_SECURITY_PW_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SECOND_SECURITY_PW_ACK kEvent;

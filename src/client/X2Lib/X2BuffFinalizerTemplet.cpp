@@ -2,7 +2,6 @@
     @breif : 버프의 종료 조건을 정의하는 Templet 파일
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffFinalizerTemplet.h"
@@ -81,9 +80,7 @@ bool CX2BuffFinalizerTemplet::ParsingFinalizerTemplateMethod( KLuaManager& luaMa
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		return ParsingFinalizer( luaManager_ );
 	}
@@ -166,7 +163,7 @@ bool CX2BuffFinalizerTemplet::SetFactorFromPacketTemplateMothod( const KBuffFact
 // 		const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 			0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-		const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+		const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 		if ( m_eDurationTimeType == eDurationTimeType )
 		{
@@ -233,7 +230,7 @@ bool CX2BuffFinalizerTemplet::SetFactorFromPacketTemplateMothod( const KBuffFact
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : true 면 종료, false 면 진행
 */
-/*virtual*/ bool CX2BuffTimeFinalizerTemplet::DidFinish( CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ bool CX2BuffTimeFinalizerTemplet::DidFinish( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	if ( !DidReserveToFinish() && 0 < m_fDurationTime )
 		return false;
@@ -245,7 +242,7 @@ bool CX2BuffFinalizerTemplet::SetFactorFromPacketTemplateMothod( const KBuffFact
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffTimeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffTimeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -266,7 +263,7 @@ bool CX2BuffFinalizerTemplet::SetFactorFromPacketTemplateMothod( const KBuffFact
 	@brief : 패킷으로 부터 받은 버프 정보로 시간에 의해 종료되는 템플릿을 셋팅
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffTimeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffTimeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	/// 전송 받은 남은 시간을 대입
 	m_fDurationTime = kFactor_[0];
@@ -308,7 +305,7 @@ bool CX2BuffFinalizerTemplet::SetFactorFromPacketTemplateMothod( const KBuffFact
 	@brief : 타격카운트가 유효범위를 벗어나면 m_iCountToBeFinished를 재설정 한다.
 	@param : 버프에 걸린 유닛(pGameUnit_)
 */
-void CX2BuffHitCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float fElapsedTime_ )
+void CX2BuffHitCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float /*fElapsedTime_*/ )
 {
 	/// 이번 프레임에 타격한 수만큼을 카운트에서 제한다.
 	if ( m_bStart && MAX_COUNT <= m_iCountToBeFinished )
@@ -325,7 +322,7 @@ void CX2BuffHitCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, floa
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffHitCountFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffHitCountFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -385,7 +382,7 @@ void CX2BuffHitCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, floa
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffHitCountFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffHitCountFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -464,7 +461,7 @@ UINT CX2BuffHitCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor* p
 	@param : 버프에 걸린 유닛(pGameUnit_)
 */
 
-void CX2BuffHittedCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float fElapsedTime_ )
+void CX2BuffHittedCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float /*fElapsedTime_*/ )
 {
 	/// 이번 프레임에 타격한 수만큼을 카운트에서 제한다.
 	if ( m_bStart && MAX_COUNT <= m_iCountToBeFinished )
@@ -481,7 +478,7 @@ void CX2BuffHittedCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, f
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffHittedCountFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffHittedCountFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -541,7 +538,7 @@ void CX2BuffHittedCountFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, f
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffHittedCountFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffHittedCountFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -613,7 +610,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffStateChangeFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffStateChangeFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -651,7 +648,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffStateChangeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffStateChangeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -663,7 +660,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@brief : 패킷으로 부터 받은 버프 정보로 유닛의 스테이트가 변경되면 종료되는 템플릿을 셋팅
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffStateChangeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffStateChangeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	m_uiStateID = static_cast<UINT>( kFactor_[0] );
 }
@@ -692,7 +689,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@brief : 변경된 HP가 이전 프레임의 HP보다 작으면 버프가 유지될 수 있는 데미지를 감소 시킴
 	@param : 버프에 걸린 유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffDamageValueFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffDamageValueFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float /*fElapsedTime_*/ )
 {
 	if ( m_bStart )
 	{
@@ -710,7 +707,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffDamageValueFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffDamageValueFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -764,7 +761,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : true 면 종료, false 면 진행
 */
-/*virtual*/ bool CX2BuffDamageValueFinalizerTemplet::DidFinish( CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ bool CX2BuffDamageValueFinalizerTemplet::DidFinish( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	return ( DidReserveToFinish() || !(m_fDamageValue > 0) );	/// 0보다 크면 끝나지 않은것
 }
@@ -773,7 +770,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffDamageValueFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffDamageValueFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -800,7 +797,7 @@ UINT CX2BuffHittedCountFinalizerTemplet::GetNewCount( const KBuffFinalizerFactor
 	@param : 종료요소(pFinalizerFactor_), 게임유닛(pGameUnit_)
 	@return : 타입에 따른 결과 값
 */
-float CX2BuffDamageValueFinalizerTemplet::GetValue( const KBuffFinalizerFactor* pFinalizerFactor_, CX2GameUnit* pGameUnit_ ) const
+float CX2BuffDamageValueFinalizerTemplet::GetValue( const KBuffFinalizerFactor* pFinalizerFactor_, CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	const float fValue = (*pFinalizerFactor_)[FO_VALUE];
 
@@ -857,7 +854,7 @@ void CX2BuffDamageValueFinalizerTemplet::ModifyDamageValue( const CX2GameUnit* p
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffPassHpFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffPassHpFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -908,7 +905,7 @@ void CX2BuffDamageValueFinalizerTemplet::ModifyDamageValue( const CX2GameUnit* p
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffPassHpFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffPassHpFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -920,7 +917,7 @@ void CX2BuffDamageValueFinalizerTemplet::ModifyDamageValue( const CX2GameUnit* p
 	@brief : 패킷으로 부터 받은 버프 정보로 일정 HP를 상향 또는 하향 돌파하면 종료되는 템플릿을 셋팅
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffPassHpFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffPassHpFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	m_fCriterion = kFactor_[0];
 	SelectDelegate();
@@ -981,7 +978,7 @@ bool CX2BuffPassHpFinalizerTemplet::CheckHpByDown( CX2GameUnit* pGameUnit_ ) con
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : 기준 수치
 */
-float CX2BuffPassHpFinalizerTemplet::GetCriterionByValue( CX2GameUnit* pGameUnit_ ) const
+float CX2BuffPassHpFinalizerTemplet::GetCriterionByValue( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	return m_fCriterion;	/// 수치
 }
@@ -1017,7 +1014,7 @@ float CX2BuffPassHpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffPassMpFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffPassMpFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -1067,7 +1064,7 @@ float CX2BuffPassHpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffPassMpFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffPassMpFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -1079,7 +1076,7 @@ float CX2BuffPassHpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 패킷으로 부터 받은 버프 정보로 일정 MP를 상향 또는 하향 돌파하면 종료되는 템플릿을 셋팅
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffPassMpFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffPassMpFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	m_fCriterion = kFactor_[0];
 	SelectDelegate();
@@ -1140,7 +1137,7 @@ bool CX2BuffPassMpFinalizerTemplet::CheckMpByDown( CX2GameUnit* pGameUnit_ ) con
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : 기준 수치
 */
-float CX2BuffPassMpFinalizerTemplet::GetCriterionByValue( CX2GameUnit* pGameUnit_ ) const
+float CX2BuffPassMpFinalizerTemplet::GetCriterionByValue( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	return m_fCriterion;	/// 수치
 }
@@ -1163,7 +1160,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffImmediateFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffImmediateFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -1189,7 +1186,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : true 면 종료, false 면 진행
 */
-/*virtual*/ bool CX2BuffImmediateFinalizerTemplet::DidFinish( CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ bool CX2BuffImmediateFinalizerTemplet::DidFinish( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	return true;
 }
@@ -1198,7 +1195,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffImmediateFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffImmediateFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 }
@@ -1211,7 +1208,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffDungeonStageChangeFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffDungeonStageChangeFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -1244,12 +1241,12 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : true 면 종료, false 면 진행
 */
-/*virtual*/ bool CX2BuffDungeonStageChangeFinalizerTemplet::DidFinish( CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ bool CX2BuffDungeonStageChangeFinalizerTemplet::DidFinish( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	if ( NULL != g_pX2Game && CX2Game::GT_DUNGEON == g_pX2Game->GetGameType() )
 	{
 		CX2DungeonGame* pDungeonGame = static_cast<CX2DungeonGame*>(g_pX2Game);
-		if ( DidReserveToFinish() || pDungeonGame->GetNowStageIndex() != m_uiIndex )	/// 버프를 시작 되었을 때하고 스테이지가 다르면
+		if ( DidReserveToFinish() || static_cast<UINT>( pDungeonGame->GetNowStageIndex() ) != m_uiIndex )	/// 버프를 시작 되었을 때하고 스테이지가 다르면
 			return true;	/// 종료
 		else
 			return false;
@@ -1262,7 +1259,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffDungeonStageChangeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffDungeonStageChangeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -1275,7 +1272,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 패킷으로 부터 받은 버프 정보로 종료 요소를 셋팅 하여 작동 시킴
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffDungeonStageChangeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffDungeonStageChangeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	/// 버프가 시작되었을 때의 스테이지
 	m_uiIndex = static_cast<UINT>( kFactor_[0] );
@@ -1290,7 +1287,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@param : 버프에 걸린 유닛의 포인터(pGameUnit_)
 	@return :
 */
-/*virtual*/ void CX2BuffLiveCreatorFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffLiveCreatorFinalizerTemplet::OnFrameMove( CX2GameUnit* /*pGameUnit_*/, float /*fElapsedTime_*/ )
 {
 	if( null == m_optrCreatorUnit || 0.f >= m_optrCreatorUnit->GetNowHp() )		/// 시전자가 죽거나 없는지 검사
 		m_bIsLiveCreator = false;
@@ -1300,7 +1297,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffLiveCreatorFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffLiveCreatorFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -1356,7 +1353,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : true 면 종료, false 면 진행
 */
-/*virtual*/ bool CX2BuffLiveCreatorFinalizerTemplet::DidFinish( CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ bool CX2BuffLiveCreatorFinalizerTemplet::DidFinish( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	if ( NULL != g_pX2Game )
 	{
@@ -1371,7 +1368,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffLiveCreatorFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffLiveCreatorFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -1398,7 +1395,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 패킷으로 부터 받은 버프 정보로 종료 요소를 셋팅 하여 작동 시킴
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffLiveCreatorFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffLiveCreatorFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	/// 16비트씩 float 4개로 쪼개진 UID를 int64를 병합
 
@@ -1447,7 +1444,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffFinishHyperFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffFinishHyperFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -1494,7 +1491,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : true 면 종료, false 면 진행
 */
-/*virtual*/ bool CX2BuffFinishHyperFinalizerTemplet::DidFinish( CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ bool CX2BuffFinishHyperFinalizerTemplet::DidFinish( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	if ( DidReserveToFinish() || false == m_bHyper )
 		return true;
@@ -1506,7 +1503,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffFinishHyperFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffFinishHyperFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -1518,7 +1515,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 패킷으로 부터 받은 버프 정보로 종료 요소를 셋팅 하여 작동 시킴
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffFinishHyperFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffFinishHyperFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	/// 버프가 시작되었을 때의 스테이지
 	m_bHyper = ( kFactor_[0] == 1.f ? true : false );
@@ -1528,7 +1525,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 매 프레임 확인
 	@return :
 */
-/*virtual*/ void CX2BuffFinishHyperFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffFinishHyperFinalizerTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, float /*fElapsedTime_*/ )
 {
 	if ( NULL != pGameUnit_ )
 	{
@@ -1559,7 +1556,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -1598,7 +1595,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 }
@@ -1608,7 +1605,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	@param : 읽어들이고 있는 루아스크립트의 루아매니저(luaManager_), 파싱성공한 FinalizerTempletPtr을 담을 vector(vecBuffFinalizerTempletPtr_)
 	@return : 파싱 성공시 true, 실패시 false 리턴
 */
-bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::ParsingFinalizerTemplateMethod( KLuaManager& luaManager_, const char* pszTableName_ )
+bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::ParsingFinalizerTemplateMethod( KLuaManager& luaManager_, const char* /*pszTableName_*/ )
 {
 	LUA_GET_VALUE_RETURN( luaManager_, "FINISH_WHEN_RIDING_ON", m_bFinishRidingOn, false,
 		return DISPLAY_ERROR( L"FINISH_WHEN_RIDING_ON" ) );
@@ -1625,7 +1622,7 @@ bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::ParsingFinalizerTemplateMeth
 	@brief : 종료 요소를 템플릿에 셋팅하여 작동 시킴
 	@param : 종료 요소(factor_)
 */
-/*virtual*/ bool CX2BuffX2StateChangeFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffX2StateChangeFinalizerTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffFinalizerFactor* pFactor = NULL;
 
@@ -1654,7 +1651,7 @@ bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::ParsingFinalizerTemplateMeth
 	@param : 버프에 걸린 게임유닛(pGameUnit_)
 	@return : true 면 종료, false 면 진행
 */
-/*virtual*/ bool CX2BuffX2StateChangeFinalizerTemplet::DidFinish( CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ bool CX2BuffX2StateChangeFinalizerTemplet::DidFinish( CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	return ( DidReserveToFinish() || m_uiIndex != static_cast<UINT>( g_pMain->GetNowStateID() ) );		/// 다르면 종료
 }
@@ -1663,7 +1660,7 @@ bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::ParsingFinalizerTemplateMeth
 	@brief : 템플릿 인자들 중 필요 한 것들을 factor로 변환
 	@param : 버프요소 인스턴스(factor_)
 */
-/*virtual*/ void CX2BuffX2StateChangeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const
+/*virtual*/ void CX2BuffX2StateChangeFinalizerTemplet::GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* /*pGameUnit_*/ ) const
 {
 	vecFactors_.push_back( KBuffFinalizerFactor( GetType() ) );
 	KBuffFinalizerFactor& FinalizerFactor = vecFactors_.back();
@@ -1676,7 +1673,7 @@ bool CX2BuffFinishRidingPetOnOrNotFinalizerTemplet::ParsingFinalizerTemplateMeth
 	@brief : 패킷으로 부터 받은 버프 정보로 종료 요소를 셋팅 하여 작동 시킴
 	@param : 서버로 부터 받은 종료요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffX2StateChangeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffX2StateChangeFinalizerTemplet::SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	/// 버프가 시작되었을 때의 스테이트
 	m_uiIndex = static_cast<UINT>( kFactor_[0] );

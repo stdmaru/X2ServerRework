@@ -3,7 +3,7 @@
 
 #include "./X2UIShop.h"
 
-CX2UIShop::CX2UIShop( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIShop::CX2UIShop( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 // : CX2UIDragable( pNowStage, NULL )
 : CX2ItemSlotManager( pNowStage, NULL ),
 m_bShow(false),
@@ -44,8 +44,7 @@ m_EnchantLevelBefore(0),
 m_AttributeEnchantItemUID(0),
 m_AttribEnchantID(-1),
 m_AttribEnchantSlotID(-1),
-m_SumDelta(0)
-, m_iAddEnchantLevel(0)	/// MAGIC_ENCHANT_LEVEL_LIMIT 기본 강화 제한 레벨의 추가 값(이벤트 용)
+m_iAddEnchantLevel(0)	/// MAGIC_ENCHANT_LEVEL_LIMIT 기본 강화 제한 레벨의 추가 값(이벤트 용)
 {
 	m_vecBuySlot.clear();
 	for(int i=0; i<BIC_COUNT; ++i)
@@ -131,7 +130,7 @@ HRESULT CX2UIShop::OnFrameMove( double fTime, float fElapsedTime )
  	return S_OK;
 }
 
-bool CX2UIShop::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	bool bFlag = false;
 	switch( uMsg )
@@ -254,7 +253,7 @@ bool CX2UIShop::MouseRButtonUp( D3DXVECTOR2 mousePos )
 
 }
 
-bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -421,7 +420,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		{
 			if(m_pDLGBuyItemConfirm != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemConfirm, 0, false );
 				m_pDLGBuyItemConfirm = NULL;
 				return Handler_EGS_BUY_ED_ITEM_REQ();
 			}
@@ -430,7 +429,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case USCM_BUY_ITEM_CONFIRM_CANCLE:
 		{
 			if ( m_pDLGBuyItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemConfirm, 0, false );
 
 			m_pDLGBuyItemConfirm = NULL;
 
@@ -443,7 +442,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		{
 			if ( m_pDLGBuyItemNum != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemNum, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemNum, 0, false );
 				m_pDLGBuyItemNum = NULL;
 				OpenBuyItemConfirmDLG();
 			}
@@ -454,7 +453,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case USCM_BUY_ITEM_QUANTITY_CANCLE:
 		{
 			if ( m_pDLGBuyItemNum != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemNum, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyItemNum, 0, false );
 
 			m_pDLGBuyItemNum = NULL;
 
@@ -488,7 +487,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case USCM_SELL_ITEM_CONFIRM_CANCLE:
 		{
 			if ( m_pDLGSellItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemConfirm, 0, false );
 
 			m_pDLGSellItemConfirm = NULL;
 
@@ -501,7 +500,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case USCM_SELL_ITEM_QUANTITY_CONFIRM:
 		{
 			if ( m_pDLGSellItemNum != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemNum, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemNum, 0, false );
 
 			m_pDLGSellItemNum = NULL;
 
@@ -512,7 +511,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case USCM_SELL_ITEM_QUANTITY_CANCLE:
 		{
 			if ( m_pDLGSellItemNum != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemNum, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemNum, 0, false );
 
 			m_pDLGSellItemNum = NULL;
 
@@ -565,7 +564,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		{
 			if ( m_pDLGRepairItemConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRepairItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRepairItemConfirm, 0, false );
 				m_pDLGRepairItemConfirm = NULL;
 			}
 			return true;
@@ -577,7 +576,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		{
 			if ( m_pDLGEnchantItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItem, 0, false );
 				m_pDLGEnchantItem = NULL;
 			}
 		}
@@ -612,7 +611,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 			if ( m_pDLGEnchantItemResult != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItemResult, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItemResult, 0, false );
 				m_pDLGEnchantItemResult = NULL;
 			}
 		}
@@ -651,7 +650,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		{
 			if ( m_pDLGAttribEnchantItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttribEnchantItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttribEnchantItem, 0, false );
 				m_pDLGAttribEnchantItem = NULL;
 			}
 
@@ -712,7 +711,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case USCM_ENCHANT_ATTRIBUTE_ITEM_CONFIRM:
 		{
 			if ( m_pDLGAttribEnchantItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttribEnchantItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttribEnchantItemConfirm, 0, false );
 			m_pDLGAttribEnchantItemConfirm = NULL;
 
 			return Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( m_AttribEnchantSlotID, m_AttribEnchantID, false );
@@ -756,7 +755,7 @@ bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case USCM_ENCHANT_ATTRIBUTE_ITEM_REMOVE_CONFIRM:
 		{
 			if ( m_pDLGAttribEnchantItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttribEnchantItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttribEnchantItemConfirm, 0, false );
 			m_pDLGAttribEnchantItemConfirm = NULL;
 
 			return Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( m_AttribEnchantSlotID, m_AttribEnchantID, false );
@@ -848,7 +847,7 @@ void CX2UIShop::SetShow(bool val)
 
 	if(val)	// 켜질 때 처리해야 할 부분
 	{
-		if(m_HouseID == NULL) return;
+		if(m_HouseID == 0) return;
 
 		RegisterLuaBind();
 		if(m_pDLGShop == NULL)
@@ -1160,7 +1159,7 @@ void CX2UIShop::ResetBuySlotList( int nPage )
 	pStaticPageNum->GetString(0)->msg = wstrmPageNum.str();
 	// 전체 상품의 인덱스
 	int iStartIndex = (m_nNowPage-1) * m_vecBuySlot.size();
-	int iEndIndex = min( m_nNowPage*m_vecBuySlot.size(), (int)m_vecItemList[m_NowBuyItemCategory].size() );
+	int iEndIndex = min( static_cast<int>( m_nNowPage*m_vecBuySlot.size() ), (int)m_vecItemList[m_NowBuyItemCategory].size() );
 
 	// const int MAGIC_MAX_NUM_BUY_ITEM_SLOT = m_pDLGShop->GetDummyInt(0);
 
@@ -1221,7 +1220,6 @@ void CX2UIShop::ResetBuySlotList( int nPage )
 					UINT uMaxStringLength = wstrItemName.length();
 					int iStringSize = 0;
 
-					bool bFindPos = false;
 					for( UINT i=uSlideStartPos; i<uMaxStringLength; ++i )
 					{
 						WCHAR wChar = wstrItemName[i];
@@ -1261,7 +1259,6 @@ void CX2UIShop::ResetBuySlotList( int nPage )
 					UINT uMaxStringLength = wstrItemName.length();
 					int iStringSize = 0;
 
-					bool bFindPos = false;
 					for( UINT i=uSlideStartPos; i<uMaxStringLength; ++i )
 					{
 						WCHAR wChar = wstrItemName[i];
@@ -1316,7 +1313,7 @@ void CX2UIShop::SellItem( UidType sellItemUID, D3DXVECTOR2 pos )
 		return;
 	}
 
-	if ( pSellItem->GetItemTemplet()->GetPeriodType() == CX2Item::SPT_GP && pSellItem->GetItemTemplet()->GetItemType() == CX2Item::IT_ACCESSORY && pSellItem->GetItemData().m_Period != 0 )
+	if ( pSellItem->GetItemTemplet()->GetPeriodType() == CX2Item::PT_QUANTITY && pSellItem->GetItemTemplet()->GetItemType() == CX2Item::IT_ACCESSORY && pSellItem->GetItemData().m_Period != 0 )
 	{
 		CKTDGUIDialogType pMsgBox = g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2( -999, -999 ), GET_STRING( STR_ID_21663 ), g_pMain->GetNowState() );
 		pMsgBox->SetEnableMoveByDrag_LUA(false);
@@ -1359,8 +1356,6 @@ void CX2UIShop::SellItem( UidType sellItemUID, D3DXVECTOR2 pos )
 
 void CX2UIShop::OpenSellItemConfirmDLG()
 {
-	int popUpSizeX = 425;
-	int popUpSizeY = 147;
 
 	CX2Item* pItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItem( m_SellItemUID );
 	if ( pItem != NULL )
@@ -1384,7 +1379,7 @@ void CX2UIShop::OpenSellItemConfirmDLG()
 
 
 // 이 코드는 앞으로 자주 쓰게 될 것이야
-void CX2UIShop::OpenItemSellNumDLG( D3DXVECTOR2 pos )
+void CX2UIShop::OpenItemSellNumDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	SAFE_DELETE_DIALOG(m_pDLGSellItemNum);
@@ -1398,7 +1393,6 @@ void CX2UIShop::OpenItemSellNumDLG( D3DXVECTOR2 pos )
 // 	m_pDLGSellItemNum->SetPos( pos );
 	m_pDLGSellItemNum->SetPos( g_pMain->GetWindowPos( D3DXVECTOR2(1024-865, 768-633), D3DXVECTOR2(75,20)) );
 
-	CKTDGUIStatic* pStaticPrice = (CKTDGUIStatic*) m_pDLGSellItemNum->GetControl( L"Static_Price" );
 
 	CKTDGUIButton* pButtonOK = (CKTDGUIButton*) m_pDLGSellItemNum->GetControl( L"Button_OK" );
 	CKTDGUIButton* pButtonCancle = (CKTDGUIButton*) m_pDLGSellItemNum->GetControl( L"Button_Cancle" );
@@ -1455,7 +1449,7 @@ void CX2UIShop::UpdateItemSellNumDLG( bool bReadIME, bool bTextSelected )
 		m_SellItemNum = MaxItemNum;
 
 	WCHAR buff[256] = {0};
-	_itow( m_SellItemNum, buff, 10 );
+	_itow_s( m_SellItemNum, buff, 10 );
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str(), bTextSelected );
 
@@ -1496,11 +1490,11 @@ bool CX2UIShop::Handler_EGS_SELL_ITEM_REQ()
 	m_SellItemNum = 0;
 	return true;
 }
-bool CX2UIShop::Handler_EGS_SELL_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_SELL_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 다이얼로그 처리
 	if ( m_pDLGSellItemConfirm != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemConfirm, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSellItemConfirm, 0, false );
 
 	m_pDLGSellItemConfirm = NULL;
 
@@ -1576,7 +1570,7 @@ void CX2UIShop::RepairItem( UidType RepairItemUID )
 						)
 						StringCchPrintf( buff, 256, GET_REPLACED_STRING( ( STR_ID_903, "i", repairEDCost ) ) );
 					else
-						wsprintf( buff, GET_REPLACED_STRING( ( STR_ID_904, "i", repairEDCost ) ) );
+						swprintf_s( buff, L"%s", GET_REPLACED_STRING( ( STR_ID_904, "i", repairEDCost ) ) );
 				}
 				else
 				{
@@ -1603,7 +1597,7 @@ void CX2UIShop::RepairItem( UidType RepairItemUID )
 bool CX2UIShop::Handler_EGS_REPAIR_ITEM_REQ( UidType ItemUID )
 {
 	if ( m_pDLGRepairItemConfirm != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRepairItemConfirm, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRepairItemConfirm, 0, false );
 
 	m_pDLGRepairItemConfirm = NULL;
 
@@ -1642,7 +1636,7 @@ bool CX2UIShop::Handler_EGS_REPAIR_ITEM_REQ( UidType ItemUID )
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_REPAIR_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_REPAIR_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REPAIR_ITEM_ACK kEvent;
@@ -1838,7 +1832,7 @@ void CX2UIShop::RepairAllEquippedItem()
 void CX2UIShop::AllEquippingItemRepairREQ()
 {
 	if ( m_pDLGRepairItemConfirm != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRepairItemConfirm, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRepairItemConfirm, 0, false );
 
 	m_pDLGRepairItemConfirm = NULL;
 
@@ -1889,8 +1883,8 @@ void CX2UIShop::AllEquippingItemRepairREQ()
 // 주의 : 사용시 NULL CHECK!
 CKTDGUIRadioButton* CX2UIShop::GetRadioButtonNameByCategory( BUY_ITEM_CATEGORY buyItemCategory )
 {
-    if( m_pDLGShop == NULL )
-        return NULL;
+	if( m_pDLGShop == NULL )
+		return NULL;
 
 	CKTDGUIRadioButton* pRButton = NULL;
 	switch(buyItemCategory)
@@ -1999,7 +1993,7 @@ int CX2UIShop::PreCheckShopBuyItem()
 	return 0;
 }
 // 이 코드는 앞으로 자주 쓰게 될 것이야
-void CX2UIShop::OpenItemBuyNumDLG( D3DXVECTOR2 pos )
+void CX2UIShop::OpenItemBuyNumDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	int iRet = PreCheckShopBuyItem();
@@ -2037,7 +2031,6 @@ void CX2UIShop::OpenItemBuyNumDLG( D3DXVECTOR2 pos )
 // 	m_pDLGBuyItemNum->SetPos( pos );
 	m_pDLGBuyItemNum->SetPos( g_pMain->GetWindowPos( D3DXVECTOR2(1024-865, 768-633), D3DXVECTOR2(75,20)) );
 
-	CKTDGUIStatic* pStaticPrice = (CKTDGUIStatic*) m_pDLGBuyItemNum->GetControl( L"Static_Price" );
 
 	CKTDGUIButton* pButtonOK = (CKTDGUIButton*) m_pDLGBuyItemNum->GetControl( L"Button_OK" );
 	CKTDGUIButton* pButtonCancle = (CKTDGUIButton*) m_pDLGBuyItemNum->GetControl( L"Button_Cancle" );
@@ -2171,7 +2164,7 @@ void CX2UIShop::UpdateItemBuyNumDLG( bool bReadIME, bool bTextSelected )
 		m_BuyItemNum = MaxBuyItem;
 
 	WCHAR buff[256] = {0};
-	_itow( m_BuyItemNum, buff, 10 );
+	_itow_s( m_BuyItemNum, buff, 10 );
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str(), bTextSelected );
 
@@ -2189,14 +2182,11 @@ void CX2UIShop::OpenBuyItemConfirmDLG()
         m_pDLGBuyItemConfirm.Invalidate();
     }
 
-	int popUpSizeX = 425;
-	int popUpSizeY = 147;
 
 	if ( m_BuyItemSlotNum == -1 )
 		return;
 
 	BuySlot* pSlotInfo = m_vecBuySlot[m_BuyItemSlotNum];
-	int price = pSlotInfo->m_pItemTemplet->GetPrice();
 
 	if ( pSlotInfo != NULL )
 	{
@@ -2301,7 +2291,7 @@ bool CX2UIShop::Handler_EGS_BUY_ED_ITEM_REQ()
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_BUY_ED_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_BUY_ED_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BUY_ED_ITEM_ACK kEvent;
@@ -2411,7 +2401,6 @@ void CX2UIShop::EnchantItem( UidType EnchantItemUID, D3DXVECTOR2 pos )
 
 	//wstring normalButtonDesc	= L"";
 	//wstring newButtonDesc		= L"";
-	WCHAR wszEnchantED[256]		= L"";
 
 	int normalStoneCount	= 0;
 	int newStoneCount		= 0;
@@ -2468,14 +2457,14 @@ void CX2UIShop::EnchantItem( UidType EnchantItemUID, D3DXVECTOR2 pos )
 
 }
 
-void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 pos)
+void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 /*pos*/)
 {
 	// 다이얼로그 자동 클릭되는 현상을 막자
 	g_pData->GetUIManager()->SetDLGFlag(false);
 
 	if ( m_pDLGEnchantItem != NULL )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItem, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItem, 0, false );
 	}
 
 	const CX2Inventory& kInventory = g_pData->GetMyUser()->GetSelectUnit()->GetInventory();
@@ -2510,6 +2499,8 @@ void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 pos)
 		{
 			iCost = (int)( ( (float)pItem->GetItemTemplet()->GetPrice() * 0.1f ) * 0.1f );
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -2551,7 +2542,7 @@ void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 pos)
 	if ( pStaticSlot != NULL && pStaticSlot->GetPicture(0) != NULL )
 	{
         const wchar_t* pwszShopImage = pItem->GetItemTemplet()->GetShopImage();
-		if ( pwszShopImage[0] != NULL )
+		if ( pwszShopImage[0] != L'\0' )
 			pStaticSlot->GetPicture(0)->SetTex( pwszShopImage );
 		else
 			pStaticSlot->GetPicture(0)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -3059,6 +3050,8 @@ void CX2UIShop::UpdateEnchantWindow()
 				StringCchPrintfW( newStaticName, ARRAY_SIZE(newStaticName), L"Static_Inactive%d", iNewStoneLevel+1 );
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3142,7 +3135,7 @@ bool CX2UIShop::Handler_EGS_ENCHANT_ITEM_REQ( bool bSpecialEnchant )
 			}
 		}
 
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItem, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGEnchantItem, 0, false );
 	}
 	m_pDLGEnchantItem = NULL;
 
@@ -3170,7 +3163,7 @@ bool CX2UIShop::Handler_EGS_ENCHANT_ITEM_REQ( bool bSpecialEnchant )
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_ENCHANT_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_ENCHANT_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ENCHANT_ITEM_ACK kEvent;
@@ -3284,7 +3277,7 @@ void CX2UIShop::OpenEnchantResultWindow( KEGS_ENCHANT_ITEM_ACK& kEGS_ENCHANT_ITE
 			if ( pStaticSlot != NULL && pStaticSlot->GetPicture(0) != NULL )
 			{
                 const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-				if ( pwszShopImage[0] != NULL )
+				if ( pwszShopImage[0] != L'\0' )
 					pStaticSlot->GetPicture(0)->SetTex( pwszShopImage );
 				else
 					pStaticSlot->GetPicture(0)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -3439,7 +3432,7 @@ void CX2UIShop::SplitEnchantDLGStringSet ( CKTDGUIStatic* pStatic, wstring strIt
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CX2UIShop::EnchantAttributeItem( UidType AttributeEnchantItemUID, D3DXVECTOR2 pos )
+void CX2UIShop::EnchantAttributeItem( UidType AttributeEnchantItemUID, D3DXVECTOR2 /*pos*/ )
 {
 	// 다이얼로그 자동 클릭되는 현상을 막자
 	g_pData->GetUIManager()->SetDLGFlag(false);
@@ -3945,7 +3938,7 @@ void CX2UIShop::ResetAtrribEnchantWindow()
 
 }
 
-bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( int slotNum, int enchantID, bool bDebug )
+bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( int slotNum, int enchantID, bool /*bDebug*/ )
 {
 	KEGS_ATTRIB_ENCHANT_ITEM_REQ kPacket;
 	kPacket.m_iItemUID = m_AttributeEnchantItemUID;
@@ -3958,7 +3951,7 @@ bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( int slotNum, int enchantID,
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ATTRIB_ENCHANT_ITEM_ACK kEvent;
@@ -4158,7 +4151,7 @@ bool CX2UIShop::Handler_EGS_SUPPORT_MATERIAL_EVENT_TIME_REQ()
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_SUPPORT_MATERIAL_EVENT_TIME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_SUPPORT_MATERIAL_EVENT_TIME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SUPPORT_MATERIAL_EVENT_TIME_ACK kEvent;

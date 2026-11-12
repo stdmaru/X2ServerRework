@@ -81,7 +81,7 @@ CX2Curtain::~CX2Curtain(void)
 	//CurtainBreak();
 }
 
-HRESULT CX2Curtain::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2Curtain::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	CollisionCheck();
 	return S_OK;
@@ -120,9 +120,6 @@ void CX2Curtain::CollisionCheck()
 		}
 		else
 		{
-			D3DXVECTOR2 m_vPosCurtain = D3DXVECTOR2( m_vPos.x, m_vPos.z );
-			D3DXVECTOR2 m_vPosUser    = D3DXVECTOR2( pGUUser->GetPos().x, pGUUser->GetPos().z );
-
 			if ( fLen >= m_fReactGapLengthX )
 			{
 				m_CollisionCheckedUnitIndex.erase( i );

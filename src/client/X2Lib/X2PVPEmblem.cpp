@@ -45,8 +45,8 @@ CX2PVPEmblem::PVPEmblemData* CX2PVPEmblem::GetMyNowUnitPVPEmblem()
 	if ( g_pData->GetMyUser() == NULL || g_pData->GetMyUser()->GetSelectUnit() == NULL )
 		return NULL;
 
-		char cRank = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_cRank;
-		return  GetPVPEmblemData( static_cast<CX2PVPEmblem::PVP_RANK>( cRank ) );
+	char cRank = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_cRank;
+	return  GetPVPEmblemData( static_cast<CX2PVPEmblem::PVP_RANK>( cRank ) );
 }
 
 void CX2PVPEmblem::AddEmblemData_LUA( int emblemID, const char* pName, const char* pTextureName, const char* pTextureKey )

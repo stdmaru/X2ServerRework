@@ -139,7 +139,6 @@ class CX2TFieldNpc : public CKTDGObject
 		bool						m_bOpenQuestReceive;
 
 		int								m_iMotionId;
-		D3DXVECTOR3						m_vBonePos;
 
         // 내부에서 관리하는 객체이므로 smart pointer를 사용하지 않는다.
         // - jintaeks on 2009-01-12, 16:07

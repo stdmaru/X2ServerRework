@@ -453,7 +453,7 @@ class CKTDNUDP
 
 		__forceinline const Peer*	GetMyPeer();
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-		__forceinline const Peer*	GetPeer( __int64 UID );
+		const Peer*	GetPeer( __int64 UID );
 		void			            SetMyUID( __int64 myUID );
         __int64                     GetMyUID() { return m_MyUID; }
 //#else 	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -569,7 +569,7 @@ class CKTDNUDP
         bool                        _RobustConnectTestResult();
 
 
-        __forceinline Peer*	        _GetPeer( __int64 UID );
+        Peer*	        _GetPeer( __int64 UID );
 	    __forceinline bool			SendPure_Scattered( u_long ulIP, int port, WSABUF alpBuffers[], DWORD dwBuffCount );
 
         int                         Estimate_RelayPacketSize( const char cRelayID, const std::vector<__int64>& vecUIDs, const char ID = 0, const void* pBuffer = NULL, int size = 0 );

@@ -4,8 +4,6 @@
 
 	const int	MAX_GUILD_SKILL_LEVEL					= 5;		/// 길드 스킬 최대 레벨
 	const int	MAGIC_SKILL_DESC_WIDTH					= 370;		/// 스킬 툴팁 스트링 한줄당 최대 가로 길이
-	const int	MAX_ONE_CLASS_SKILL_ROW_NUM				= 5;		/// 하나의 전직당 스킬 트리 최대 행 개수
-	const int	SKILL_USE_IMAGE_WIDTH_SIZE				= 70;		/// 스킬 시전 샘플 이미지 가로 크기
 	const float SKILL_MAIN_DESC_OFFSET_Y				= 65.f;		/// 메인 툴팁의 오프셋 세로 위치
 
 //////////////////////////////////////////////////////////////////////////
@@ -31,7 +29,6 @@ CX2GuildSkillTreeSlotData::CX2GuildSkillTreeSlotData()
 
 	const CX2UserSkillTree& refUserSkillTree = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree; // 슬롯 B 관련
 
-	int iSkillLevel = refUserSkillTree.GetSkillLevel( m_eSkillID, true );
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( m_eSkillID );
 
@@ -344,10 +341,9 @@ void CX2GuildSkillTreeSlotData::ShowSlotPicture(bool bShow, CKTDGUISlot* pSlot, 
 //////////////////////////////////////////////////////////////////////////
 
 
-CX2UIGuildSkillTree::CX2UIGuildSkillTree( CKTDXStage* pNowStage ) :
+CX2UIGuildSkillTree::CX2UIGuildSkillTree( CKTDXStage* /*pNowStage*/ ) :
 m_bShow(false),
 m_bSkillRemoveMode(false),
-m_bClassInfoVaild(false),
 //m_MovedPosition(0,0),
 //m_DLGPosition(0,0),
 m_DLGSize(0,0),
@@ -357,8 +353,7 @@ m_pDLGSkillUnsealInform(NULL),
 m_pDLGSkillUnsealed( NULL ),
 m_SumDelta(0),
 m_iPrevSP(-1),
-m_pTalkBoxManager(NULL),
-m_bUsingCSP( false )		// 이것도 사용안하는듯...
+m_pTalkBoxManager(NULL)
 {
 	m_pUserSkillTree = NULL;
 
@@ -401,7 +396,7 @@ void CX2UIGuildSkillTree::SetPosition( D3DXVECTOR2 vec )
 
 }
 
-HRESULT CX2UIGuildSkillTree::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2UIGuildSkillTree::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 	return S_OK;
@@ -463,7 +458,7 @@ bool CX2UIGuildSkillTree::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return bFlag;
 }
 
-bool CX2UIGuildSkillTree::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2UIGuildSkillTree::OnMouseWheel(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	CKTDGUIContolList* pControlList = (CKTDGUIContolList*) m_pDLGUISkillTree->GetControl( L"SkillTreeControlList" );
 	if( pControlList == NULL )
@@ -492,7 +487,7 @@ bool CX2UIGuildSkillTree::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	return true;
 }
 
-bool CX2UIGuildSkillTree::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildSkillTree::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -500,7 +495,7 @@ bool CX2UIGuildSkillTree::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 		{
 			if( m_pDLGSkillUnsealInform != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, 0, false );
 				m_pDLGSkillUnsealInform = NULL;
 			}
 		} break;
@@ -519,9 +514,6 @@ bool CX2UIGuildSkillTree::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 			if(g_pData->GetMyUser() != NULL &&
 				g_pData->GetMyUser()->GetSelectUnit() != NULL )
 			{
-				const CX2UserSkillTree& refUserSkillTree = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree;
-				int iSPoint = 0;
-				int iCSPoint = 0;
 
 				// oasis907 : 김상윤 [2009.12.3] // 길드 기간제 포인트 출력
 				int iMaxCSPoint = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iMaxGuildCSPoint;
@@ -1404,7 +1396,7 @@ void CX2UIGuildSkillTree::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 
 }
 
-void CX2UIGuildSkillTree::UpdateUI( bool bEquipped, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
+void CX2UIGuildSkillTree::UpdateUI( bool /*bEquipped*/, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
 {
 
 	if(bSP)
@@ -1566,7 +1558,6 @@ void CX2UIGuildSkillTree::UpdateSPInfo()
 		CTime cTime;
 		// oasis907 : 김상윤 [2009.12.3] //
 		KncUtil::ConvertStringToCTime( g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_wstrGuildCSPointEndDate, cTime );
-		CTime tCurrentTime = g_pData->GetServerCurrentTime();
 
 		if( bUsingCSP )
 		{
@@ -1950,7 +1941,7 @@ void CX2UIGuildSkillTree::SetArrowColor( CX2SkillTree::SKILL_ID eSkillID, D3DXCO
 // 아직 스킬 봉인해제 자체가 미구현이므로 기반만 닦아 둔다.
 // 다이얼로그 닫는 경우까지만 만들어 뒀습니다. 구매 버튼을 눌렀을 때는 아무것도 안 하게 되어 있으니 다음 작업자 분께서는
 // UICustomMsgProc에서 case GSTUCM_UNSEAL_SKILL_BUY 항목에 그 부분을 작업해 주세요.
-void CX2UIGuildSkillTree::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* pSkillTemplet, D3DXVECTOR2 SlotCenterPos )
+void CX2UIGuildSkillTree::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* /*pSkillTemplet*/, D3DXVECTOR2 SlotCenterPos )
 {
 	SAFE_DELETE_DIALOG( m_pDLGSkillUnsealInform );
 
@@ -1968,7 +1959,7 @@ void CX2UIGuildSkillTree::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTem
 
 // SlotManager의 ItemDesc 쪽 코드를 긁어왔음
 void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkillID /*= CX2SkillTree::SI_NONE*/, D3DXVECTOR2 pos /*= D3DXVECTOR2(0,0)*/,
-								    D3DXVECTOR2 size /*= D3DXVECTOR2(0,0)*/, bool bEquipped /*= false*/ )
+								    D3DXVECTOR2 size /*= D3DXVECTOR2(0,0)*/, bool /*bEquipped*/ /*= false*/ )
 {
 
 	if(m_pDLGSkillToolTip == NULL )
@@ -2042,7 +2033,6 @@ void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSki
 
 
 		/// 스킬 트리 템플릿 반환 ------------------------------------------------------------------------------
-		int										iUnitClass			= static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetClass() );
 		const CX2SkillTree::SkillTreeTemplet*	pSkillTreeTemplet	= g_pData->GetSkillTree()->GetGuildSkillTreeTemplet( 0, pSkillTemplet->m_eID );
 
 
@@ -2241,7 +2231,6 @@ void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSki
 		pMainPictureData->SetSize( D3DXVECTOR2( static_cast<float>( itemDescWidth ), static_cast<float>( itemDescHeight ) ) );
 		pMainPictureData->pPoint->color = D3DXCOLOR( 1,1,1,0.7f );
 
-		bool bCheckEquipping = false;
 
 
 		/// 메인 설명 툴팁의 y좌표를 타이틀 툴팁의 위치에 맞춰 설정

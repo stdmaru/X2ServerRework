@@ -41,12 +41,12 @@ void CX2CouponBox::RegisterLuaBind()
 }
 
 
-bool CX2CouponBox::MouseUp( D3DXVECTOR2 mousePos )
+bool CX2CouponBox::MouseUp( D3DXVECTOR2 /*mousePos*/ )
 {
 	return false;
 }
 
-bool CX2CouponBox::MouseDown( D3DXVECTOR2 mousePos )
+bool CX2CouponBox::MouseDown( D3DXVECTOR2 /*mousePos*/ )
 {
 	return false;
 }
@@ -67,7 +67,7 @@ void CX2CouponBox::SetNowState( CX2State* pState )
 }
 
 
-bool CX2CouponBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CouponBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -149,7 +149,6 @@ bool CX2CouponBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			{
 				wstring wstrCouponNumber = L"";
 				WCHAR wszControlName[64] = L"";
-				bool bOK = false;
 
 				int iMaxCouponSize = 4;
 
@@ -234,7 +233,7 @@ bool CX2CouponBox::Handler_EGS_PURCHASED_CASH_ITEM_LIST_REQ( int iPageIndex, int
 	return true;
 }
 
-bool CX2CouponBox::Handler_EGS_PURCHASED_CASH_ITEM_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CouponBox::Handler_EGS_PURCHASED_CASH_ITEM_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PURCHASED_CASH_ITEM_LIST_ACK kEvent;
@@ -267,7 +266,7 @@ bool CX2CouponBox::Handler_EGS_GET_PURCHASED_CASH_ITEM_REQ( uLong ulOrderNo, uLo
 	return true;
 }
 
-bool CX2CouponBox::Handler_EGS_GET_PURCHASED_CASH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CouponBox::Handler_EGS_GET_PURCHASED_CASH_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_PURCHASED_CASH_ITEM_ACK kEvent;
@@ -301,7 +300,7 @@ bool CX2CouponBox::Handler_EGS_APPLY_COUPON_REQ( const WCHAR* wszCouponNumber )
 	return true;
 }
 
-bool CX2CouponBox::Handler_EGS_APPLY_COUPON_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CouponBox::Handler_EGS_APPLY_COUPON_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_APPLY_COUPON_ACK kEvent;

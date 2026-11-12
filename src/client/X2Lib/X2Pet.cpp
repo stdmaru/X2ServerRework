@@ -614,7 +614,7 @@ HRESULT	CX2PET::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 
-	if( NULL != g_pX2Game != NULL && NULL != pMasterUserUnit )
+	if( NULL != g_pX2Game && NULL != pMasterUserUnit )
 	{
 		if( pMasterUserUnit->GetSyncData().bFrameStop == true )
 		{
@@ -899,8 +899,6 @@ HRESULT	CX2PET::OnFrameMove( double fTime, float fElapsedTime )
 		}
 
 		// 피격 피드백
-		bool bEmotionUnKnown = false;
-		bool bEmotionHungry = false;
 		if( IsActionState( GetNowState() ) == false )
 		{
 			if( m_AttackComboNum > 0 && m_AttackComboNum % g_pData->GetPetManager()->GetDispositionVal( 4, iEmotion, iExtroversion ) == 0 )
@@ -2161,8 +2159,8 @@ bool CX2PET::StateChange( int iStateId, bool bForce, bool bCheck )
 	m_petSyncData.bStateChange	= true;
 	m_PetStateData = m_StateList[m_petSyncData.nowState];
 
-    if ( m_pXSkinAnim != NULL )
-        m_pXSkinAnim->ResetOneshotPerformed();
+	if ( m_pXSkinAnim != NULL )
+		m_pXSkinAnim->ResetOneshotPerformed();
 
 	//다음 스테이트를 시작한다
 	bTableOpen = m_LuaManager.BeginTableByReference( m_PetStateData.stateID );
@@ -2582,7 +2580,7 @@ void CX2PET::DoProcessEvent()
 
 		case SCT_POSITIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y > 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y > 0.0f )
 				{
 					StateChange( pEventProcessData->m_NextStateID );
 				}
@@ -2591,7 +2589,7 @@ void CX2PET::DoProcessEvent()
 
 		case SCT_NEGATIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y <= 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y <= 0.0f )
 				{
 					StateChange( pEventProcessData->m_NextStateID );
 				}
@@ -3790,7 +3788,7 @@ float CX2PET::GetNowIntimacy()
 
 float CX2PET::GetNowSatiety()
 {
-	CX2PetManager::PetTemplet *petTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)m_petData.m_PetId );
+	[[maybe_unused]] CX2PetManager::PetTemplet *petTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)m_petData.m_PetId );
 	float fSatiety = m_petData.m_Satiety / 4800.f;
 	return fSatiety;
 }

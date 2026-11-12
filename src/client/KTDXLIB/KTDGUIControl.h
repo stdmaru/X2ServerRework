@@ -546,6 +546,12 @@ class CKTDGUIControl : private x2::NonCopyable
 			bool GetLoop() const { return m_bLoop; }
 			void SetLoop( bool bLoop_ ) { m_bLoop = bLoop_; }
 
+			/// BandiVideo's BVL_STATUS, which X2Lib read through m_Bvl: ready (open, stopped or played to the end),
+			/// playing, or error (the file did not open).
+			enum MOVIE_STATUS { MOVIE_STATUS_READY, MOVIE_STATUS_PLAYING, MOVIE_STATUS_ERROR };
+			MOVIE_STATUS GetStatus() const;
+			void Stop() { m_Player.Stop(); }
+
 			const D3DXVECTOR2& GetSize() const { return m_vSize; }
 			void SetSize(const D3DXVECTOR2& val) { m_vSize = val; }
 

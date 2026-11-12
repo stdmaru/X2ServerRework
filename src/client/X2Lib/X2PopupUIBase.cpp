@@ -9,7 +9,6 @@
 CX2PopupUIBase::CX2PopupUIBase(void)
 	: m_bShow ( false )
 	, m_pDlgPopup( NULL )
-	, m_pNowState( NULL )
 	, m_pPicLeftTop( NULL )
 	, m_pPicCenterTop ( NULL )
 	, m_pPicRightTop( NULL )
@@ -19,6 +18,7 @@ CX2PopupUIBase::CX2PopupUIBase(void)
 	, m_pPicLeftBottom( NULL )
 	, m_pPicCenterBottom( NULL )
 	, m_pPicRightBottom( NULL )
+	, m_pNowState( NULL )
 	, m_nMenuCount( 0 )
 {
 	// ���� �� �Ҵ�

@@ -78,7 +78,6 @@ CX2RidingPetManager::~CX2RidingPetManager(void)
 //#pragma region OnFrameMove
 HRESULT CX2RidingPetManager::OnFrameMove( IN double fTime_, IN float fElapsedTime_ )
 {
-	int iIndex = 0;
 	RidingPetMap::iterator iter;
 
 	if ( m_pSkillSlot )
@@ -178,7 +177,7 @@ void CX2RidingPetManager::SetShowAll( IN bool bVal_ )
 
 	RidingPetMap::iterator iter;
 
-	for ( iter == m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
+	for ( iter = m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
 	{
 		CX2RidingPetPtr pRidingPet = iter->second;
 		pRidingPet->SetShowObject( m_bShow );
@@ -239,7 +238,7 @@ void CX2RidingPetManager::InitPos()
 //#pragma endregion
 
 //#pragma region UICustomEventProc
-bool CX2RidingPetManager::UICustomEventProc( IN HWND hWnd_, IN UINT uMsg_, IN WPARAM wParam_, IN LPARAM lParam_ )
+bool CX2RidingPetManager::UICustomEventProc( IN HWND /*hWnd_*/, IN UINT /*uMsg_*/, IN WPARAM /*wParam_*/, IN LPARAM /*lParam_*/ )
 {
 	return false;
 }
@@ -279,7 +278,7 @@ bool CX2RidingPetManager::UIServerEventProc( IN HWND hWnd_, IN UINT uMsg_, IN WP
 //#pragma endregion
 
 //#pragma region CreateRidingPet
-CX2RidingPetPtr CX2RidingPetManager::CreateRidingPet( IN UidType uUserUid_, IN const CX2RidingPet::RidingPetInfo& RidingPetInfo_, IN D3DXVECTOR3 vInitPos_ )
+CX2RidingPetPtr CX2RidingPetManager::CreateRidingPet( IN UidType uUserUid_, IN const CX2RidingPet::RidingPetInfo& RidingPetInfo_, IN D3DXVECTOR3 /*vInitPos_*/ )
 {
 	RidingPetTemplet* pRidingPetTemplet = GetRidingPetTemplet( (CX2RidingPetManager::RIDING_PET_UNIT_ID) RidingPetInfo_.m_Id );
 
@@ -520,7 +519,7 @@ CX2RidingPet* CX2RidingPetManager::GetRidingPetIndex( IN int iIndex_ )
 	int iIndex = 0;
 	RidingPetMap::iterator iter;
 
-	for ( iter == m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
+	for ( iter = m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
 	{
 		CX2RidingPetPtr pRidingPet = iter->second;
 
@@ -777,7 +776,7 @@ void CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_REQ( UidType petUid )
 	g_pMain->AddServerPacket( EGS_SUMMON_RIDING_PET_ACK, 60.f );
 }
 
-bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_SUMMON_RIDING_PET_ACK kEvent;
@@ -829,7 +828,7 @@ bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_ACK( HWND hWnd, UINT uMs
 							if ( NULL != pRidingPetTemplet )
 							{
 								int iSlotNum = 0;
-								BOOST_FOREACH ( const RidingPetSkillInfo& SkilInfo, pRidingPetTemplet->m_vecAttackSkill )
+								for ( const RidingPetSkillInfo& SkilInfo : pRidingPetTemplet->m_vecAttackSkill )
 								{
 									m_pSkillSlot->SetSkillSlotCoolTime( iSlotNum++, SkilInfo.m_fCoolTime );
 								}
@@ -877,7 +876,7 @@ bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_ACK( HWND hWnd, UINT uMs
 	return false;
 }
 
-bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SUMMON_RIDING_PET_NOT kEvent;
@@ -932,7 +931,7 @@ void CX2RidingPetManager::Handler_EGS_CREATE_RIDING_PET_REQ( const UidType _uId 
 	g_pMain->AddServerPacket( EGS_CREATE_RIDING_PET_ACK, 60.f );
 }
 
-bool CX2RidingPetManager::Handler_EGS_CREATE_RIDING_PET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RidingPetManager::Handler_EGS_CREATE_RIDING_PET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_CREATE_RIDING_PET_ACK kEvent;
@@ -1027,7 +1026,7 @@ void CX2RidingPetManager::Handler_EGS_UNSUMMON_RIDING_PET_REQ( bool bIsDirect_ /
 	}
 }
 
-bool CX2RidingPetManager::Handler_EGS_UNSUMMON_RIDING_PET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RidingPetManager::Handler_EGS_UNSUMMON_RIDING_PET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_UNSUMMON_RIDING_PET_ACK kEvent;
@@ -1116,7 +1115,7 @@ bool CX2RidingPetManager::Handler_EGS_UNSUMMON_RIDING_PET_ACK( HWND hWnd, UINT u
 	return false;
 }
 
-bool CX2RidingPetManager::Handler_EGS_UNSUMMON_RIDING_PET_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RidingPetManager::Handler_EGS_UNSUMMON_RIDING_PET_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_SUMMON_RIDING_PET_NOT kEvent;
@@ -1194,7 +1193,7 @@ void CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_REQ( UidType _uId )
 	bool bCEventQuest2 = true;
 
 	// �̺�Ʈ�� �� ���� Ȯ��
-	if(StrCmpW(kInfo.m_wstrDestroyDate.c_str(), L"") == 0)
+	if(wcscmp(kInfo.m_wstrDestroyDate.c_str(), L"") == 0)
 		bCEventQuest1 = false;
 	else
 		bCEventQuest1 = true;
@@ -1221,7 +1220,7 @@ void CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_REQ( UidType _uId )
 	g_pMain->AddServerPacket( EGS_RELEASE_RIDING_PET_ACK, 60.f );
 }
 
-bool CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_RELEASE_RIDING_PET_ACK kEvent;
@@ -1255,7 +1254,7 @@ bool CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_ACK( HWND hWnd, UINT uM
 	return false;
 }
 
-bool CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_RELEASE_RIDING_PET_NOT kEvent;
@@ -1552,6 +1551,8 @@ bool CX2RidingPetManager::GetRidingOn()
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 	return Is_Ride;
@@ -1596,6 +1597,8 @@ bool CX2RidingPetManager::GetRidingOnState()
 					Is_Riding_State = true;
 			}
 		}
+		break;
+	default:
 		break;
 	}
 

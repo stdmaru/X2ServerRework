@@ -2,7 +2,6 @@
    @breif : 버프의 행동을 정의하는 Templet 파일
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffDisplayerTemplet.h"
@@ -90,9 +89,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 {
 	if ( luaManager_.BeginTable( pszTableNameUTF8_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		return ParsingDisplayer( luaManager_ );
 	}
@@ -165,9 +162,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 	/// 각 유닛 타입별로 RenderParam 셋팅을 읽어들임
 	while ( luaManager_.BeginTable( iTableIndex ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 
 		StBuffRenderParamPtr ptrStBuffRenderParam( new StBuffRenderParam );
@@ -319,7 +314,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 	@brief : 버프에 의해 출력 중인 EffectSet을 종료하는 함수
 	@param : 표현 종료를 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffEffectSetDisplayerTemplet::DoFinish( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffEffectSetDisplayerTemplet::DoFinish( CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( NULL != g_pX2Game )
 	{
@@ -339,7 +334,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 	@brief : 버프의 표현요소로 유닛에 붙은 트레이스를 시작시키는 함수
 	@param : 표현을 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffUnitSlashTraceDisplayerTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffUnitSlashTraceDisplayerTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( !DidStart() )	/// 중첩 된 것이라면 실행하지 않는다.
 	{
@@ -361,7 +356,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 	@brief : 버프에 의해 출력 중인 Trace를 종료하는 함수
 	@param : 표현 종료를 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffUnitSlashTraceDisplayerTemplet::DoFinish( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffUnitSlashTraceDisplayerTemplet::DoFinish( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( DidStart() )
 	{
@@ -511,7 +506,7 @@ void CX2BuffEffectSetImpactPointDisplayerTemplet::DoFinishByType( CX2GameUnit* p
 	@brief : 버프에 의해 출력 중인 Weapon 파티클을 종료
 	@param : 표현 종료를 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffWeaponParticleDisplayerTemplet::DoFinish( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffWeaponParticleDisplayerTemplet::DoFinish( CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( NULL != g_pX2Game && DidStart() )
 	{
@@ -773,7 +768,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 	@brief : 버프의 표현요소로 사운드 출력
 	@param : 표현을 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffSoundDisplayTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffSoundDisplayTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	pGameUnit_->PlaySound( m_wstrSoundName.c_str() );
 }
@@ -842,7 +837,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 	@brief : 버프의 표현요소로 이펙트셋을 Play시키는 함수
 	@param : 표현을 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffEffectSetCreateGapDisplayerTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffEffectSetCreateGapDisplayerTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( NULL != g_pX2Game )
 	{
@@ -873,7 +868,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 	@brief : 버프에 의해 출력 중인 EffectSet을 종료하는 함수
 	@param : 표현 종료를 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffEffectSetCreateGapDisplayerTemplet::DoFinish( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffEffectSetCreateGapDisplayerTemplet::DoFinish( CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( NULL != g_pX2Game )
 	{
@@ -963,7 +958,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 	@brief : 버프의 표현요소로 이펙트셋을 Play시키는 함수
 	@param : 표현을 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffEffectSetOnlyMyClassDisplayerTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffEffectSetOnlyMyClassDisplayerTemplet::StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( NULL != g_pX2Game &&
         NULL != pGameUnit_ &&
@@ -1008,7 +1003,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 	@brief : 버프에 의해 출력 중인 EffectSet을 종료하는 함수
 	@param : 표현 종료를 적용할 유닛(pGameUnit_), 버프 정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffEffectSetOnlyMyClassDisplayerTemplet::DoFinish( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffEffectSetOnlyMyClassDisplayerTemplet::DoFinish( CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( NULL != g_pX2Game )
 	{

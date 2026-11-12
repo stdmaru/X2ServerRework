@@ -2,7 +2,6 @@
    @breif : 버프의 행동을 정의하는 Templet 파일
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffBehaviorTemplet.h"
@@ -37,7 +36,7 @@ case type_: \
 		vector<UINT>::iterator vItr = vecBehaviorType.begin();
 		while ( vecBehaviorType.end() != vItr )		/// 조합에 포함된 행동요소들을 파싱
 		{
-			if( static_cast<BUFF_DISPLAYER_TYPE>( *vItr ) != BBT_REFLECT_MAGIC )
+			if( static_cast<BUFF_BEHAVIOR_TYPE>( *vItr ) != BBT_REFLECT_MAGIC )
 			{
 				bExceptionCase = false;
 			}
@@ -152,9 +151,7 @@ bool CX2BuffBehaviorTemplet::ParsingBehaviorTemplateMethod( KLuaManager& luaMana
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		return ParsingBehavior( luaManager_ );
 	}
@@ -203,7 +200,7 @@ bool CX2BuffBehaviorTemplet::SetFactorFromPacketTemplateMothod( const KBuffFacto
 	@brief : interval 타이머 Update, HP 변경
 	@param : HP가 변경되야 하는 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/, float fElapsedTime_ )
 {
     m_CheckElapsedTimeForInterval.OnFrameMove( fElapsedTime_ );	/// Interval 타이머 진행
 	m_delegateChangeHpByTypeFunc( pGameUnit_ );		/// HP 변경
@@ -232,7 +229,7 @@ bool CX2BuffBehaviorTemplet::SetFactorFromPacketTemplateMothod( const KBuffFacto
 // 			const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 				0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 			// 현재 효과의 적용값
 			const float fNewValueOrPercent = m_delegateGetValueOrPercentPerSecondFunc( pBehaviorFactor, fRegist );
@@ -307,7 +304,7 @@ bool CX2BuffBehaviorTemplet::SetFactorFromPacketTemplateMothod( const KBuffFacto
 	@brief : 패킷으로 부터 받은 버프 정보로 초당 Hp를 증감 시키는 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	m_fResultValue = kFactor_[0];
 	SelectDelegate();
@@ -463,7 +460,7 @@ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 	@brief : interval 타이머 Update, Mp 변경
 	@param : Mp가 변경되야 하는 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/, float fElapsedTime_ )
 {
 	m_CheckElapsedTimeForInterval.OnFrameMove( fElapsedTime_ );	/// Interval 타이머 진행
 	m_delegateChangeMpByTypeFunc( pGameUnit_ );		/// Mp 변경
@@ -492,7 +489,7 @@ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 // 			const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 				0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 			// 현재 효과의 적용값
 			const float fNewValueOrPercent = GetValueOrPercentPerSecond( pBehaviorFactor, fRegist );
@@ -568,7 +565,7 @@ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 	@brief : 패킷으로 부터 받은 버프 정보로 초당 MP를 증감 시키는 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	m_fResultValue = kFactor_[0];
 	SelectDelegate();
@@ -736,7 +733,7 @@ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 	@brief : 패킷으로 부터 받은 버프 정보로 좌우반전을 적용시키는 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffReverseLeftRightBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffReverseLeftRightBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& /*kFactor_*/, CX2GameUnit* pGameUnit_ )
 {
 	pGameUnit_->CreateAndInsertReverseLeftRightByBuff( kBuffFactor_.m_BuffIdentity );
 }
@@ -798,7 +795,7 @@ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 	@brief : 패킷으로 부터 받은 버프 정보로 공격(콤보, 스킬)을 못하게 하는 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffIdentityBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffIdentityBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& /*kFactor_*/, CX2GameUnit* pGameUnit_ )
 {
 	pGameUnit_->CreateAndInsertBuffIdentity( GetType(), kBuffFactor_.m_BuffIdentity );
 }
@@ -852,7 +849,7 @@ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 // 				const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 					0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-				const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+				const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 				const float fNewValue = GetValue( pBehaviorFactor, pGameUnit_, fRegist );
 				if ( DidStart() )	/// 중첩 또는 교체라면
@@ -1060,9 +1057,9 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 			if ( DidStart() )	/// 기존에 작동 중인 것이었으면 기존의 효과 삭제
 				pGameUnit_->EraseTemporaryBuffFactor( pBuffTemplet_->GetBuffIdentity() );
 
-			m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
-			if ( 0 > m_uiSkillId )
+			if ( 0 > (*pBehaviorFactor)[FO_SKILL_ID] )
 				return DISPLAY_ERROR( L"SKILL_ID doesn't exist" );
+			m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
 
 			CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( m_uiBuffFactorId );
 			if ( pGameUnit_->GetGameUnitType() == CX2GameUnit::GUT_USER )
@@ -1410,7 +1407,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : 보여주기용 각성 시간을 갱신
 	@param : 각성중인 유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeHyperModeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffChangeHyperModeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/, float fElapsedTime_ )
 {
 	if ( 0.0f < m_fRemainTime )
 	{
@@ -1426,7 +1423,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : BuffFactor에 담겨진 값으로 Templet 셋팅
 	@param : 버프요소(BuffFactor_), 버프를 가지고 있을 게임유닛(pGameUnit_), 기존에 가지고 있던 또는 새로운 버프템플릿 포인터(pBuffTemplet_)
 */
-/*virtual*/ bool CX2BuffChangeHyperModeBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffChangeHyperModeBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffBehaviorFactor* pBehaviorFactor = NULL;
 
@@ -1473,7 +1470,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : 패킷으로 부터 받은 버프 정보로 각성 행동 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeHyperModeBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffChangeHyperModeBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
 {
 	m_uiHyperModeCount = static_cast<UINT>( kFactor_[0] );
 	if ( static_cast<UINT>(CX2GageUI::PGUWO_ORB3) < m_uiHyperModeCount )
@@ -1488,7 +1485,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : 버프가 종료됬을 때 정리해야하는 행동들을 처리
 	@param : @param : 해당 버프에 걸렸던 게임유닛(pGameUnit_), 버프템플릿(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffChangeHyperModeBehaviorTemplet::DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffChangeHyperModeBehaviorTemplet::DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	CX2GageData* pGageData = CX2GageManager::GetInstance()->GetMyGageData();
 	if ( NULL != pGageData )
@@ -1506,7 +1503,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : 스킬 쿨타임 초기화
 	@param : 버프에 걸리 게임유닛(pGameUnit_), 버프의 템플리정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffResetSkillCoolTimeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffResetSkillCoolTimeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/, float /*fElapsedTime_*/ )
 {
 	if ( DidStart() )
 
@@ -1518,7 +1515,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : BuffFactor에 담겨진 값으로 Templet 셋팅
 	@param : 버프요소(BuffFactor_), 버프를 가지고 있을 게임유닛(pGameUnit_), 기존에 가지고 있던 또는 새로운 버프템플릿 포인터(pBuffTemplet_)
 */
-/*virtual*/ bool CX2BuffResetSkillCoolTimeBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffResetSkillCoolTimeBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffBehaviorFactor* pBehaviorFactor = NULL;
 
@@ -1575,7 +1572,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 /*virtual*/ void CX2BuffResetSkillCoolTimeBehaviorTemplet::GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const
 {
 	vecFactors_.push_back( KBuffBehaviorFactor( GetType() ) );
-	KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
+	[[maybe_unused]] KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
 }
 
 /** @function : ParsingBehavior
@@ -1640,14 +1637,14 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 /*virtual*/ void CX2BuffChangeUnitScaleBehaviorTemplet::GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const
 {
 	vecFactors_.push_back( KBuffBehaviorFactor( GetType() ) );
-	KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
+	[[maybe_unused]] KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
 }
 
 /** @function : SetFactorFromPacket
 	@brief : 패킷으로 부터 받은 버프 정보로 유닛의 스케일을 변경하는 행동 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeUnitScaleBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffChangeUnitScaleBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& /*kFactor_*/, CX2GameUnit* pGameUnit_ )
 {
 	if ( !DidStart() )
 		pGameUnit_->CreateAndInsertChangeUnitScaleByBuff( kBuffFactor_.m_BuffIdentity, m_vScale );
@@ -1722,7 +1719,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 /*virtual*/ void CX2BuffCustomFunctionBehaviorTemplet::GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const
 {
 	vecFactors_.push_back( m_kBuffBehaviorFactor );
-	KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
+	[[maybe_unused]] KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
 }
 
 /** @function : SetFactorFromPacket
@@ -1753,7 +1750,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : BuffFactor에 담겨진 값으로 Templet 셋팅
 	@param : 버프요소(BuffFactor_), 버프를 가지고 있을 게임유닛(pGameUnit_), 기존에 가지고 있던 또는 새로운 버프템플릿 포인터(pBuffTemplet_)
 */
-/*virtual*/ bool CX2BuffEffectSetWithDamageBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffEffectSetWithDamageBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffBehaviorFactor* pBehaviorFactor = NULL;
 
@@ -1798,7 +1795,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : 패킷으로 부터 받은 버프 정보로 데미지를 이펙트셋을 실행
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/void CX2BuffEffectSetWithDamageBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/void CX2BuffEffectSetWithDamageBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
 {
 	m_bNotUse = ( 0.0f < kFactor_[0] ? true : false );
 	m_fPowerRate = kFactor_[1];
@@ -1810,7 +1807,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 	@brief : 버프가 종료됬을 때 정리해야하는 행동들을 처리
 	@param : 해당 버프에 걸렸던 게임유닛(pGameUnit_), 버프템플릿(pBuffTemplet_)
 */
-/*virtual*/void CX2BuffEffectSetWithDamageBehaviorTemplet::DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/void CX2BuffEffectSetWithDamageBehaviorTemplet::DoFinish( CX2GameUnit* /*pGameUnit_*/, CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	if ( NULL != g_pX2Game && DidStart() )
 	{
@@ -1919,7 +1916,7 @@ void CX2BuffEffectSetWithDamageBehaviorTemplet::PlayEffectSet( CX2GameUnit* pGam
 	@brief : 패킷으로 부터 받은 버프 정보로 데미지를 이펙트셋을 실행
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/void CX2BuffStunBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/void CX2BuffStunBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& /*kFactor_*/, CX2GameUnit* pGameUnit_ )
 {
 	pGameUnit_->CreateAndInsertStunByBuff( kBuffFactor_.m_BuffIdentity );
 
@@ -1948,7 +1945,7 @@ void CX2BuffEffectSetWithDamageBehaviorTemplet::PlayEffectSet( CX2GameUnit* pGam
 	@brief : BuffFactor에 담겨진 값으로 Templet 셋팅
 	@param : 버프요소(BuffFactor_), 버프를 가지고 있을 게임유닛(pGameUnit_), 기존에 가지고 있던 또는 새로운 버프템플릿 포인터(pBuffTemplet_)
 */
-/*virtual*/ bool CX2BuffFinishOtherBuffDebuffBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffFinishOtherBuffDebuffBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffBehaviorFactor* pBehaviorFactor = NULL;
 
@@ -2076,7 +2073,7 @@ void CX2BuffFinishOtherBuffDebuffBehaviorTemplet::EraseBuffTempletFromGameUnit( 
 	@brief : 패킷으로 부터 받은 버프 정보로 데미지를 이펙트셋을 실행
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/void CX2BuffFreezeBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/void CX2BuffFreezeBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
 {
 	m_fAnimCurrentTime = kFactor_[0];
 	pGameUnit_->SetNowAnimationTime( m_fAnimCurrentTime );
@@ -2106,7 +2103,7 @@ void CX2BuffFinishOtherBuffDebuffBehaviorTemplet::EraseBuffTempletFromGameUnit( 
 	}
 }
 
-void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_, float fElapsedTime_ )
+void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/, float /*fElapsedTime_*/ )
 {
 	if ( DidStart() )
 		pGameUnit_->AnimStop();
@@ -2132,7 +2129,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	@brief : BuffFactor에 담겨진 값으로 Templet 셋팅
 	@param : 버프요소(BuffFactor_), 버프를 가지고 있을 게임유닛(pGameUnit_), 기존에 가지고 있던 또는 새로운 버프템플릿 포인터(pBuffTemplet_)
 */
-/*virtual*/ bool CX2BuffCanPassUnitBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffCanPassUnitBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffBehaviorFactor* pBehaviorFactor = NULL;
 
@@ -2166,7 +2163,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	@brief : 매 프레임 SetCanPassUnit 지정
 	@param : 버프에 걸리 게임유닛(pGameUnit_), 버프의 템플리정보(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffCanPassUnitBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_, float fElapsedTime_ )
+/*virtual*/ void CX2BuffCanPassUnitBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/, float /*fElapsedTime_*/ )
 {
 	if ( DidStart() )
 		pGameUnit_->SetCanPassUnit( m_bCanPassUnit );
@@ -2423,6 +2420,8 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 			case BBT_CHANGE_ATTRIBUTE_WIND_ATTACK_RATE :
 				m_eEnchantAttributeType = BEAT_PIERCING;
 				break;
+			default:
+				break;
 			}
 
 
@@ -2607,7 +2606,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	@brief : BuffFactor에 담겨진 값으로 Templet 셋팅
 	@param : 버프요소(BuffFactor_), 버프를 가지고 있을 게임유닛(pGameUnit_), 기존에 가지고 있던 또는 새로운 버프템플릿 포인터(pBuffTemplet_)
 */
-/*virtual*/ bool CX2BuffChangeAttackSphereScaleBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffChangeAttackSphereScaleBehaviorTemplet::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffBehaviorFactor* pBehaviorFactor = NULL;
 
@@ -2679,7 +2678,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	@brief : 패킷으로 부터 받은 버프 정보로 스탯을 변경하는 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeAttackSphereScaleBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffChangeAttackSphereScaleBehaviorTemplet::SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& /*kFactor_*/, CX2GameUnit* pGameUnit_ )
 {
 	/// 오작동 할 것으로 예상 됨... // 김현철 // 2013-07-18
 	if ( !DidStart() )
@@ -2702,7 +2701,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	@brief : 버프가 종료됬을 때 정리해야하는 행동들을 처리
 	@param : @param : 해당 버프에 걸렸던 게임유닛(pGameUnit_), 버프템플릿(pBuffTemplet_)
 */
-/*virtual*/ void CX2BuffChangeAttackSphereScaleBehaviorTemplet::DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ void CX2BuffChangeAttackSphereScaleBehaviorTemplet::DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	for( const AttackSphereNameAndScale& attackSphereNameAndScale : m_vecAttackSphereNameAndScale )
 	{
@@ -2898,18 +2897,17 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	@brief : BuffFactor에 담겨진 값으로 Templet 셋팅
 	@param : 버프요소(BuffFactor_), 버프를 가지고 있을 게임유닛(pGameUnit_), 기존에 가지고 있던 또는 새로운 버프템플릿 포인터(pBuffTemplet_)
 */
-/*virtual*/ bool CX2BuffChangeConsumeMpRate::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ )
+/*virtual*/ bool CX2BuffChangeConsumeMpRate::SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* /*pBuffTemplet_*/ )
 {
 	const KBuffBehaviorFactor* pBehaviorFactor = NULL;
 
 	/// 버프가 가지고 있는 여러 요소 중 현재 클래스에 해당 하는 정보를 얻어옴
 	if ( BuffFactor_.GetBehaviorFactor( GetType(), &pBehaviorFactor ) )
 	{
-		float fMPConsume = 0.f;
-		m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
-
-		if ( 0 > m_uiSkillId )
+		if ( 0 > (*pBehaviorFactor)[FO_SKILL_ID] )
 			return DISPLAY_ERROR( L"SKILL_ID doesn't exist" );
+
+		m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
 
 		if ( pGameUnit_->GetGameUnitType() == CX2GameUnit::GUT_USER )
 		{
@@ -2964,7 +2962,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	@brief : 패킷으로 부터 받은 버프 정보로 다른 유닛에게 지정된 버프 또는 디버프를 적용할 수 있는 행동 템플릿을 셋팅
 	@param : 서버로 부터 받은 행동요소(kFactor_), 적용할 게임유닛(pGameUnit_)
 */
-/*virtual*/ void CX2BuffChangeConsumeMpRate::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ )
+/*virtual*/ void CX2BuffChangeConsumeMpRate::SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* /*pGameUnit_*/ )
 {
 	m_eChangeType	= STATIC_CAST_FLOAT_TO_ENUM( BUFF_CHANGE_TYPE, kFactor_.m_vecValues[FO_CHANGE_TYPE] );
 	m_uiSkillId		= static_cast<UINT>( kFactor_[FO_SKILL_ID] );

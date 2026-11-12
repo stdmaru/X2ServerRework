@@ -580,7 +580,7 @@ public:
 
 	virtual void	ChargeMpAndEtcInTrainingGame();
 
-	__forceinline int	GetForcePower();
+	int	GetForcePower();
 
 	virtual void	DoProcessWhenKillEnemy( const CX2GameUnit* pDefender_ );
 

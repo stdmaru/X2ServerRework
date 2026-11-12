@@ -2,9 +2,9 @@
 
 #if defined(_WIN32)
 #include "x2/platform/types.h" // <windows.h>
-#include "x2/platform/unicode.h"
 #include <tlhelp32.h>
 #include <psapi.h>
+#include <shellapi.h>
 #else
 #include <cerrno>
 #include <csignal>
@@ -14,6 +14,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
+
+#include "x2/platform/unicode.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -666,11 +668,56 @@ bool Process::Running()
 
 #endif
 
+#if defined(_WIN32)
+
+bool OpenUrl(const std::wstring& url)
+{
+    const auto result = reinterpret_cast<INT_PTR>(
+        ::ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL));
+    return result > 32;
+}
+
+#else
+
+bool OpenUrl(const std::wstring& url)
+{
+    const std::string command = "xdg-open " + QuoteShellArgument(WideToUtf8(url)) + " >/dev/null 2>&1 &";
+    return std::system(command.c_str()) == 0;
+}
+
+#endif
+
 bool Process::WriteLine(std::string_view line)
 {
     std::string data(line);
     data += '\n';
     return Write(data);
+}
+
+std::string MachineIdentity()
+{
+#if defined(_WIN32)
+    char value[128] = {};
+    DWORD size = sizeof(value);
+    if (RegGetValueA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Cryptography", "MachineGuid",
+                     RRF_RT_REG_SZ | RRF_SUBKEY_WOW6464KEY, nullptr, value, &size) != ERROR_SUCCESS)
+        return {};
+    return value;
+#else
+    for (const char* path : {"/etc/machine-id", "/var/lib/dbus/machine-id"}) {
+        if (FILE* file = std::fopen(path, "r")) {
+            char value[128] = {};
+            const bool read = std::fgets(value, sizeof(value), file) != nullptr;
+            std::fclose(file);
+            std::string id = read ? value : "";
+            while (!id.empty() && (id.back() == '\n' || id.back() == '\r'))
+                id.pop_back();
+            if (!id.empty())
+                return id;
+        }
+    }
+    return {};
+#endif
 }
 
 } // namespace x2::platform

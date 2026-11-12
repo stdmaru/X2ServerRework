@@ -58,7 +58,7 @@ CX2WorldObjectParticle::CX2WorldObjectParticle( CKTDGParticleSystem* pParticleSy
 }
 
 
-HRESULT CX2WorldObjectParticle::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2WorldObjectParticle::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	HRESULT hr = S_OK;
 

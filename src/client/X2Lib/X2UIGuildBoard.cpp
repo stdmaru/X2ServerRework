@@ -2,13 +2,12 @@
 
 
 #include "./X2UIGuildBoard.h"
-#include < iomanip >
+#include <iomanip>
 
 CX2UIGuildBoard::CX2UIGuildBoard( const CKTDXStage* const pNowStage, const WCHAR* const pFileName ) :
 m_bShow( false ),
 m_bOldApplyDelete( false ),
 m_bRegMyGuildAd( false ),
-m_pNowStage( pNowStage ),
 m_pDlgGuildBoard( NULL ),
 m_nowSortType( ST_REG_DATE ),
 m_uiNowPage( 1 ),
@@ -18,10 +17,10 @@ m_uiMaxPageJoinList( 1 ),
 m_uiListIndexForJoin( 0 ),
 m_uiListIndexForSkill( 0 ),
 m_uiJoinListIndex( 0 ),
-m_vPosDlg( 0, 0 ),
+m_sAdvertisePeriod(1),
 m_vSizeDlg( 0, 0 ),
-m_pGuildSkillTreeInfo( NULL ),
-m_sAdvertisePeriod(1)	// 이거 초기값 1로 해야하는게 맞는건지 아닌건지....
+m_vPosDlg( 0, 0 ),
+m_pGuildSkillTreeInfo( NULL )	// 이거 초기값 1로 해야하는게 맞는건지 아닌건지....
 {
 	m_pRadioGuildNumMember = NULL;
 	m_pRadioGuildLevel = NULL;
@@ -125,7 +124,7 @@ m_sAdvertisePeriod(1)	// 이거 초기값 1로 해야하는게 맞는건지 아�
 	{
 		m_columnForJoinList[i].m_pCharacterIcon = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_Character_Icon.lua" );
 		D3DXVECTOR3 tempPos1 = m_pDlgJoinList->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgJoinList->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgJoinList->GetPos();
 		m_columnForJoinList[i].m_pCharacterIcon->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 
 		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_columnForJoinList[i].m_pCharacterIcon );
@@ -448,7 +447,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_SKILL_IN_BOARD_REQ()
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_SKILL_IN_BOARD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_SKILL_IN_BOARD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_GUILD_SKILL_IN_BOARD_ACK kEvent;
@@ -482,7 +481,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_REQ()
 
 	return true;
 }
-bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -504,7 +503,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, 
 		m_uiNowPage				= kEvent.m_uiViewPage;
 
 		//////////////////////////////////////////////////////////////////////////
-		u_int iSize = kEvent.m_vecGuildAdList.size();
+		[[maybe_unused]] u_int iSize = kEvent.m_vecGuildAdList.size();
 		//////////////////////////////////////////////////////////////////////////
 
 		UpdatePageUI();
@@ -538,7 +537,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, 
 					//SetNumImage( m_columnForAdvertise[i].m_pStaticGuildLevel, kGuildAdInfo.m_ucGuildLevel );
 
 					WCHAR buff[256] = {0};
-					_itow( kGuildAdInfo.m_ucGuildLevel, buff, 10 );
+					_itow_s( kGuildAdInfo.m_ucGuildLevel, buff, 10 );
 					wstring wstrNum = buff;
 
 					m_columnForAdvertise[i].m_pStaticGuildLevel->SetString( 0, wstrNum.c_str() );
@@ -561,6 +560,8 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, 
 				}
 			}
 			break;
+		default:
+			break;
 		}
 		return true;
 
@@ -581,7 +582,7 @@ bool CX2UIGuildBoard::Handler_EGS_MODIFY_REG_GUILD_AD_REQ( wstring &wstrMessage 
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_MODIFY_REG_GUILD_AD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_MODIFY_REG_GUILD_AD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MODIFY_REG_GUILD_AD_ACK kEvent;
@@ -632,7 +633,7 @@ bool CX2UIGuildBoard::Handler_EGS_REGISTRATION_GUILD_AD_REQ( wstring &wstrMessag
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_REGISTRATION_GUILD_AD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_REGISTRATION_GUILD_AD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REGISTRATION_GUILD_AD_ACK kEvent;
@@ -687,7 +688,7 @@ bool CX2UIGuildBoard::Handler_EGS_APPLY_JOIN_GUILD_REQ( wstring &wstrMessage, bo
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_APPLY_JOIN_GUILD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_APPLY_JOIN_GUILD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_APPLY_JOIN_GUILD_ACK kEvent;
@@ -728,7 +729,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_REQ()
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_APPLY_JOIN_GUILD_LIST_ACK kEvent;
@@ -831,7 +832,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_ACK(  HWND hWnd, UIN
 
 					//m_columnForJoinList[i].m_pStaticJoinList->SetString( 2, L"09-06-21 145:2434:434");
 					WCHAR	temp[20] = { 0, };
-					if( kApplyJoinGuildInfo.m_wstrRegDate.find( L" " ) >= 0 )
+					if( kApplyJoinGuildInfo.m_wstrRegDate.find( L" " ) != std::wstring::npos )
 						kApplyJoinGuildInfo.m_wstrRegDate.copy(temp, kApplyJoinGuildInfo.m_wstrRegDate.find( L" " ) );
 
 					m_columnForJoinList[i].m_pStaticJoinList->SetString( 2,  temp );
@@ -874,7 +875,7 @@ bool CX2UIGuildBoard::Handler_EGS_ACCEPT_JOIN_GUILD_REQ()
 
 	return true;
 }
-bool CX2UIGuildBoard::Handler_EGS_ACCEPT_JOIN_GUILD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_ACCEPT_JOIN_GUILD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ACCEPT_JOIN_GUILD_ACK kEvent;
@@ -912,7 +913,7 @@ bool CX2UIGuildBoard::Handler_EGS_DELETE_APPLY_JOIN_GUILD_REQ()
 
 	return true;
 }
-bool CX2UIGuildBoard::Handler_EGS_DELETE_APPLY_JOIN_GUILD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_DELETE_APPLY_JOIN_GUILD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_APPLY_JOIN_GUILD_ACK kEvent;
@@ -945,7 +946,7 @@ bool CX2UIGuildBoard::SetShowGuildAdvertiseMessageDlg(bool bEnable)
 	{
 		if(m_pDlgGuildAdvertiseMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildAdvertiseMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildAdvertiseMessage, 0, false );
 			m_pDlgGuildAdvertiseMessage = NULL;
 		}
 		return true;
@@ -968,7 +969,7 @@ bool CX2UIGuildBoard::SetShowGuildJoinMessageDlg(bool bEnable)
 	{
 		if(m_pDlgGuildJoinMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildJoinMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildJoinMessage, 0, false );
 			m_pDlgGuildJoinMessage = NULL;
 		}
 		return true;
@@ -1291,7 +1292,7 @@ void CX2UIGuildBoard::SetNumToPicture( CKTDGUIControl::CPictureData* const pPict
 
 
 
-HRESULT		CX2UIGuildBoard::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT		CX2UIGuildBoard::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	return S_OK;
 }
@@ -1525,7 +1526,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 				CKTDGUIControl* pControl = NULL;
 				pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				Handler_EGS_APPLY_JOIN_GUILD_REQ( m_wstrLastMessage , true);
 				return true;
@@ -1568,7 +1569,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			Handler_EGS_APPLY_JOIN_GUILD_REQ( m_wstrLastMessage , false);
 		} break;
 	case UGBCM_PUSH_JOIN_MESSAGE_CANCEL:
@@ -1578,7 +1579,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 				m_bOldApplyDelete = false;
 				CKTDGUIControl* pControl = NULL;
 				pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 			else
 			{
@@ -1657,7 +1658,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if( m_bRegMyGuildAd == true )
 			{
@@ -1678,7 +1679,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			SetShowGuildAdvertiseMessageDlg(true);
 		} break;
@@ -1734,7 +1735,6 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 			CKTDGUIRadioButton* pRadioButton = (CKTDGUIRadioButton*) lParam;
 			m_uiJoinListIndex = pRadioButton->GetDummyInt(0);
 
-			if( m_uiJoinListIndex >= 0 )
 			{
 				m_columnForJoinList[m_uiJoinListIndex].m_pButtonDescMessage->SetShowEnable(true, true);
 
@@ -1950,7 +1950,6 @@ bool CX2UIGuildBoard::CanILearnThisSkill( CX2SkillTree::SKILL_ID eSkillID, bool 
 	if( true == IsMaxGuildSkillLevel( eSkillID ) )
 		return false;
 
-	int iSkillLevelToLearn = GetGuildSkillLevel( eSkillID ) + 1;
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 	if( NULL == pSkillTemplet )
 		return false;

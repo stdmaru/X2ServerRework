@@ -95,7 +95,7 @@ public:
 		float					m_fTimeLeftForReplyInvite;
 
 	public:
-		TutorInvited( UidType InviterUnitUID, wstring& wstrInviterName, float fTimeLeft, int YesMsgID, int NoMsgID, CKTDXStage* pNowStage );
+		TutorInvited( UidType InviterUnitUID, const wstring& wstrInviterName, float fTimeLeft, int YesMsgID, int NoMsgID, CKTDXStage* pNowStage );
 		~TutorInvited();
 		void OnFrameMove( double fTime, float fElapsedTime );
 	};

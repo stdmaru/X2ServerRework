@@ -1,9 +1,15 @@
 #include "stdafx.h"
+#include "x2/platform/console.h"
 #include "./X2Main.h"
 
-#include <ShlObj.h>
 
-#include "MachineIdLib.h"
+#include "x2/platform/process.h"
+#include "x2/platform/modules.h"
+#include "x2/platform/system_scan.h"
+#include "base64.h"
+#include <filesystem>
+#include <array>
+#include <cstdint>
 
 
 #include <functional>
@@ -13,16 +19,6 @@ using std::bind;
 
 #include "X2DLLManager.h"
 
-#if defined(DEBUG) || defined(_DEBUG)
-#ifdef CLIENT_COUNTRY_KR
-#endif // CLIENT_COUNTRY_KR
-#else // DEBUG
-#ifdef CLIENT_COUNTRY_KR
-#endif // CLIENT_COUNTRY_KR
-#endif // DEBUG
-
-
-#endif
 
 //{{ kimhc // 2010.3.3 // ???? ???? ????
 //}} kimhc // 2010.3.3 // ???? ???? ????
@@ -52,183 +48,19 @@ CX2WeddingGame*		g_pWeddingGame	= NULL;
 
 CX2ChatBox*			g_pChatBox		= NULL;
 
-FILE*				g_fpStream		= NULL;
-FILE*				g_fpStreamError = NULL;
 
 
 
 
 
 
-BOOL CALLBACK EnumCheckThreadWndProc(HWND hwnd, LPARAM lParam)
-{
-
-	if( hwnd )
-	{
-		vector<THREAD_WND_INFO>* vecThreadWndInfo = (vector<THREAD_WND_INFO>*)lParam;
-
-		WCHAR wTextWindow[_MAX_PATH] = L"";
-		WCHAR wTextClass[_MAX_PATH] = L"";
-		int hr1 = GetWindowText(hwnd, wTextWindow, _MAX_PATH);
-		int hr2 = GetClassName(hwnd,wTextClass,_MAX_PATH);
-
-		THREAD_WND_INFO threadWndInfo;
-
-		if( hr1 > 0 )
-			threadWndInfo.m_wstrName = wTextWindow;
-		else
-			threadWndInfo.m_wstrName = L"NameEmpty";
-
-		if( hr2 > 0 )
-			threadWndInfo.m_wstrClass = wTextClass;
-		else
-			threadWndInfo.m_wstrClass = L"ClassEmpty";
-
-		if( hr1 > 0 )
-		{
-			if( threadWndInfo.m_wstrName.compare( L"MSCTFIME UI") != 0 &&
-				threadWndInfo.m_wstrName.compare( L"Default IME") != 0 )
-				//StrStrW( threadWndInfo.m_wstrClass.c_str(), L"HwndlessEditorFakeHwndWrapper") &&
-				//threadWndInfo.m_wstrClass.compare L"tooltips_class32") != 0 &&
-				//threadWndInfo.m_wstrClass.compare L"tooltips_class32") != 0 &&
-				//threadWndInfo.m_wstrClass.compare L"WorkerW") != 0 )
-			{
-				vecThreadWndInfo->push_back(threadWndInfo);
-			}
-		}
-	}
-
-
-	return TRUE;
-}
-
-vector<THREAD_WND_INFO> GetThreadWnd( DWORD threadId )
-{
-
-	vector<THREAD_WND_INFO>	vecThreadWndInfo;
-	EnumThreadWindows(threadId, EnumCheckThreadWndProc, (LPARAM)&vecThreadWndInfo);
-
-#if X2_DEV_TOOLS
-	FILE *fp = fopen("threadInfo.info", "w");
-	for(UINT i=0; i<vecThreadWndInfo.size(); ++i)
-	{
-		wstring threadinfoWindow = vecThreadWndInfo[i].m_wstrName;
-		wstring threadinfoClass = vecThreadWndInfo[i].m_wstrClass;
-		fwprintf(fp, L"%s [%s]\n", threadinfoWindow.c_str(), threadinfoClass.c_str());
-	}
-	fclose(fp);
-#endif
-
-
-	return vecThreadWndInfo;
-}
-
-BOOL CALLBACK EnumWindowsProc_Thread(HWND hwnd , LPARAM lp)
-{
-    CX2Main::CheckWindowInfo* pkCheckWindowInfo = (CX2Main::CheckWindowInfo*) lp;
-    if ( pkCheckWindowInfo == NULL )
-        return FALSE;
-
-#if !X2_DEV_TOOLS
-	// checked
-#endif
-
-
-
-	WCHAR textWindow[_MAX_PATH] = L"";
-	WCHAR textClass[_MAX_PATH] = L"";
-
-	if(GetParent(hwnd))
-		return TRUE;
-
-	//THEMIDA_VM_START
-
-
-	int hr1 = GetWindowText(hwnd,textWindow,_MAX_PATH);
-	int hr2 = GetClassName(hwnd,textClass,_MAX_PATH);
-
-	MakeUpperCase(textWindow);
-	MakeUpperCase(textClass);
-
-	//if( g_pMain != NULL && g_pMain->GetCheckWindowInfo() != NULL )
-	{
-		KHackingToolInfo windowInfo;
-		if( hr1 > 0 )
-			windowInfo.m_wstrProcessName = textWindow;
-		else
-			windowInfo.m_wstrProcessName = L"EMPTY";
-		if( hr2 > 0 )
-			windowInfo.m_wstrWindowClassName = textClass;
-		else
-			windowInfo.m_wstrWindowClassName = L"EMPTY";
-
-		pkCheckWindowInfo->PushWindowInfo_Thread(windowInfo);
-	}
-
-	//THEMIDA_VM_END
-
-
-#if !X2_DEV_TOOLS
-#endif
-
-	return TRUE;
-
-
-}
-
+// The client's own anti-cheat. The original read the PEB's BeingDebugged byte with 32-bit x86 assembly.
 BOOL Pesudo_IsDebuggerPresent()
 {
-
-	// TODO : ???? VM_START ??? ENCODE_START ??????? ?????? ???? ?????? ????
-	// Error: There is at least a nested VM/CodeReplace macros. VM/CodeReplace macros cannot be nested.
-	//THEMIDA_VM_START
-	//THEMIDA_ENCODE_START
-
-#if !X2_DEV_TOOLS
-	// checked
-#endif
-
-	BOOL Retval = 0;
-	__asm
-	{
-		push eax
-		mov eax,dword ptr fs:[0x18]
-		mov eax,dword ptr ds:[eax+0x30]
-		movzx eax,byte ptr ds:[eax+0x2]
-		mov Retval,eax
-		pop eax
-	}
-
-#if !X2_DEV_TOOLS
-#endif
-
-	//THEMIDA_ENCODE_END
-	//THEMIDA_VM_END
-
 #if X2_DEV_TOOLS
-	return false;
+	return FALSE;
 #else
-	return Retval;
-#endif
-
-}
-
-
-// NOTE : ???? ?? ????? ?????? ???? ???.
-int CheckDebugger()
-{
-#if !X2_DEV_TOOLS
-#endif
-
-	_asm
-	{
-		mov eax, fs:[30h]
-		mov eax, [eax+68h]
-		and eax, 0x70
-		test eax, eax
-	}
-
-#if !X2_DEV_TOOLS
+	return x2::platform::IsDebuggerAttached() ? TRUE : FALSE;
 #endif
 }
 
@@ -237,51 +69,6 @@ int CheckDebugger()
 
 
 
-// crashreport???? ????? ??????
-inline BOOL WINAPI CrashReportCallback(LPVOID lpvState)
-{
-	SIZE_T currMemSize=0, peakMemSize=0;
-	GetUsingMemorySize( L"X2.exe", currMemSize, peakMemSize );
-	WCHAR wszText[64] = L"";
-	swprintf( wszText, sizeof(wszText)/sizeof(WCHAR)-1, L"mem: curr-%d, peak-%d", currMemSize, peakMemSize );
-	StateLog( wszText );
-
-
-
-#if !X2_DEV_TOOLS
-	g_CKTDXLog.ErrorLogToFile( "ErrorLog.txt" );
-	g_CKTDXLog.StateLogToFile( "State.log" );
-	//FileEncrypt( "ErrorLog.txt" );
-	//FileEncrypt( "State.log" );
-#endif
-
-	IDirect3DSurface9* pBackBuffer = 0;
-	if( NULL != g_pKTDXApp &&
-		NULL != g_pKTDXApp->GetDevice() )
-	{
-		g_pKTDXApp->GetDevice()->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer );
-		if( NULL != pBackBuffer )
-		{
-			D3DXSaveSurfaceToFile( L"Crash_ScreenShot.jpg", D3DXIFF_JPG, pBackBuffer, NULL, NULL );
-			pBackBuffer->Release();
-		}
-	}
-	AddFile(lpvState, (LPCTSTR)"Crash_ScreenShot.jpg",		(LPCTSTR)"screen shot"  );
-
-	AddFile(lpvState, (LPCTSTR)"log.htm",		(LPCTSTR)"log file"  );
-	AddFile(lpvState, (LPCTSTR)"ErrorLog.txt",	(LPCTSTR)"ErrorLog File" );
-	AddFile(lpvState, (LPCTSTR)"DialogLog.txt",	(LPCTSTR)"DialogLog File" );
-	AddFile(lpvState, (LPCTSTR)"P2PLog.txt",	(LPCTSTR)"P2PLog File" );
-	AddFile(lpvState, (LPCTSTR)"State.log",		(LPCTSTR)"StateLog File" );
-
-	if ( g_pMain != NULL )
-	{
-		g_pMain->SetQuitType( NetError::ERR_CLIENT_QUIT_02 );
-		g_pMain->SendQuitMsgToServer();
-	}
-
-	return TRUE;
-}
 
 
 
@@ -357,41 +144,34 @@ inline BOOL WINAPI CrashReportCallback(LPVOID lpvState)
 
 
 CX2Main::CX2Main() :
-m_bEnabledDeveloperCheatCode( true ),
-m_pData( NULL ),
-m_pStringFilter( NULL ),
-m_pGameEdit( NULL ),
-m_pTextManager( NULL ),
-m_pNoticeManager( NULL ),
-m_pCheckSumManager( NULL ),
-m_pLVUpEventMgr( NULL ),
-m_pTutorSystem( NULL ),
-m_pCouponBox( NULL ),
-
-m_pX2PVPEmblem( NULL ),
-m_pPostBox( NULL ),
-m_pSecurityPad( NULL ),
-m_pInformerManager( NULL ),
-m_pMemoryHolder( NULL )
+  m_DefaultChannelServerInfo()
+, m_pData( NULL )
+, m_pStringFilter( NULL )
+, m_pGameEdit( NULL )
+, m_pTextManager( NULL )
+, m_pNoticeManager( NULL )
+, m_pCheckSumManager( NULL )
+, m_pTutorSystem( NULL )
+, m_pCouponBox( NULL )
+, m_pX2PVPEmblem( NULL )
+, m_pPostBox( NULL )
+, m_pSecurityPad( NULL )
+, m_pInformerManager( NULL )
+, m_pMemoryHolder( NULL )
+, m_pLVUpEventMgr( NULL )
+, m_bEnabledDeveloperCheatCode( true )
 , m_bIsPopUpOnChat( false )
-, m_DefaultChannelServerInfo()
-#ifdef REFORM_UI_KEYPAD
-, m_pKeyPad( NULL )
-#endif
 , m_dwNationFlag( NF_NONE )
-, m_iGameHour( 0 )							//??????? ???? ?? ???? ?��? ???
-, m_pDlgPlayTimeInformation( NULL )			//?��??? ?��? ????? Dialog
-, m_pDlgShutDownInformation( NULL )			//?��??? ?��? ????? Dialog
-
-, m_fPlayTimeInfoShowTime( 0.f )			//???? ???? ?��?
-, m_fShutDownInfoShowTime( 0.f )			//???? ???? ?��?
-
-, m_bProcessPlayTimeInformation( false )	//???? Fade ??? ???? ????
-, m_bProcessShutDownInformation( false )	//???? Fade ??? ???? ????
-
-, m_wstrShutDownString( L"" )				//???? ?????? ????
+, m_iGameHour( 0 )
+, m_pDlgPlayTimeInformation( NULL )
+, m_fPlayTimeInfoShowTime( 0.f )
+, m_bProcessPlayTimeInformation( false )
+, m_pDlgShutDownInformation( NULL )
+, m_fShutDownInfoShowTime( 0.f )
+, m_bProcessShutDownInformation( false )
+, m_wstrShutDownString( L"" )
+, m_pKeyPad( NULL )
 , m_bSurveyUser( false )
-//{{ ???? [2013/1/4]  ????? ???? ??????? ????????? ???
 , m_bIsValideCheckKomScript ( true )
 , m_bPlayIntroMovie( true )
 {
@@ -412,7 +192,7 @@ m_pMemoryHolder( NULL )
 
 
 
-	RegisterHotKey( NULL, NULL, MOD_ALT, VK_F4 );
+	DXUTSetCloseOnAltF4( false );
 
 
 	g_pMain					= this;
@@ -439,7 +219,6 @@ m_pMemoryHolder( NULL )
 	m_QuitType				= NetError::ERR_CLIENT_QUIT_00;
 
 
-	m_pCrashReportState		= NULL;
 
 	m_X2Publisher			= XP_K3RCOMBO_US;
 
@@ -454,7 +233,6 @@ m_pMemoryHolder( NULL )
 	m_bAutoQuit			= false;
 	m_fAutoQuitTime		= 0.0f;
 	m_fAutoQuitCoolTime = (float)RandomNumber( 5, 10 );
-	m_fTimeToUpdateProcessList = 0;
 
 	m_pPartyUI = NULL;
 
@@ -489,16 +267,12 @@ m_pMemoryHolder( NULL )
 		case XP_K3RCOMBO_US:
 			{
 
-				if( __argc == 3 )
+				if( DXUTGetCommandLine().size() == 3 )
 				{
 					m_bManualLogin = false;
 					// ????ID -> ????ID?? ????
-					char* tempArgv = __argv[1];
-					wstring wstrID;
-					wstrID.clear();
-					char IDString[2000] = {0,};
-					strncpy( IDString, tempArgv , 1999 );
-					ConvertCharToWCHAR(m_wstrID, IDString, strlen(IDString));
+					const std::string& strID = DXUTGetCommandLine()[1];
+					ConvertCharToWCHAR( m_wstrID, strID.c_str(), static_cast<int>( strID.size() ) );
 					// ?????? ???? ??? -> ???? PW?? ????
 					m_wstrPass = L"81621XZJ2380DE";
 				}
@@ -533,7 +307,7 @@ m_pMemoryHolder( NULL )
 		g_pInstanceData->SetUserID( m_wstrID );
 		g_pInstanceData->SetUserPassword( m_wstrPass );
 
-		if( __argc == 3 )
+		if( DXUTGetCommandLine().size() == 3 )
 			// ???? ID?? ??? ?????? ??? ?????? ????.
 			g_pInstanceData->SetUserSessionID(m_wstrID);
 	}
@@ -556,7 +330,7 @@ m_pMemoryHolder( NULL )
 		{
 			const std::string strMessage = "Cannot load the game data: " + strError;
 			ErrorLogMsg( KEM_ERROR132, strMessage.c_str() );
-			SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Elsword", strMessage.c_str(), nullptr );
+			MessageBoxA( NULL, strMessage.c_str(), "Elsword", MB_OK | MB_ICONERROR );
 			std::exit( EXIT_FAILURE );
 		}
 	}
@@ -567,9 +341,6 @@ m_pMemoryHolder( NULL )
 
 
 
-	//{{ ????? : [2010/05/05]	//	???????? ????
-	SiCX2DLLManager()->Init();
-	//}}
 
 	m_bAutoStart = false;
 	m_AutoLoginUnitIndex = 0;
@@ -634,34 +405,6 @@ m_pMemoryHolder( NULL )
 
 
 
-#ifndef BUG_TRAP
-	string clientVersion = "";
-
-#if !X2_DEV_TOOLS
-		clientVersion = "[CRASH_REPORT_SERVICE] ";
-#else
-	clientVersion = "[CRASH_REPORT_TEST] ";
-#endif // _SERVICE_
-
-
-	string clientMainVersion = "";
-	ConvertWCHARToChar( clientMainVersion, GetClientVersion() );
-	clientVersion += "_(";
-	clientVersion += clientMainVersion;
-	string subClientVersion = "";
-	ConvertWCHARToChar( subClientVersion, GetSubClientVersion_LUA() );
-	if( subClientVersion.length() > 0 )
-	{
-		clientVersion += "_";
-		clientVersion += subClientVersion;
-	}
-	clientVersion += ")_";
-
-#ifndef _DEBUG
-	m_pCrashReportState = Install( CrashReportCallback, (LPCTSTR)"wonpok@kogstudios.com", (LPCTSTR)clientVersion.c_str() );
-#endif // _DEBUG
-
-#endif // BUG_TRAP
 
 	m_pStringFilter			= new CX2StringFilter();
 	m_pGameEdit				= new CX2GameEdit();
@@ -717,14 +460,10 @@ m_pMemoryHolder( NULL )
 
 	g_pKTDXApp->GetDIManager()->SetEnable( true );
 
-	FreeConsole();
-	if ( g_fpStream != NULL )
-		fclose( g_fpStream );
-	if ( g_fpStreamError != NULL )
-		fclose( g_fpStreamError );
+	x2::platform::CloseDebugConsole();
 
 	g_pKTDXApp->InsertStage( m_pData );
-    g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, XS_START_UP, NULL, false );
+    g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, XS_START_UP, 0, false );
 
 	m_bHackingUser = false;
 
@@ -754,11 +493,7 @@ m_pMemoryHolder( NULL )
 #	endif
 
 g_pKTDXApp->GetDeviceManager()->ResumeThread();
- 	CSystemInfo* pSystemInfo = new CSystemInfo();
- 	pSystemInfo->Init();
- 	const unsigned char* pMachineId = pSystemInfo->GetMachineId();
- 	std::string enMachineId = base64_encode(pMachineId, 16);
-	delete pSystemInfo;
+	const std::string enMachineId = GetMachineId();
 
 #if X2_DEV_TOOLS
  	FILE *fp = NULL;
@@ -773,7 +508,7 @@ g_pKTDXApp->GetDeviceManager()->ResumeThread();
 	ErrorLogMsg( XEM_ERROR1, enMachineId.c_str() );
 
 #if X2_DEV_TOOLS
-	DeleteFileA("OpenScriptFile.log");
+	std::remove( "OpenScriptFile.log" );
 #endif //LOG_LOAD_DLG_SCRIPT
 
 #if X2_DEV_TOOLS
@@ -803,7 +538,6 @@ CX2Main::~CX2Main(void)
 // #endif //  MOVIE_TEST	// 13-11-11, ???? ???? ????, kimjh, MOVIE_TEST ?? ??�� ????? Define ?? MOVIE_TEST_BASE ?? ????
 
 
-	DllManagerReport();
 
 
 
@@ -880,20 +614,6 @@ CX2Main::~CX2Main(void)
 
 
 
-	for ( int i = 0; i < (int)m_UseFontNameList.size(); i++ )
-	{
-		wstring fontName = m_UseFontNameList[i];
-		//RemoveFontResourceEx( fontName.c_str(), FR_PRIVATE, NULL );
-		if( RemoveFontResource( fontName.c_str() ) == false )
-		{
-			int i = 0;
-		}
-	}
-/*
-	InvalidateRect( g_pKTDXApp->GetHWND(), NULL, TRUE );
-	SendMessage( HWND_BROADCAST, WM_FONTCHANGE, 0, 0 );
-*/
-	m_UseFontNameList.clear();
 
 #if !X2_DEV_TOOLS
 #endif //_SERVICE_
@@ -911,9 +631,6 @@ CX2Main::~CX2Main(void)
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 
 	CX2EmblemManager::DestroyInstance();
-
-	CX2MailLogManager::GetInstance()->SendMail();
-	CX2MailLogManager::DestroyInstance();
 
 	CX2BossRaidManager::DestroyInstance();
 
@@ -983,7 +700,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 	m_fCheckDebugeTimer += fElapsedTime;
 	if( m_fCheckDebugeTimer > 20.f )
 	{
-		if( Pesudo_IsDebuggerPresent() ) //|| CheckDebugger() )
+		if( Pesudo_IsDebuggerPresent() )
 		{
 			if( g_pData != NULL && g_pData->GetServerProtocol() != NULL &&
 				g_pKTDXApp->GetFindHacking() == false )
@@ -1021,14 +738,8 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 		bool bIsvalidCheckThread = true;
 		if( m_threadCheckWindowInfo != NULL )
 		{
- 			if( m_threadCheckWindowInfo->GetThreadHandle() != NULL )
- 			{
- 				DWORD dwExitCode = 0;
- 				::GetExitCodeThread( m_threadCheckWindowInfo->GetThreadHandle(), &dwExitCode );
- 				if( dwExitCode != STILL_ACTIVE )
- 					bIsvalidCheckThread = false;
- 			}
-			if( m_threadCheckWindowInfo->GetThreadHandle() == NULL || m_threadCheckWindowInfo->GetIsLoop() == false )
+			if( false == m_threadCheckWindowInfo->HasThread() || m_threadCheckWindowInfo->IsThreadFinished() ||
+				m_threadCheckWindowInfo->GetIsLoop() == false )
 			{
 				bIsvalidCheckThread = false;
 			}
@@ -1077,7 +788,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 			}
 #endif // _SERVICE_
 
-			g_pKTDXApp->SendGameMessage( XGM_SERVER_PACKET_TIMEOUT, pWaitServerPacket->waitACK, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_SERVER_PACKET_TIMEOUT, pWaitServerPacket->waitACK, 0, false );
 			SAFE_DELETE( pWaitServerPacket );
 			m_WaitServerPacketList.erase( m_WaitServerPacketList.begin() + i );
 			i--;
@@ -1186,7 +897,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 		{
 			if ( -1 != ItrTimedPopUp->m_iTimeOutMsg )
 			{
-				g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, ItrTimedPopUp->m_iTimeOutMsg, NULL, false );
+				g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, ItrTimedPopUp->m_iTimeOutMsg, 0, false );
 			}
 
 			m_listTimedMessagePopUp.erase( ItrTimedPopUp++ );
@@ -1295,12 +1006,8 @@ bool CX2Main::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				return true;
 			}
 			break;
-		case WM_SYSCOMMAND:
-			if( wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER )
-			{
-				return true;
-			}
-			break;
+		// WM_SYSCOMMAND: the original kept the screen saver and monitor power-off away; SDL disables the screen saver
+		// while the window is open.
 
 		case WM_SETFOCUS:
 			// Back from a page opened in the system browser: what closing the embedded browser's dialog did.
@@ -2912,7 +2619,7 @@ void CX2Main::RegisterLuabind()
 
 
 
-bool CX2Main::StateChange( int stateID, int iDetailStateID )
+bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 {
 
 
@@ -3317,6 +3024,8 @@ void CX2Main::ReservedServerEventProc()
 					{
 						continue;	// continue for loop
 					} break;
+				default:
+					break;
 				}
 
 
@@ -3342,6 +3051,8 @@ void CX2Main::ReservedServerEventProc()
 					{
 						continue;	// continue for loop
 					} break;
+				default:
+					break;
 				}
 
 
@@ -3353,6 +3064,8 @@ void CX2Main::ReservedServerEventProc()
 				i--;
 			} break;
 //}} oasis907 : ????? [2009.12.17] //
+		default:
+			break;
 		}
 	}
 }
@@ -3366,7 +3079,8 @@ bool CX2Main::DeleteFile( const WCHAR* pFileName )
 	// The original tested the array instead of GetPullPath's result and deleted the bare name when nothing was found.
 	if ( g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->GetPullPath( wszFileName ) != NULL )
 	{
-		::DeleteFile( wszFileName );
+		std::error_code error;
+		std::filesystem::remove( std::filesystem::path( wszFileName ), error );
 		return true;
 	}
 
@@ -3438,7 +3152,6 @@ bool CX2Main::DeleteFile( const WCHAR* pFileName )
 
 	const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pStatic->GetString(0)->fontIndex );
 	if( pFont == NULL )
@@ -3582,7 +3295,6 @@ CKTDGUIDialogType CX2Main::KTDGUIOKMsgBoxPlus( D3DXVECTOR2 pos, const WCHAR* pTe
 
 	const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pStatic->GetString(0)->fontIndex );
 	if( pFont == NULL )
@@ -3685,7 +3397,6 @@ CKTDGUIDialogType CX2Main::KTDGUIMsgBox( D3DXVECTOR2 pos, const WCHAR* pText, CK
 
 
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 //	CKTDGFontManager::CKTDGFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetFont( pStatic->GetString(0)->fontIndex );
 	//CKTDGUIUniBuffer uniBuffer;
@@ -3789,7 +3500,6 @@ CKTDGUIDialogType CX2Main::KTDGUIOkAndCancelMsgBox( D3DXVECTOR2 pos, const WCHAR
 
 	const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	//CKTDGFontManager::CKTDGFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetFont( pStatic->GetString(0)->fontIndex );
 	//CKTDGUIUniBuffer uniBuffer;
@@ -4185,13 +3895,12 @@ void CX2Main::AddChannelServerIP_LUA( const char* pServerIP, int iServerPort /*=
 	if( NULL == pServerIP )
 		return;
 
-	struct hostent* host = NULL;
 	wstring wstrChannelServerIP = L"";
-	host = gethostbyname(pServerIP);
+	const std::string strResolvedIP = x2::platform::ResolveIPv4( pServerIP );
 
-	if( host != NULL )
+	if( !strResolvedIP.empty() )
 	{
-		ConvertUtf8ToWCHAR( wstrChannelServerIP, inet_ntoa(*(struct in_addr*)host->h_addr_list[0]) );
+		ConvertUtf8ToWCHAR( wstrChannelServerIP, strResolvedIP.c_str() );
 	}
 	else
 	{
@@ -4235,8 +3944,8 @@ void CX2Main::SetSubClientVersion_LUA( char* pVersion )
 void CX2Main::ChangeKoreanAndEnglishKey( bool bKorean )
 {
 	HIMC haneng;
-	haneng = ImmGetContext(g_pKTDXApp->GetHWND());
-	ImmSetConversionStatus(haneng,bKorean,0);
+	haneng = x2::dxut::imm::ImmGetContext(g_pKTDXApp->GetHWND());
+	x2::dxut::imm::ImmSetConversionStatus(haneng,bKorean,0);
 }
 
 //{{ kimhc // 2010.3.12 //	???? ????
@@ -4244,18 +3953,18 @@ bool CX2Main::GetNativeAndEnglisKeyState() //???? ??? ??? ??????	// TRUE ?? ???
 {
 	bool bRet = false;
 	HIMC hIMC = NULL;
-	if ( hIMC = ImmGetContext( g_pKTDXApp->GetHWND() ) )
+	if ( (hIMC = x2::dxut::imm::ImmGetContext( g_pKTDXApp->GetHWND() )) )
 	{
 		DWORD fdwConversion, fdwSentence;
 
-		BOOL bRet2 = ImmGetConversionStatus(hIMC, &fdwConversion, &fdwSentence);
+		BOOL bRet2 = x2::dxut::imm::ImmGetConversionStatus(hIMC, &fdwConversion, &fdwSentence);
 
 		if( bRet2 )
 		{
 			bRet = ( fdwConversion & IME_CMODE_NATIVE ? true : false );
 		}
 
-		ImmReleaseContext( g_pKTDXApp->GetHWND(), hIMC );
+		x2::dxut::imm::ImmReleaseContext( g_pKTDXApp->GetHWND(), hIMC );
 	}
 
 	return bRet;
@@ -4265,64 +3974,8 @@ bool CX2Main::GetNativeAndEnglisKeyState() //???? ??? ??? ??????	// TRUE ?? ???
 //{{ kimhc // 2010.9.14 // ??????? ???????? ???? ????? ??????? ???? ��???? ????? ��?? ??? ????
 //}} kimhc // 2010.9.14 // ??????? ???????? ???? ????? ??????? ???? ��???? ????? ��?? ??? ????
 
-void CX2Main::ResetCrashReport( const WCHAR* wszAddMsg )
-{
-
-	string clientVersion = "";
-
-#if !X2_DEV_TOOLS
-		clientVersion = "[CRASH_REPORT_SERVICE] ";
-#else
-	clientVersion = "[CRASH_REPORT_TEST] ";
-#endif
-
-	string clientMainVersion = "";
-	ConvertWCHARToChar( clientMainVersion, GetClientVersion() );
-	clientVersion += "_(";
-	clientVersion += clientMainVersion;
-	string subClientVersion = "";
-	ConvertWCHARToChar( subClientVersion, GetSubClientVersion_LUA() );
-	if( subClientVersion.length() > 0 )
-	{
-		clientVersion += "_";
-		clientVersion += subClientVersion;
-	}
-	clientVersion += ")_";
-
-	string userID = "";
-	if( NULL != g_pData && NULL != g_pData->GetMyUser() )
-	{
-		ConvertWCHARToChar( userID, g_pData->GetMyUser()->GetUserData().userID.c_str() );
-	}
-
-	string unitName = "";
-	if( NULL != g_pData && NULL != g_pData->GetMyUser() &&
-		NULL != g_pData->GetMyUser()->GetSelectUnit() &&
-		NULL != g_pData->GetMyUser()->GetSelectUnit()->GetNickName() )
-	{
-		ConvertWCHARToChar( unitName, g_pData->GetMyUser()->GetSelectUnit()->GetNickName() );
-	}
-
-	clientVersion += "_";
-	clientVersion += userID;
-	clientVersion += "_";
-	clientVersion += unitName;
-	clientVersion += "_";
-
-	if( NULL != wszAddMsg )
-	{
-		string szAddMsg;
-		ConvertWCHARToChar( szAddMsg, wszAddMsg );
-		clientVersion += szAddMsg;
-	}
-
-	if( NULL != m_pCrashReportState )
-		SetEMailSubjectPrefix( m_pCrashReportState, (LPCTSTR)clientVersion.c_str() );
-}
-
 bool CX2Main::SendQuitMsgToServer()
 {
-	char szErrorLogFileName[256] = "ErrorLog.txt";
 	KEGS_CLIENT_QUIT_REQ kPacket;
 
 
@@ -4453,14 +4106,12 @@ bool CX2Main::IsValidPacket( int enumID )
 	case NetError::ERR_SHUT_DOWN_04:
 	case NetError::ERR_SHUT_DOWN_05:
 		{
-			CKTDGUIDialogType pDLGOK =
 				KTDGUIOKMsgBox( D3DXVECTOR2(250,300), NetError::GetErrStrF(enumID),
 								m_pNowState, CX2StateCreateUnit::SCUUCM_SHUT_DOWN_OK );
 			return true;
 		} break;
 	case NetError::ERR_NX_AUTH_00:
 		{
-			CKTDGUIDialogType pDLGOK =
 				KTDGUIOKMsgBox( D3DXVECTOR2(250,300), NetError::GetErrStrF(enumID),
 								m_pNowState, CX2CashShop::CSUCM_CHECK_AUTHORITY_OK );
 			return true;
@@ -4480,8 +4131,7 @@ bool CX2Main::IsValidPacket( int enumID )
 			if( NULL != g_pData->GetUIManager() &&
 				NULL != g_pData->GetUIManager()->GetUIInventory() )
 			{
-				CKTDGUIDialogType pDLGOK =
-					KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_16527 ),
+				KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_16527 ),
 					CX2UIInventory::UIM_ITEM_USE_DEFENCE_DUNGEON_POTION,
 					GetNowState() );
 			}
@@ -4603,116 +4253,12 @@ bool CX2Main::IsValidPacket( int enumID )
 }
 
 
+// The font manager loads the font from the .kom files for FreeType. The original also registered it with GDI
+// (AddFontResource), which nothing draws with any more.
 bool CX2Main::InstallFont( const char* pValueName, const char* pFontFileName )
 {
 	g_pKTDXApp->GetDGManager()->GetFontManager()->InstallFont( pValueName, pFontFileName );
-
-	WCHAR FontPath[MAX_PATH] = {0,};
-	WCHAR tempFontFileName[MAX_PATH] = {0,};
-	WCHAR FontFileName[MAX_PATH] = {0,};
-	WCHAR FilePath[MAX_PATH] = {0,};
-
-	wstring fontFileName;
-	wstring realFontFileName;
-	ConvertUtf8ToWCHAR( fontFileName, pFontFileName );
-	ConvertUtf8ToWCHAR( realFontFileName, pFontFileName );
-
-	StringCchPrintf( FontFileName, MAX_PATH , L"%s", fontFileName.c_str() );
-	StringCchPrintf( tempFontFileName, MAX_PATH , L"%s", fontFileName.c_str() );
-	/*wsprintf( FontFileName, L"%s", fontFileName.c_str() );
-	wsprintf( tempFontFileName, L"%s", fontFileName.c_str() );*/
-
-	if ( g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->GetPullPath( tempFontFileName ) == NULL )
-		return false;
-
-	StringCchPrintf( FilePath, MAX_PATH , g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->GetPullPath( FontFileName ) );
-	/*wsprintf( FilePath, g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->GetPullPath( FontFileName ) );*/
-	/*
-
-	GetWindowsDirectory( FontPath, MAX_PATH );
-	wcscat( FontPath, L"\\Fonts\\" );
-	wcscat( FontPath, realFontFileName.c_str() );
-
-	string strFontPath;
-	ConvertWCHARToChar( strFontPath, FontPath );
-
-	if ( _access( strFontPath.c_str(), 0 ) != 0 )
-	{
-		if ( CopyFile( FilePath, FontPath, FALSE ) == FALSE )
-		{
-			//InvalidateRect( g_pKTDXApp->GetHWND(), NULL, TRUE );
-			return false;
-		}
-	}
-	*/
-
-	if ( AddFontResource( FilePath ) == FALSE )
-	{
-		//KTDGUIOKMsgBox( D3DXVECTOR2(250,300), L"Font Install Fail", m_pNowState );
-		ErrorLog(XEM_ERROR16);
-		return false;
-
-	}
-
-//	SendMessage( HWND_BROADCAST, WM_FONTCHANGE, 0, 0 );
-
-	m_UseFontNameList.push_back( FilePath );
-
-
-/*
-
-	OSVERSIONINFO vi;
-	vi.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	WCHAR szKey[255] = {0};
-	GetVersionEx( &vi );
-
-	debugWPrintf( L"InstallFont8" );
-
-	if ( vi.dwPlatformId == VER_PLATFORM_WIN32_NT )
-	{
-		wcscpy( szKey, L"SoftWare\\Microsoft\\Windows NT\\CurrentVersion\\Fonts" );
-	}
-	else
-	{
-		wcscpy( szKey, L"SoftWare\\Microsoft\\Windows\\CurrentVersion\\Fonts" );
-	}
-
-	debugWPrintf( L"InstallFont9" );
-
-	//SHRegWriteString()
-	//SHRegSetUSValue( szKey, , REG_SZ, , , HKEY_LOCAL_MACHINE );
-
-	HKEY key;
-
-	DWORD dwDisp;
-	WCHAR lpData[256];
-	wsprintf( lpData, L"%s", fontFileName.c_str() );
-
-	wstring valueName;
-	ConvertCharToWCHAR( valueName, pValueName );
-
-	if(RegCreateKeyEx(HKEY_LOCAL_MACHINE, szKey,0,NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE,NULL,&key,&dwDisp)
-		!=ERROR_SUCCESS)
-	{
-		KTDGUIOKMsgBox( D3DXVECTOR2(250,300), L"Font Install Fail", m_pNowState );
-		ErrorLog(XEM_ERROR17);
-		return false;
-	}
-
-
-
-	if(RegSetValueEx(key, valueName.c_str(), 0, REG_SZ, (LPBYTE)lpData,  sizeof(WCHAR) * (int)wcslen(lpData) )
-		!=ERROR_SUCCESS)
-	{
-		ErrorLog(XEM_ERROR18);
-		KTDGUIOKMsgBox( D3DXVECTOR2(250,300), L"Font Install Fail", m_pNowState );
-		return false;
-	}
-
-	RegCloseKey(key);
-*/
 	return true;
-
 }
 
 void CX2Main::BuyItemSuper_LUA( int itemID, int iQuantity /*= 1*/, short sPeriod /*= 0*/ )
@@ -4743,12 +4289,14 @@ void CX2Main::BuyItemSuper_LUA( int itemID, int iQuantity /*= 1*/, short sPeriod
 				AddServerPacket( EGS_BUY_ED_ITEM_ACK );
 
 			} break;
+		default:
+			break;
 		}
 	}
 }
 
 
-void CX2Main::SetAuthLevel_LUA( const CHAR* userID, CX2User::X2_USER_AUTH_LEVEL level )
+void CX2Main::SetAuthLevel_LUA( [[maybe_unused]] const CHAR* userID, [[maybe_unused]] CX2User::X2_USER_AUTH_LEVEL level )
 {
 #if X2_DEV_TOOLS
 	if( g_pData->GetMyUser()->GetAuthLevel() < CX2User::XUAL_OPERATOR )
@@ -4785,7 +4333,7 @@ void CX2Main::Handler_EGS_CHECK_SUM_REQ( bool bFileCheck /* = false */ )
 wstring CX2Main::GetEDString( int edToChange )
 {
 	WCHAR buff[256] = {0};
-	_itow( edToChange, buff, 10 );
+	_itow_s( edToChange, buff, 10 );
 
 	return GetEDString( buff );
 }
@@ -5166,6 +4714,8 @@ void CX2Main::SetFreeCamera( bool bEnable )
 			}
 
 		} break;
+	default:
+		break;
 	}
 }
 bool CX2Main::GetFreeCamera() const
@@ -5206,6 +4756,8 @@ bool CX2Main::GetFreeCamera() const
 				return g_pX2Game->GetFreeCamera();
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -5243,6 +4795,8 @@ void CX2Main::SetWorldCameraEdit( bool bEnable)
 				g_pX2Game->SetWorldCameraEdit( bEnable );
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -5282,6 +4836,8 @@ void CX2Main::PlayWorldCamera( int iWorldCameraID )
 				g_pX2Game->PlayWorldCamera(iWorldCameraID );
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -5425,7 +4981,7 @@ void CX2Main::CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCust
 void CX2Main::DeleteStateChangeDLG()
 {
 	if ( m_pDLGStateChange != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGStateChange, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGStateChange, 0, false );
 
 	m_pDLGStateChange = NULL;
 }
@@ -5614,266 +5170,7 @@ wstring CX2Main::GetStrByLineBreakColor( const WCHAR* pOrgStr, int width, int fo
 //}
 
 
-void CX2Main::UpdateProcessList()
-{
-    set<wstring>    setProcessNameToFindHack;
-
-	wstring wstrTemp;
-	DWORD aProcesses[1024], cbNeeded;
-
-	if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) )
-		return;
-
-#if X2_DEV_TOOLS
-	FILE *fp = NULL;
-	fp = fopen("ProcessList.Log", "w");
-#endif
-
-	DWORD cProcesses = cbNeeded / sizeof(DWORD);
-	for ( DWORD PidFor = 0x0c; PidFor < 0xFFFF; PidFor +=4 )
-	{
-		if( PidFor == GetCurrentProcessId() )
-			continue;
-
-		HANDLE hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
-			PROCESS_VM_READ,
-			FALSE, PidFor );
-
-		if (hProcess)
-		{
-			BOOL sHide = false;
-			unsigned int i;
-			WCHAR szName[MAX_PATH]= L"<Unknown>";
-			HMODULE hModule;
-
-			for ( i = 1; i <= cProcesses; i++ )
-			{
-				if (PidFor == aProcesses[i])
-				{
-					sHide = true;
-					break;
-				}
-
-			}
-
-			if(EnumProcessModules(hProcess,&hModule,sizeof(hModule),&cbNeeded))
-			{
-				GetModuleFileNameEx(hProcess,hModule,szName,ARRAY_SIZE(szName));
-				wstrTemp = szName;
-				MakeUpperCase( wstrTemp );
-
-				if(!sHide)
-					wstrTemp = wstrTemp + L" [Hidden] ";
-                setProcessNameToFindHack.insert( wstrTemp );
-
-#if X2_DEV_TOOLS
-				fwprintf(fp, L"%-5d - %16s  %s\n", PidFor, szName, (sHide) ? L"" : L"--[Hidden]--");
-#endif
-			}
-			else
-			{
-				GetProcessImageFileName(hProcess,szName,ARRAY_SIZE(szName));
-				wstrTemp = szName;
-				MakeUpperCase( wstrTemp );
-
-				wstrTemp = L"[Zombie] " + wstrTemp + L" \r\n ";
-                setProcessNameToFindHack.insert( wstrTemp );
-
-#if X2_DEV_TOOLS
-				fwprintf(fp, L"%-5d - %16s  %s\n", PidFor, szName, L"--[Zombie]--");
-#endif
-			}
-		}
-
-		CloseHandle( hProcess );
-	}
-
-#if X2_DEV_TOOLS
-	fclose(fp);
-#endif
-
-
-
-
-    if ( setProcessNameToFindHack.empty() == false )
-    {
-        CSLock lock(m_csProcessNameToFindHack);
-        m_setProcessNameToFindHack_CS.insert( setProcessNameToFindHack.begin(), setProcessNameToFindHack.end() );
-    }
-
-}
-
-
-
-
-
-
-void CX2Main::SendHackMail()
-{
-//	ELSWORD_VIRTUALIZER_START
-//	THEMIDA_VM_START
-//
-//
-//	char szMail[2][MAX_PATH];
-//	strncpy( szMail[0], "demiahun@gmail.com" , MAX_PATH - 1  );		// ????
-//	strncpy( szMail[1], "elswordmkt@gmail.com" , MAX_PATH - 1 );	// ?????
-//	//strcpy( szMail[0], "demiahun@gmail.com" );		// ????
-//	//strcpy( szMail[1], "elswordmkt@gmail.com" );	// ?????
-//
-//	char szID[MAX_PATH] = "";
-//	if( g_pInstanceData != NULL &&
-//		g_pInstanceData->GetUserID().size() > 0 )
-//	{
-//		WCHAR wszID[MAX_PATH] = L"";
-//		wcscpy( wszID, g_pInstanceData->GetUserID().c_str() );
-//		::MultiByteToWideChar( CP_ACP, 0, szID, -1, wszID, MAX_PATH );
-//	}
-//
-//#ifdef PROCESSLIST
-//	m_setProcessNameToFindHack.clear();
-//#endif
-//	if ( m_setProcessNameToFindHack.empty() == false )
-//	{
-//		for( int i = 0; i < 2; ++i )
-//		{
-//			//g_pX2SMTPMail->SetSenderEMail( "demiahun@kogstudios.com" );
-//			//g_pX2SMTPMail->SetReceiverEMail( "demiahun@kogstudios.com" );
-//			g_pX2SMTPMail->SetSenderEMail( szMail[i] );
-//			g_pX2SMTPMail->SetReceiverEMail( szMail[i] );
-//
-//			if( strlen( szID ) > 0 )
-//				g_pX2SMTPMail->SetSenderName( szID );
-//			else
-//				g_pX2SMTPMail->SetSenderName( "????? ??? ???? ??????" ); // TODO : ?? string always.h ?? ????
-//
-//			string mailName;
-//			ConvertWCHARToChar( mailName, m_MailNameToFindHack.c_str() );
-//			g_pX2SMTPMail->SetSubject( (char*)mailName.c_str() );
-//			stringstream wstrstm;
-//
-//			set<wstring>::iterator sit;
-//			sit = m_setProcessNameToFindHack.begin();
-//			for ( ; sit != m_setProcessNameToFindHack.end(); sit++ )
-//			{
-//				m_setSendedProcessList.insert( *sit );
-//				string processName;
-//				ConvertWCHARToChar( processName, (*sit).c_str() );
-//				wstrstm << processName.c_str() << "\n";
-//			}
-//			g_pX2SMTPMail->SetDesc( (char*)wstrstm.str().c_str() );
-//			g_pX2SMTPMail->SendMail( g_pKTDXApp->GetHWND() );
-//		}
-//
-//
-////{{ oasis907 : ????? [2009.12.21] // ?? CSmtp
-//		if(g_pX2SMTPMail->SMTPGetLastError() != CX2SMTPMail::CSMTP_NO_ERROR)
-//		{
-//			// Unable to initialize winsock2
-//			return;
-//		}
-//
-//#ifdef CHANGE_MAILSTRING
-//		g_pX2SMTPMail->SMTPSetServer( m_strMailAddress.c_str(), 25 );
-//#else
-//		g_pX2SMTPMail->SMTPSetServer( "mail.kog.co.kr", 25 );
-//#endif
-//		g_pX2SMTPMail->SMTPSetLogin("escrash");            // ???? ????
-//		g_pX2SMTPMail->SMTPSetPassword("@Els.123");
-//
-//		if( strlen( szID ) > 0 )
-//			g_pX2SMTPMail->SMTPSetSenderName( szID );
-//		else
-//			g_pX2SMTPMail->SMTPSetSenderName( "????? ??? ???? ??????" ); // TODO : ?? string always.h ?? ????
-//
-//
-//		g_pX2SMTPMail->SMTPSetSenderMail("escrash@kog.co.kr");
-//		g_pX2SMTPMail->SMTPSetReplyTo("escrash@kog.co.kr"); // ??? ???
-//
-//		string mailName;
-//		ConvertWCHARToChar( mailName, m_MailNameToFindHack.c_str() );
-//		g_pX2SMTPMail->SMTPSetSubject( (char*)mailName.c_str() );
-//		stringstream wstrstm;
-//
-//		// ???? ??? ????? ????
-//		//g_pX2SMTPMail->SMTPAddRecipient("demiahun@kogstudios.com");
-//		g_pX2SMTPMail->SMTPAddRecipient("eshack@kogstudios.com");
-//		//g_pX2SMTPMail->SMTPAddRecipient("oasis907@naver.com");
-//		//g_pX2SMTPMail->SMTPAddRecipient("megagame@kog.co.kr");
-//		//g_pX2SMTPMail->SMTPAddRecipient("wonpok@kog.co.kr");
-//
-//		g_pX2SMTPMail->SMTPSetXPriority(CX2SMTPMail::XPRIORITY_NORMAL);
-//		g_pX2SMTPMail->SMTPSetXMailer("The Bat! (v3.02) Professional");
-//
-//#ifdef MORE_INFO_ABOUT_HACK
-//		// ????? ????
-//
-//		// DLL ????
-//		AddDLLInfo(wstrstm);
-//
-//		// ???��??? ????
-//		AddProcessInfo(wstrstm);
-//#endif // MORE_INFO_ABOUT_HACK
-//
-//		set<wstring>::iterator sit;
-//		sit = m_setProcessNameToFindHack.begin();
-//		for ( ; sit != m_setProcessNameToFindHack.end(); sit++ )
-//		{
-//			m_setSendedProcessList.insert( *sit );
-//			string processName;
-//			ConvertWCHARToChar( processName, (*sit).c_str() );
-//			wstrstm << processName.c_str() << "\n";
-//		}
-//
-//		g_pX2SMTPMail->SMTPSetMessageBody((char*)wstrstm.str().c_str());
-//
-//		string strUserId = ANTI_HACK_STRING_UserID_Hack_ScreenShot;
-//		wstring wstrUserId = ANTI_HACK_WSTRING_UserID_Hack_ScreenShot;
-//
-//		if( m_strUserIdToFindHack.empty() == false )
-//		{
-//			ConvertWCHARToChar( strUserId, m_strUserIdToFindHack.c_str() );
-//			wstrUserId = m_strUserIdToFindHack;
-//		}
-//		strUserId = strUserId + ".jpg";
-//		wstrUserId = wstrUserId + L".jpg";
-//
-//		// ???? ��?? ???? ????
-//		//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
-//		//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
-//		wchar_t szFilePath[1024] = _T("");
-//		wchar_t strHackImageBuffer[1024];
-//		GetCurrentDirectory( _MAX_PATH, szFilePath );
-//		StringCchPrintf(strHackImageBuffer, 1024,  _T("%s\\%s"), szFilePath, wstrUserId.c_str());
-//		//wsprintf(strHackImageBuffer, _T("%s\\%s"), szFilePath, wstrUserId.c_str());
-//		string strNickName = "";
-//		ConvertWCHARToChar( strNickName, strHackImageBuffer );
-//
-//		g_pX2SMTPMail->SMTPAddAttachment(strNickName.c_str());
-//
-//		if( g_pX2SMTPMail->SMTPSend() )
-//		{
-//			//The mail was send successfully
-//		}
-//		else
-//		{
-//			//Unable to send the mail
-//		}
-//		// ????? ???, ��?????? ????
-//		g_pX2SMTPMail->SMTPClearRecipient();
-//
-//
-//		DeleteFile( wstrUserId.c_str() );
-//
-////}} oasis907 : ????? [2009.12.21] // ?? CSmtp
-//	}
-//
-//	m_setProcessNameToFindHack.clear();
-//
-//	THEMIDA_VM_END
-//	ELSWORD_VIRTUALIZER_END
-}
-
-void CX2Main::SendHackMail_DamageHistory(const char *strComm)
+void CX2Main::SendHackMail_DamageHistory(const char */*strComm*/)
 {
 ////#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -5992,7 +5289,6 @@ void CX2Main::SendHackMail_DamageHistory(const char *strComm)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
@@ -6049,7 +5345,7 @@ void CX2Main::SendHackMail_DamageHistory(const char *strComm)
 ////#endif
 }
 
-void CX2Main::SendHackMail_HackUserNot(const char *strComm)
+void CX2Main::SendHackMail_HackUserNot(const char */*strComm*/)
 {
 //	ELSWORD_VIRTUALIZER_START
 //	THEMIDA_VM_START
@@ -6124,11 +5420,9 @@ void CX2Main::SendHackMail_HackUserNot(const char *strComm)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
-//	wstring wstrDllInfo = SiCX2DLLManager()->GetReportEvent();
 //	string strDllInfo = "";
 //	ConvertWCHARToChar( strDllInfo, wstrDllInfo );
 //	wstrstm << strDllInfo << "\n\n";
@@ -6188,7 +5482,7 @@ void CX2Main::SendHackMail_HackUserNot(const char *strComm)
 }
 
 
-void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
+void CX2Main::SendHackMail_AttachFile(const char */*strComm*/, const string& /*userId*/)
 {
 //	ELSWORD_VIRTUALIZER_START
 //	THEMIDA_VM_START
@@ -6272,7 +5566,6 @@ void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
 //	// ????? ????
 //
 //	// DLL ????
-//	wstring wstrDllInfo = SiCX2DLLManager()->GetReportEvent();
 //	string strDllInfo = "";
 //	ConvertWCHARToChar( strDllInfo, wstrDllInfo );
 //	wstrstm << strDllInfo << "\n\n";
@@ -6335,7 +5628,7 @@ void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
 
 
 
-void CX2Main::SendHackMail_FileList(const char *strComm, const string& userId)
+void CX2Main::SendHackMail_FileList(const char */*strComm*/, const string& /*userId*/)
 {
 //	ELSWORD_VIRTUALIZER_START
 //	THEMIDA_VM_START
@@ -6441,7 +5734,7 @@ void CX2Main::SendHackMail_FileList(const char *strComm, const string& userId)
 //
 }
 
-void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
+void CX2Main::SendHackMail_VERIFYVALUE(const char */*strComm*/)
 {
 //#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -6517,7 +5810,6 @@ void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
@@ -6576,7 +5868,7 @@ void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
 
 }
 
-void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
+void CX2Main::SendHackMailGameStart(int /*iVal*/, bool /*bVal*/)
 {
 //#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -6680,7 +5972,6 @@ void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
@@ -6738,364 +6029,8 @@ void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
 //#endif
 }
 
-void CX2Main::AddMemoryInfo( stringstream& strstm )
-{
-	PROCESS_MEMORY_COUNTERS_EX pmcex;
-	GetProcessMemoryInfo( GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmcex, sizeof(pmcex));
-
-	const UINT MEGA = 1024 * 1024;
-
-	string strNewLine = "\n";
-	/// ???? ???��??? ??? ????
-	strstm << "- Memory Information - " << strNewLine;
-	strstm << "PageFaultCount: " << pmcex.PageFaultCount << strNewLine;
-	strstm << "PeakWorkingSetSize(???): " << pmcex.PeakWorkingSetSize / MEGA << strNewLine;
-	strstm << "WorkingSetSize(????): " << pmcex.WorkingSetSize / MEGA << strNewLine;
-	strstm << "QuotaPeakPagedPoolUsage: " << pmcex.QuotaPeakPagedPoolUsage << strNewLine;
-	strstm << "QuotaPagedPoolUsage: " << pmcex.QuotaPagedPoolUsage << strNewLine;
-	strstm << "QuotaPeakNonPagedPoolUsage: " << pmcex.QuotaPeakNonPagedPoolUsage << strNewLine;
-	strstm << "QuotaNonPagedPoolUsage: " << pmcex.QuotaNonPagedPoolUsage << strNewLine;
-	strstm << "PrivateUsage(????): " << pmcex.PrivateUsage / MEGA << strNewLine;
-
-	MEMORYSTATUSEX MemStatusEx;
-	MemStatusEx.dwLength = sizeof( MEMORYSTATUSEX );
-	if ( GlobalMemoryStatusEx( &MemStatusEx ) )
-	{
-		/// ????? ??? ????
-		strstm << "dwMemoryLoad: " << MemStatusEx.dwMemoryLoad / MEGA << strNewLine;
-		strstm << "ullTotalPhys: " << MemStatusEx.ullTotalPhys / MEGA << strNewLine;
-		strstm << "ullAvailPhys: " << MemStatusEx.ullAvailPhys / MEGA << strNewLine;
-		strstm << "ullTotalPageFile: " << MemStatusEx.ullTotalPageFile << strNewLine;
-		strstm << "ullAvailPageFile: " << MemStatusEx.ullAvailPageFile << strNewLine;
-		strstm << "ullTotalVirtual: " << MemStatusEx.ullTotalVirtual / MEGA << strNewLine;
-		strstm << "ullAvailVirtual: " << MemStatusEx.ullAvailVirtual / MEGA << strNewLine;
-	}
-
-	/// ????? ?????? ??? ??? ?�X
-	const UINT uiStrSize = MAX_PATH + 1;
-	char szSystemDirectory[uiStrSize] = { 0, };
-	const UINT uiReturnValue = GetSystemDirectoryA( szSystemDirectory, uiStrSize );
-	if ( uiReturnValue <= uiStrSize && uiReturnValue != 0 )
-	{
-		char drive[_MAX_DRIVE] = { 0, };
-		char dir[_MAX_DIR] = { 0, };
-		char fname[_MAX_FNAME] = { 0, };
-		char ext[_MAX_EXT] = { 0, };
-
-		_splitpath( szSystemDirectory, drive, dir, fname, ext );
-		if ( DRIVE_FIXED == GetDriveTypeA( drive ) )
-		{
-			ULARGE_INTEGER ulAvail, ulTotal;
-			if ( GetDiskFreeSpaceExA( drive, &ulAvail, &ulTotal, NULL ) )
-			{
-				strstm << "Hard Drive: " << drive << strNewLine;
-				strstm << "Available Space: " << static_cast<int>( ulAvail.QuadPart / MEGA )<< "MB" << strNewLine;
-				strstm << "Total Space: " << static_cast<int>( ulTotal.QuadPart / MEGA )<< "MB" << strNewLine;
-			}
-		}
-	}
-
-	/// ???????? ????
-	IDirect3D9* pD3D9 = DXUTGetD3DObject();
-	UINT dwAdapterCount = pD3D9->GetAdapterCount();
-
-	for( UINT iAdapter = 0; iAdapter < dwAdapterCount; iAdapter++ )
-	{
-		D3DADAPTER_IDENTIFIER9 id;
-		ZeroMemory( &id, sizeof( D3DADAPTER_IDENTIFIER9 ) );
-		pD3D9->GetAdapterIdentifier( iAdapter, 0, &id );
-		strstm << "D3D9 Adapter: " << iAdapter << strNewLine;
-		strstm << "Driver: " << id.Driver << strNewLine;
-		strstm	<< "Description: " << id.Description << strNewLine;
-	}
-
-	strstm << strNewLine << strNewLine;
-}
-
-void CX2Main::AddDLLInfo(stringstream& strstm)
-{
-	string strNewLine = "\n";
-
-	strstm << "- DLL Information -" << strNewLine;
-
-
-	HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION|PROCESS_VM_READ, FALSE, GetCurrentProcessId() );
-	if (NULL == hProcess)
-	{
-		strstm << "Cannot access to process." << strNewLine;
-		return;
-	}
-
-	HMODULE hMods[1024];
-	DWORD cbNeeded;
-	if(EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
-	{
-		int numProcess = cbNeeded / sizeof(HMODULE);
-		for (int i = 0; i < numProcess; i++ )
-		{
-			char szModName[MAX_PATH];
-			ZeroMemory( szModName, MAX_PATH );
-			// Get the full path to the module's file.
-			if (!GetModuleFileNameExA( hProcess, hMods[i], szModName, ARRAY_SIZE(szModName) ))
-			{
-				strncpy(szModName, "[Hidden]" , MAX_PATH - 1 );
-				//strcpy(szModName, "[Hidden]");
-			}
-
-			strstm << x2::str(x2::format("[0x%08X] %s") % hMods[i] % szModName);
-
-			HANDLE hFile = CreateFileA( szModName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL );
-			DWORD dwFileSize = GetFileSize( hFile, NULL );
-
-			// system32 ???? ????? ?????? ?? ?????? ????? ????????
-			if ( INVALID_FILE_SIZE != dwFileSize )
-				strstm << ", Size: " << dwFileSize << strNewLine;
-			else
-				strstm << strNewLine;
-
-			CloseHandle( hFile );
-		}
-	}
-
-	CloseHandle( hProcess );
-
-	strstm << strNewLine << strNewLine;
-}
-
-void CX2Main::AddProcessInfo(stringstream& strstm, bool bThreadInfo)
-{
-	string strNewLine = "\n";
-
-	strstm << "- Process Information -" << strNewLine;
-
-    {
-        CSLock lock(m_csProcessNameToFindHack);
-        m_setProcessNameToFindHack_CS.clear();
-    }
-	UpdateProcessList();
-    set<wstring>    setSendedProcessList;
-    {
-        CSLock lock(m_csSendedProcessList);
-        setSendedProcessList = 			m_setSendedProcessList_CS;
-    }
-    for( const std::wstring& wstrProcessName : setSendedProcessList )
-    {
-		string processName;
-		ConvertWCHARToChar( processName, wstrProcessName );
-		strstm << processName.c_str() << strNewLine;
-    }
-    setSendedProcessList.clear();
-    set<wstring>    setProcessNameToFindHack;
-    {
-        CSLock lock(m_csProcessNameToFindHack);
-        setProcessNameToFindHack = m_setProcessNameToFindHack_CS;
-    }
-    for( const std::wstring& wstrProcessName : setProcessNameToFindHack )
-    {
-		setSendedProcessList.insert( wstrProcessName );
-		string processName;
-		ConvertWCHARToChar( processName, wstrProcessName );
-		strstm << processName.c_str() << strNewLine;
-    }
-    if ( setSendedProcessList.empty() == false )
-    {
-        CSLock lock(m_csSendedProcessList);
-        m_setSendedProcessList_CS.insert( setSendedProcessList.begin(), setSendedProcessList.end() );
-    }
-
-
-	if( bThreadInfo == true )
-	{
-		strstm << strNewLine << "- TInfo -" << strNewLine;
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		DWORD ThreadId = GetWindowThreadProcessId(NULL,NULL);
-		vector<THREAD_WND_INFO> vecThreadInfo = GetThreadWnd(ThreadId);
-		for(UINT i=0; i<vecThreadInfo.size(); ++i)
-		{
-			string threadWndName;
-			ConvertWCHARToChar( threadWndName, vecThreadInfo[i].m_wstrName.c_str() );
-
-			if( !vecThreadInfo[i].m_wstrClass.empty() )
-			{
-				string threadClassName;
-				ConvertWCHARToChar( threadClassName, vecThreadInfo[i].m_wstrClass.c_str() );
-				strstm << threadWndName.c_str() << "   [" << threadClassName.c_str() << "]" << strNewLine;
-			}
-			else
-			{
-				strstm << threadWndName.c_str() << "   [EMPTY]" << strNewLine;
-			}
-		}
-
-		strstm << strNewLine << strNewLine;
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		if( g_pKTDXApp->GetHWND() != NULL )
-		{
-			DWORD ThreadId = GetWindowThreadProcessId(g_pKTDXApp->GetHWND(),NULL);
-
-			vector<THREAD_WND_INFO> vecThreadInfo = GetThreadWnd(ThreadId);
-
-			for(UINT i=0; i<vecThreadInfo.size(); ++i)
-			{
-				string threadWndName;
-				ConvertWCHARToChar( threadWndName, vecThreadInfo[i].m_wstrName.c_str() );
-
-				if( !vecThreadInfo[i].m_wstrClass.empty() )
-				{
-					string threadClassName;
-					ConvertWCHARToChar( threadClassName, vecThreadInfo[i].m_wstrClass.c_str() );
-					strstm << threadWndName.c_str() << "   [" << threadClassName.c_str() << "]" << strNewLine;
-				}
-				else
-				{
-					strstm << threadWndName.c_str() << "   [EMPTY]" << strNewLine;
-				}
-
-			}
-		}
-	}
-
-	strstm << strNewLine << strNewLine;
-}
-
-
 //{{ ????? : [2010/05/05]	//	DLL ?????? ?????
-void CX2Main::SendHackMail_DLLInjection(const char *strComm)
-{
-////#ifdef _SERVICE_
-//
-//
-//	ELSWORD_VIRTUALIZER_START
-//	THEMIDA_VM_START
-//
-//
-//
-//#ifdef _SERVICE_
-//		if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-//		{
-//			if( g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetUserData() != NULL &&
-//				g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-//				return;
-//		}
-//#endif
-//
-//	//{{ oasis907 : ????? [2009.12.21] // ?? CSmtp
-//	if(g_pX2SMTPMail->SMTPGetLastError() != CX2SMTPMail::CSMTP_NO_ERROR)
-//	{
-//		// Unable to initialize winsock2
-//		return;
-//	}
-//
-//	char szID[MAX_PATH] = "";
-//	if( g_pInstanceData != NULL &&
-//		g_pInstanceData->GetUserID().size() > 0 )
-//	{
-//		WCHAR wszID[MAX_PATH] = L"";
-//		wcscpy( wszID, g_pInstanceData->GetUserID().c_str() );
-//		::MultiByteToWideChar( CP_ACP, 0, szID, -1, wszID, MAX_PATH );
-//	}
-//
-//#ifdef CHANGE_MAILSTRING
-//	g_pX2SMTPMail->SMTPSetServer( m_strMailAddress.c_str(), 25 );
-//#else
-//	g_pX2SMTPMail->SMTPSetServer( "mail.kog.co.kr", 25 );
-//#endif
-//	g_pX2SMTPMail->SMTPSetLogin("escrash");            // ???? ????
-//	g_pX2SMTPMail->SMTPSetPassword("@Els.123");
-//
-//	if( strlen( szID ) > 0 )
-//		g_pX2SMTPMail->SMTPSetSenderName( szID );
-//	else
-//		g_pX2SMTPMail->SMTPSetSenderName( "????? ??? ???? ??????" );
-//
-//
-//	g_pX2SMTPMail->SMTPSetSenderMail("escrash@kog.co.kr");
-//	g_pX2SMTPMail->SMTPSetReplyTo("escrash@kog.co.kr"); // ??? ???
-//
-//	string mailName;
-//	ConvertWCHARToChar( mailName, m_MailNameToFindHack.c_str() );
-//	g_pX2SMTPMail->SMTPSetSubject( (char*)mailName.c_str() );
-//
-//	// ???? ??? ????? ????
-//	g_pX2SMTPMail->SMTPAddRecipient("eshack@kogstudios.com");
-//	//g_pX2SMTPMail->SMTPAddRecipient("carl79@kog.co.kr");
-//	//g_pX2SMTPMail->SMTPAddRecipient("wonpok@kog.co.kr");
-//	//g_pX2SMTPMail->SMTPAddRecipient("megagame@kog.co.kr");
-//
-//	g_pX2SMTPMail->SMTPSetXPriority(CX2SMTPMail::XPRIORITY_NORMAL);
-//	g_pX2SMTPMail->SMTPSetXMailer("The Bat! (v3.02) Professional");
-//
-//
-//
-//	stringstream strstm;
-//	strstm << ANTI_HACK_STRING_UserID_AntiHacking_Event_DLL_Injection << std::endl << std::endl;
-//
-//	// ????
-//	strstm << strComm <<"\n\n";
-//
-//#ifdef MORE_INFO_ABOUT_HACK
-//	// ????? ????
-//
-//	// DLL ????
-//	AddDLLInfo(strstm);
-//
-//	// ???��??? ????
-//	AddProcessInfo(strstm);
-//#endif // MORE_INFO_ABOUT_HACK
-//
-//	g_pX2SMTPMail->SMTPSetMessageBody(strstm.str().c_str());
-//
-//
-//
-//
-//
-//
-//	string strUserId = ANTI_HACK_STRING_UserID_Hack_ScreenShot;
-//	wstring wstrUserId = ANTI_HACK_WSTRING_UserID_Hack_ScreenShot;
-//
-//	if( m_strUserIdToFindHack.empty() == false )
-//	{
-//		ConvertWCHARToChar( strUserId, m_strUserIdToFindHack.c_str() );
-//		wstrUserId = m_strUserIdToFindHack;
-//	}
-//	strUserId = strUserId + ".jpg";
-//	wstrUserId = wstrUserId + L".jpg";
-//
-//	// ???? ��?? ???? ????
-//	wchar_t szFilePath[1024] = _T("");
-//	wchar_t strHackImageBuffer[1024];
-//	GetCurrentDirectory( _MAX_PATH, szFilePath );
-//	StringCchPrintf(strHackImageBuffer, 1024, _T("%s\\%s"), szFilePath, wstrUserId.c_str());
-//	//wsprintf(strHackImageBuffer, _T("%s\\%s"), szFilePath, wstrUserId.c_str());
-//	string strNickName = "";
-//	ConvertWCHARToChar( strNickName, strHackImageBuffer );
-//
-//	g_pX2SMTPMail->SMTPAddAttachment(strNickName.c_str());
-//
-//	if( g_pX2SMTPMail->SMTPSend() )
-//	{
-//		//The mail was send successfully
-//	}
-//	else
-//	{
-//		//Unable to send the mail
-//	}
-//	// ????? ???, ��?????? ????
-//	g_pX2SMTPMail->SMTPClearRecipient();
-//
-//	DeleteFile( wstrUserId.c_str() );
-//
-//	//}} oasis907 : ????? [2009.12.21] // ?? CSmtp
-//
-//	THEMIDA_VM_END
-//	ELSWORD_VIRTUALIZER_END
-//
-////#endif
-}
-
-void CX2Main::SendUserMonitoringMail(const char *strComm)
+void CX2Main::SendUserMonitoringMail(const char */*strComm*/)
 {
 //	//#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -7243,7 +6178,7 @@ void CX2Main::SendUserMonitoringMail(const char *strComm)
 //	//#endif
 }
 
-void CX2Main::SendMail_MoneyMonitoring(const char *strComm)
+void CX2Main::SendMail_MoneyMonitoring(const char */*strComm*/)
 {
 ////#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -7393,55 +6328,6 @@ void CX2Main::PushPresentArrival( KEGS_PRESENT_MESSAGE_TO_RECEIVER_NOT& kEvent )
 	presentArrival.m_SenderNickName = kEvent.m_wstrSenderNickName;
 
 	m_quePresentArrival.push( presentArrival );
-}
-
-void CX2Main::DeleteNMCachData()
-{
-	HANDLE				hSearch;
-	WIN32_FIND_DATA		fd;
-
-	wstring nmDataFolder = L"C:\\Documents and Settings\\All Users\\Application Data\\Nexon\\Common\\NMDATA";
-	wstring tempAllFile = nmDataFolder + L"\\*.*";
-	hSearch = FindFirstFile( tempAllFile.c_str(), &fd );
-
-	vector< wstring > vecFilePathToDelete;
-
-	if(hSearch == INVALID_HANDLE_VALUE)
-		return;
-
-	do
-	{
-		if( wcscmp(fd.cFileName, L".") && wcscmp(fd.cFileName, L"..") )
-		{
-			if( fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-			{
-
-			}
-			else
-			{
-				WCHAR			wstrNewSearchFile[256];
-				std::wstring	wstrFile;
-				std::wstring	wstrFileName;
-
-				wcscpy( wstrNewSearchFile, nmDataFolder.c_str() );
-				wcscat( wstrNewSearchFile, L"\\");
-				wcscat( wstrNewSearchFile, fd.cFileName );
-
-				if ( ::DeleteFile( wstrNewSearchFile ) != FALSE )
-				{
-					int i = 0;
-				}
-			}
-		}
-
-	}while( FindNextFile( hSearch, &fd ) );
-
-	FindClose(hSearch);
-
-	if ( ::DeleteFile( L"C:\\Documents and Settings\\All Users\\Application Data\\Nexon\\Common\\nmservice.ini" ) != FALSE )
-	{
-		int i = 0;
-	}
 }
 
 void CX2Main::LoadLuaEnum()
@@ -7758,21 +6644,37 @@ void CX2Main::RemoveTimedMessagePopup( TimedMessagePopUp::MESSAGE_TYPE eMessageT
 	//}} kimhc // 2010.01.22 // list?? ????
 }
 
+namespace
+{
+	// The machine ID the servers check (KUserSecurityManager::CheckValidMachineID), in the layout of the original's
+	// closed MachineIdLib: bytes 0-11 identify the machine (the MAC address and a disk serial number there; a hash of
+	// x2::platform::MachineIdentity() here), 12-13 are zero and 14-15 hold the check word, sum of words 0-5 * (i + 3).
+	std::array<unsigned char, 16> MakeMachineId()
+	{
+		std::array<unsigned char, 16> id = {};
+		const std::string identity = x2::platform::MachineIdentity();
+		for( int part = 0; part < 2; ++part )
+		{
+			uint64_t hash = 14695981039346656037ull + static_cast<uint64_t>( part ); // FNV-1a
+			for( const char c : identity )
+				hash = ( hash ^ static_cast<unsigned char>( c ) ) * 1099511628211ull;
+			for( int i = 0; i < 6; ++i )
+				id[part * 6 + i] = static_cast<unsigned char>( hash >> ( i * 8 ) );
+		}
+
+		uint16_t check = 0;
+		for( int i = 0; i < 6; ++i )
+			check = static_cast<uint16_t>( check + ( id[i * 2] | ( id[i * 2 + 1] << 8 ) ) * ( i + 3 ) );
+		id[14] = static_cast<unsigned char>( check );
+		id[15] = static_cast<unsigned char>( check >> 8 );
+		return id;
+	}
+}
+
 std::string CX2Main::GetMachineId()
 {
-
-	CSystemInfo* pSystemInfo = new CSystemInfo();
-	if( pSystemInfo == NULL )
-		return "";
-
-	pSystemInfo->Init();
-	const unsigned char* pMachineId = pSystemInfo->GetMachineId();
-
-	std::string wstrMachineId = base64_encode(pMachineId, 16);
-	delete pSystemInfo;
-
-
-	return wstrMachineId;
+	const std::array<unsigned char, 16> machineId = MakeMachineId();
+	return base64_encode( machineId.data(), static_cast<unsigned int>( machineId.size() ) );
 }
 
 
@@ -7782,20 +6684,6 @@ std::string CX2Main::GetMachineId()
 //}
 
 
-void CX2Main::DllManagerReport()
-{
-#if !X2_DEV_TOOLS
-#endif
-
-	//THEMIDA_VM_START
-
-	SiCX2DLLManager()->ReportEvent();
-
-	//THEMIDA_VM_END
-
-#if !X2_DEV_TOOLS
-#endif
-}
 
 
 CX2Main::TimedMessagePopUp* CX2Main::GetTimedMessagePopup( CKTDGUIDialogType pDialog )
@@ -7852,10 +6740,10 @@ bool CX2Main::KeyProcess()
 	{
 
 
-		if( g_pInstanceData != NULL &&
-			GetNowStateID() == CX2Main::XS_VILLAGE_MAP ||
-			GetNowStateID() == CX2Main::XS_BATTLE_FIELD &&
-			g_pInstanceData->GetIsDungeonLounge() == false )
+		if( (g_pInstanceData != NULL &&
+			GetNowStateID() == CX2Main::XS_VILLAGE_MAP) ||
+			(GetNowStateID() == CX2Main::XS_BATTLE_FIELD &&
+			g_pInstanceData->GetIsDungeonLounge() == false) )
 		{
 			// ???
 			if ( bHideDialog == false && GET_KEY_STATE( GA_PVE ) == TRUE ) //DIK_P
@@ -8110,7 +6998,7 @@ bool CX2Main::KeyProcess()
 
 		if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_DELETE) == TRUE &&
 			(	g_pData->GetUIManager()->GetUIPersonalTrade() == NULL ||
-				g_pData->GetUIManager()->GetUIPersonalTrade() != NULL && g_pData->GetUIManager()->GetUIPersonalTrade()->IsTrading() == false
+				(g_pData->GetUIManager()->GetUIPersonalTrade() != NULL && g_pData->GetUIManager()->GetUIPersonalTrade()->IsTrading() == false)
 			)
 		)
 		{
@@ -8673,7 +7561,6 @@ CKTDGUIDialogType CX2Main::KTDGUIInfoBox( D3DXVECTOR2 vPos, const WCHAR* pText, 
 
 
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	//	CKTDGFontManager::CKTDGFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetFont( pStatic->GetString(0)->fontIndex );
 	//CKTDGUIUniBuffer uniBuffer;
@@ -8734,1074 +7621,228 @@ void CX2Main::DeleteInfoBox()
 
 
 
-//{{ ????? : [2010/03/24]	// ???��??? ?? ???
-struct PROCESS_INFO
+namespace
 {
-	wstring			ProcessName;
-	DWORD			ProcessID;
-};
-//}}
+	/// A hacking tool was found: tells the server (once) and stops the client.
+	bool ReportHackingTool( CKTDXApp* pKTDXApp_ )
+	{
+		if( g_pData != NULL && g_pData->GetServerProtocol() != NULL && g_pData->GetMyUser() != NULL &&
+			g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
+		{
+			g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
+			g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
+		}
+		pKTDXApp_->SetFindHacking( true );
+		return true;
+	}
 
+	bool Contains( const wstring& wstrText_, const wstring& wstrPart_ )
+	{
+		return NULL != wcsstr( wstrText_.c_str(), wstrPart_.c_str() );
+	}
 
-BOOL CALLBACK EnumChildProc_Thread(HWND hwnd , LPARAM lp)
-{
-	g_pMain->GetCheckWindowInfo()->SetChildWindow_Thread( true );
-	return FALSE;
+	/// The module of this process that GetModuleHandle( wstrName_ ) finds: by file name, ".DLL" when it has no extension.
+	const x2::platform::LoadedModule* FindLoadedModule( const std::vector<x2::platform::LoadedModule>& vecModule_, const wstring& wstrName_ )
+	{
+		wstring wstrFileName = x2::platform::ModuleFileName( wstrName_ );
+		MakeUpperCase( wstrFileName );
+		if( wstrFileName.find( L'.' ) == wstring::npos )
+			wstrFileName += L".DLL";
+
+		for( const x2::platform::LoadedModule& module : vecModule_ )
+		{
+			wstring wstrModule = x2::platform::ModuleFileName( module.path );
+			MakeUpperCase( wstrModule );
+			if( wstrModule == wstrFileName )
+				return &module;
+		}
+		return NULL;
+	}
+
+	wstring DecryptHackListName( char* szEncrypted_ )
+	{
+		char* szDecrypted = XORDecrypt( szEncrypted_, static_cast<int>( strlen( szEncrypted_ ) ) );
+		wstring wstrName;
+		ConvertCharToWCHAR( wstrName, szDecrypted );
+		SAFE_DELETE_ARRAY( szDecrypted );
+		return wstrName;
+	}
 }
 
-
-
+/// The client's own anti-cheat: matches the server's hacking tool list (KHackingToolInfo, by process, window or object
+/// name) against what runs on the machine. The original also mailed what it found (SMTP mail was removed), so the
+/// flags that only mailed (13-18, 20, 23, 26-29, 32, 34) do nothing.
 bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 {
-#if !X2_DEV_TOOLS
-#endif
+	if( m_bForceExitThread == true || m_pInstanceData == NULL || m_pKTDXApp == NULL )
+		return true;
 
-//  #ifndef _SERVICE_
-//  	if( g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
-//  		return false;
-//  #endif
-
-	if( g_pKTDXApp != NULL && g_pKTDXApp->GetHWND() != NULL )
+	// Every other process, by upper-case executable path.
+	std::vector<wstring> vecProcessName;
+	for( const x2::platform::ProcessEntry& process : x2::platform::ListProcesses() )
 	{
-		m_bFindChild_Thread = false;
-		EnumChildWindows( g_pKTDXApp->GetHWND(), EnumChildProc_Thread, NULL );
-		if( m_bFindChild_Thread == true )
-		{
-			// ??? ?????�� ???????.
-			m_bSendedMail_Thread = true;
-			if( m_bSendedMail_Thread == false )
-			{
-				g_pMain->SendHackMail_DamageHistory(ANTI_HACK_STRING_AntiHacking_CHILD_WINDOW);
-			}
-		}
+		wstring wstrName = process.path;
+		MakeUpperCase( wstrName );
+		vecProcessName.push_back( wstrName );
 	}
 
-
-
-
-	static float fCheckTime = 0.f;
-	DWORD ThreadId = GetWindowThreadProcessId(NULL,NULL);
-	//vector<THREAD_WND_INFO> vecDeskThreadInfo = GetThreadWnd(ThreadId);
-
-	fCheckTime += g_pKTDXApp->GetElapsedTime();
-	if( fCheckTime >= 3.f * 60.f)
+	// m_vecWindowInfo_Thread: the top-level windows without a parent or owner, upper-case ("EMPTY" when blank);
+	// vecTitledWindow: every top-level window with a title, as it is.
+	ClearWindowInfo_Thread();
+	std::vector<x2::platform::DesktopWindow> vecTitledWindow;
+	for( const x2::platform::DesktopWindow& window : x2::platform::ListTopLevelWindows() )
 	{
-		fCheckTime = 0.f;
-		m_vecDeskThreadInfo_Thread.clear();
-	}
-
-	if( m_vecDeskThreadInfo_Thread.size() == 0 )
-	{
-		m_vecDeskThreadInfo_Thread = GetThreadWnd(ThreadId);
-
-		m_vecTopWndInfo_Thread.clear();
+		if( false == window.owned )
 		{
-			HWND hWnd = ::GetTopWindow(NULL);
-			while(hWnd)
-			{
-				string strWndText = " ";
-				string strWndClass = " ";
-				WCHAR wTextWindow[_MAX_PATH] = L"";
-				WCHAR wTextClass[_MAX_PATH] = L"";
-				int hr1 = GetWindowText(hWnd, wTextWindow, _MAX_PATH);
-				int hr2 = GetClassName(hWnd,wTextClass,_MAX_PATH);
-
-				THREAD_WND_INFO threadWndInfo;
-
-				if( hr1 > 0 )
-					threadWndInfo.m_wstrName = wTextWindow;
-				else
-					threadWndInfo.m_wstrName = L"NameEmpty";
-
-				if( hr2 > 0 )
-					threadWndInfo.m_wstrClass = wTextClass;
-				else
-					threadWndInfo.m_wstrClass = L"ClassEmpty";
-
-				if( hr1 > 0 )
-				{
-					if( strWndText.compare( "MSCTFIME UI") != 0 && strWndText.compare( "Default IME") != 0 )
-					{
-						m_vecTopWndInfo_Thread.push_back(threadWndInfo);
-					}
-				}
-
-				hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT);
-			}
-
-			if( m_vecDeskThreadInfo_Thread.size() == 0 || m_vecTopWndInfo_Thread.size() == 0 )
-			{
-			}
+			KHackingToolInfo windowInfo;
+			windowInfo.m_wstrProcessName = window.title.empty() ? L"EMPTY" : window.title;
+			windowInfo.m_wstrWindowClassName = window.className.empty() ? L"EMPTY" : window.className;
+			MakeUpperCase( windowInfo.m_wstrProcessName );
+			MakeUpperCase( windowInfo.m_wstrWindowClassName );
+			PushWindowInfo_Thread( windowInfo );
 		}
-
-
-		// x2 ???��????? ??? ?????�J???? ???? (formmain window?? ?????? ???)
-		if( g_pKTDXApp->GetHWND() != NULL )
-		{
-			DWORD X2ThreadId = GetWindowThreadProcessId(g_pKTDXApp->GetHWND(),NULL);
-
-			vector<THREAD_WND_INFO> vecThreadWndInfo = GetThreadWnd(X2ThreadId);
-			for( UINT itw=0; itw<vecThreadWndInfo.size(); ++itw )
-			{
-				THREAD_WND_INFO twi = vecThreadWndInfo[itw];
-
-				char *strDeFilter = NULL;
-				wstring wstrtwname = L"";
-				char strNewFilter1[100] = { 68, -59, -118, -85, -111, -54, 46, 72, 0, };
-				strDeFilter = XORDecrypt( strNewFilter1, strlen(strNewFilter1) );
-				ConvertCharToWCHAR( wstrtwname, strDeFilter );
-
-				if( twi.m_wstrName.compare(wstrtwname) == 0 )
-				{
-				}
-				SAFE_DELETE_ARRAY( strDeFilter );
-			}
-		}
-	}
-
-
-	HWND hWndForeGround = GetForegroundWindow();
-	if( hWndForeGround != NULL && g_pKTDXApp->GetHWND() != hWndForeGround &&
-		GetActiveWindow() == g_pKTDXApp->GetHWND() )
-	{
-		WCHAR wTextWindow[_MAX_PATH] = L"";
-		int hr1 = GetWindowText(hWndForeGround, wTextWindow, _MAX_PATH);
-
-		if( hr1 > 0 )
-		{
-			string strForeGroundWndName = "";
-			ConvertWCHARToChar(strForeGroundWndName, wTextWindow);
-		}
-		else
-		{
-		}
+		if( false == window.title.empty() )
+			vecTitledWindow.push_back( window );
 	}
 
 	if( m_bForceExitThread == true )
 		return true;
 
-	std::vector<PROCESS_INFO> vecZombieProcessInfo;
-	std::vector<PROCESS_INFO> vecProcessInfo;
-	PROCESS_INFO tempProcessInfo;
-	DWORD aProcesses[1024], cbNeeded;
-	if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) )
-		return false;
-	DWORD cProcesses = cbNeeded / sizeof(DWORD);
-
-	DWORD PidFor;
-	for ( PidFor = 0x0c; PidFor < 0xFFFF; PidFor +=4 )
+	// Two entries of the client's own, a process and a module.
 	{
-		HANDLE hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
-			PROCESS_VM_READ,
-			FALSE, PidFor );
+		KHackingToolInfo khti;
+		char strNewFilter1[100] = { 70, -17, -76, -106, -108, -30, 116, 20, -63, -2, 88, -35, 0, };
+		khti.m_cFlag = ANTIHACKING_ID::ANTIHACKING_FILGER_01;
+		khti.m_wstrProcessName = DecryptHackListName( strNewFilter1 );
+		m_vecHackList_Thread.push_back( khti );
 
-		if (hProcess)
+		char strNewFilter2[100] = { 76, -6, -68, -118, -112, -123, 35, 74, -125, 0, };
+		khti.m_cFlag = ANTIHACKING_ID::ANTIHACKING_FILGER_07;
+		khti.m_wstrProcessName = DecryptHackListName( strNewFilter2 );
+		m_vecHackList_Thread.push_back( khti );
+	}
+
+	const std::vector<x2::platform::LoadedModule> vecModule = x2::platform::ListLoadedModules();
+
+	for( KHackingToolInfo hackInfo : m_vecHackList_Thread )
+	{
+		// Flags 16 and 25-35 compare names as they are.
+		if( hackInfo.m_cFlag != 16 && hackInfo.m_cFlag != 25 &&
+			hackInfo.m_cFlag != 26 && hackInfo.m_cFlag != 27 && hackInfo.m_cFlag != 28 && hackInfo.m_cFlag != 29 &&
+			hackInfo.m_cFlag != 32 && hackInfo.m_cFlag != 33 && hackInfo.m_cFlag != 34 && hackInfo.m_cFlag != 35 )
 		{
-			BOOL sHide = false;
-			unsigned int i;
-			WCHAR szName[MAX_PATH]= L"<Unknown>";
-			HMODULE hModule;
-
-			for ( i = 0; i < cProcesses; ++i )
-			{
-				if (PidFor == aProcesses[i])
-				{
-					sHide = true;
-					break;
-				}
-
-			}
-
-			if(EnumProcessModules(hProcess,&hModule,sizeof(hModule),&cbNeeded))
-			{
-				GetModuleFileNameEx(hProcess,hModule,szName,ARRAY_SIZE(szName));
-
-				tempProcessInfo.ProcessID = PidFor;
-				tempProcessInfo.ProcessName = szName;
-				MakeUpperCase( tempProcessInfo.ProcessName );
-
-				// ???? ???��?????? ??????? ??��?
-				if(tempProcessInfo.ProcessID != GetCurrentProcessId())
-				{
-#ifdef CONVERSION_VS
-					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
-					std::vector<PROCESS_INFO>::iterator it = find_if(vecProcessInfo.begin(), vecProcessInfo.end(),
-						std::bind(std::equal_to<DWORD>(), std::bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
-#else
-					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
-					std::vector<PROCESS_INFO>::iterator it = find_if(vecProcessInfo.begin(), vecProcessInfo.end(),
-						bind(std::equal_to<DWORD>(), bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
-#endif // CONVERSION_VS
-					if ( it == vecProcessInfo.end() )
-						vecProcessInfo.push_back( tempProcessInfo );
-				}
-			}
-			else
-			{
-				GetProcessImageFileName(hProcess,szName,ARRAY_SIZE(szName));
-				tempProcessInfo.ProcessID = PidFor;
-				tempProcessInfo.ProcessName = szName;
-				MakeUpperCase( tempProcessInfo.ProcessName );
-
-				// ???? ???��?????? ??????? ??��?
-				if(tempProcessInfo.ProcessID != GetCurrentProcessId())
-				{
-#ifdef CONVERSION_VS
-					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
-					std::vector<PROCESS_INFO>::iterator it = find_if(vecZombieProcessInfo.begin(), vecZombieProcessInfo.end(),
-						std::bind(std::equal_to<DWORD>(), std::bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
-#else
-					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
-					std::vector<PROCESS_INFO>::iterator it = find_if(vecZombieProcessInfo.begin(), vecZombieProcessInfo.end(),
-						bind(std::equal_to<DWORD>(), bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
-#endif // CONVERSION_VS
-					if ( it == vecZombieProcessInfo.end() )
-						vecZombieProcessInfo.push_back( tempProcessInfo );
-				}
-			}
-
+			MakeUpperCase( hackInfo.m_wstrProcessName );
+			MakeUpperCase( hackInfo.m_wstrWindowClassName );
 		}
 
-		CloseHandle( hProcess );
+		switch( hackInfo.m_cFlag )
+		{
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_01: // process
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_11: // process whose modules could not be read (the original's "zombie")
+			for( const wstring& wstrProcess : vecProcessName )
+			{
+				if( Contains( wstrProcess, hackInfo.m_wstrProcessName ) )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_02: // window text
+			for( const KHackingToolInfo& windowInfo : m_vecWindowInfo_Thread )
+			{
+				/// kimhc // 2013-08-26 // never a window of Internet Explorer
+				if( Contains( windowInfo.m_wstrProcessName, hackInfo.m_wstrProcessName ) &&
+					false == Contains( windowInfo.m_wstrProcessName, L"WINDOWS INTERNET EXPLORER" ) )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_03: // window class
+			for( const KHackingToolInfo& windowInfo : m_vecWindowInfo_Thread )
+			{
+				if( Contains( windowInfo.m_wstrWindowClassName, hackInfo.m_wstrWindowClassName ) )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_04: // window text and class
+			for( const KHackingToolInfo& windowInfo : m_vecWindowInfo_Thread )
+			{
+				if( Contains( windowInfo.m_wstrProcessName, hackInfo.m_wstrProcessName ) &&
+					Contains( windowInfo.m_wstrWindowClassName, hackInfo.m_wstrWindowClassName ) )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_05: // named event (checked only when there are windows, as before)
+			if( false == m_vecWindowInfo_Thread.empty() && x2::platform::NamedEventExists( hackInfo.m_wstrProcessName ) )
+				return ReportHackingTool( m_pKTDXApp );
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_06: // named mutex (likewise)
+			if( false == m_vecWindowInfo_Thread.empty() && x2::platform::NamedMutexExists( hackInfo.m_wstrProcessName ) )
+				return ReportHackingTool( m_pKTDXApp );
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_07: // module loaded in this process
+			if( NULL != FindLoadedModule( vecModule, hackInfo.m_wstrProcessName ) )
+				return ReportHackingTool( m_pKTDXApp );
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_08: // file
+			{
+				std::error_code error;
+				if( std::filesystem::exists( std::filesystem::path( hackInfo.m_wstrProcessName ), error ) )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_21: // unload a module of this process
+			if( const x2::platform::LoadedModule* pModule = FindLoadedModule( vecModule, hackInfo.m_wstrProcessName ) )
+				x2::platform::UnloadModule( *pModule );
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_22: // likewise, through the DLL manager
+			SiCX2DLLManager()->ForceFreeModule( hackInfo.m_wstrProcessName );
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_24: // FindWindow: a top-level window with that title (any case)
+			for( const x2::platform::DesktopWindow& window : vecTitledWindow )
+			{
+				wstring wstrTitle = window.title;
+				MakeUpperCase( wstrTitle );
+				if( wstrTitle == hackInfo.m_wstrProcessName )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_33: // top-level window, exact title
+			for( const x2::platform::DesktopWindow& window : vecTitledWindow )
+			{
+				if( false == hackInfo.m_wstrProcessName.empty() && window.title == hackInfo.m_wstrProcessName )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		case ANTIHACKING_ID::ANTIHACKING_FILGER_35: // top-level window, exact class
+			for( const x2::platform::DesktopWindow& window : vecTitledWindow )
+			{
+				if( false == hackInfo.m_wstrWindowClassName.empty() && window.className == hackInfo.m_wstrWindowClassName )
+					return ReportHackingTool( m_pKTDXApp );
+			}
+			break;
+
+		default:
+			break;
+		}
 
 		if( m_bForceExitThread == true )
 			return true;
 	}
 
-	wstring wstrDeFilter = L"";
-	char *strDeFilter = NULL;
-	KHackingToolInfo khti;
-
-	char strNewFilter1[100] = { 70, -17, -76, -106, -108, -30, 116, 20, -63, -2, 88, -35, 0, };
-	strDeFilter = XORDecrypt( strNewFilter1, strlen(strNewFilter1) );
-	ConvertCharToWCHAR( wstrDeFilter, strDeFilter );
-	khti.m_cFlag = 1;
-	khti.m_wstrProcessName = wstrDeFilter;
-
-    m_vecHackList_Thread.push_back( khti );
-	SAFE_DELETE_ARRAY( strDeFilter );
-
-	char strNewFilter2[100] = { 76, -6, -68, -118, -112, -123, 35, 74, -125, 0, };
-	strDeFilter = XORDecrypt( strNewFilter2, strlen(strNewFilter2) );
-	ConvertCharToWCHAR( wstrDeFilter, strDeFilter );
-	khti.m_cFlag = 7;
-	khti.m_wstrProcessName = wstrDeFilter;
-    m_vecHackList_Thread.push_back( khti );
-	SAFE_DELETE_ARRAY( strDeFilter );
-
-	bool bFind = false;
-	ClearWindowInfo_Thread();
-	EnumWindows( (WNDENUMPROC)EnumWindowsProc_Thread, (LPARAM)this );
-
-	//// Module
-	//X2AntiHackHelper::ModuleVector vecModuleName;
-	//X2AntiHackHelper::EnumProcessModules(vecModuleName);
-
-	WCHAR tempModuleName[MAX_PATH] = L"";
-
-	if( m_pInstanceData != NULL && m_pKTDXApp != NULL )
-	{
-        if ( m_vecHackList_Thread.empty() == false )
-		{
-
-            for(int i=0; i< (int) m_vecHackList_Thread.size(); ++i)
-			{
-                KHackingToolInfo hackInfo = m_vecHackList_Thread[i];
-				if( hackInfo.m_cFlag != 16 && hackInfo.m_cFlag != 25 &&
-					hackInfo.m_cFlag != 26 && hackInfo.m_cFlag != 27 && hackInfo.m_cFlag != 28 && hackInfo.m_cFlag != 29 &&
-					hackInfo.m_cFlag != 32 && hackInfo.m_cFlag != 33 && hackInfo.m_cFlag != 34 && hackInfo.m_cFlag != 35 )
-				{
-					MakeUpperCase( hackInfo.m_wstrProcessName );
-					MakeUpperCase( hackInfo.m_wstrWindowClassName );
-				}
-
-				switch(hackInfo.m_cFlag)
-				{
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_01: // Process
-					{
-						for(UINT j=0; j<vecProcessInfo.size(); ++j)
-						{
-							wstring processName = vecProcessInfo[j].ProcessName;
-							MakeUpperCase(processName);
-
-							if( StrStrW(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
-							{
-
-								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-								{
-									if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-										g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-									{
-										g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-										g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-									}
-								}
-
-								string strProcessName;
-								ConvertWCHARToChar( strProcessName, processName.c_str() );
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_Process;
-								strMailTitle = strMailTitle + strProcessName;
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-								m_pKTDXApp->SetFindHacking( true );
-								return true;
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_02: // WindowText
-					{
-						for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
-						{
-							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-
-							/// kimhc // 20130826 // WINDOWS INTERNET EXPLORER?? ?????? ??? ????? ?????? ????? ??
-							if( StrStrW(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) &&
-								NULL == StrStrW(windowInfo.m_wstrProcessName.c_str(), L"WINDOWS INTERNET EXPLORER" ) )
-							{
-
-								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-								{
-									if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-										g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-									{
-										g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-										g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-									}
-								}
-
-								string strProcessName;
-								ConvertWCHARToChar( strProcessName, windowInfo.m_wstrProcessName.c_str() );
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_WindowText;
-								strMailTitle = strMailTitle + strProcessName;
-
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-								m_pKTDXApp->SetFindHacking( true );
-								return true;
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_03: // WindowClass
-					for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
-					{
-						KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-						if( StrStrW(windowInfo.m_wstrWindowClassName.c_str(), hackInfo.m_wstrWindowClassName.c_str()) )
-						{
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-							string strProcessName;
-							ConvertWCHARToChar( strProcessName, windowInfo.m_wstrWindowClassName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_WindowClass;
-							strMailTitle = strMailTitle + strProcessName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-							m_pKTDXApp->SetFindHacking( true );
-							return true;
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_04: // WindowText & WindowClass
-					{
-						for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
-						{
-							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-							if( StrStrW(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) &&
-								StrStrW(windowInfo.m_wstrWindowClassName.c_str(), hackInfo.m_wstrWindowClassName.c_str()) )
-							{
-								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-								{
-									if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-										g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-									{
-										g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-										g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-									}
-								}
-
-								string strWindowName, strWindowClass;
-								ConvertWCHARToChar( strWindowName, windowInfo.m_wstrProcessName.c_str() );
-								ConvertWCHARToChar( strWindowClass, windowInfo.m_wstrWindowClassName.c_str() );
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_WindowText_WindowClass;
-								strMailTitle = strMailTitle + strWindowName + ", " + strWindowClass;
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-								m_pKTDXApp->SetFindHacking( true );
-								return true;
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_05: // Event
-					{
-						for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
-						{
-							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-							if(OpenEvent( EVENT_ALL_ACCESS, FALSE, hackInfo.m_wstrProcessName.c_str() ))
-							{
-								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-								{
-									if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-										g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-									{
-										g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-										g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-									}
-								}
-
-								string strProcessName;
-								ConvertWCHARToChar( strProcessName, hackInfo.m_wstrProcessName.c_str() );
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_Event;
-								strMailTitle = strMailTitle + strProcessName;
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-								m_pKTDXApp->SetFindHacking( true );
-								return true;
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_06: // Mutex
-					{
-						for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
-						{
-							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-							HANDLE hMutex = CreateMutex( NULL, FALSE, hackInfo.m_wstrProcessName.c_str() );
-							if(GetLastError() == ERROR_ALREADY_EXISTS)
-							{
-								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-								{
-									if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-										g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-									{
-										g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-										g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-									}
-								}
-
-								string strProcessName;
-								ConvertWCHARToChar( strProcessName, hackInfo.m_wstrProcessName.c_str() );
-
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_Mutex;
-								strMailTitle = strMailTitle + strProcessName;
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-								m_pKTDXApp->SetFindHacking( true );
-								return true;
-							}
-							else
-							{
-								ReleaseMutex(hMutex);
-								CloseHandle(hMutex);
-							}
-						}
- 					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_07: // Injected DLL Module in current process
-					{
-						//for(int index=0; index<vecModuleName.size(); ++index)
-						//{
-						//	if(StrStrW(vecModuleName[index].c_str(), hackInfo.m_wstrProcessName.c_str()))
-						//	{
-						//		if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-						//		{
-						//			g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-						//			if( g_pData != NULL && g_pData->GetMyUser() != NULL )
-						//				g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-						//		}
-
-						//		string strProcessName;
-						//		ConvertWCHARToChar( strProcessName, hackInfo.m_wstrProcessName.c_str() );
-						//		string strMailTitle = "AntiHacking Module - ";
-						//		strMailTitle = strMailTitle + strProcessName;
-
-						//		//g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-						//		m_pKTDXApp->SetFindHacking( true );
-						//		return true;
-						//	}
-						//}
-
-						// ?????
-						HMODULE hMod = GetModuleHandle( hackInfo.m_wstrProcessName.c_str() );
-						if( hMod )
-						{
-
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-							string strModuleName;
-							ConvertWCHARToChar( strModuleName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_Module;
-							strMailTitle = strMailTitle + strModuleName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-							m_pKTDXApp->SetFindHacking( true );
-							return true;
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_08:	//	File
-					{
-						// ???????????? ???
-						OFSTRUCT of;
-						string strFileName;
-						ConvertWCHARToChar( strFileName, hackInfo.m_wstrProcessName.c_str() );
-
-						if( OpenFile(strFileName.c_str(), &of, OF_EXIST) != HFILE_ERROR )
-						{
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_FileExist;
-							strMailTitle = strMailTitle + strFileName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-							m_pKTDXApp->SetFindHacking( true );
-
-							//::DeleteFile(hackInfo.m_wstrProcessName.c_str());
-
-							return true;
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_09:	//	DLL Manager & not exit game
-					{
-						if( SiCX2DLLManager()->FindModule( hackInfo.m_wstrProcessName.c_str() ) == true )
-						{
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-							string strDllName;
-							ConvertWCHARToChar( strDllName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_DLL_Find;
-							strMailTitle = strMailTitle + strDllName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_10:	//	DLL Manager & exit game
-					{
-						if( SiCX2DLLManager()->FindModule( hackInfo.m_wstrProcessName.c_str() ) == true )
-						{
-
-
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-							string strDllName;
-							ConvertWCHARToChar( strDllName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_DLL_Find_Exit;
-							strMailTitle = strMailTitle + strDllName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-							m_pKTDXApp->SetFindHacking( true );
-							return true;
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_11:
-					{
-						for(UINT j=0; j<vecZombieProcessInfo.size(); ++j)
-						{
-							wstring processName = vecZombieProcessInfo[j].ProcessName;
-							MakeUpperCase(processName);
-
-							if( StrStrW(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
-							{
-
-
-								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-								{
-									if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-										g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-									{
-										g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-										g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-									}
-								}
-
-								string strProcessName;
-								ConvertWCHARToChar( strProcessName, processName.c_str() );
-
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_ZombiProcess;
-								strMailTitle = strMailTitle + strProcessName;
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-								m_pKTDXApp->SetFindHacking( true );
-								return true;
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_13:
-					{
-						if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-							g_pData->GetMyUser()->GetUserData().hackingUserType == CX2User::HUT_AGREE_HACK_USER )
-						{
-							// ???????????? ???
-							OFSTRUCT of;
-							string strFileName;
-							ConvertWCHARToChar( strFileName, hackInfo.m_wstrProcessName );
-
-							if( OpenFile(strFileName.c_str(), &of, OF_EXIST) != HFILE_ERROR )
-							{
-                                std::string strWindowClassName;
-                                ConvertWCHARToChar( strWindowClassName, hackInfo.m_wstrWindowClassName );
-                                g_pMain->SendHackMail_AttachFile(strFileName.c_str(), strWindowClassName );
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_14:
-					{
-						if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-							g_pData->GetMyUser()->GetUserData().hackingUserType == CX2User::HUT_AGREE_HACK_USER )
-						{
-							bool			bFind = false;
-							HANDLE          hFind;
-							WIN32_FIND_DATA dataFind;
-							BOOL            bMoreFile = TRUE;
-							wstring wstrMailTitle = hackInfo.m_wstrProcessName;
-							wstrMailTitle = wstrMailTitle + L"\n";
-
-							string strDirName;
-							ConvertWCHARToChar( strDirName, hackInfo.m_wstrProcessName.c_str() );
-
-							hFind = FindFirstFile(hackInfo.m_wstrProcessName.c_str(), &dataFind);
-							while(hFind != INVALID_HANDLE_VALUE && bMoreFile == TRUE)
-							{
-								if(dataFind.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-								{
-									if(!(wcscmp(dataFind.cFileName, L".") == 0 || wcscmp(dataFind.cFileName, L"..") == 0))
-									{
-										wstrMailTitle = wstrMailTitle + dataFind.cFileName;
-										wstrMailTitle = wstrMailTitle + L"   [DIR]\n";
-									}
-								}
-								else
-								{
-									wstrMailTitle = wstrMailTitle + dataFind.cFileName;
-									wstrMailTitle = wstrMailTitle + L"   [FILE]\n";
-								}
-
-								bFind = true;
-								bMoreFile = FindNextFile(hFind, &dataFind);
-							}
-
-							if( bFind == true )
-							{
-								string strMailTitle;
-								ConvertWCHARToChar( strMailTitle, wstrMailTitle );
-                                string strWindowClassName;
-                                ConvertWCHARToChar( strWindowClassName, hackInfo.m_wstrWindowClassName );
-                                g_pMain->SendHackMail_FileList(strMailTitle.c_str(), strWindowClassName );
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_15: // Process & Not Exit Game
-					{
-						for(UINT j=0; j<vecProcessInfo.size(); ++j)
-						{
-							wstring processName = vecProcessInfo[j].ProcessName;
-							MakeUpperCase(processName);
-
-							if( StrStrW(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
-							{
-// 								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-// 								{
-// #ifdef FIX_HACKUSER_REG01
-// 									if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-// 										g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-// 									{
-// 										g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-// 										g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-// 									}
-// #endif
-// 								}
-
-								string strProcessName;
-								ConvertWCHARToChar( strProcessName, processName.c_str() );
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_Process;
-								strMailTitle = strMailTitle + strProcessName;
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-								//m_pKTDXApp->SetFindHacking( true );
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_16:	// ??? ???? ??????
-					{
-						if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-							g_pInstanceData != NULL && g_pInstanceData->GetUserID() == hackInfo.m_wstrProcessName )
-						{
-							// ?????? ???? ???
-							g_pMain->SendUserMonitoringMail(ANTI_HACK_USER_MONITORING);
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_17: // find module & not exit
-					{
-						// ?????
-						HMODULE hMod = GetModuleHandle( hackInfo.m_wstrProcessName.c_str() );
-						if( hMod )
-						{
-// 							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-// 							{
-// #ifdef FIX_HACKUSER_REG01
-// 								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-// 									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-// 								{
-// 									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-// 									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-// 								}
-// #endif
-// 							}
-
-							string strModuleName;
-							ConvertWCHARToChar( strModuleName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_Module;
-							strMailTitle = strMailTitle + strModuleName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_18:	// ??? ???? ??????
-					{
-						if( g_pMain->m_wstrPublicIp == hackInfo.m_wstrProcessName )
-						{
-							// ?????? ???? ???
-							g_pMain->SendUserMonitoringMail(ANTI_HACK_IP_MONITORING);
-						}
-					}
-					break;
-
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_19:	//	DLL Manager In & not exit game
-					{
-						if( SiCX2DLLManager()->FindModuleIn( hackInfo.m_wstrProcessName.c_str() ) == true )
-						{
-// 							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-// 							{
-// #ifdef FIX_HACKUSER_REG01
-// 								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-// 									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-// 								{
-// 									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-// 									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-// 								}
-// #endif
-// 							}
-
-							string strDllName;
-							ConvertWCHARToChar( strDllName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_DLL_Find;
-							strMailTitle = strMailTitle + strDllName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_20: // WindowText & not Exit
-					{
-						for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
-						{
-							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-							if( StrStrW(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
-							{
-								string strProcessName;
-								ConvertWCHARToChar( strProcessName, windowInfo.m_wstrProcessName.c_str() );
-
-
-								string strMailTitle = ANTI_HACK_STRING_AntiHacking_WindowText;
-								strMailTitle = strMailTitle + strProcessName;
-
-								g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_21: // ???? ??? ????
-					{
-						HMODULE hMod = GetModuleHandle( hackInfo.m_wstrProcessName.c_str() );
-						if( hMod )
-						{
-							FreeLibrary(hMod);
-						}
-					}
-					break;
-
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_22: // dll manager?? ???? ??? ????
-					{
-						SiCX2DLLManager()->ForceFreeModule( hackInfo.m_wstrProcessName );
-					}
-					break;
-
-
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_23: // machine id?? ??????
-					{
-						if( g_pInstanceData != NULL && g_pInstanceData->GetMachineId().empty() == false )
-						{
-							wstring wstrMachineId = L"";
-							ConvertUtf8ToWCHAR( wstrMachineId, g_pInstanceData->GetMachineId().c_str() );
-							MakeUpperCase(wstrMachineId);
-							if( hackInfo.m_wstrProcessName == wstrMachineId )
-							{
-								// ?????? ???? ???
-								g_pMain->SendUserMonitoringMail(ANTI_HACK_MACHINE_MONITORING);
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_24: // findwindow
-					{
-						if( FindWindow(NULL, hackInfo.m_wstrProcessName.c_str()) != NULL )
-						{
-
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-							string strProcessName;
-							ConvertWCHARToChar( strProcessName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_FindWindow;
-							strMailTitle = strMailTitle + strProcessName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-							m_pKTDXApp->SetFindHacking( true );
-							return true;
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_26:	// ?????? ?????? ???? ??? (not exit)
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_27:	// exit
-					{
-						for( UINT iThreadWindow = 0; iThreadWindow<m_vecDeskThreadInfo_Thread.size(); ++iThreadWindow )
-						{
-							if( hackInfo.m_wstrProcessName.empty() == false && m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrName.empty() == false )
-							{
-								if( m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrName.compare( hackInfo.m_wstrProcessName.c_str()) == 0
-									&& ( hackInfo.m_wstrWindowClassName.empty() ||	/// ??????? ????? ????????? ?????
-										/// ??? ??��?? ????? ????????? ????? ??
-									   ( m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrClass.compare( hackInfo.m_wstrWindowClassName.c_str() ) == 0 ) )
-								  )
-								{
-									string strProcessName;
-									ConvertWCHARToChar( strProcessName, m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrName.c_str() );
-
-
-									string strMailTitle = ANTI_HACK_STRING_AntiHacking_TWindowText;
-									strMailTitle = strMailTitle + strProcessName;
-
-									if ( !hackInfo.m_wstrWindowClassName.empty() )
-									{
-										string strClassName;
-										ConvertWCHARToChar( strClassName, m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrClass.c_str() );
-
-										strMailTitle += strClassName;
-									}
-
-									g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-
-									if( hackInfo.m_cFlag == ANTIHACKING_ID::ANTIHACKING_FILGER_27 )
-									{
-										m_pKTDXApp->SetFindHacking( true );
-										return true;
-									}
-									break;
-								}
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_28:	// ?????? ?????? ????? ??? (not exit)
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_29:	// exit
-					{
-						for( UINT iThreadWindow = 0; iThreadWindow<m_vecDeskThreadInfo_Thread.size(); ++iThreadWindow )
-						{
-							if( hackInfo.m_wstrWindowClassName.empty() == false && m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrClass.empty() == false )
-							{
-								if( m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrClass.compare(hackInfo.m_wstrWindowClassName.c_str()) == 0 )
-								{
-									string strProcessName;
-									ConvertWCHARToChar( strProcessName, m_vecDeskThreadInfo_Thread[iThreadWindow].m_wstrClass.c_str() );
-
-
-									string strMailTitle = ANTI_HACK_STRING_AntiHacking_TWindowClass;
-									strMailTitle = strMailTitle + strProcessName;
-
-									g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-
-									if( hackInfo.m_cFlag == ANTIHACKING_ID::ANTIHACKING_FILGER_29 )
-									{
-										m_pKTDXApp->SetFindHacking( true );
-										return true;
-									}
-									break;
-								}
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_32:	// ?????? ?????? ???? ??? (not exit)
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_33:	// exit
-					{
-						for( UINT iThreadWindow = 0; iThreadWindow<m_vecTopWndInfo_Thread.size(); ++iThreadWindow )
-						{
-							if( hackInfo.m_wstrProcessName.empty() == false && m_vecTopWndInfo_Thread[iThreadWindow].m_wstrName.empty() == false )
-							{
-								if( m_vecTopWndInfo_Thread[iThreadWindow].m_wstrName.compare( hackInfo.m_wstrProcessName.c_str()) == 0 )
-								{
-									string strProcessName;
-									ConvertWCHARToChar( strProcessName, m_vecTopWndInfo_Thread[iThreadWindow].m_wstrName.c_str() );
-
-
-									string strMailTitle = ANTI_HACK_STRING_AntiHacking_TWindowText;
-									strMailTitle = strMailTitle + strProcessName;
-
-									g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-
-									if( hackInfo.m_cFlag == ANTIHACKING_ID::ANTIHACKING_FILGER_33 )
-									{
-										m_pKTDXApp->SetFindHacking( true );
-										return true;
-									}
-									break;
-								}
-							}
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_34:	// ?????? ?????? ????? ??? (not exit)
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_35:	// exit
-					{
-						for( UINT iThreadWindow = 0; iThreadWindow<m_vecTopWndInfo_Thread.size(); ++iThreadWindow )
-						{
-							if( hackInfo.m_wstrWindowClassName.empty() == false && m_vecTopWndInfo_Thread[iThreadWindow].m_wstrClass.empty() == false )
-							{
-								if( m_vecTopWndInfo_Thread[iThreadWindow].m_wstrClass.compare(hackInfo.m_wstrWindowClassName.c_str()) == 0 )
-								{
-									string strProcessName;
-									ConvertWCHARToChar( strProcessName, m_vecTopWndInfo_Thread[iThreadWindow].m_wstrClass.c_str() );
-
-
-									string strMailTitle = ANTI_HACK_STRING_AntiHacking_TWindowClass;
-									strMailTitle = strMailTitle + strProcessName;
-
-									g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-
-									if( hackInfo.m_cFlag == ANTIHACKING_ID::ANTIHACKING_FILGER_35 )
-									{
-										m_pKTDXApp->SetFindHacking( true );
-										return true;
-									}
-									break;
-								}
-							}
-						}
-					}
-					break;
-
-				default:
-					{
-					}
-					break;
-				}
-
-				if( m_bForceExitThread == true )
-					return true;
-			}
-		}
-		else
-		{
-			// ?????? ??? ???????? ?????? ????!
-			// g_pMain->SendHackMail_DamageHistory("-- EmptyList --");
-			g_pMain->SendHackMail_DamageHistory("-- EmptyList --");
-			return false;
-		}
-	}
-
-#if !X2_DEV_TOOLS
-#endif
 	return false;
 }
-
 //////////////////////////////////////////////////////////////////////////
-void CX2Main::TimedMessagePopUp::OnFrameMove( double fTime, float fElapsedTime )
+void CX2Main::TimedMessagePopUp::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( NULL == m_pDialog )
 	{
@@ -9912,13 +7953,11 @@ void CX2Main::TimedMessagePopUp::OnFrameMove( double fTime, float fElapsedTime )
 
 					const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 					//bool checkEnterChar = false;
-					int nowTextLen = 0;
-					int lineNum = 1;
 
 					CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pStatic->GetString(0)->fontIndex );
 					if( NULL != pFont )
 					{
-						lineNum = CWordLineHandler::LineBreakInX2MainMsgBox( tempText, pFont, constTextMaxLen );
+						CWordLineHandler::LineBreakInX2MainMsgBox( tempText, pFont, constTextMaxLen );
 					}
 					pStatic->GetString(0)->msg = tempText;
 				}
@@ -9941,27 +7980,6 @@ KServerGroupInfo CX2Main::GetPickedChannelServer() const
 	return iter->second;
 }
 
-
-
-bool CX2Main::GetWallPaperDirectory( char * pszDir, int iDirSize )
-{
-	LPITEMIDLIST  psttList;
-
-	if( SHGetSpecialFolderLocation( NULL, CSIDL_DESKTOP, &psttList ) == S_OK )
-	{
-		LPMALLOC  psttMalloc;
-
-		SHGetPathFromIDListA( psttList, pszDir );
-
-		SHGetMalloc( &psttMalloc );
-		psttMalloc->Free( psttList );
-		psttMalloc->Release();
-
-		return true;
-	}
-
-	return false;
-}
 
 
 void CX2Main::CreatePlayTimeInformation()						//??? ?????��? ???
@@ -10177,7 +8195,7 @@ void CX2Main::UdpPacketAnalysisLog_LUA( bool bEnable )
 #endif //UDP_PACKET_ANALYSIS_LOG
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-void CX2Main::UdpPacketOverlapTest_LUA( bool bEnable )
+void CX2Main::UdpPacketOverlapTest_LUA( [[maybe_unused]] bool bEnable )
 {
 #if X2_DEV_TOOLS
 	m_bUdpPacketOverlap = bEnable;
@@ -10192,8 +8210,8 @@ void CX2Main::UdpPacketOverlapTest_LUA( bool bEnable )
 void    CX2Main::SetUDPMode_LUA( const char* pszGameType, const char* pszUDPMode )
 {
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( false == ( pszGameType != NULL && pszGameType[0] != NULL
-        && pszUDPMode != NULL && pszUDPMode[0] != NULL ) )
+    if ( false == ( pszGameType != NULL && pszGameType[0] != '\0'
+        && pszUDPMode != NULL && pszUDPMode[0] != '\0' ) )
         return;
 
     const char* apszGameType[] =
@@ -10217,7 +8235,7 @@ void    CX2Main::SetUDPMode_LUA( const char* pszGameType, const char* pszUDPMode
 
     for( int i = 0; i <  CX2Game::GT_NUMS; ++i )
     {
-        if ( stricmp( pszGameType, apszGameType[ i ] ) == 0 )
+        if ( _stricmp( pszGameType, apszGameType[ i ] ) == 0 )
         {
             eGameType = CX2Game::GAME_TYPE( i );
             goto udpmode;
@@ -10227,7 +8245,7 @@ void    CX2Main::SetUDPMode_LUA( const char* pszGameType, const char* pszUDPMode
 udpmode:
     for( int i = 0; i < CKTDNUDP::FORCE_CONNECT_MODE_NUMS; ++i )
     {
-        if ( stricmp( pszUDPMode, apszUDPMode[ i ] ) == 0 )
+        if ( _stricmp( pszUDPMode, apszUDPMode[ i ] ) == 0 )
         {
             eUDPMode = CKTDNUDP::EForceConnectMode( i );
             goto setmode;
@@ -10280,12 +8298,12 @@ bool CX2Main::ResetDeveloperScriptSet ( const WCHAR* pFileName )	// DevScriptTab
 		return false;
 
 	DeleteFile ( L"DevScriptTable_Log.txt");
-	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool ??? ???? ????-----" << fileout;
+	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool script loading start-----" << fileout;
 
 
 	vector<DeveloperScriptSet::DeveloperScript> & pVecDeveloperScript = m_DeveloperScriptSet.GetDeveloperScriptSet();
 
-	BOOST_FOREACH ( DeveloperScriptSet::DeveloperScript devScript, pVecDeveloperScript )
+	for ( DeveloperScriptSet::DeveloperScript devScript : pVecDeveloperScript )
 	{
 		if ( true == devScript.m_wstrDeveloperScriptFileName.empty() )
 		{
@@ -10316,7 +8334,7 @@ bool CX2Main::ResetDeveloperScriptSet ( const WCHAR* pFileName )	// DevScriptTab
 			ASSERT (!L"Can't Find DevScriptSet Type" );
 		}
  	}
-	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool ??? ???? ???-----" << fileout;
+	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool script loading end-----" << fileout;
 
 	return true;
 }
@@ -10325,7 +8343,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameEffectSet ( DeveloperScriptSet::Develo
 {
 	/// ???? ?? ??? ??? ?��?, Swap ?? ???, Merge ?? ??? ?��? ??? ?? ??????.
 	vector<CX2EffectSet*> pVecGameEffectSet = g_pData->m_vecGameEFfectSet;
-	BOOST_FOREACH ( CX2EffectSet * pEffectSet, pVecGameEffectSet )
+	for ( CX2EffectSet * pEffectSet : pVecGameEffectSet )
 	{
 		SAFE_DELETE( pEffectSet );
 	}
@@ -10394,7 +8412,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameMajorXMeshPlayer ( DeveloperScriptSet:
 {
 	/// Step 1. ???? ?? ??? ??? ?��?, Swap ?? ???, Merge ?? ??? ?��? ??? ?? ??????.
 	vector<CKTDGXMeshPlayer*> m_vecGameMajorXMeshPlayer = g_pData->m_vecGameMajorXMeshPlayer;
-	BOOST_FOREACH ( CKTDGXMeshPlayer * pMeshPlayer, m_vecGameMajorXMeshPlayer )
+	for ( CKTDGXMeshPlayer * pMeshPlayer : m_vecGameMajorXMeshPlayer )
 	{
 		SAFE_DELETE( pMeshPlayer );
 	}
@@ -10439,7 +8457,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameMajorXMeshPlayer ( DeveloperScriptSet:
 
 // ???? ?? ????? ??????? @1 ?????? ????????? ???
 // ??? ?????? GET_REPLACED_STRING ????? ?? ??????
-wstring CX2Main::GetReplacedWstring( wstring & wstrModify, char* szParamTypeList, ... )
+wstring CX2Main::GetReplacedWstring( wstring & wstrModify, const char* szParamTypeList, ... )
 {
 	wstring wstrReplacedString = wstrModify;
 	int iParamTypeListSize = strlen( szParamTypeList );
@@ -10515,17 +8533,7 @@ wstring CX2Main::GetReplacedWstring( wstring & wstrModify, char* szParamTypeList
 				wstmReplaceValue << va_arg( marker, wchar_t* );
 			}
 			break;
-		case 'l':       // std::string ???? ???
-			{
-				std::string strValue = va_arg( marker, std::string );
-				wstmReplaceValue << KncUtil::toWideString( strValue );
-			}
-			break;
-		case 'L':       // std::wstring ???? ???
-			{
-				wstmReplaceValue << va_arg( marker, std::wstring );
-			}
-			break;
+		// 'l' and 'L' took a std::string / std::wstring, which cannot pass through varargs: removed (no caller used them).
 		case 'M':       // ????? ?????? ??? ???
 		case 'm':
 			{

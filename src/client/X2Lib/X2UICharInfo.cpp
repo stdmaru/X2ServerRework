@@ -11,23 +11,23 @@ CX2UICharInfo::CX2UICharInfo( CKTDXStage* pNowStage, const WCHAR* pFileName )
 m_pDLGCharInfo(NULL),
 //m_pStat(NULL),
 //m_pStatEqip(NULL),
-m_pUnitViewerUI(NULL),
-m_DLGPosition(0,0),					// D3DXVECTOR2
-m_DLGSize(0,0),						// D3DXVECTOR2
+m_Stat(),
+m_StatEqip(),					// D3DXVECTOR2
+m_pUnitViewerUI(NULL),						// D3DXVECTOR2
+m_DLGPosition(0,0),
+m_DLGSize(0,0),
 m_fRemainRotY(0.0f),
-m_fMouseSensitivity(0.01f),
-m_bRotateReturn(true),
-m_UnitClickPos(117,93),				// D3DXVECTOR2
-m_UnitClickSize(214,253),			// D3DXVECTOR2
-m_bUnitClicked(false),
-m_bShow(false),
-m_MovedPosition(0,0)				// D3DXVECTOR2
+m_fMouseSensitivity(0.01f),				// D3DXVECTOR2
+m_bRotateReturn(true),			// D3DXVECTOR2
+m_UnitClickPos(117,93),
+m_UnitClickSize(214,253),
+m_bUnitClicked(false)				// D3DXVECTOR2
+, m_bShow(false)
+, m_MovedPosition(0,0)
+//{{ robobeg : 2013-11-04
+, m_StatPet()
 , m_bShowPVPOption(false)
 , m_bShowDungeonOption (true)
-//{{ robobeg : 2013-11-04
-, m_Stat()
-, m_StatEqip()
-, m_StatPet()
 //}} robobeg : 2013-11-04
 {
 
@@ -147,7 +147,6 @@ void CX2UICharInfo::UnitHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 
 
 
@@ -254,7 +253,7 @@ void CX2UICharInfo::UnitHandling( double fTime, float fElapsedTime )
 
 		m_pUnitViewerUI->OnFrameMove( fTime, fElapsedTime );
 
-		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			m_pUnitViewerUI->PlayByMotionType( CX2UnitViewerUI::UVUMT_WAIT );
 		}
@@ -269,7 +268,7 @@ void CX2UICharInfo::UnitHandling( double fTime, float fElapsedTime )
 
 
 
-bool CX2UICharInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UICharInfo::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDLGCharInfo ) )
@@ -924,7 +923,7 @@ bool CX2UICharInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	return false;
 }
 
-bool CX2UICharInfo::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UICharInfo::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
@@ -1566,7 +1565,7 @@ void CX2UICharInfo::UpdateOptionStatFromSpecialSkill( CX2SocketItem::SocketData&
 /** @function : UpdateResistanceStatUI
 	@brief : 불, 물, 자연, 바람, 빛, 어둠 속성 저항 UI 갱신
 */
-void CX2UICharInfo::UpdateResistanceStatUI(const CX2SocketItem::SocketData& socketData_)
+void CX2UICharInfo::UpdateResistanceStatUI(const CX2SocketItem::SocketData& /*socketData_*/)
 {
 	// 속성저항
 	const int iMaxResistance = 500;
@@ -1815,15 +1814,15 @@ CX2SocketItem::SocketData CX2UICharInfo::GetMyEquippedSocketData()
 
 		// 아이템 고유의 소켓 옵션
 			// 랜덤 소켓 옵션 담기
-			if( NULL != pItem )
-			{
-				vecSocketOption.assign( pItem->GetItemData().m_vecRandomSocket.begin(),
-					pItem->GetItemData().m_vecRandomSocket.end() );
-			}
-			// 일반 소켓 옵션 담기
-			std::vector<int> vecNormalSocketOption;
-			pItem->GetItemTemplet()->GetSocketOptions( vecNormalSocketOption );
-			vecSocketOption.insert( vecSocketOption.end(), vecNormalSocketOption.begin(), vecNormalSocketOption.end() );
+		if( NULL != pItem )
+		{
+			vecSocketOption.assign( pItem->GetItemData().m_vecRandomSocket.begin(),
+				pItem->GetItemData().m_vecRandomSocket.end() );
+		}
+		// 일반 소켓 옵션 담기
+		std::vector<int> vecNormalSocketOption;
+		pItem->GetItemTemplet()->GetSocketOptions( vecNormalSocketOption );
+		vecSocketOption.insert( vecSocketOption.end(), vecNormalSocketOption.begin(), vecNormalSocketOption.end() );
         SumSocketOption( vecSocketOption, SocketDataRetVal, iItemSocketLevel );
 
 		// 아이템에 유저가 박은 소켓에 의한 옵션
@@ -1972,7 +1971,6 @@ void CX2UICharInfo::ResetNowEquipUI()
 
 void CX2UICharInfo::ResetEDnCashnVP()
 {
-	WCHAR buff[256] = {0};
 	CKTDGUIStatic* pStaticUnitStat;
 
 	pStaticUnitStat = (CKTDGUIStatic*)m_pDLGCharInfo->GetControl( L"g_pStaticInfo_cash" );
@@ -2256,7 +2254,6 @@ bool CX2UICharInfo::Handler_EGS_CHANGE_INVENTORY_SLOT_REQ( CX2SlotItem* pFromCX2
 		ASSERT( !"UIInventory NULL" );			// 최초 생성 후 항상 살아있어야 함
 		g_pData->GetUIManager()->CreateUIInventory();
 	}
-	int NowInvenSortTypePageNum = g_pData->GetUIManager()->GetUIInventory()->GetNowInvenSortTypePageNum();
 
 	KEGS_CHANGE_INVENTORY_SLOT_ITEM_REQ kEGS_CHANGE_INVENTORY_SLOT_ITEM_REQ;
 

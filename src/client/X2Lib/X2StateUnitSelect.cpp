@@ -407,11 +407,6 @@ void CX2StateUnitSelect::SetShowCharacterName( bool bShow )
 
 
 
-void CX2StateUnitSelect::ResetCrashReport()
-{
-	g_pMain->ResetCrashReport( L"" );
-}
-
 void CX2StateUnitSelect::SetShowCharacterNameForSelectedUnit()
 {
 

@@ -10,8 +10,8 @@ m_vCurrentPos( 0, 0, 0 ),
 m_iLineIndex( 0 ),
 m_vLastPos( 0, 0, 0 ),
 m_iLastPosLineIndex( 0 ),
-m_ComeBackInfoFromDungeon(),
-m_bIsRight(true)
+m_bIsRight(true),
+m_ComeBackInfoFromDungeon()
 {
 	OpenScript();
 }
@@ -271,9 +271,9 @@ void CX2LocationManager::LocalParsing( KLuaManager& kLuamanager, const vector< L
 		}
 
 		CX2LocationManager::LocalMapTemplet* pLocalMapTemplet
-			= new CX2LocationManager::LocalMapTemplet( static_cast<const LOCAL_MAP_ID>( localMapID ),
-			static_cast<const SEnum::VILLAGE_MAP_ID>( villageID ), static_cast<const SEnum::VILLAGE_MAP_ID>( villageDGID ),
-			static_cast<const SEnum::VILLAGE_MAP_ID>( villageDungeonLoungeID ), static_cast<const SEnum::VILLAGE_MAP_ID>( iBattleFieldRestID ),
+			= new CX2LocationManager::LocalMapTemplet( static_cast<LOCAL_MAP_ID>( localMapID ),
+			static_cast<SEnum::VILLAGE_MAP_ID>( villageID ), static_cast<SEnum::VILLAGE_MAP_ID>( villageDGID ),
+			static_cast<SEnum::VILLAGE_MAP_ID>( villageDungeonLoungeID ), static_cast<SEnum::VILLAGE_MAP_ID>( iBattleFieldRestID ),
 			vecDungeonID, vecBattleFieldID, localDialogFileName, true );
 
 		if( kLuamanager.BeginTable( "EnterCondition" ) == true )
@@ -298,7 +298,6 @@ void CX2LocationManager::LocalParsing( KLuaManager& kLuamanager, const vector< L
 
 
 
-			int requireUnitLevel = 1;
 			LUA_GET_VALUE( kLuamanager, "RequireUnitLevel", pLocalMapTemplet->m_RequireUnitLevel, 1 );
 
 			kLuamanager.EndTable(); // EnterCondition

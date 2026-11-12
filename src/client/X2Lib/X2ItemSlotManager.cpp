@@ -174,7 +174,7 @@ CX2SlotItem* CX2ItemSlotManager::GetSlotByID( int iSlotID )
 	return NULL;
 }
 
-HRESULT CX2ItemSlotManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2ItemSlotManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	KTDXPROFILE();
 
@@ -367,7 +367,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 			wstrItemDesc = GetSlotItemDesc();
 		}
 
-		CKTDGFontManager::CUKFont* pItemDescFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX );
 
 		//{{ JHKang / 강정훈 / 2010.9.17 / 툴팁 생성 줄바꿈 관련 개선
 		// 툴팁 수정에 따른 가로 크기 변경 (현재 가로 해상도 크기 / 4), 가로 세로 크기 조절
@@ -396,7 +395,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 			if( itemDescHeight > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 			{
 				pItemDesc->GetString(0)->fontIndex = SLOT_MANAGER_FONT_INDEX_SMALL;
-				pItemDescFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX_SMALL );
 				itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 13 : 14;	// XUF_DODUM_11_NORMAL의 크기
 				itemDescFontHeight += m_iDescFontHeightOffset;
 
@@ -523,7 +521,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 				GetIsShowCompareItemDescBySlotType( m_pNowOverItemSlot->GetSlotType() ) == true )
 			{
 				wstring itemDescCompare = GetSlotItemDesc();
-				CKTDGFontManager::CUKFont* pItemDescFontCompare = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX );
 				int itemDescWidthCompare = 0;
 				int itemDescHeightCompare = 0;
 
@@ -548,7 +545,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 					if( itemDescHeightCompare > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 					{
 						pItemDescCompare->GetString(0)->fontIndex = SLOT_MANAGER_FONT_INDEX_SMALL;
-						pItemDescFontCompare = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX_SMALL );
 						itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 13 : 14;	// XUF_DODUM_11_NORMAL의 크기
 						itemDescFontHeight += m_iDescFontHeightOffset;
 						itemDescCompare = CWordLineHandler::GetStrByLineBreakColorInX2Main(wstrItemDescCompTemp.c_str(), itemDescWidthCompare - ITEM_DESC_ADD_SIZE_X, SLOT_MANAGER_FONT_INDEX_SMALL);
@@ -753,7 +749,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByUID( UidType itemUID, bool bIt
         bItemDescExtra, true);
 }
 
-std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool bItemDescExtra /*= true*/, bool bMyUnitItem_ /*= false*/ )
+std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool bItemDescExtra /*= true*/, bool /*bMyUnitItem_*/ /*= false*/ )
 {
 	wstring slotItemDesc = L"";
 	WCHAR buff[1024] = {0};
@@ -761,8 +757,8 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 
 	CX2Unit* pkUnit = g_pData->GetMyUser()->GetSelectUnit();
     const CX2Item::ItemTemplet* pkItemTemplet = g_pData->GetItemManager()->GetItemTemplet( itemTID );
-    if ( pkItemTemplet == NULL )
-        return  slotItemDesc;
+	if ( pkItemTemplet == NULL )
+		return  slotItemDesc;
 
 	//{{ kimhc // 2009-08-26 // 아이템 봉인 시 디스크립션 변경
 	const CX2Item::ItemData*	pItemData		= NULL;
@@ -1744,7 +1740,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 	// 아이템에 요구레벨이 있는 경우에는 소켓 레벨을 아이템의 요구레벨로 하고
 	// 아이템에 요구레벨이 없는 경우에는 소켓 레벨을 유저(타겟유저)의 레벨 함
 
-	const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : pkUnit->GetUnitData().m_Level;
+	const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : static_cast<int>( pkUnit->GetUnitData().m_Level );
 		if( NULL != pItem && false == pItem->GetIsEvaluation() )
 		{
 			slotItemDesc += L"\n#C00FF00";
@@ -1829,7 +1825,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 
 	//{{ megagame : 박교현 : [2010-04-18] (마우스 오른쪽 버튼으로 사용)
     const wchar_t* pwszDescription = pkItemTemplet->GetDescription();
-	if ( pwszDescription[0] != NULL )
+	if ( pwszDescription[0] != L'\0' )
 	{
 		StringCchPrintf( buff, 1024, L"\n\n%s", pwszDescription );
 		//wsprintf( buff, L"\n\n%s", pkItemTemplet->m_Description.c_str() );
@@ -1962,7 +1958,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 			slotItemDesc += L"ModelName :";
 
 			const wchar_t* pCIMName = pkItemTemplet->GetCommonItemModelName( g_pData->GetSelectUnitType() );
-			if ( NULL == pCIMName[0] )
+			if ( L'\0' == pCIMName[0] )
 			{
 				slotItemDesc +=	pkItemTemplet->GetModelName(0);
 			}
@@ -2096,6 +2092,8 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescExtra_RBtn( int itemTID, CX2Item
 			    //}} kimhc // 2009-08-26 // 아이템 봉인 시 디스크립션 변경
 					    slotItemDesc += GET_STRING( STR_ID_307 );
 				    }
+                default:
+                	break;
                 }//switch
 			}
 		}
@@ -2363,7 +2361,7 @@ wstring CX2ItemSlotManager::GetExpirationDateDesc( CX2Item* pItem )		// 주의!!
 }
 
 //{{ kimhc // 2011-07-05 // 옵션데이타 수치화 작업
-/*virtual*/ wstring CX2ItemSlotManager::GetSetItemDesc( CX2Item* pItem, int itemTID, const int iUserLevel_ )
+/*virtual*/ wstring CX2ItemSlotManager::GetSetItemDesc( CX2Item* /*pItem*/, int itemTID, const int iUserLevel_ )
 //}} kimhc // 2011-07-05 // 옵션데이타 수치화 작업
 {
 	wstring tempDesc = L"";
@@ -3010,12 +3008,14 @@ bool CX2ItemSlotManager::GetIsShowCompareItemDescBySlotType( CX2Slot::SLOT_TYPE 
 		{
 			return false;
 		} break;
+	default:
+		break;
 	}
 
 	return true;
 }
 
-void CX2ItemSlotManager::SplitDescHeight( wstring* pOrgStr, wstring* pTempStr, int &pHeight, int &pFontHeight, int fontIndex, bool bSplit )
+void CX2ItemSlotManager::SplitDescHeight( wstring* pOrgStr, wstring* pTempStr, int &pHeight, int &pFontHeight, int /*fontIndex*/, bool bSplit )
 {
 	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
 	const int SIZE_Y = 40;

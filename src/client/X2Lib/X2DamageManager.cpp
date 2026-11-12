@@ -565,6 +565,8 @@ wstring CX2DamageManager::GetExtraDamageName( CX2DamageManager::EXTRA_DAMAGE_TYP
 
 
 
+	default:
+		break;
 	}
 
 
@@ -599,8 +601,8 @@ bool CX2DamageManager::GroundHit( DamageData* pDamageData, bool bAttackOnlyThisU
 
     CKTDGLineMap* pLineMap = g_pX2Game->GetWorld()->GetLineMap();
     ASSERT( pLineMap != NULL );
-    if ( pLineMap == NULL )
-        return false;
+	if ( pLineMap == NULL )
+		return false;
 
 	if(pAttackerEffect != NULL)
 	{
@@ -881,6 +883,8 @@ bool CX2DamageManager::AreaHit( DamageData* pDamageData, bool bAttackOnlyThisUni
 		break;
 	case DAT_FAR_UNIT:
 		std::sort(vecAreaHitUnitIndex.begin(), vecAreaHitUnitIndex.end(), AreaHitCmpFar);
+		break;
+	default:
 		break;
 	}
 
@@ -1199,7 +1203,6 @@ bool CX2DamageManager::EffectToUnit( DamageData* pDamageData )
 			}
 		}
 
-		CX2GameUnit* pAttackerGameUnit = pDamageData->optrAttackerGameUnit.GetObservable();
 
 		if ( NULL == pAttacker->GetOwnerUnit()  )
 			continue;
@@ -1886,7 +1889,7 @@ bool CX2DamageManager::CollisionDataToUnit( DamageData* pDamageData )
 
 bool CX2DamageManager::OpenDamageSoundScript( const WCHAR* wszFileName )
 {
-	if ( NULL == wszFileName || NULL == wszFileName[0] )
+	if ( NULL == wszFileName || L'\0' == wszFileName[0] )
 		return false;
 
 //{{ robobeg : 2008-10-28
@@ -1995,7 +1998,7 @@ bool CX2DamageManager::OpenDamageSoundScript( const WCHAR* wszFileName )
 
 bool CX2DamageManager::ParseDamageSoundBlock( KLuaManager& luaManager, HIT_TYPE eHitType, const char* pszTableNameUTF8 )
 {
-	if( pszTableNameUTF8 == NULL || pszTableNameUTF8[0] == NULL )
+	if( pszTableNameUTF8 == NULL || pszTableNameUTF8[0] == '\0' )
 		return false;
 
 	if( true == luaManager.BeginTable( pszTableNameUTF8 ) )
@@ -2251,6 +2254,8 @@ float CX2DamageManager::ExtraDamageData::GetCalcPerDamage(int iUnitLevel, float 
 	case CX2DamageManager::EDT_LEG_WOUND:
 		fPerDamage = 82.f;
 		break;
+	default:
+		break;
 	}
 
 	if(g_pX2Game != NULL && g_pX2Game->GetGameType() == CX2Game::GT_PVP)
@@ -2259,8 +2264,7 @@ float CX2DamageManager::ExtraDamageData::GetCalcPerDamage(int iUnitLevel, float 
 			g_pMain->GetPVPChannelClass( g_pMain->GetConnectedChannelID() ) == KPVPChannelInfo::PCC_PLAY ||
 			g_pMain->GetPVPChannelClass( g_pMain->GetConnectedChannelID() ) == KPVPChannelInfo::PCC_TOURNAMENT )
 		{
-			// 자유채널,연습채널,대회채널 : iLevel은 1로 보정 (결국은 0)
-			fPerDamage = fPerDamage;
+			// free, practice and tournament channels: the level counts as 1 (no change in the end): fPerDamage stays
 		}
 		else
 		{
@@ -2273,7 +2277,7 @@ float CX2DamageManager::ExtraDamageData::GetCalcPerDamage(int iUnitLevel, float 
 		fPerDamage = (fPerDamage + (fPerDamage * 0.2f * iLevel));
 	}
 
-	fPerDamage *= (1.f - (fResist / CX2EnchantItem::EAR_MAX_VALUE));
+	fPerDamage *= (1.f - (fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE )));
 
 	return fPerDamage;
 
@@ -2389,7 +2393,7 @@ float CX2DamageManager::CalcWayOfSwordPoint( WAY_OF_SWORD_TYPE wayOfSwordType_, 
 }
 
 
-float CX2DamageManager::CalcWayOfSwordPointOnDamageReact( float fDamageRate_, int iWayOfSwordState )
+float CX2DamageManager::CalcWayOfSwordPointOnDamageReact( float /*fDamageRate_*/, int iWayOfSwordState )
 {
 	float fWSPGain = 0.f;
 
@@ -2517,7 +2521,7 @@ float CX2DamageManager::GetDestRageWSPGain_Elesis()
 }
 bool CX2DamageManager::OpenWayOfSwordScript( const WCHAR* wszFileName )
 {
-	if ( NULL == wszFileName || NULL == wszFileName[0] )
+	if ( NULL == wszFileName || L'\0' == wszFileName[0] )
 		return false;
 
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState(), 0, true );
@@ -2933,6 +2937,8 @@ bool CX2DamageManager::GetIsPossibleProvokeExtraDamage ( DamageData * pDamageDat
 			case EDT_WATER_HOLD:
 			case EDT_ATTACK_ALL_TEAM:
 				return false;
+		default:
+			break;
 		}
 	}
 	return true;

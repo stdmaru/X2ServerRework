@@ -17,7 +17,7 @@ typedef x2::intrusive_ptr<CX2RidingPet> CX2RidingPetPtr;
 
 struct  CX2EffectSet_EffectSetInstance_TAG {};
 typedef KHandleType<int,CX2EffectSet_EffectSetInstance_TAG>     CX2EffectSet_EffectSetInstanceHandle;
-#define INVALID_EFFECTSET_HANDLE    (CX2EffectSet_EffectSetInstanceHandle::invalid_handle())
+#define INVALID_EFFECTSET_HANDLE    (CX2EffectSet_EffectSetInstanceHandle::invalid_handle{})
 
 
 

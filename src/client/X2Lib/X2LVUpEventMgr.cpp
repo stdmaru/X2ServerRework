@@ -269,7 +269,7 @@ void CX2LVUpEventMgr::AddLevelUpEvent_LUA()
 	m_mapLVUpEvent.insert( std::make_pair( pLVUpEvent->m_EventID, pLVUpEvent ) );
 }
 
-bool CX2LVUpEventMgr::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2LVUpEventMgr::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch( wParam )
 	{
@@ -389,7 +389,7 @@ void CX2LVUpEventMgr::LVUpEvent::SetNowStage( CKTDXStage* pStage )
 	}
 }
 
-void CX2LVUpEventMgr::LVUpEvent::OnFrameMove( double fTime, float fElapsedTime )
+void CX2LVUpEventMgr::LVUpEvent::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	//이제 여기서 검사해서 다이얼로그 자동으로 띄워져부럴까~~~?
 	CheckLevel();
@@ -400,7 +400,7 @@ void CX2LVUpEventMgr::LVUpEvent::DeleteDialog()
 	for ( int i = 0; i < (int)m_vecDialog.size(); i++ )
 	{
 		CKTDGUIDialogType pDialog = m_vecDialog[i];
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, 0, false );
 	}
 	m_vecDialog.clear();
 }

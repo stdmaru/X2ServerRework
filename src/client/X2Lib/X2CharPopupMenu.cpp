@@ -8,7 +8,6 @@ m_pDlgMenu( NULL ),
 m_iUid( -1 ),
 m_wstrName( L"" ),
 m_eUnitClass( CX2Unit::UC_NONE ),
-m_pPicCharacter( NULL ),
 //m_pPicLevelTen(),
 //m_pPicLevelOne(),
 m_pStaticName( NULL ),
@@ -19,17 +18,13 @@ m_pButtonwhisper( NULL ),
 m_pButtonfriend( NULL ),
 m_pButtondisciple( NULL ),
 m_pButtonleader( NULL ),
-m_pButtonparty( NULL ),
-m_pButtoninvite( NULL ),
-m_pButtonout( NULL ),
-m_pButtontrade( NULL ),
-m_pButtonInviteGuild( NULL )	//{{ 허상형 : [2009/9/18] // 길드 버튼 추가
-,m_pButtonInviteCouple ( NULL )
-,m_pButtonSummonCouple ( NULL )
-, m_pPicMiddle1( NULL )
-, m_pPicBottom1( NULL )
-, m_pPicMiddle2( NULL )
-, m_pPicBottom2( NULL )
+m_pButtonparty( NULL )	//{{ 허상형 : [2009/9/18] // 길드 버튼 추가
+,m_pButtoninvite( NULL )
+,m_pButtonout( NULL )
+, m_pButtontrade( NULL )
+, m_pButtonInviteGuild( NULL )
+, m_pButtonInviteCouple ( NULL )
+, m_pButtonSummonCouple ( NULL )
 {
 	// 변수 초기화
 	for(UINT i=0; i < ARRAY_SIZE(m_pPicLevelTen); ++i)
@@ -193,6 +188,8 @@ void CX2CharPopupMenu::SetUnit( UidType uidUnitUID, bool bPartyMember /*= false*
 						}
 
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -258,6 +255,8 @@ void CX2CharPopupMenu::SetUnit( UidType uidUnitUID, bool bPartyMember /*= false*
 				}
 
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -423,7 +422,6 @@ void CX2CharPopupMenu::SetMode( USER_MENU eMode, bool bPartyMember/* = false*/ )
 
 		if( g_pData->GetGuildManager()->CanInviteMember() == true )	//	길드 초대 할 수 있는 등급인지 검사
 		{
-			int iMyGuild = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_byMemberShipGrade;
 			//	상대 유저의 길드와 내 길드가 다른지 여부 조건식 추가
 			if( g_pData->GetGuildManager()->IsMyGuildUser(m_iUid) == false )
 			{
@@ -483,6 +481,8 @@ void CX2CharPopupMenu::SetMode( USER_MENU eMode, bool bPartyMember/* = false*/ )
 						++m_nMenuCount;
 					}
 				} break;
+			default:
+				break;
 			}
 		}
 
@@ -721,7 +721,7 @@ bool CX2CharPopupMenu::SetPopupMenu( UidType iUnitUID, bool bPartyMember/* = fal
 	return true;
 }
 
-bool CX2CharPopupMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CharPopupMenu::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 #ifdef EXTEND_SERVER_GROUP_MASK
 	int	iServerGroupID = -1;
@@ -847,6 +847,8 @@ bool CX2CharPopupMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 							}
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 			else
@@ -1235,6 +1237,8 @@ bool CX2CharPopupMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 					}
 				}
 				break;
+			default:
+				break;
 			}
 
 			ClosePopupMenu ();
@@ -1245,7 +1249,7 @@ bool CX2CharPopupMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return false;
 }
 
-bool CX2CharPopupMenu::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CharPopupMenu::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }

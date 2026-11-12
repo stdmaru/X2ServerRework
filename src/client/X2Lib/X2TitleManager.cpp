@@ -52,7 +52,7 @@ CX2TitleManager::~CX2TitleManager(void)
     SAFE_DELETE(m_pDlgTitle);
 }
 
-HRESULT CX2TitleManager::OnFrameMove(double fTime, float fElapsedTime)
+HRESULT CX2TitleManager::OnFrameMove(double /*fTime*/, float /*fElapsedTime*/)
 {
 
     //if(m_pDlgTitle != NULL && GetShow() == true)
@@ -248,6 +248,7 @@ bool CX2TitleManager::AddTitleMissionInfo_LUA()
     LUA_GET_VALUE_RETURN_ENUM(	luaManager, "m_eConditionUnitType",	kMissionTemplet.m_kCondition.m_eUnitType,	CX2Unit::UNIT_TYPE,	CX2Unit::UT_NONE,	goto LoadFail; );
     LUA_GET_VALUE_RETURN_ENUM(	luaManager, "m_eConditionUnitClass",	kMissionTemplet.m_kCondition.m_eUnitClass,	CX2Unit::UNIT_CLASS,	CX2Unit::UC_NONE,	goto LoadFail; );
 
+    {
     int iClearMissionID = 0;
     LUA_GET_VALUE_RETURN(		luaManager, "m_iConditionClearMissionID", iClearMissionID,							-1,			goto LoadFail );
 
@@ -279,6 +280,7 @@ bool CX2TitleManager::AddTitleMissionInfo_LUA()
     m_mapTitleMission.insert( std::make_pair( kMissionTemplet.m_iMissionID, kMissionTemplet ) );
     return true;
 
+    }
 LoadFail:
     ErrorLog(XEM_ERROR132);
     return false;
@@ -606,7 +608,7 @@ const CX2TitleManager::TitleInfo* CX2TitleManager::GetTitleInfo( int iTitleID )
 	return mit->second;
 }
 
-bool CX2TitleManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
     switch(wParam)
     {
@@ -1249,13 +1251,11 @@ void CX2TitleManager::TakeTitle(std::vector<KTitleInfo> vecTitleInfo)
 
     if(m_pDlgTitle != NULL)
     {
-        int iTitleId;
         KTitleInfo nodeTitle;
 
         for(int i=0; i<(int)vecTitleInfo.size(); ++i)
         {
             nodeTitle = vecTitleInfo[i];
-            iTitleId = nodeTitle.m_iTitleID;
 
             UpdateTitle(nodeTitle, 0);
             //UpdateTitle(iTitleId, 0, nodeTitle.m_bInfinity);
@@ -1378,7 +1378,7 @@ bool CX2TitleManager::UpdateMission(std::vector< KMissionInstance > vecMisstionI
     return ret;
 }
 
-void CX2TitleManager::UpdateSubMission(int iMissionId, std::vector< KSubMissionInstance > vecSubMission)
+void CX2TitleManager::UpdateSubMission(int /*iMissionId*/, std::vector< KSubMissionInstance > vecSubMission)
 {
     KSubMissionInstance kSubMission;
 
@@ -1514,8 +1514,8 @@ bool CX2TitleManager::GetUnitType(int titleid)
 {
     const TitleInfo *pTitle = GetTitleInfo(titleid);
 
-    if(pTitle == NULL)
-        return false;
+	if(pTitle == NULL)
+		return false;
 
 	if(	pTitle->m_eUnitType == CX2Unit::UT_NONE ||
 		(	g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetSelectUnit() != NULL &&
@@ -1585,7 +1585,7 @@ bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_REQ(int titleId)
     return true;
 }
 
-bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1619,7 +1619,7 @@ bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_ACK( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 // 진행중인 미션
-bool CX2TitleManager::Handler_EGS_NEW_MISSION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_NEW_MISSION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1638,7 +1638,7 @@ bool CX2TitleManager::Handler_EGS_NEW_MISSION_NOT( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 // 획득한 미션
-bool CX2TitleManager::Handler_EGS_REWARD_TITLE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_REWARD_TITLE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1660,7 +1660,7 @@ bool CX2TitleManager::Handler_EGS_REWARD_TITLE_NOT( HWND hWnd, UINT uMsg, WPARAM
 
 
 // 타이틀 미션이 업데이트된 내용이 있을때
-bool CX2TitleManager::Handler_EGS_UPDATE_MISSION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_UPDATE_MISSION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1683,7 +1683,7 @@ bool CX2TitleManager::Handler_EGS_UPDATE_MISSION_NOT( HWND hWnd, UINT uMsg, WPAR
 }
 
 //현재 장착중인 타이틀의 기간이 다되었을경우
-bool CX2TitleManager::Handler_EGS_TITLE_EXPIRATION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_TITLE_EXPIRATION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TITLE_EXPIRATION_NOT kEvent;

@@ -188,6 +188,8 @@ class CX2StateMenu : public CX2StateCommonBG
 			wstring				m_SenderNickName;
 			wstring				m_PresentMsg;
 
+			PresentArrival() = default;
+			PresentArrival( const PresentArrival& ) = default;
 			PresentArrival& operator=(const PresentArrival& rhs)
 			{
 				if ( this == &rhs )

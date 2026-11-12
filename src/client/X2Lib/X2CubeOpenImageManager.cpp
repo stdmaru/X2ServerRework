@@ -4,8 +4,7 @@
 #include "X2CubeOpenImageManager.h"
 
 CX2CubeOpenImageManager::CX2CubeOpenImageManager() :
-	m_iNowCubeID( 0 )
-	,m_bPlaying(false)
+	m_bPlaying(false)
 	,m_bStart(false)
 	,m_bSoundPlaying(false)
 	,m_bNowResultEventCubePlaying(false)
@@ -113,7 +112,7 @@ bool CX2CubeOpenImageManager::AddImageInfo_LUA()
 
 	if(vecResultID.size() != 0 && (vecResultID.size() == vecResultImageName.size() ))
 	{
-		for(int i = 0; i < vecResultID.size(); ++i)
+		for(int i = 0; i < static_cast<int>( vecResultID.size() ); ++i)
 		{
 			pImageInfo->m_mapResultImageInfo.insert(std::make_pair(vecResultID[i], vecResultImageName[i]));
 		}
@@ -189,7 +188,7 @@ bool	CX2CubeOpenImageManager::GetCubeImageName(IN float fProgressOpen, IN const 
 		}
 
 		iImageNum = static_cast<int>(fProgressOpen / fTime ) % pCubeImageInfo->m_vecImageName.size();
-		if( false == pCubeImageInfo->m_bLoop && iImageNum == pCubeImageInfo->m_vecImageName.size() - 1)
+		if( false == pCubeImageInfo->m_bLoop && static_cast<size_t>( iImageNum ) == pCubeImageInfo->m_vecImageName.size() - 1)
 			m_bShowLastImage = true;
 	}
 
@@ -374,7 +373,7 @@ bool	CX2CubeOpenImageManager::IsFadeInOutImage(IN const int iCubeID)
 
 	return pCubeImageInfo->m_bImageFadeInOut;
 }
-const bool		CX2CubeOpenImageManager::IsResultItemID(IN const int iItemID)
+bool		CX2CubeOpenImageManager::IsResultItemID(IN const int iItemID)
 {
 	if(m_setResultItemID.find(iItemID) != m_setResultItemID.end())
 		return true;

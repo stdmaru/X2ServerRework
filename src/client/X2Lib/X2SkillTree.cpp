@@ -46,9 +46,9 @@
 
 CX2SkillTree::CX2SkillTree(void)
 //{{ kimhc // 2010.7.29 // ���Խ� ���� ��ų ���� ����
-: m_bSkillSlotChanging( false )			// ��ų����ü���� ���ΰ�? (SkillSlotChangeReq�� ������ �� Ack�� ���� ���� ���� �����ΰ�?)
-, m_iUsedSPoint( 0 )
+: m_iUsedSPoint( 0 )			// ��ų����ü���� ���ΰ�? (SkillSlotChangeReq�� ������ �� Ack�� ���� ���� ���� �����ΰ�?)
 , m_iUsedCSPoint( 0 )
+, m_bSkillSlotChanging( false )
 //}} kimhc // 2010.7.29 // ���Խ� ���� ��ų ���� ����
 {
 	m_mapGetSkillInfo.clear();
@@ -176,7 +176,6 @@ bool CX2SkillTree::AddSkillTreeTemplet_LUA()
 	LUA_GET_VALUE( luaManager,		"m_iRowIndex",				skillTreeTemplet.m_iTier,			0				);
 	LUA_GET_VALUE( luaManager,		"m_iColumnIndex",			skillTreeTemplet.m_iIndexInTier,	0				);
 
-	int iPrecedingSkillID = 0;
 	LUA_GET_VALUE( luaManager,		"m_iPrecedingSkill",		skillTreeTemplet.m_iPrecedingSkill,	0				);
 
 
@@ -218,6 +217,8 @@ bool CX2SkillTree::AddSkillTemplet_LUA()
 		{
 			pSkillTemplet->m_bGuildSkill = true;
 		} break;
+	default:
+		break;
 	}
 
 	LUA_GET_VALUE_ENUM( luaManager,		"m_eID",						pSkillTemplet->m_eID,							SKILL_ID,			SI_NONE					);
@@ -259,7 +260,7 @@ bool CX2SkillTree::AddSkillTemplet_LUA()
 
 	LUA_GET_VALUE( luaManager,			"m_iRequireUpgradeSkillPoint",	pSkillTemplet->m_iRequireUpgradeSkillPoint,		0		);
 
-	LUA_GET_VALUE( luaManager,			"m_usWOSType",					static_cast<int>( pSkillTemplet->m_iWOSType ),	0		);
+	LUA_GET_VALUE( luaManager,			"m_usWOSType",					pSkillTemplet->m_iWOSType,	0		);
 
 
 	SetSkillStat( luaManager, pSkillTemplet->m_vecStat );
@@ -275,7 +276,6 @@ bool CX2SkillTree::AddSkillTemplet_LUA()
 		return true;
 	}
 
-	float fValue = 0.f;
 
 	if( true == luaManager.BeginTable( "SA_EFFECTIVE_TIME" ) )					SetSkillAbilityMap( &luaManager, SA_EFFECTIVE_TIME, pSkillTemplet );
 	if( true == luaManager.BeginTable( "SA_EFFECTIVE_COUNT" ) )          		SetSkillAbilityMap( &luaManager, SA_EFFECTIVE_COUNT, pSkillTemplet );
@@ -632,6 +632,8 @@ bool CX2SkillTree::IsUnitTypeDefaultSkill( SKILL_ID eSkillID )
 		{
 			return true;
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -659,7 +661,6 @@ bool CX2SkillTree::AddGuildSkillTreeTemplet_LUA()
 	LUA_GET_VALUE( luaManager,		"m_iRowIndex",				skillTreeTemplet.m_iTier,				0			);
 	LUA_GET_VALUE( luaManager,		"m_iColumnIndex",			skillTreeTemplet.m_iIndexInTier,		0			);
 
-	int iPrecedingSkillID = 0;
 	LUA_GET_VALUE( luaManager,		"m_iPrecedingSkill",		skillTreeTemplet.m_iPrecedingSkill,		0			);
 
 	SkillTreeTempletMap& mapSkillTreeTemplet = m_mapGuildSkillTreeTemplet[ 0 ];
@@ -913,7 +914,7 @@ bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_REQ( int iSlotID, CX2SkillTree:
 }
 
 
-bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// ��Ŷ ó��
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -985,7 +986,7 @@ bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_ACK( HWND hWnd, UINT uMsg, WPAR
 }
 
 
-bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SKILL_SLOT_NOT kEvent;
@@ -996,7 +997,6 @@ bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_NOT( HWND hWnd, UINT uMsg, WPAR
 	CX2Unit::UnitData* pUnitData = NULL;
 	if ( g_pMain->GetNowStateID() == CX2Main::XS_PVP_ROOM )
 	{
-		CX2StatePVPRoom* pkStatePVPRoom = (CX2StatePVPRoom*) g_pMain->GetNowState();
 		CX2Room::SlotData* pkSlotData = g_pX2Room->GetSlotDataByUnitUID( kEvent.m_iUnitUID );
 		if ( pkSlotData != NULL )
 		{
@@ -1054,7 +1054,7 @@ bool CX2SkillTree::Handler_EGS_GET_SKILL_REQ( USHORT usPageNumber_/* = 0*/ )
 
 
 
-bool CX2SkillTree::Handler_EGS_GET_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_GET_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// ��Ŷ ó��
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1098,7 +1098,6 @@ bool CX2SkillTree::Handler_EGS_GET_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wPara
 																getSkillInfo.m_iSkillLevel, getSkillInfo.m_iSpendSkillCSPoint,
 																pUnitData->m_UserSkillTree.GetUsingPage() );
 
-				bool bEnableSkillEquipped = true;
 				const CX2SkillTree::SKILL_ID eSkillId = static_cast<CX2SkillTree::SKILL_ID>( getSkillInfo.m_iSkillID );
 
 				const CX2SkillTree::SkillTemplet* pSkillTemplet = GetSkillTemplet( eSkillId );
@@ -1117,6 +1116,8 @@ bool CX2SkillTree::Handler_EGS_GET_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wPara
 							g_pData->GetUIManager()->GetUICharInfo()->ResetStat();
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 
@@ -1175,7 +1176,7 @@ void CX2SkillTree::Hander_EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_REQ( const int 
 	g_pMain->AddServerPacket( EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_ACK );
 }
 
-void CX2SkillTree::Handler_EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+void CX2SkillTree::Handler_EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_ACK kEvent;
@@ -1193,7 +1194,7 @@ void CX2SkillTree::Handler_EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_ACK( HWND hWnd
 
 
 
-bool CX2SkillTree::Handler_EGS_RESET_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_RESET_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	if ( NULL == g_pData ||
 		 NULL == g_pData->GetMyUser() ||
@@ -1309,6 +1310,8 @@ bool CX2SkillTree::Handler_EGS_RESET_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 					}
 
 				} break;
+			default:
+				break;
 			}
 
 			if( NULL != g_pData->GetUIManager() &&
@@ -1344,7 +1347,7 @@ bool CX2SkillTree::Handler_EGS_INIT_SKILL_TREE_REQ( UidType itemUID )
 }
 
 
-bool CX2SkillTree::Handler_EGS_INIT_SKILL_TREE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_INIT_SKILL_TREE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INIT_SKILL_TREE_ACK kEvent;
@@ -1365,7 +1368,7 @@ bool CX2SkillTree::Handler_EGS_INIT_SKILL_TREE_ACK( HWND hWnd, UINT uMsg, WPARAM
 				}
 				// UI��..
 				if( NULL != g_pData->GetUIManager() &&
-					NULL != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
+					0 != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
 				{
 					g_pData->GetUIManager()->GetUIInventory()->UpdateInventorySlotList(kEvent.m_vecInventorySlotInfo);
 
@@ -1416,7 +1419,7 @@ bool CX2SkillTree::Handler_EGS_INIT_SKILL_TREE_ACK( HWND hWnd, UINT uMsg, WPARAM
 	return false;
 }
 
-bool CX2SkillTree::Handler_EGS_EXPIRE_CASH_SKILL_POINT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_EXPIRE_CASH_SKILL_POINT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EXPIRE_CASH_SKILL_POINT_NOT kEvent;
@@ -1468,7 +1471,7 @@ bool CX2SkillTree::Handler_EGS_EXPIRE_CASH_SKILL_POINT_NOT( HWND hWnd, UINT uMsg
 	return true;
 }
 
-bool CX2SkillTree::Handler_EGS_UPDATE_CASH_SKILL_POINT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_UPDATE_CASH_SKILL_POINT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_CASH_SKILL_POINT_NOT kEvent;
@@ -1554,7 +1557,7 @@ bool CX2SkillTree::Handler_EGS_UPDATE_CASH_SKILL_POINT_NOT( HWND hWnd, UINT uMsg
 
 
 
-bool CX2SkillTree::Handler_EGS_EXPAND_SKILL_SLOT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_EXPAND_SKILL_SLOT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EXPAND_SKILL_SLOT_NOT kEvent;
@@ -1589,7 +1592,7 @@ bool CX2SkillTree::Handler_EGS_EXPAND_SKILL_SLOT_NOT( HWND hWnd, UINT uMsg, WPAR
 }
 
 
-bool CX2SkillTree::Handler_EGS_EXPIRE_SKILL_SLOT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_EXPIRE_SKILL_SLOT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( NULL != g_pData->GetMyUser() )
 		return false;
@@ -1640,7 +1643,7 @@ bool CX2SkillTree::Handler_EGS_EXPIRE_SKILL_SLOT_NOT( HWND hWnd, UINT uMsg, WPAR
 	return true;
 }
 
-bool CX2SkillTree::Handler_EGS_SKILL_SLOT_CHANGE_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_SKILL_SLOT_CHANGE_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	if( NULL == g_pData->GetMyUser() )
 		return false;
@@ -1735,7 +1738,7 @@ bool CX2SkillTree::Handler_EGS_SKILL_SLOT_CHANGE_ITEM_NOT( HWND hWnd, UINT uMsg,
 
 
 
-bool CX2SkillTree::Handler_EGS_UNSEAL_SKILL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_UNSEAL_SKILL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UNSEAL_SKILL_NOT kEvent;
@@ -1852,7 +1855,7 @@ bool CX2SkillTree::Handler_EGS_GET_GUILD_SKILL_REQ( CX2SkillTree::SKILL_ID eSkil
 
 
 
-bool CX2SkillTree::Handler_EGS_GET_GUILD_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_GET_GUILD_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// oasis907 : ����� [2009.11.19] // ACK ���� �Ϸ�
 
@@ -1878,7 +1881,7 @@ bool CX2SkillTree::Handler_EGS_GET_GUILD_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM
 
 
 
-bool CX2SkillTree::Handler_EGS_GET_GUILD_SKILL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_GET_GUILD_SKILL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// oasis907 : ����� [2009.11.19] // NOT ���� �Ϸ�
 
@@ -1948,6 +1951,8 @@ bool CX2SkillTree::Handler_EGS_GET_GUILD_SKILL_NOT( HWND hWnd, UINT uMsg, WPARAM
 				g_pData->GetUIManager()->GetUICharInfo()->ResetStat();
 			}
 		} break;
+	default:
+		break;
 	}
 
 	if( NULL != g_pData->GetGuildManager()->GetUIGuild()->GetUIGuildSkillTree() )
@@ -2039,7 +2044,7 @@ bool CX2SkillTree::Handler_EGS_RESET_GUILD_SKILL_REQ( CX2SkillTree::SKILL_ID eSk
 }
 
 // oasis907 : ����� [2009.11.27] //
-bool CX2SkillTree::Handler_EGS_RESET_GUILD_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_RESET_GUILD_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESET_GUILD_SKILL_ACK kEvent;
@@ -2074,7 +2079,7 @@ bool CX2SkillTree::Handler_EGS_RESET_GUILD_SKILL_ACK( HWND hWnd, UINT uMsg, WPAR
 
 
 // oasis907 : ����� [2009.11.27] //
-bool CX2SkillTree::Handler_EGS_RESET_GUILD_SKILL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_RESET_GUILD_SKILL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESET_GUILD_SKILL_NOT kEvent;
@@ -2150,6 +2155,8 @@ bool CX2SkillTree::Handler_EGS_RESET_GUILD_SKILL_NOT( HWND hWnd, UINT uMsg, WPAR
 			}
 			*/
 		} break;
+	default:
+		break;
 	}
 
 	if( NULL != g_pData->GetGuildManager()->GetUIGuild()->GetUIGuildSkillTree() )
@@ -2196,7 +2203,7 @@ bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_REQ( UidType itemUID )
 }
 
 
-bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INIT_GUILD_SKILL_ACK kEvent;
@@ -2217,7 +2224,7 @@ bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_ACK( HWND hWnd, UINT uMsg, 
 				}
 				// UI��..
 				if( NULL != g_pData->GetUIManager() &&
-					NULL != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
+					0 != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
 				{
 					g_pData->GetUIManager()->GetUIInventory()->UpdateInventorySlotList(kEvent.m_vecInventorySlotInfo);
 
@@ -2239,7 +2246,7 @@ bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_ACK( HWND hWnd, UINT uMsg, 
 
 
 
-bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INIT_GUILD_SKILL_NOT kEvent;
@@ -2280,14 +2287,13 @@ bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_NOT( HWND hWnd, UINT uMsg, 
 
 
 
-bool CX2SkillTree::Handler_EGS_EXPIRE_GUILD_CASH_SKILL_POINT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_EXPIRE_GUILD_CASH_SKILL_POINT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EXPIRE_GUILD_CASH_SKILL_POINT_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
 
-	CX2Unit* pMyUnit = g_pData->GetMyUser()->GetSelectUnit();
 
 	// oasis907 : ����� [2009.12.4] // ��� ���Խ�
 	CX2Unit* pUnit = g_pData->GetMyUser()->GetSelectUnit();
@@ -2433,7 +2439,7 @@ bool CX2SkillTree::Handler_EGS_UNSEAL_GUILD_SKILL_NOT( HWND hWnd, UINT uMsg, WPA
 //}} oasis907 : ����� //// 2009-11-12 ////
 
 //#pragma region Skill Page System
-bool CX2SkillTree::Handler_EGS_GET_NEXT_SKILL_PAGE_ED_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_GET_NEXT_SKILL_PAGE_ED_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_GET_NEXT_SKILL_PAGE_ED_ACK kEvent;
@@ -2476,7 +2482,7 @@ bool CX2SkillTree::Handler_EGS_EXPAND_SKILL_PAGE_REQ()
 	}
 }
 
-bool CX2SkillTree::Handler_EGS_EXPAND_SKILL_PAGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_EXPAND_SKILL_PAGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_EXPAND_SKILL_PAGE_ACK kEvent;
@@ -2557,7 +2563,7 @@ bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_REQ( USHORT usPageN
 	return true;
 }
 
-bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK kEvent;
@@ -2593,7 +2599,6 @@ bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK( HWND hWnd, UIN
 				pUnitData->m_UserSkillTree.SetSkillLevelAndCSP( static_cast<CX2SkillTree::SKILL_ID>( userSkillData.m_iSkillID ),
 					userSkillData.m_cSkillLevel, userSkillData.m_cSkillCSPoint, pUnitData->m_UserSkillTree.GetUsingPage() );
 
-				bool bEnableSkillEquipped = true;
 				const CX2SkillTree::SKILL_ID eSkillId = static_cast<CX2SkillTree::SKILL_ID>( userSkillData.m_iSkillID );
 
 				if ( eSkillId == CX2SkillTree::SI_NONE )
@@ -2616,6 +2621,8 @@ bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK( HWND hWnd, UIN
 							g_pData->GetUIManager()->GetUICharInfo()->ResetStat();
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 
@@ -2651,7 +2658,7 @@ bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK( HWND hWnd, UIN
 
 
 // �¿� : ���ҽ� ������ �۾�
-wstring CX2SkillTree::GetSkillLevelTextureName( int iLevel )
+wstring CX2SkillTree::GetSkillLevelTextureName( int /*iLevel*/ )
 {
 	return L"DLG_UI_Common_Texture_NewSkill_01.tga";
 
@@ -2672,7 +2679,7 @@ wstring CX2SkillTree::GetSkillLevelTextureKey( int iLevel )
 
 //{{ 2009. 8. 5  ������		���� ��ų ������ ����
 
-const CX2SkillTree::SKILL_ID CX2SkillTree::GetUnsealSkillItemInfo( const int iItemID ) const
+CX2SkillTree::SKILL_ID CX2SkillTree::GetUnsealSkillItemInfo( const int iItemID ) const
 {
 	if ( NULL != g_pData &&
 		 NULL != g_pData->GetMyUser() &&
@@ -2741,11 +2748,7 @@ void CX2SkillTree::UnequipRelationSkill()
 void CX2SkillTree::SetSkillAbilityMap( KLuaManager* pLuaManager, SKILL_ABILITY_TYPE eSkillAbility, CX2SkillTree::SkillTemplet* pSkillTemplet )
 {
 	if ( NULL == pLuaManager )
-	{
-		pLuaManager->EndTable();
-
 		return;
-	}
 
 	vector<float>	vecSkillValue;			/// 30 ���� ������ ��ų ȿ�� ���� �����ϴ� ��ü
 	int				iTableIndex		= 1;	/// ���̺� �ε���
@@ -2871,7 +2874,6 @@ void CX2SkillTree::FixOrInsertMapSkillInfoValue( CX2SkillTree::SKILL_ID eSkillID
 		return;
 	}
 
-	const CX2UserSkillTree&	refUserSkillTree	= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree;				/// ������ ��ų ���
 	const int				iSkillLevel			= g_pData->GetUIManager()->GetUISkillTree()->GetSkillLevelInSkillWimdow( eSkillID );	/// ���� ��ų�� ����
 
 	int						iUnitClass			= static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetClass() );				/// ���� Ŭ����
@@ -2891,7 +2893,6 @@ void CX2SkillTree::FixOrInsertMapSkillInfoValue( CX2SkillTree::SKILL_ID eSkillID
 		if ( pSkillTemplet->GetSkillRequireLevelValue( iSkillLevel + 1 ) > iUnitLevel )
 			return;
 
-		const int iHaveSPoint	= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint - m_iUsedSPoint;		/// ���� ��ų ����Ʈ
 		const int iHaveCSPoint	= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint - m_iUsedCSPoint;	/// ���� ĳ�� ��ų ����Ʈ
 
 		/// �Һ� ��ų ����Ʈ ���� ( �������� ��ȭ���� )
@@ -2924,7 +2925,6 @@ void CX2SkillTree::FixOrInsertMapSkillInfoValue( CX2SkillTree::SKILL_ID eSkillID
 		{
 			KGetSkillInfo&						getSkillInfo	= it->second;
 
-			const CX2SkillTree::SkillTemplet*	pSkillTemplet	= g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 
 			getSkillInfo.m_iSkillLevel			+= 1;
 			getSkillInfo.m_iSpendSkillCSPoint	+= iSpendSkillCSPoint;
@@ -3082,7 +3082,7 @@ bool CX2SkillTree::IsMyClassSkillID( SKILL_ID eSkillID )
 	@param		: ������ ���̵�
 	@return		: ���� Ŭ���� ����
 */
-const int CX2SkillTree::GetUnsealSkillItemRequireClass( const int iItemID ) const
+int CX2SkillTree::GetUnsealSkillItemRequireClass( const int iItemID ) const
 {
 	std::map< int, SealSkillItemInfo >::const_iterator mit = m_mapSealSkillItemTemplet.find( iItemID );
 
@@ -3097,7 +3097,7 @@ const int CX2SkillTree::GetUnsealSkillItemRequireClass( const int iItemID ) cons
 	@param		: ���� ����
 	@return		: �� ��ų ����Ʈ
 */
-const int CX2SkillTree::GetCalcInitSkillPoint( const int iUnitLevel ) const
+int CX2SkillTree::GetCalcInitSkillPoint( const int iUnitLevel ) const
 {
 	int iSkillPoint = 0;
 

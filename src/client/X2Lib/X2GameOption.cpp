@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "./X2GameOption.h"
+#include "x2/platform/process.h"
 
 #include "KBenchmark_SUM.h"
 #include "KBenchmark_LINPACK.h"
@@ -127,6 +128,8 @@ void CX2GameOption::UpTexDetail()
 			SetTexDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -147,6 +150,8 @@ void CX2GameOption::DownTexDetail()
 		{
 			SetTexDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -196,6 +201,8 @@ void CX2GameOption::UpUnitDetail()
 			SetUnitDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -216,6 +223,8 @@ void CX2GameOption::DownUnitDetail()
 		{
 			SetUnitDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -274,6 +283,8 @@ void CX2GameOption::UpMapDetail()
 			SetMapDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -294,6 +305,8 @@ void CX2GameOption::DownMapDetail()
 		{
 			SetMapDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -363,6 +376,8 @@ void CX2GameOption::UpEffectDetail()
 			SetEffectDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -383,6 +398,8 @@ void CX2GameOption::DownEffectDetail()
 		{
 			SetEffectDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -407,7 +424,7 @@ void CX2GameOption::SetFieldDetail( FieldLevel optionLevel, bool bForce /*= fals
 
 void CX2GameOption::UpFieldDetail()
 {
-	if( m_OptionList.m_FieldDetail == OL_HIGH )
+	if( m_OptionList.m_FieldDetail == FL_HIGH )
 		return;
 
 	switch( m_OptionList.m_FieldDetail )
@@ -430,7 +447,7 @@ void CX2GameOption::UpFieldDetail()
 
 void CX2GameOption::DownFieldDetail()
 {
-	if( m_OptionList.m_FieldDetail == OL_LOW )
+	if( m_OptionList.m_FieldDetail == FL_LOW )
 		return;
 
 	switch( m_OptionList.m_FieldDetail )
@@ -477,7 +494,7 @@ void CX2GameOption::SetFieldParty( bool bParty )
 	}
 }
 
-void CX2GameOption::SetFieldFriend( bool bFriend )
+void CX2GameOption::SetFieldFriend( bool /*bFriend*/ )
 {
 	//m_OptionList.m_bFriend = bFriend;
 
@@ -1281,7 +1298,7 @@ void CX2GameOption::SetVerticalSync( IN bool bVal_ )
 {
 	m_OptionList.m_bVerticalSync = bVal_;
 
-	if( true == bVal_ && D3DPRESENT_INTERVAL_IMMEDIATE == DXUTGetVerticalSync() )
+	if( true == bVal_ && static_cast<UINT>( D3DPRESENT_INTERVAL_IMMEDIATE ) == DXUTGetVerticalSync() )
 	{
 		DXUTSetVerticalSync( 0 );
 		::SetFocus( g_pKTDXApp->GetHWND() );
@@ -1433,10 +1450,9 @@ void CX2GameOption::_DecideProperGraphicOption()
 	iCpuScore = _CalcCpuScore();
 
 	//System Memory Score 계산
-	MEMORYSTATUS memStatus;
-	memStatus.dwLength = sizeof( MEMORYSTATUS );
-	GlobalMemoryStatus( &memStatus );
-	UINT uiTotalSystemMem = (UINT)( (float)memStatus.dwTotalPhys / 1024.0f / 1024.0f );//MB로...
+	std::size_t totalPhys = 0, availablePhys = 0;
+	x2::platform::PhysicalMemory( totalPhys, availablePhys );
+	UINT uiTotalSystemMem = (UINT)( (float)totalPhys / 1024.0f / 1024.0f );//MB로...
 
 	//100점으로 환산...
 	iSystemMemScore = (int)( ( 100.0f / 4096.0f ) * (float)uiTotalSystemMem );

@@ -135,12 +135,12 @@ void CX2UnitLoader::OnFrameMove( float fElapsedTime )
 }
 
 void CX2UnitLoader::AddUnitLoadDataForGame( CX2Unit* pUnit
-						, bool bAddPetResource
+						, bool /*bAddPetResource*/
 						)
 {
     ASSERT( pUnit != NULL );
-    if ( pUnit == NULL )
-        return;
+	if ( pUnit == NULL )
+		return;
 
 
 
@@ -202,8 +202,8 @@ void CX2UnitLoader::AddUnitLoadDataForGame( CX2Unit* pUnit
 void    CX2UnitLoader::AddUnitLoadDataForSquareOrField( CX2Unit* pUnit, bool bTField )
 {
     ASSERT( pUnit != NULL );
-    if ( pUnit == NULL )
-        return;
+	if ( pUnit == NULL )
+		return;
 
 	UidType uidUnitUID = pUnit->GetUID();
 	if ( m_mapLoadUnitDataLoaded.find( uidUnitUID ) != m_mapLoadUnitDataLoaded.end() )
@@ -275,8 +275,8 @@ void	CX2UnitLoader::AddNPCUnitUIDResource( UINT uid, CX2UnitManager::NPC_UNIT_ID
 	if ( uid == UINT(-1) )
 		return;
     const CX2UnitManager::NPCUnitInfo* pInfo = g_pData->GetUnitManager()->GetNPCUnitInfo( id );
-    if ( pInfo == NULL || pInfo->m_pInitData == NULL )
-        return;
+	if ( pInfo == NULL || pInfo->m_pInitData == NULL )
+		return;
 
 	if ( m_mapNPCUnitUIDResourceLoaded.find( uid ) != m_mapNPCUnitUIDResourceLoaded.end() )
 		return;
@@ -299,8 +299,8 @@ void	CX2UnitLoader::AddNPCUnitUIDResource( UINT uid, CX2UnitManager::NPC_UNIT_ID
 void    CX2UnitLoader::AddNPCUnitIDResource( CX2UnitManager::NPC_UNIT_ID id )
 {
     const CX2UnitManager::NPCUnitInfo* pInfo = g_pData->GetUnitManager()->GetNPCUnitInfo( id );
-    if ( pInfo == NULL || pInfo->m_pInitData == NULL )
-        return;
+	if ( pInfo == NULL || pInfo->m_pInitData == NULL )
+		return;
 
 	if ( m_mapNPCUnitIDResourceLoaded.find( id ) != m_mapNPCUnitIDResourceLoaded.end() )
 		return;

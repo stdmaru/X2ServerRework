@@ -5,7 +5,6 @@
 
 CX2StateStartUp::CX2StateStartUp(void)
 {
-	HRESULT hr = S_OK;
 	g_pKTDXApp->SkipFrame();
 
 
@@ -36,15 +35,12 @@ CX2StateStartUp::CX2StateStartUp(void)
 	SetForegroundWindow( g_pKTDXApp->GetHWND() );
 	SetFocus( g_pKTDXApp->GetHWND() );
 
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOGIN, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOGIN, 0, false );
 
 
 //
 //#ifndef _SERVICE_
 //
-//		AllocConsole();
-//		g_fpStream = freopen("CONOUT$", "a", stdout);		// redirect printf to console
-//		g_fpStreamError = freopen("CONOUT$", "a", stderr);	// redirect printf to console
 //		dbg::logfile::SetLogLevel(2);
 //
 //#endif _SERVICE_

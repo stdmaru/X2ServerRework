@@ -2160,7 +2160,7 @@ void CX2UnitViewerUI::UpdateEqip( bool bEconomical /* = false */ )
 				if ( pItem->GetItemData().m_PeriodType == CX2Item::PT_ENDURANCE &&
 					pItem->GetItemData().m_Endurance <= 0 )
 					continue;
-					setItemUID.insert( pItem->GetUID() );
+				setItemUID.insert( pItem->GetUID() );
 				//}} kimhc // 실시간 엘소드 중 실시간 내구도 감소
 
 			}//for
@@ -2378,8 +2378,8 @@ void CX2UnitViewerUI::RemoveAllEquips()
 
 void CX2UnitViewerUI::AddEquipByTID( int itemTID, bool bBasicItem  )
 {
-    if ( itemTID <= 0 )
-        return;
+	if ( itemTID <= 0 )
+		return;
 
 	// 아이템 생성
 	CX2Item* pItem = NULL;
@@ -2407,7 +2407,7 @@ void CX2UnitViewerUI::AddEquipByTID( int itemTID, bool bBasicItem  )
 	    if ( m_ViewEquipMap.empty() )
 		    kItemData.m_ItemUID = -1;
 	    else
-		    kItemData.m_ItemUID = min( m_ViewEquipMap.begin()->first, -1 ) - 1;
+		    kItemData.m_ItemUID = min( m_ViewEquipMap.begin()->first, static_cast<UidType>( -1 ) ) - 1;
 
 	    kItemData.m_Endurance = 1;
 
@@ -2570,19 +2570,19 @@ void CX2UnitViewerUI::AddEquipByTID( int itemTID, bool bBasicItem  )
 
 void CX2UnitViewerUI::AddEqip( UidType itemUID )
 {
-    if ( itemUID <= 0 )
-        return;
+	if ( itemUID <= 0 )
+		return;
 
-    if ( m_ViewEquipMap.find( itemUID ) != m_ViewEquipMap.end() )
-        return;
+	if ( m_ViewEquipMap.find( itemUID ) != m_ViewEquipMap.end() )
+		return;
 
 	CX2Item* pItem = m_pUnit->GetInventory().GetItem( itemUID );
 	if( pItem == NULL )
 		return;
 
     ASSERT( pItem->GetUID() == itemUID );
-    if ( pItem->GetUID() != itemUID )
-        return;
+	if ( pItem->GetUID() != itemUID )
+		return;
 
 	if ( m_pUnit != NULL )
 	{
@@ -2597,8 +2597,8 @@ void CX2UnitViewerUI::AddEqip( UidType itemUID )
 
     CX2Unit::EQIP_POSITION ePos = pItemTemplet->GetEqipPosition();
     ASSERT( ePos >= CX2Unit::EQIP_POSITION( 0 ) && ePos < CX2Unit::EP_END );
-    if ( !( ePos >= CX2Unit::EQIP_POSITION( 0 ) && ePos < CX2Unit::EP_END ) )
-        return;
+	if ( !( ePos >= CX2Unit::EQIP_POSITION( 0 ) && ePos < CX2Unit::EP_END ) )
+		return;
 
 	int enchantLevel = pItem->GetItemData().m_EnchantLevel;
 	/*
@@ -2643,8 +2643,8 @@ void CX2UnitViewerUI::AddEqip( UidType itemUID )
     if ( pX2Eqip == NULL )
         return;
     pX2Eqip->SetManagerObject( this );
-    if ( IsRecursivelyManagedByDGManager() )
-        g_pKTDXApp->GetDGManager()->AddObjectChain( pX2Eqip.get() );
+	if ( IsRecursivelyManagedByDGManager() )
+		g_pKTDXApp->GetDGManager()->AddObjectChain( pX2Eqip.get() );
 
 	if(m_bFixed && (pX2Eqip->GetEqipType() == CX2Item::UT_ATTACH_ANIM || pX2Eqip->GetEqipType() == CX2Item::UT_ATTACH_NORMAL ) )
 		pX2Eqip->SetFixed();
@@ -2759,6 +2759,8 @@ void CX2UnitViewerUI::ReplaceEmptyToBasic()
 		{
 			ReplaceEmptyToBasic( CX2Unit::EP_RAVEN_LEFT_ARM,	m_pUnit->GetUnitTemplet()->m_RavenLeftArmItemID		);
 		} break;
+	default:
+		break;
 	}
 
 
@@ -4686,6 +4688,8 @@ void CX2UnitViewerUI::ProcessEnchantedWeaponEffectAtHand( CX2Unit::UNIT_TYPE uni
 			aEmitRate[2] = 60.f;
 			aEmitRate[3] = 25.f;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -5320,6 +5324,8 @@ bool CX2UnitViewerUI::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId, wstring &wst
 			case CX2Unit::ET_EMOTION_AVATAR6:
 				m_bMixedEmotion[5] = true;
 				break;
+			default:
+				break;
 			}
 			SAFE_CLOSE( pMixMotion );
 		}
@@ -5432,15 +5438,15 @@ void CX2UnitViewerUI::SetUnitReForm()
 	if( m_pXSkinAnim == NULL )
 		return;
 
-	float fMoveBip01 = 10.f;
-	float fMoveFootStep = -10.f;
-	D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
-	float fScale = 1.f;
+	[[maybe_unused]] float fMoveBip01 = 10.f;
+	[[maybe_unused]] float fMoveFootStep = -10.f;
+	[[maybe_unused]] D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] float fScale = 1.f;
 
 	// 실시간 테스트용
 #if X2_DEV_TOOLS
@@ -5554,6 +5560,7 @@ void CX2UnitViewerUI::SetUnitReForm()
 				if ( pFrame_L_Dummy != NULL )
 					SetFrameScale( &vDummyHand, true, pFrame_L_Dummy );
 			}
+			[[fallthrough]];
 
 		case CX2Unit::UT_LIRE:
 			{
@@ -5620,7 +5627,6 @@ void CX2UnitViewerUI::SetUnitReForm()
 				D3DXVECTOR3 vThigh = D3DXVECTOR3( 1.05f, 0.94f, 0.92f );
 				D3DXVECTOR3 vCalf = D3DXVECTOR3( 1.065f, 0.93f, 0.9f );
 				D3DXVECTOR3 vFoot = D3DXVECTOR3( 0.93f, 0.85f, 0.83f );
-				D3DXVECTOR3 vDummyHand = D3DXVECTOR3( 1.f, 1.f, 1.f );
 				D3DXVECTOR3 vSpine = D3DXVECTOR3( 0.94f, 0.97f, 1.f );
 
 				CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrameHead = m_pXSkinAnim->GetCloneFrame( L"Bip01_Head" );

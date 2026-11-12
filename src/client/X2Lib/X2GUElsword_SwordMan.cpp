@@ -52,19 +52,12 @@ namespace _CONST_ELSWORD_
 	const float MAGIC_ERS_DASH_JUMP_XZ_MP_COST = 4.f;
 	const float MAGIC_ERS_DASH_JUMP_XZZ_MP_COST = 0.f;
 
-	const float VIGOR_FIRE_BALL_MP_COST = 5.f;			// �ı�
-	const float VIGOR_ERS_XZ_MP_COST = 3.f;				// �ı�
-	const float VIGOR_ERS_XZZ_MP_COST = 6.f;			// �ı�
-	const float VIGOR_ERS_DASH_JUMP_XZ_MP_COST = 3.f;	// �ı�
 	const float VIGOR_ERS_DASH_JUMP_XZZ_MP_COST = 3.5f;	// Ȱ�� - MP�Ҹ� 50% ����
 
-	const float MAGIC_PHANTOM_SWORD_DELAY	= 0.2f;
 
 	const int	CONST_BRUTAL_SLAYER_LEVEL = 5;
 
 
-	const int BLADE_RAIN_SKILL_RANGE = 250;								// �����̵� ���� �Ÿ�
-	const int BLADE_RAIN_GET_SUMMON_POS_CHECK_LINEMAP_COUNT = 10;		// �����̵� ���� ���θ� üũ �Ÿ�
 
 }
 
@@ -78,23 +71,23 @@ CX2GUElsword_SwordMan::CX2GUElsword_SwordMan( int unitIndex, int teamNum,
 : CX2GUUser( unitIndex, teamNum,
 	pScriptLuaState,
 	frameBufferNum, pUnit )
-, m_fRollingSmashDuration( 0.f )
-, m_bIsMagicKnightWinMotion2( false )
 , m_hRuneSlayerDashJumpXZ( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_hRuneSlayerComboXZ( INVALID_EFFECTSET_HANDLE )
 , m_hSwordEnchant( INVALID_EFFECTSET_HANDLE )
+, m_fRollingSmashDuration( 0.f )
+, m_bIsMagicKnightWinMotion2( false )
 , m_bERS_DASH_JUMP_XZ_Rune_Created( false )
 , m_bERS_COMBO_XZ_Rune_Created( false )
-, m_bShowWeaponEnchantEffect( true )
 , m_hDamageEffectHarshChaserBlade( INVALID_DAMAGE_EFFECT_HANDLE )
+, m_bShowWeaponEnchantEffect( true )
 , m_fAutoGuardRate( 0.f )
 , m_hDamageEffectPiercingSword( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_fPiercingSwordProjectileRange( 0.f )
 , m_fRuneProjectileRangeIncPercent( 0.f )
 , m_fRuneProjectileSizeIncPercent( 0.f )
+, m_bIsGuardMotion( false )
 , m_ucSaveDebuffCount( 0 )
 , m_bAutoGuardBlocking( false )
-, m_bIsGuardMotion( false )
 , m_fIncreaseCoolTimeRel( 1.f )
 , m_fActiveSkillAddPowerRate( 1.f )
 , m_hEffectSwordShield( INVALID_EFFECTSET_HANDLE )
@@ -230,7 +223,7 @@ CX2GUElsword_SwordMan::~CX2GUElsword_SwordMan(void)
 }
 
 /*static*/
-void	CX2GUElsword_SwordMan::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUElsword_SwordMan::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -243,10 +236,10 @@ void CX2GUElsword_SwordMan::ReInit( bool bRandom, int startPosIndex )
 
 	if( IsMyUnit() == true && CX2Game::GT_PVP == g_pX2Game->GetGameType() )
 	{
-		const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+		const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
-		if( GetTeam() == CX2Room::TN_RED && g_pX2Game->GetRedTeamKill() > g_pX2Game->GetBlueTeamKill() ||
-			GetTeam() == CX2Room::TN_BLUE && g_pX2Game->GetRedTeamKill() < g_pX2Game->GetBlueTeamKill() )
+		if( (GetTeam() == CX2Room::TN_RED && g_pX2Game->GetRedTeamKill() > g_pX2Game->GetBlueTeamKill()) ||
+			(GetTeam() == CX2Room::TN_BLUE && g_pX2Game->GetRedTeamKill() < g_pX2Game->GetBlueTeamKill()) )
 		{
 			if( eWayOfSwordState == WSS_VIGOR )
 			{
@@ -399,7 +392,7 @@ void CX2GUElsword_SwordMan::End_SwordmanDestruction()
 	m_CommonState.m_Wait = USI_WAIT;
 	return;
 }
-void CX2GUElsword_SwordMan::AddComboToBrutalSlayer( const CX2DamageManager::DamageData& damageData_ )
+void CX2GUElsword_SwordMan::AddComboToBrutalSlayer( const CX2DamageManager::DamageData& /*damageData_*/ )
 {
 	const int iComboNumber
 		= ( NULL != GetComboManager() ? GetComboManager()->GetCombo() : 0 );
@@ -692,6 +685,8 @@ void CX2GUElsword_SwordMan::InitState()
 		{
 			m_iSkillCutInSetIndex = 3;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -774,6 +769,8 @@ void CX2GUElsword_SwordMan::InitState()
 			m_StateList[stateData.stateID] = stateData;
 
 		} break;
+	default:
+		break;
 	}
 
 	// COMBO_XX �迭
@@ -818,6 +815,8 @@ void CX2GUElsword_SwordMan::InitState()
 			m_StateList[stateData.stateID] = stateData;
 
 		} break;
+	default:
+		break;
 	}
 
 
@@ -900,6 +899,8 @@ void CX2GUElsword_SwordMan::InitState()
 			stateData.StateEnd			= SET_CB_FUNC( CX2GUElsword_SwordMan, ESSI_ETK_DASH_COMBO_ZZ_StateEnd );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -987,6 +988,8 @@ void CX2GUElsword_SwordMan::InitState()
 			stateData.StateEnd			= SET_CB_FUNC( CX2GUElsword_SwordMan, ESSI_EIS_DASHJUMP_COMBO_XXX_End );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -1087,6 +1090,8 @@ void CX2GUElsword_SwordMan::InitState()
 		}
 		break;
 
+	default:
+		break;
 	}
 
 
@@ -2304,7 +2309,7 @@ void CX2GUElsword_SwordMan::InitStateCommon()
 
 /*virtual*/ void CX2GUElsword_SwordMan::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -2358,6 +2363,8 @@ void CX2GUElsword_SwordMan::InitStateCommon()
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -3636,7 +3643,7 @@ void CX2GUElsword_SwordMan::InitStateCommon()
 
 
 /*static*/
-void	CX2GUElsword_SwordMan::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUElsword_SwordMan::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -4428,7 +4435,7 @@ void CX2GUElsword_SwordMan::DieFrontStart()
 	CommonStateStart();
 	DyingStart();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();
@@ -4470,7 +4477,7 @@ void CX2GUElsword_SwordMan::DieBackStart()
 	CommonStateStart();
 	DyingStart();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();
@@ -4499,7 +4506,7 @@ void CX2GUElsword_SwordMan::DieBackEventProcess()
 	}
 }
 
-#pragma DMLEE_NOTE( "�� �Լ� �� ĳ���� ���� �����ϰ� �����Ǹ� GUUSER�� �Űܼ� �ϳ��� ��������" )
+// Note: once this function is the same for every character, move it to CX2GUUser.
 
 void CX2GUElsword_SwordMan::WinFrameMove()
 {
@@ -6050,7 +6057,7 @@ void CX2GUElsword_SwordMan::WayOfSwordStateChange()
 		iNextWayOfSwordState = m_FrameDataNow.syncData.m_CannonBallCount;
 	}
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( iNextWayOfSwordState == WSS_VIGOR &&
 		eWayofSwordState != WSS_VIGOR )
@@ -7625,8 +7632,6 @@ void CX2GUElsword_SwordMan::ESSI_MAGIC_KNIGHT_DASH_JUMP_COMBO_X2a_FrameMove()
 		else
 		{
 			D3DXVECTOR3 pos = m_pXSkinAnim->GetCloneFramePosition( L"Dummy2_Lhand" );
-			D3DXVECTOR3 angle = GetRotateDegree();
-			angle.z = -30.0f;
 			CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"MagicFail", pos, 100, 100, 1, 1 );
 			if( pSeq != NULL )
 			{
@@ -10306,10 +10311,12 @@ void CX2GUElsword_SwordMan::ESSI_SI3_ES_ARMAGEDDON_BLADE_HYPER_FrameMove()
 	{
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_ESK_ARMAGEDON_BLADE );
 		if ( NULL != pSkillTemplet )
+		{
 			if( GetEqippedSkillMemo( CX2SkillTree::SMI_ELSWORD_MEMO18 ) == true )
 				SetBuffFactorToGameUnit( pSkillTemplet, 3 );
 			else
 				SetBuffFactorToGameUnit( pSkillTemplet, 2 );
+		}
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.8f ) )
 	{
@@ -10362,11 +10369,9 @@ void CX2GUElsword_SwordMan::ESSI_SI1_ES_WIND_BLADE_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.08f ) )
 	{
-		D3DXVECTOR3 pos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
@@ -10420,11 +10425,9 @@ void CX2GUElsword_SwordMan::ESSI_SI1_ES_WIND_BLADE_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.08f ) )
 	{
-		D3DXVECTOR3 pos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
@@ -10524,8 +10527,7 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_FrameMove()
 	{
 		D3DXVECTOR3 pos = GetPos();
 		pos.y += 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
 		CX2DamageEffect::CEffect *pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		if( pEffect != NULL && GetEqippedSkillMemo( CX2SkillTree::SMI_ELSWORD_MEMO4 ) == true )
 		{
@@ -10542,13 +10544,12 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_FrameMove()
 
 		pos = GetPos() + vec * fScalePos;
 		pos.y = oy + 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 		pos = GetPos() - vec * fScalePos;
 		pos.y = oy + 2.0f;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 	}
 
@@ -10609,8 +10610,7 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_HYPER_FrameMove()
 	{
 		D3DXVECTOR3 pos = GetPos();
 		pos.y += 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
 		CX2DamageEffect::CEffect *pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_HYPER", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 		if( pEffect != NULL && GetEqippedSkillMemo( CX2SkillTree::SMI_ELSWORD_MEMO4 ) == true )
@@ -10627,14 +10627,13 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_HYPER_FrameMove()
 
 		pos = GetPos() + vec * 670.0f;
 		pos.y = oy + 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO_HYPER", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 		pos = GetPos() - vec * 670.0f;
 		pos.y = oy + 2.0f;
-		pMeshInstance  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO_HYPER", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 	}
@@ -10769,7 +10768,6 @@ void CX2GUElsword_SwordMan::ESSI_LEAP_StartFuture()
 
 	m_StartPosToLeap = GetPos();
 
-	D3DXVECTOR3 objectPos = pGUNPC->GetPos();
 
 	D3DXVECTOR3 tempPos = pGUNPC->GetPos() - GetPos();
 	//ĳ���� ��ġ�� ������ġ��� ���� ���Ǿ��� �ٶ󺼱�?
@@ -10873,7 +10871,6 @@ void CX2GUElsword_SwordMan::ESSI_LEAP_FrameMoveFuture()
 
 	D3DXMatrixIdentity( &matTrans );
 	D3DXMatrixRotationAxis( &matTrans, &tempDirVec, D3DXToRadian( m_DegreeToLeap ) );
-	D3DXVECTOR4 transPos;
 	D3DXVec3TransformCoord( &vecHeight, &vecHeight, &matTrans );
 
 	m_FrameDataFuture.syncData.position += vecHeight;
@@ -13845,7 +13842,6 @@ void CX2GUElsword_SwordMan::ESSI_SI_SA_ETK_MAELSTORM_RAGE_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.1333f ) )
 	{
-		float fEffectiveTime = 0.f;
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_EIS_MAELSTORM_RAGE );
 		if( NULL != pSkillTemplet )
 		{
@@ -14023,8 +14019,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_SA_ETK_SWORD_FALL_FrameMove()
 		else
 			vEffectPos -= (0.f * GetDirVector() );
 
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"elsword_A_swordFall_M01", vEffectPos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"elsword_A_swordFall_M01", vEffectPos, GetRotateDegree(), GetRotateDegree() );
 		m_vSwordFallSheathPos = vEffectPos;
 	}
 
@@ -14680,7 +14675,6 @@ void CX2GUElsword_SwordMan::ESSI_SI_SA_EIS_SWORD_BLASTING_FrameMove()
 	{
 		D3DXVECTOR3 vRotDegree = GetRotateDegree();
 		D3DXVECTOR3 vDirVec = GetDirVector();
-		D3DXVECTOR3 vZVec = GetZVector();
 		vDirVec.y = 0.f;
 
 		D3DXVECTOR3 vPos = GetPos();
@@ -15129,7 +15123,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_A_ES_DEFENCE_READY_StartFuture()
 
 	if( NULL != m_GuardForElswordPtr )
 	{
-		switch( m_GuardForElswordPtr->GetSkillSlotID_Guard() )
+		switch( static_cast<USER_STATE_ID>( m_GuardForElswordPtr->GetSkillSlotID_Guard() ) )
 		{
 		case USI_SPECIAL_ATTACK_1:
 			m_GuardForElswordPtr->SetGuardKeyPointer( &m_InputData.pureA );
@@ -15201,7 +15195,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_A_ES_DEFENCE_WAIT_EventProcess()
 	{
 		// ���� ��� ��, MP �� ��� �����Ǹ� ���� ���� ��ȯ ����
 		if( 0 >= static_cast<int> ( GetNowMp() )
-			 || NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() )
+			 || ( NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() ) )
 		{
 			StateChange( ESSI_SI_A_ES_DEFENCE_END );
 		}
@@ -15255,7 +15249,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_A_ES_DEFENCE_DAMAGE_EventProcess()
 	{
 		StateChange( ESSI_SI_A_ES_DEFENCE_WAIT );
 	}
-	else if( 0.f >= GetNowMp() || 0.f >= GetNowHp() || NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() )
+	else if( 0.f >= GetNowMp() || 0.f >= GetNowHp() || ( NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() ) )
 	{
 		StateChange( ESSI_SI_A_ES_DEFENCE_END );
 	}
@@ -15865,6 +15859,8 @@ void CX2GUElsword_SwordMan::SetSpecificValueByEnchant()
 				fMpConsumption -= 5.f;
 		} break;
 
+	default:
+		break;
 	}
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( eSkillID_ );

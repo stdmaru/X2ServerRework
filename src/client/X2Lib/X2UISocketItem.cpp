@@ -4,13 +4,13 @@
 
 #include "./X2UISocketItem.h"
 
-CX2UISocketItem::CX2UISocketItem( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UISocketItem::CX2UISocketItem( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2UIDragable( pNowStage, NULL ),
-m_bShow(false),
 m_bFashion(false),
-m_iSocketCount(0),
 m_iTotalCostED(0),
+m_iSocketCount(0),
 m_ItemPrice(0),
+m_bShow(false),
 m_MovedPosition(0,0),				// D3DXVECTOR2
 m_DLGPosition(0,0),					// D3DXVECTOR2
 m_DLGSize(0,0),						// D3DXVECTOR2
@@ -142,12 +142,16 @@ void CX2UISocketItem::ResetSocketWindow( UidType Uid )
 		{
 		case 5:
 			m_pIMEEditSocketOptionCode[4]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 4:
 			m_pIMEEditSocketOptionCode[3]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 3:
 			m_pIMEEditSocketOptionCode[2]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 2:
 			m_pIMEEditSocketOptionCode[1]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 1:
 			m_pIMEEditSocketOptionCode[0]->SetShowEnable(true, true);
 			break;
@@ -333,7 +337,7 @@ void CX2UISocketItem::ResetSocketWindow( UidType Uid )
 					wstring socketDesc = CWordLineHandler::GetStrByLineBreakInX2Main( pSocketData->GetSocketDesc( iSocketLevel ).c_str(), 190, XUF_DODUM_13_SEMIBOLD );
 		//}} kimhc // 2011-07-21 // 옵션 수치화
 
-					if ( socketDesc.find( L"\n") != -1 )
+					if ( socketDesc.find( L"\n") != std::wstring::npos )
 						bCheckTwoLine = true;
 
 					if ( bCheckTwoLine == false )
@@ -663,38 +667,32 @@ void CX2UISocketItem::ShowSocketDescExpected(int iSlotIndex)
 		}
 	}
 
-	if ( -1 < iIndex && iArraySize > iIndex )
+	if ( -1 < iIndex && iArraySize > static_cast<UINT>( iIndex ) )
 	{
 		// 포인터의 위치 계산으로 인덱스를 구해준다.
 		if ( g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetSelectUnit() != NULL )
 		{
 			if ( g_pData->GetMyUser()->GetSelectUnit()->GetType() == CX2Unit::UT_ADD )
 			{
-				UINT uStrID = _CONST_UISOCKETITEM_INFO_::g_iArrayMagicStoneStringID[iIndex];
 
 				switch( iIndex )
 				{
 				case 4:		// STR_5076
-					uStrID = STR_ID_29867;
 					break;
 
 				case 6:		// STR_5078
-					uStrID = STR_ID_29868;
 					break;
 
 				case 20:	// STR_5089
 				case 34:	// STR_5089
-					uStrID = STR_ID_29869;
 					break;
 
 				case 19:	// STR_5091
 				case 36:	// STR_5091
-					uStrID = STR_ID_29870;
 					break;
 
 				case 12:	// STR_13904
 				case 29:	// STR_13904
-					uStrID = STR_ID_29873;
 					break;
 
 				default:
@@ -709,7 +707,7 @@ void CX2UISocketItem::ShowSocketDescExpected(int iSlotIndex)
 
 	bool bCheckTwoLine = false;
 	wstring socketDesc = CWordLineHandler::GetStrByLineBreakInX2Main( wstrDesc.str().c_str(), 190, XUF_DODUM_13_SEMIBOLD );
-	if ( socketDesc.find( L"\n") != -1 )
+	if ( socketDesc.find( L"\n") != std::wstring::npos )
 		bCheckTwoLine = true;
 
 	if ( bCheckTwoLine == false )
@@ -799,7 +797,7 @@ void CX2UISocketItem::UpdateUICostED()
 {
 	CKTDGUIStatic* pStatic_ED = static_cast< CKTDGUIStatic* >(m_pDlgSocketItem->GetControl( L"g_pStatic_ED" ));
 	WCHAR buff[256] = {0};
-	_itow( m_iTotalCostED, buff, 10 );
+	_itow_s( m_iTotalCostED, buff, 10 );
 	pStatic_ED->GetString(0)->msg = buff;
 
 	UpdateButtonEquip();
@@ -965,7 +963,7 @@ bool CX2UISocketItem::OnRClickedItem( D3DXVECTOR2 mousePos )
 					wstring socketDesc = CWordLineHandler::GetStrByLineBreakInX2Main(pSocketData->GetSocketDesc( iSocketLevel ).c_str(), 190, XUF_DODUM_13_SEMIBOLD );
 					//}} kimhc // 2011-07-21 // 옵션 수치화
 
-					if ( socketDesc.find( L"\n") != -1 )
+					if ( socketDesc.find( L"\n") != std::wstring::npos )
 						bCheckTwoLine = true;
 
 					if ( bCheckTwoLine == false )
@@ -1261,7 +1259,7 @@ HRESULT CX2UISocketItem::OnFrameMove( double fTime, float fElapsedTime )
 }
 
 
-bool CX2UISocketItem::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISocketItem::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	bool bFlag = false;
@@ -1432,7 +1430,7 @@ bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_REQ( bool bDev )
 }
 
 
-bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SOCKET_ITEM_ACK kEvent;
@@ -1517,7 +1515,7 @@ bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 
-bool CX2UISocketItem::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISocketItem::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -1556,7 +1554,7 @@ bool CX2UISocketItem::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_SOCKET_ITEM_REQ();
 		}
@@ -1680,7 +1678,6 @@ void CX2UISocketItem::SocketEquipReadyEffectStart()
 	}
 
 
-	float ftime_latency = 0.f;
 
 	for ( int i = 0; i < _CONST_UISOCKETITEM_INFO_::g_iMaxNumSocketInItem; i++ )
 	{
@@ -1724,7 +1721,6 @@ void CX2UISocketItem::SocketEquipReadyEffectEnd()
 	}
 
 
-	float ftime_latency = 0.f;
 
 	for ( int i = 0; i < _CONST_UISOCKETITEM_INFO_::g_iMaxNumSocketInItem; i++ )
 	{

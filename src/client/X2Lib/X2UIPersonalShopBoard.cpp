@@ -1,28 +1,25 @@
 #include "stdafx.h"
 
 #include "./X2UIPersonalShopBoard.h"
-#include < iomanip >
+#include <iomanip>
 
 CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHAR* pFileName )
 : CX2ItemSlotManager( pNowStage, NULL )
 , m_bShow( false )
-, m_bOldApplyDelete( false )
-, m_bRegMyGuildAd( false )
-, m_pNowStage( pNowStage )
 , m_pDlgPersonalShopBoard( NULL )
+, m_fCurrentTime( 0.f )
+, m_fLastSearchTime( 0.f )
+, m_vSizeDlg( 0, 0 )
+, m_vPosDlg( 0, 0 )
+, m_uiFirstPageinCurrentBoard( 1 )
 , m_uiNowPage( 1 )
 , m_uiMaxPage( 0 )
-, m_uiFirstPageinCurrentBoard( 1 )
 , m_iComboFirstindex( 0 )
 , m_iComboSecondindex( 0 )
 , m_iComboCharacterindex( 0 )
 , m_iComboClassindex( 0 )
 , m_iIMEEditMinLevel( 0 )
 , m_iIMEEditMaxLevel( 50 )
-, m_fCurrentTime( 0.f )
-, m_fLastSearchTime( 0.f )
-, m_vPosDlg( 0, 0 )
-, m_vSizeDlg( 0, 0 )
 , m_pListboxSearchKeyword( NULL )
 , m_iCloseSearchKeywordListTime( 0 )
 , m_iFocusOutSearchKeywordBoxTime( 0 )
@@ -64,7 +61,6 @@ CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHA
 
 
 	m_pButtonInitSearchCondition = static_cast< CKTDGUIButton* >( m_pDlgPersonalShopBoard->GetControl( L"ButtonInitSearchCondition" ) );
-	//m_pButtonBuyItem = static_cast< CKTDGUIButton* >( m_pDlgPersonalShopBoard->GetControl( L"ButtonBuyItem" ) );
 
 
 	m_pComboFirst = static_cast< CKTDGUIComboBox* >( m_pDlgPersonalShopBoard->GetControl( L"ComboFirst" ) );
@@ -119,7 +115,7 @@ CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHA
 	{
 		m_pItemList[i] = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Personal_Shop_Board_ItemList.lua" );
 		D3DXVECTOR3 tempPos1 = m_pDlgPersonalShopBoard->GetDummyPos(i+2);
-		D3DXVECTOR3 tempPos2 = m_pDlgPersonalShopBoard->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgPersonalShopBoard->GetPos();
 		m_pItemList[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 
 		CKTDGUIButton *pButton = static_cast< CKTDGUIButton* >( m_pItemList[i]->GetControl( L"ButtonBuyItem" ) );
@@ -183,7 +179,7 @@ CX2UIPersonalShopBoard::~CX2UIPersonalShopBoard()
 
 void CX2UIPersonalShopBoard::SetIMMEditMinLevel(int iMinLevel)
 {
-	int iMaxEXP = g_pData->GetEXPTable()->GetEXPData( _CONST_X2GAME_::g_iMaxLevel ).m_nTotalExp;
+	[[maybe_unused]] int iMaxEXP = g_pData->GetEXPTable()->GetEXPData( _CONST_X2GAME_::g_iMaxLevel ).m_nTotalExp;
 	if( g_pInstanceData != NULL )
 		iMaxEXP = g_pData->GetEXPTable()->GetEXPData( g_pInstanceData->GetMaxLevel() ).m_nTotalExp;
 
@@ -202,7 +198,7 @@ void CX2UIPersonalShopBoard::SetIMMEditMinLevel(int iMinLevel)
 	}
 
 	WCHAR buff[256] = {0};
-	_itow( iMinLevel, buff, 10 );
+	_itow_s( iMinLevel, buff, 10 );
 	m_pIMEEditMinLevel->SetText(buff, false);
 
 
@@ -234,7 +230,7 @@ void CX2UIPersonalShopBoard::SetIMMEditMaxLevel(int iMaxLevel)
 	}
 
 	WCHAR buff[256] = {0};
-	_itow( iMaxLevel, buff, 10 );
+	_itow_s( iMaxLevel, buff, 10 );
 	m_pIMEEditMaxLevel->SetText(buff, false);
 
 	if(iMaxLevel == 1)
@@ -323,7 +319,7 @@ HRESULT	CX2UIPersonalShopBoard::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UIPersonalShopBoard::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShopBoard::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
@@ -506,10 +502,8 @@ bool CX2UIPersonalShopBoard::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 	return bFlag;
 }
 
-bool CX2UIPersonalShopBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShopBoard::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
-	int tmp_min = 0;
-	int tmp_max = 0;
 
 	switch ( wParam )
 	{
@@ -1874,9 +1868,9 @@ bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_REQ()
 	int uMaxLevel = 0;
 
 	// 해외팀 변경
-	if( m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == 0 ||
-		m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == _CONST_X2GAME_::g_iMaxLevel ||
-		m_iIMEEditMinLevel == _CONST_X2GAME_::g_iMaxLevel && m_iIMEEditMaxLevel == 0)
+	if( (m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == 0) ||
+		(m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == _CONST_X2GAME_::g_iMaxLevel) ||
+		(m_iIMEEditMinLevel == _CONST_X2GAME_::g_iMaxLevel && m_iIMEEditMaxLevel == 0))
 	{
 		uMinLevel = -1;
 		uMaxLevel = -1;
@@ -1935,7 +1929,7 @@ bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_REQ()
 
 	return true;
 }
-bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 
@@ -2026,7 +2020,6 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 
 			wstring wstrSellerNickName = kTradeBoardItemInfo.m_wstrSellerNickName;
 
-			CX2Item::ITEM_GRADE iGrade = g_pData->GetItemManager()->GetItemTemplet( iItemID )->GetItemGrade();
 			m_iSelectedPersonalShopUid = kTradeBoardItemInfo.m_iPersonalShopUID;
 
 			m_iPersonalShopUidList[i] = kTradeBoardItemInfo.m_iPersonalShopUID;
@@ -2064,7 +2057,6 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 
 			if ( wstrItemName != wstrLineBreakItemName )
 			{
-				const D3DXVECTOR2 vecItemNameOffSet = pStaticItemName->GetOffsetPos();
 				pStaticItemName->SetOffsetPos( D3DXVECTOR2( 0.f, -8.f ) );
 				pStaticItemName->GetString(0)->msg = wstrLineBreakItemName;
 			}
@@ -2165,7 +2157,7 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 		}
 		else if( uiFirstPage + i == m_uiNowPage ) // 현재 페이지 버튼
 		{
-			_itow( uiFirstPage + i, buff, 10 );
+			_itow_s( uiFirstPage + i, buff, 10 );
 			m_pStaticPageNum->SetString( i, buff );
 			m_pStaticPageNum->GetString( i )->color = D3DXCOLOR(0.6f,0.0f,0.0f,1.0f);
 			m_pButtonPageNum[i]->SetShowEnable(true, false);
@@ -2173,7 +2165,7 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 		}
 		else
 		{
-			_itow( uiFirstPage + i, buff, 10 );
+			_itow_s( uiFirstPage + i, buff, 10 );
 			m_pStaticPageNum->SetString( i, buff );
 			m_pStaticPageNum->GetString( i )->color = D3DXCOLOR(0.4f,0.4f,0.4f,1.0f);
 			m_pButtonPageNum[i]->SetShowEnable(true, true);
@@ -2730,6 +2722,7 @@ bool CX2UIPersonalShopBoard::CheckSelectCategoryOption( IN const CX2Item::ItemTe
 			case 6:
 				if ( eItemEquipPosition != CX2Unit::EP_AC_LEG )
 					return false;
+				break;
 			case 7:
 				if ( eItemEquipPosition != CX2Unit::EP_AC_ARM )
 					return false;

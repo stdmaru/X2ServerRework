@@ -79,14 +79,14 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 	, m_bReceive_KEGS_UNIT_INFO_UPDATE( false )
 	, m_bLeaveRoomAtTutorial( false )
 	//, m_DungeonEndingEvent;
+	, m_iStartSecretStageEnteringEvent( 0 )
 	, m_pDLGArcadeMission( NULL )
 	, m_fTimeShowArcadeMission( 0.f )
-	, m_iStartSecretStageEnteringEvent( 0 )
 	, m_bAutoShowOffArcadeMission( true )
 	, m_TimerWaitingPortal(3.f)
-	, m_RenderStateID(s_akStates)
 	, m_TexDataMovingGageBG( L"DLG_LOADING_BAR.tga", L"LOADING_BG" )
 	, m_TexDataMovingGage( L"DLG_LOADING_BAR.tga", L"LOADING_BAR" )
+	, m_RenderStateID(s_akStates)
 	, m_bEnterDefenceDungeon( false )		/// 어둠의 문 입장 처리 여부
 	, m_fWaitDefenceDungeonStartTime( -1.f )	/// 어둠의 문 시작까지의 대기 시간
 	, m_SumDelta( 0 )
@@ -96,7 +96,7 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 	m_pCX2GameLoadingTip	= new CX2GameLoadingTip();
 	if( NULL != m_pCX2GameLoadingTip && NULL != g_pData->GetPartyManager() && NULL != g_pData->GetPartyManager()->GetMyPartyData() )
 	{
-		if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) )
+		if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) )
 			m_pCX2GameLoadingTip->SetVillageSetting();
 	}
 
@@ -228,7 +228,7 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 		}
 	}
 
-	if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
+	if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
 		CX2Dungeon::DM_HENIR_CHALLENGE == g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonMode )
 	{
 		g_pData->GetUIManager()->SetShowQuickSlot(false);
@@ -251,8 +251,8 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 	CX2State::Handler_EGS_GET_ACTIVE_LAGCHECK_REQ();
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK_VER2
 
-    if ( g_pData->GetGameUDP() != NULL )
-        g_pData->GetGameUDP()->RemoveAllPendingPingSends();
+	if ( g_pData->GetGameUDP() != NULL )
+		g_pData->GetGameUDP()->RemoveAllPendingPingSends();
 
 	/// 만약 어둠의 문 입장중이라면, 소환 퀵슬롯 설정
 	if ( NULL != g_pData &&
@@ -839,6 +839,8 @@ HRESULT CX2StateDungeonGame::OnFrameMove( double fTime, float fElapsedTime )
 							GameLoadingReq( 100 );
 					}
 					break;
+				default:
+					break;
 				}
 
 				m_ConnectType = CX2Game::CT_CONNECT_SUCCESS;
@@ -1072,6 +1074,8 @@ bool CX2StateDungeonGame::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 							EndDungeonGameReq( CX2Room::TN_RED );
 
 						} break;
+					default:
+						break;
 					}
 				}
 				break;
@@ -1092,6 +1096,8 @@ bool CX2StateDungeonGame::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 							CX2StateTrainingGame* pStateTrainingGame = (CX2StateTrainingGame*) g_pMain->GetNowState();
 							pStateTrainingGame->Handler_EGS_END_TC_GAME_REQ( false );
 						} break;
+					default:
+						break;
 					}
 				}
 				break;
@@ -1163,7 +1169,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GAME_EXIT_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 
 			if( true == g_pMain->GetIsPlayingTutorial() )
@@ -1199,7 +1205,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GAME_EXIT_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 
 			return true;
@@ -1209,7 +1215,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GOTO_FIRST_DUNGEON_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 			m_pDLGGoToFirstDungeon = NULL;
 
 
@@ -1226,7 +1232,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GOTO_FIRST_DUNGEON_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 			m_pDLGGoToFirstDungeon = NULL;
 
 			g_pMain->SetIsExitingTutorial( true );
@@ -1724,7 +1730,7 @@ bool CX2StateDungeonGame::UIP2PEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 
 
-bool CX2StateDungeonGame::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_ACK kEvent;
@@ -1741,7 +1747,7 @@ bool CX2StateDungeonGame::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPAR
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -1761,7 +1767,7 @@ bool CX2StateDungeonGame::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPAR
 	return m_pDungeonGame->Handler_EGS_LEAVE_ROOM_NOT( kEvent );
 }
 
-bool CX2StateDungeonGame::Handler_EGS_GAME_LOADING_TIME_OUT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_GAME_LOADING_TIME_OUT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	//StateChangeLocalMapReq();
 	StateChangeFieldReq();
@@ -1785,7 +1791,7 @@ bool CX2StateDungeonGame::GameLoadingReq( int percent )
 	return true;
 }
 
-bool CX2StateDungeonGame::GameLoadingAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::GameLoadingAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -1801,7 +1807,7 @@ bool CX2StateDungeonGame::GameLoadingAck( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return false;
 }
 
-bool CX2StateDungeonGame::GameLoadingNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::GameLoadingNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GAME_LOADING_NOT kPacket;
@@ -1933,7 +1939,7 @@ bool CX2StateDungeonGame::EndDungeonGameReq( CX2Room::TEAM_NUM winTeam  )
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_END_GAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_END_GAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -1951,7 +1957,7 @@ bool CX2StateDungeonGame::Handler_EGS_END_GAME_ACK( HWND hWnd, UINT uMsg, WPARAM
 	return false;
 }
 
-/*virtual*/ bool CX2StateDungeonGame::Handler_EGS_END_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateDungeonGame::Handler_EGS_END_GAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_GAME_NOT kEvent;
@@ -2043,7 +2049,7 @@ bool CX2StateDungeonGame::StateChangeLocalMapReq()
 	return true;
 }
 
-bool CX2StateDungeonGame::StateChangeLocalMapAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::StateChangeLocalMapAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return true;
 }
@@ -2062,7 +2068,7 @@ bool CX2StateDungeonGame::StateChangeResultReq()
 	return true;
 }
 
-bool CX2StateDungeonGame::StateChangeResultAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::StateChangeResultAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -2080,7 +2086,7 @@ bool CX2StateDungeonGame::StateChangeResultAck( HWND hWnd, UINT uMsg, WPARAM wPa
 	return false;
 }
 
-bool CX2StateDungeonGame::StateChangeResultNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::StateChangeResultNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_RESULT_NOT kEvent;
@@ -2127,7 +2133,7 @@ bool CX2StateDungeonGame::DungeonStageLoadReq( int stageNum )
 	return true;
 }
 
-bool CX2StateDungeonGame::DungeonStageLoadAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::DungeonStageLoadAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -2157,7 +2163,7 @@ bool CX2StateDungeonGame::DungeonStageLoadAck( HWND hWnd, UINT uMsg, WPARAM wPar
 
 
 
-bool CX2StateDungeonGame::DungeonStageLoadNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::DungeonStageLoadNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_STAGE_LOAD_NOT kEvent;
@@ -2249,7 +2255,7 @@ bool CX2StateDungeonGame::DungeonStageLoadCompleteReq( bool bIsSecretStage )
 	return true;
 }
 
-bool CX2StateDungeonGame::DungeonStageLoadCompleteAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::DungeonStageLoadCompleteAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -2268,7 +2274,7 @@ bool CX2StateDungeonGame::DungeonStageLoadCompleteAck( HWND hWnd, UINT uMsg, WPA
 }
 
 
-bool CX2StateDungeonGame::DungeonStageLoadCompleteNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::DungeonStageLoadCompleteNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_STAGE_LOAD_COMPLETE_NOT kEvent;
@@ -2289,7 +2295,7 @@ bool CX2StateDungeonGame::DungeonStageLoadCompleteNot( HWND hWnd, UINT uMsg, WPA
 }
 
 
-bool CX2StateDungeonGame::DungeonStageStartNot( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::DungeonStageStartNot( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_STAGE_START_NOT kEvent;
@@ -2307,7 +2313,7 @@ bool CX2StateDungeonGame::DungeonStageStartNot( HWND hWnd, UINT uMsg, WPARAM wPa
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_OPEN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_OPEN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SUB_STAGE_OPEN_ACK kEvent;
@@ -2318,7 +2324,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_OPEN_ACK( HWND hWnd, UIN
 }
 
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_OPEN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_OPEN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SUB_STAGE_OPEN_NOT kEvent;
@@ -2329,7 +2335,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_OPEN_NOT( HWND hWnd, UIN
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SUB_STAGE_GO_NEXT_ACK kEvent;
@@ -2339,7 +2345,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ACK( HWND hWnd, 
 	return m_pDungeonGame->Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ACK( kEvent );
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT kEvent;
@@ -2349,7 +2355,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT( HWND hW
 	return m_pDungeonGame->Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT( kEvent );
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_ACK kEvent;
@@ -2359,7 +2365,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_ACK( HWND 
 	return m_pDungeonGame->Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_ACK( kEvent );
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SUB_STAGE_START_NOT kEvent;
@@ -2374,7 +2380,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_START_NOT( HWND hWnd, UI
 	return m_pDungeonGame->Handler_EGS_DUNGEON_SUB_STAGE_START_NOT( kEvent );
 }
 
-bool CX2StateDungeonGame::Handler_EGS_REMAINING_PLAY_TIME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_REMAINING_PLAY_TIME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
@@ -2394,7 +2400,7 @@ bool CX2StateDungeonGame::Handler_EGS_REMAINING_PLAY_TIME_NOT( HWND hWnd, UINT u
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_MY_USER_UNIT_INFO_TO_SERVER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_MY_USER_UNIT_INFO_TO_SERVER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -2411,7 +2417,7 @@ bool CX2StateDungeonGame::Handler_EGS_MY_USER_UNIT_INFO_TO_SERVER_ACK( HWND hWnd
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_END_GAME_DUNGEON_RESULT_DATA_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_END_GAME_DUNGEON_RESULT_DATA_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_GAME_DUNGEON_RESULT_DATA_NOT kPacket;
@@ -2463,7 +2469,7 @@ bool CX2StateDungeonGame::Handler_EGS_END_GAME_DUNGEON_RESULT_DATA_NOT( HWND hWn
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_UNIT_INFO_NOT kEvent;
@@ -2564,7 +2570,7 @@ bool CX2StateDungeonGame::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg
 //	return m_pDungeonGame->Handler_EGS_NOTIFY_MSG_NOT( kEvent );;
 //}
 
-bool CX2StateDungeonGame::Handler_EGS_CHANGE_PITIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_CHANGE_PITIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_NOT kEvent;
@@ -2579,7 +2585,7 @@ bool CX2StateDungeonGame::Handler_EGS_CHANGE_PITIN_NOT( HWND hWnd, UINT uMsg, WP
 }
 
 //{{ oasis907 : 김상윤 [2010.5.6] //
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_EFFECT_REMAINING_TIME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_EFFECT_REMAINING_TIME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_EFFECT_REMAINING_TIME_NOT kEvent;
@@ -2593,7 +2599,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_EFFECT_REMAINING_TIME_NOT( HWND hW
 }
 //}}
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_EFFECT_TIME_OUT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_EFFECT_TIME_OUT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_EFFECT_TIME_OUT_NOT kEvent;
@@ -2609,7 +2615,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_EFFECT_TIME_OUT_NOT( HWND hWnd, UI
 
 
 
-bool CX2StateDungeonGame::Handler_EGS_PLAY_TIME_OUT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_PLAY_TIME_OUT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( NULL == m_pDungeonGame )
 		return true;
@@ -2675,7 +2681,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_REQ()
 	return false;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_ACK kEvent;
@@ -2700,7 +2706,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_ACK( HWND
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_NOT kEvent;
@@ -2726,7 +2732,7 @@ bool CX2StateDungeonGame::Send_EGS_DUNGEON_SECRET_STAGE_ENTER_SELECT_NOT( bool b
 	return true;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_RESULT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SECRET_STAGE_ENTER_RESULT_NOT kEvent;
@@ -2739,7 +2745,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_RESULT_NOT( HWN
 		NULL != m_pDungeonGame->GetDungeon()->GetNowStage() &&
 		NULL != m_pDungeonGame->GetDungeon()->GetNowStage()->GetNowSubStage() )
 	{
-		CX2StateDungeonGame* pCX2StateDungeonGame = (CX2StateDungeonGame*)g_pMain->GetNowState();
 
 		if( g_pX2Game->IsHost() == true )
 		{
@@ -2805,13 +2810,12 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_REQ()
 	return false;
 }
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
 #endif
 
 	bool bResult = false;
-	CX2DungeonSubStage *pSubStage = NULL;
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_KILLALLNPC_CHECK_ACK kEvent;
@@ -2821,7 +2825,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND hWnd, U
 		m_pDungeonGame->GetDungeon() != NULL &&
 		m_pDungeonGame->GetDungeon()->GetNowStage() != NULL )
 	{
-		pSubStage = m_pDungeonGame->GetDungeon()->GetNowStage()->GetNowSubStage();
 	}
 
 	if( g_pMain->DeleteServerPacket( EGS_DUNGEON_KILLALLNPC_CHECK_ACK ) == true )
@@ -2885,7 +2888,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND hWnd, U
 
 
 
-bool CX2StateDungeonGame::Handler_EGS_BAD_ATTITUDE_USER_MSG_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )	// 불량 유저 MSG 에 대한 처리
+bool CX2StateDungeonGame::Handler_EGS_BAD_ATTITUDE_USER_MSG_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )	// 불량 유저 MSG 에 대한 처리
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BAD_ATTITUDE_USER_MSG_NOT kEvent;
@@ -2950,7 +2953,7 @@ void CX2StateDungeonGame::ClearTutorialInputTreeParticle()
 
 
 
-HRESULT CX2StateDungeonGame::TutorialFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2StateDungeonGame::TutorialFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( false == m_pDungeonGame->GetShowTutorialUI() )
 	{
@@ -2962,8 +2965,6 @@ HRESULT CX2StateDungeonGame::TutorialFrameMove( double fTime, float fElapsedTime
 		m_pDLGTutorialInputControl->SetShow(true);
 	}
 
-	CKTDGUIStatic* pStatic_SkillList_Fold	= (CKTDGUIStatic*) m_pDLGTutorialInputControl->GetControl( L"Static_Skill_List_Fold" );
-	CKTDGUIStatic* pStatic_SkillList_Unfold	= (CKTDGUIStatic*) m_pDLGTutorialInputControl->GetControl( L"Static_Skill_List_Unfold" );
 
 
 	if( NULL != g_pData->GetSlideShot() &&
@@ -3043,7 +3044,7 @@ HRESULT CX2StateDungeonGame::TutorialFrameMove( double fTime, float fElapsedTime
 		if( m_fTimeLeftForHighlight <= 0.f )
 		{
 			m_fTimeLeftForHighlight = 0.f;
-			m_HighLightSkillID = (char)-1;
+			m_HighLightSkillID = -1;
 		}
 	}
 
@@ -3055,8 +3056,8 @@ HRESULT CX2StateDungeonGame::TutorialFrameMove( double fTime, float fElapsedTime
 		{
 
 			CX2Unit::UNIT_TYPE eUnitType = pCX2GUUser->GetUnit()->GetType();
-			char nowUserStateID = (char)pCX2GUUser->GetNowStateID();
-			// note!! 전직 커맨드 추가되면 여기에 작업
+			const int nowUserStateID = pCX2GUUser->GetNowStateID();
+			// note!! add new job-class commands here
 			switch( eUnitType )
 			{
 			case CX2Unit::UT_ELSWORD:
@@ -3262,6 +3263,8 @@ HRESULT CX2StateDungeonGame::TutorialFrameMove( double fTime, float fElapsedTime
 
 				} break;
 
+			default:
+				break;
 			}
 		}
 	}
@@ -3294,8 +3297,6 @@ void CX2StateDungeonGame::TextOutSkillList( const char unitStateID )
 	if( NULL == pCX2GUUser )
 		return;
 
-	CX2Unit::UNIT_CLASS unitClass = pCX2GUUser->GetUnit()->GetClass();
-	char nowUserStateID = (char)pCX2GUUser->GetNowStateID();
 
 
 	const D3DXCOLOR coOutline		= D3DXCOLOR(  0.f, 0.f,  0.f,  1.f );
@@ -3331,7 +3332,6 @@ void CX2StateDungeonGame::TextOutSkillList( const char unitStateID )
 
 			if( true == m_bCreateCommandSuccessSplash )
 			{
-				CKTDGParticleSystem::CParticleEventSequence* pSeq =
 					g_pX2Game->GetMajorParticle()->CreateSequence( NULL,  L"SkillSuccessSplash", (float)iPosX+120, (float)iPosY+10, 0, 1000, 1000, 1, 1 );
 				m_bCreateCommandSuccessSplash = false;
 			}
@@ -3392,7 +3392,7 @@ void CX2StateDungeonGame::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 				talkBox.m_BackTexColor		= coBackColor_;
 
 				talkBox.m_bUseOutLine		 = true;
-				if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+				if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 				{
 					talkBox.m_bUseOutLine = false;
 				}
@@ -4102,6 +4102,8 @@ void CX2StateDungeonGame::DungeonMapUI::CreatStageGraph( CX2Dungeon* pDungeon )
 								m_mapStageGraph[ std::make_pair(nextStageData.m_iStageIndex, nextStageData.m_iSubStageIndex) ] = nextSubStageNode;
 							}
 						} break;
+					default:
+						break;
 					}
 				}
 			}
@@ -4612,7 +4614,7 @@ CX2StateDungeonGame::DungeonEndingEvent::~DungeonEndingEvent()
 	SAFE_DELETE_DIALOG( m_pDLGCharacterPicture );
 }
 
-void CX2StateDungeonGame::DungeonEndingEvent::OnFrameMove( double fTime, float fElapsedTime )
+void CX2StateDungeonGame::DungeonEndingEvent::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( m_fElapsedTime_ShowClearEffect >= 0.f )
 	{
@@ -4714,6 +4716,8 @@ void CX2StateDungeonGame::DungeonEndingEvent::OnFrameMove( double fTime, float f
 						pStatic_Character_Name->GetString(0)->msg = GET_STRING( STR_ID_29422 );
 					} break;
 
+				default:
+					break;
 				}
 			}
 
@@ -4855,7 +4859,7 @@ CX2StateDungeonGame::SecretStageEnteringEvent::~SecretStageEnteringEvent()
 	SAFE_DELETE_DIALOG( m_pDLGCharacterPicture );
 }
 
-void CX2StateDungeonGame::SecretStageEnteringEvent::OnFrameMove( double fTime, float fElapsedTime )
+void CX2StateDungeonGame::SecretStageEnteringEvent::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( m_fElapsedTime_ShowClearEffect >= 0.f )
 	{
@@ -4925,6 +4929,8 @@ void CX2StateDungeonGame::SecretStageEnteringEvent::OnFrameMove( double fTime, f
 						pStatic_Character->GetPicture(0)->SetSize( vPictureSize );
 						pStatic_Character->GetPicture(0)->SetTex_LUA2( "HQ_Boss_Alterasia_Type_H.tga" );
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -5084,7 +5090,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		break;
 	case CX2Unit::UC_CHUNG_TACTICAL_TROOPER:
 		{
-			CX2GUChung* pChungUser = static_cast<CX2GUChung*>( pMyUser );
 
 			// 광폭화 모드이면
 			if ( pMyUser->IsFullHyperMode() )
@@ -5096,7 +5101,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 
 	case CX2Unit::UC_ARA_MARTIAL_ARTIST:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Martial_Artist_Rage.tga";
@@ -5105,7 +5109,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_LITTLE_HSIEN:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_LITTLE_HSIEN_Rage.tga";
@@ -5114,7 +5117,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_SAKRA_DEVANAM:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Sakra_Devanam_Rage.tga";
@@ -5123,7 +5125,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_LITTLE_DEVIL:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Little_Devil_Rage.tga";
@@ -5132,7 +5133,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_YAMA_RAJA:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Yama_Raja_Rage.tga";
@@ -5186,7 +5186,7 @@ void CreateMonsterListDialog::Update( bool bSortAlphabetical )
 	std::wstring::size_type iEndIndex = wstrEnumString.find( L"\"", iFoundIndex );
 
 	int iCount = 0;
-	while( iFoundIndex != -1 )
+	while( iFoundIndex != static_cast<size_t>( -1 ) )
 	{
 
 		if( iCount%2 == 0 )
@@ -5199,7 +5199,7 @@ void CreateMonsterListDialog::Update( bool bSortAlphabetical )
 
 		iFoundIndex = wstrEnumString.find( L"NUI_", iEndIndex );
 
-		if( iFoundIndex == std::wstring::npos || -1 == iFoundIndex || iFoundIndex == iEndIndex )
+		if( iFoundIndex == std::wstring::npos || static_cast<size_t>( -1 ) == iFoundIndex || iFoundIndex == iEndIndex )
 			break;
 
 		iEndIndex = wstrEnumString.find( L"\"", iFoundIndex );
@@ -5420,8 +5420,6 @@ void CX2StateDungeonGame::DrawFace( const float fX_, const float fY_, const CKTD
 	float X2 = fX_ + fWidth_ * fWidthPercent_;
 	float Y2 = fY_ + fHeight_;
 
-	float UMax = 1.0f;
-	float VMax = 1.0f;
 
 	DRAWFACE_RHW_VERTEX vertex[4];
 	ZeroMemory( vertex, sizeof(DRAWFACE_RHW_VERTEX) * 4 );
@@ -5575,7 +5573,7 @@ bool CX2StateDungeonGame::Handler_EGS_CATCH_HACKUSER_INFO_NOT( KEGS_CATCH_HACKUS
 	@param		: 이벤트 메시지
 	@return		: 처리 여부
 */
-bool CX2StateDungeonGame::Handler_EGS_DECISION_ENTER_DEFENCE_DUNGEON_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DECISION_ENTER_DEFENCE_DUNGEON_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DECISION_ENTER_DEFENCE_DUNGEON_NOT kEvent;
@@ -5621,7 +5619,7 @@ bool CX2StateDungeonGame::Handler_EGS_DECISION_ENTER_DEFENCE_DUNGEON_NOT( HWND h
 	@param		: 이벤트 메시지
 	@return		: 처리 여부
 */
-bool CX2StateDungeonGame::Handler_EGS_UPDATE_INVENTORY_SLOT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_UPDATE_INVENTORY_SLOT_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_INVENTORY_SLOT_INFO_NOT kEvent;
@@ -5657,7 +5655,7 @@ void CX2StateDungeonGame::WaitDefenceDungeonStart( const float fElapsedTime )
 
 		if ( 0.f >= m_fWaitDefenceDungeonStartTime && NULL != g_pKTDXApp )
 		{
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, 0, false );
 			m_fWaitDefenceDungeonStartTime = -1.f;
 		}
 	}
@@ -5669,7 +5667,7 @@ void CX2StateDungeonGame::WaitDefenceDungeonStart( const float fElapsedTime )
 	@param		: 이벤트 메시지
 	@return		: 처리 여부
 */
-bool CX2StateDungeonGame::Handler_LEAVE_ROOM_BEFORE_DEFENCE_DUNGEON_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_LEAVE_ROOM_BEFORE_DEFENCE_DUNGEON_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if ( NULL != g_pMain && NULL != g_pMain->GetNowState() )
 	{
@@ -5701,7 +5699,7 @@ bool CX2StateDungeonGame::Handler_LEAVE_ROOM_BEFORE_DEFENCE_DUNGEON_START_NOT( H
 	@param		: 이벤트 메시지
 	@return		: 처리 여부
 */
-bool CX2StateDungeonGame::Handler_EGS_ENTER_DEFENCE_DUNGEON_POPUP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_ENTER_DEFENCE_DUNGEON_POPUP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	/// 입장 여부를 선택하는 팝업 생성
 	if ( NULL != g_pMain &&
@@ -5776,7 +5774,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_NOT()
 
 
 
-bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_CLEAR_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_CLEAR_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_SUB_STAGE_CLEAR_ACK kEvent;
@@ -5785,7 +5783,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_CLEAR_ACK( HWND hWnd, UI
 	return m_pDungeonGame->Handler_EGS_DUNGEON_SUB_STAGE_CLEAR_ACK( kEvent );
 }
 
-bool CX2StateDungeonGame::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonGame::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	// 인벤토리가 열려 있을 때는 인벤토리의 휠 처리만 하기
 	if( NULL != g_pData &&

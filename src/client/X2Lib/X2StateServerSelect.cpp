@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "x2/platform/console.h"
+#include "x2/platform/process.h"
 #include "./X2StateServerSelect.h"
 
 bool CX2StateServerSelect::m_sbSelectedServerSet = false;
@@ -38,103 +40,87 @@ float CHANNEL_CONGESTION_SCOPE_TEMP[] = {0.1f, 0.2f, 0.3f, 0.9f, };
 // ?? ????? ????, ???? ???? ?? * CHANNEL_CONGESTION_SCOPE_TEMP[3] = FULL
 
 CX2StateServerSelect::CX2StateServerSelect(void) :
-m_pDLGServerSelectBack(NULL),
-m_pDLGCheckHack(NULL),
-//m_vecUnitSlot;
-m_pDLGUnitSelectBack(NULL),
-m_pDLGUnitSelectFront(NULL),
-m_pDLGDeleteUnitCheck(NULL),
-m_pDLGLoadingState(NULL),
-m_pDLGRenameMsgBox(NULL),
-m_pDLGRenameConfirmMsgBox( NULL ),
-m_pDLGRenameSuccessMsgBox( NULL ),
-m_pDLGTutorialMsgBox(NULL),
-m_pDLGGoToFirstDungeon(NULL),
-m_pDLGRecommend(NULL),
-m_pDLGRecommendSuccess(NULL),
-//m_UnitButtonList;
-//m_UnitViewerUIList;
-m_pSelectUnit(NULL),
-m_pSelectButton(NULL),
-m_bUnitClicked(false),
-m_fMouseSensitivity(0.01f),
-m_fRemainRotY(0.0f),
-m_bRotateReturn(true),
-m_fRotSpeed(false),
-m_pOveredButton(NULL),
-m_pOveredName(NULL),
-m_bOneTimeInit(true),
-m_bStateChangingToUnitCreate(false),
-m_bPlayDownAnim(false),
-m_fDownAnimTime(0.0f),
-m_MaxUnitNum(0),
-m_bReserveEnterTutorial(false),
-m_bCheckRecommend(false),
-m_bCheckRecommendSuccess(false),
-m_NowPage(1),
-m_MaxPage(1),		// ???????? ??? ????
-m_bPortCheckWait( false ),
-m_fPortCheckWaitTime( 0.f ),
-m_PortCheckRetryTime( 0 ),
-m_bENX_USER_LOGIN_NOT( false ),
-m_bEGS_VERIFY_ACCOUNT_ACK( false ),
-m_bIsGameBang( false ),
-m_bPortCheckReq( false ),
-m_bEGS_VERIFY_ACCOUNT_REQ( false ),
-m_fEGS_VERIFY_ACCOUNT_ACK_WaitTime( 0.f ),
-m_bReceivedServerGroupList( false ),
-m_pDLGServerGroupSelectBack(NULL),
-//{{ //2012.02.28 lygan_?????? // ????? unitUID?? ??????? ????? ???? ??? ????? ??
-m_iSelectUnitUID( 0 ),
-m_bMaintainNowUnitButton( false ),
-//}}
-m_bReceivedChannelList( false ),
-m_bSentEGS_CONNECT_REQ( false ),
-m_bReceivedEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( false ),
-m_bReservedConnectionToChannelServer( false ),
-m_bWaiting_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( false ),
-m_iTryConnectChannelID( -1 ),
-m_bJustChangedNickName( false ),
-m_NickNameChangeUnitUID( -1 ),
-m_NickNameChangeUnitNickName( L"" ),
-m_bRemoveUnitAfterReceiveNMSerialNum( false )
-//{{ kimhc // 2009-12-15 // ?????? ??? ????? ???? �?? ??????? ???
+  m_pDLGServerSelectBack(NULL)
 , m_pDLGChannelSelectBack( NULL )
 , m_iChannelNum( 0 )
-//{{ ????? : [2011/6/20] //        �?? ???? ???????? ????
 , m_bSelectChannel( false )
-//}} ????? : [2011/6/20] //        �?? ???? ???????? ????
-//}}  kimhc // 2009-12-15 // ?????? ??? ????? ???? �?? ??????? ???
+, m_pDLGCheckHack(NULL)
+, m_pDLGUnitSelectBack(NULL)
+, m_pDLGUnitSelectFront(NULL)
+, m_pDLGDeleteUnitCheck(NULL)
+, m_pDLGLoadingState(NULL)
+, m_pDLGRenameMsgBox(NULL)
+, m_pDLGRenameConfirmMsgBox( NULL )
+, m_pDLGRenameSuccessMsgBox( NULL )
+, m_pDLGTutorialMsgBox(NULL)
+, m_pDLGGoToFirstDungeon(NULL)
+, m_pDLGRecommend(NULL)
+, m_pDLGRecommendSuccess(NULL)
+, m_pDLGATLLimitCheckMsgBox (NULL)
+, m_pSelectUnit(NULL)
+, m_pSelectButton(NULL)
+, m_bUnitClicked(false)
+, m_fMouseSensitivity(0.01f)
+, m_fRemainRotY(0.0f)
+, m_bRotateReturn(true)
+, m_fRotSpeed(false)
+, m_pOveredButton(NULL)
+, m_pOveredName(NULL)
+, m_bOneTimeInit(true)
+, m_bStateChangingToUnitCreate(false)
+, m_bPlayDownAnim(false)
+, m_fDownAnimTime(0.0f)
+, m_MaxUnitNum(0)
+, m_bReserveEnterTutorial(false)
+, m_bCheckRecommend(false)
+, m_bCheckRecommendSuccess(false)
+, m_NowPage(1)
+, m_MaxPage(1)		// ???????? ??? ????
+, m_bPortCheckWait( false )
+, m_fPortCheckWaitTime( 0.f )
+, m_PortCheckRetryTime( 0 )
+, m_bENX_USER_LOGIN_NOT( false )
+, m_bEGS_VERIFY_ACCOUNT_ACK( false )
+, m_bIsGameBang( false )
+, m_bPortCheckReq( false )
+, m_bEGS_VERIFY_ACCOUNT_REQ( false )
+, m_fEGS_VERIFY_ACCOUNT_ACK_WaitTime( 0.f )
+, m_pDLGServerGroupSelectBack(NULL)
+, m_bReceivedServerGroupList( false )
+, m_iSelectUnitUID( 0 )
+, m_bMaintainNowUnitButton( false )
+, m_bReceivedChannelList( false )
+, m_bSentEGS_CONNECT_REQ( false )
+, m_bReceivedEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( false )
+, m_bReservedConnectionToChannelServer( false )
+, m_bWaiting_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( false )
+, m_iTryConnectChannelID( -1 )
+, m_bJustChangedNickName( false )
+, m_NickNameChangeUnitUID( -1 )
+, m_NickNameChangeUnitNickName( L"" )
+, m_bRemoveUnitAfterReceiveNMSerialNum( false )
 , m_bEnableUnitSelectBySecondSecurity( false )
 , m_bRecivedKeyMap( false )
-, m_pDLGATLLimitCheckMsgBox (NULL)
+, m_bSend_EGS_SELECT_UNIT_REQ_For_Auto_Connection ( false )
 , m_pUnitViewerUI ( NULL )
 , m_iChannelNowPage ( 1 )
 , m_iChannelMaxPage ( 1 )
-, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_iCreateUnitTodayCount ( 0 )
-
+, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_fFadeTitleControlValue ( 0.f )
 , m_iReservedEntryPointServerChannelIndex ( -1 )
-, m_bSend_EGS_SELECT_UNIT_REQ_For_Auto_Connection ( false )
 , m_pSelectChannelButton ( NULL )
 , m_bIsAbledStateCreateUnitButton ( true )
 , m_pSound( NULL )
-, m_bOrgSound( false )
-, m_bOrgMusic( false )
-
 , m_pDLGReConnectChannelServer ( NULL )
 , m_bReservedSecurityPad ( false )
-
-, m_bWaitingEGS_CONNECT_REQ_ChannelButtonUp ( false )
-
 , m_bReservedHackingUserAgreeDlg ( false )
-
-
+, m_bWaitingEGS_CONNECT_REQ_ChannelButtonUp ( false )
+, m_bOrgSound( false )
+, m_bOrgMusic( false )
 #ifdef FIX_REFORM_ENTRY_POINT_10TH		// kimjh, ???? ???? ????, 10?? ???? ????
 , m_fElapsedTime_WaitingCharacterList ( 0.f )
 #endif // FIX_REFORM_ENTRY_POINT_10TH
-
 {
 	m_bReConnectChannelServer = true;
 
@@ -277,6 +263,8 @@ m_bRemoveUnitAfterReceiveNMSerialNum( false )
 			{
 				g_pMain->SetIsExitingTutorial( false );
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -486,7 +474,7 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_701 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 				m_bStateChangingToUnitCreate = true;
 			}
 			//}} ????? : [2011/6/20] //        �?? ???? ???????? ????
@@ -538,11 +526,10 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 			{
 				if ( g_pMain->m_bPlayIntroMovie == true )
 				{
-					BVL_STATUS status;
-					pIntroMovieData->m_Bvl.GetStatus( status );
+					const CKTDGUIControl::CMovieData::MOVIE_STATUS status = pIntroMovieData->GetStatus();
 					pIntroMovieData->SetLoop( false );
 
-					if ( status == BVL_STATUS_READY )
+					if ( status == CKTDGUIControl::CMovieData::MOVIE_STATUS_READY )
 					{
 						pIntroMovieData->SetShow( false );
 						pMovieStatic->SetShow( false );
@@ -553,9 +540,9 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 						ProcessIntroMovieEnd();		// ????? ???????? ?????? ?? �??????? ?? ??
 
 					}
-					else if( status == BVL_STATUS_ERROR )
+					else if( status == CKTDGUIControl::CMovieData::MOVIE_STATUS_ERROR )
 					{
-						pIntroMovieData->m_Bvl.Stop();
+						pIntroMovieData->Stop();
 						pMovieStatic->SetShow( false );
 						g_pMain->GetGameOption().SetSound( m_bOrgSound );
 						g_pMain->GetGameOption().SetMusic( m_bOrgMusic );
@@ -564,7 +551,7 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 				}
 				else
 				{
-					pIntroMovieData->m_Bvl.Stop();
+					pIntroMovieData->Stop();
 					pMovieStatic->SetShow( false );
 					g_pMain->GetGameOption().SetSound( m_bOrgSound );
 					g_pMain->GetGameOption().SetMusic( m_bOrgMusic );
@@ -738,7 +725,7 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-void CX2StateServerSelect::OnFrameMove_GameServerConnect( double fTime, float fElapsedTime )
+void CX2StateServerSelect::OnFrameMove_GameServerConnect( double /*fTime*/, float fElapsedTime )
 {
 	if ( m_bPortCheckReq == false &&
 		g_pData->GetMyUser() != NULL &&
@@ -756,23 +743,14 @@ void CX2StateServerSelect::OnFrameMove_GameServerConnect( double fTime, float fE
 #if X2_DEV_TOOLS
 			g_pData->GetServerProtocol()->SendID( E_DISABLE_HB_CHECK_REQ );
 
-			if( NULL == g_fpStream && NULL == g_fpStreamError )
-			{
-				AllocConsole();
-				g_fpStream = freopen("CONOUT$", "a", stdout); // redirect printf to console
-				g_fpStreamError = freopen("CONOUT$", "a", stderr); // redirect printf to console
-				dbg::logfile::SetLogLevel(2);
-			}
+			x2::platform::OpenDebugConsole();
+			dbg::logfile::SetLogLevel(2);
 #endif
 		}
 		else
 		{
 #if X2_DEV_TOOLS
-			FreeConsole();
-			if ( g_fpStream != NULL )
-				fclose( g_fpStream );
-			if ( g_fpStreamError != NULL )
-				fclose( g_fpStreamError );
+			x2::platform::CloseDebugConsole();
 #endif
 		}
 
@@ -789,7 +767,7 @@ void CX2StateServerSelect::OnFrameMove_GameServerConnect( double fTime, float fE
 			//{{ kimhc // 2010-05-07 // ????�? ???? ???? ???? ????? ????
 			// 	 int* x = NULL;
 			// 	 *x = 1;
-			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 			//}} kimhc // 2010-05-07 // ????�? ???? ???? ???? ????? ????
 		}
 	}
@@ -948,7 +926,6 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 	{
 		case SUSUCM_UNIT_BUTTON_OVER:
 			{
-				CKTDGUIButton* pButton = (CKTDGUIButton*)lParam;
 				return false;
 				//return AnimateCharacterName( pButton );
 			}
@@ -1029,7 +1006,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 				//Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_REQ ();
 
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 			}
 			else
 			{
@@ -1108,7 +1085,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 					wstring tempNickName = m_pSelectUnit->GetNickName();
 					if(tempNickName.length() != 0 )
 					{
-						if ( tempNickName.find( L"_") != -1 )
+						if ( tempNickName.find( L"_") != std::wstring::npos )
 						{
 							g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(260, 275), GET_STRING( STR_ID_713 ), this, -1, -1.f, L"DLG_UI_OKMsgBoxPlusNew.lua", D3DXVECTOR2 ( 0, -130 ),  L"UI_PopUp_Negative_01.ogg" );
 							return false;
@@ -1135,7 +1112,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_DELETE_UNIT_CHECK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, 0, false );
 				m_pDLGDeleteUnitCheck = NULL;
 
 				//{{AFX
@@ -1160,7 +1137,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 			break;
 		case SUSUCM_FINAL_DELETE_UNIT_CHECK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, 0, false );
 				m_pDLGDeleteUnitCheck = NULL;
 
 				return Handler_EGS_FINAL_DELETE_UNIT_REQ();
@@ -1179,7 +1156,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 			break;
 		case SUSUCM_RESTORE_UNIT_CHECK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, 0, false );
 				m_pDLGDeleteUnitCheck = NULL;
 
 				return Handler_EGS_RESTORE_UNIT_REQ();
@@ -1246,7 +1223,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_RENAME_CONFIRM_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, 0, false );
 				m_pDLGRenameConfirmMsgBox = NULL;
 
 				Handler_EGS_ENTRY_POINT_CHANGE_NICK_NAME_REQ ( m_NickNameChangeUnitUID, m_NickNameChangeUnitNickName.c_str(), false, m_pSelectUnit->GetServerGroupID() );
@@ -1256,7 +1233,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_RENAME_CONFIRM_CANCEL:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, 0, false );
 				m_pDLGRenameConfirmMsgBox = NULL;
 				return true;
 			} break;
@@ -1264,13 +1241,12 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_RENAME_SUCCESS_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameSuccessMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameSuccessMsgBox, 0, false );
 				m_pDLGRenameSuccessMsgBox = NULL;
 
 
 				m_bJustChangedNickName = true;
 
-				const int MAGIC_UNIT_LEVEL = -1;
 
 				Handler_EGS_CHARACTER_LIST_REQ ();
 				return true;
@@ -1278,7 +1254,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_TUTORIAL_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, 0, false );
 				m_pDLGTutorialMsgBox = NULL;
 
 
@@ -1289,7 +1265,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_TUTORIAL_CANCEL:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, 0, false );
 				m_pDLGTutorialMsgBox = NULL;
 
 				g_pMain->SetIsPlayingTutorial( false );
@@ -1304,7 +1280,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_FIRST_DUNGEON_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 				m_pDLGGoToFirstDungeon = NULL;
 
 				if( NULL == m_pSelectUnit )
@@ -1322,7 +1298,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_FIRST_DUNGEON_CANCEL:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 				m_pDLGGoToFirstDungeon = NULL;
 
 
@@ -1503,10 +1479,10 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 			break;
 		case SSSUCM_ATL_LIMIT_CHECK_OK:
 			{
-				ShellExecute(NULL, L"open", L"https://member.nexon.com/verify/realname.aspx", L"",L"", SW_SHOWNORMAL );
+				x2::platform::OpenUrl( L"https://member.nexon.com/verify/realname.aspx" );
 				if( NULL != m_pDLGATLLimitCheckMsgBox )
 				{
-					g_pKTDXApp->SendGameDlgMessage(XGM_DELETE_DIALOG, m_pDLGATLLimitCheckMsgBox, NULL, false);
+					g_pKTDXApp->SendGameDlgMessage(XGM_DELETE_DIALOG, m_pDLGATLLimitCheckMsgBox, 0, false);
 				}
 				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 			}
@@ -1535,7 +1511,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 				if ( NULL != m_pSelectUnit )
 				{
 					wstring tempNickName = m_pSelectUnit->GetNickName();
-					if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != -1 )
+					if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != std::string::npos )
 					{
 						//??????? ???? ?????? ??????? ???? ??????? ???�?? ????.
 						OpenRenameMsgBox( true );
@@ -1635,13 +1611,13 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 					g_pData->GetServerProtocol()->DisconnectFromGameServer();
 				if ( true == g_pData->GetServerProtocol()->IsChConnected() )
 					g_pData->GetServerProtocol()->DisconnectFromChannelServer();
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 			} break;
 
 		case SSSUCM_DOUBLE_CONNECT:
 			{
 				g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_DOUBLE_CONNECT );
-				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 			}break;
 	}
 
@@ -1892,7 +1868,6 @@ bool CX2StateServerSelect::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 void CX2StateServerSelect::CreateChannelButton( bool bSelectTopChannelButton /* = false */ )
 {
 	CKTDGUIDialogType pChannelSlot = NULL;
-	CKTDGUIButton* pButton = NULL;
 
 	D3DXVECTOR3 dummyPos;
 
@@ -2161,7 +2136,7 @@ void CX2StateServerSelect::CreateUnitButton()
 		CKTDGUIStatic* pStaticChangeNickMessage = (CKTDGUIStatic*) pUnitSlot->GetControl( L"standby" );
 
 		wstring tempNickName = pUnit->GetNickName();
-		if ( tempNickName.find( L"__DELETED__") != -1 )
+		if ( tempNickName.find( L"__DELETED__") != std::wstring::npos )
 		{
 			pStaticID->GetString(0)->msg = GET_STRING(STR_ID_29404);
 
@@ -2418,8 +2393,8 @@ void CX2StateServerSelect::UnitButtonUp( CX2Unit* pUnit )
 	if ( m_pSelectUnit == pUnit )
 	{
 		wstring tempNickName = m_pSelectUnit->GetNickName();
-		if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != -1 ||
-			 tempNickName.find( L"__DELETED__") != -1 )
+		if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != std::string::npos ||
+			 tempNickName.find( L"__DELETED__") != std::wstring::npos )
 		{
 			//??????? ???? ?????? ??????? ???? ??????? ???�?? ????.
 			OpenRenameMsgBox( true );
@@ -2632,7 +2607,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_REQ( UidType unitUID, int iUn
 
 
 /// ?????? ????, ?????, ???
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_1_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_1_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_1_NOT kEvent;
@@ -2844,7 +2819,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_1_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// ?????
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_2_NOT kEvent;
@@ -2879,7 +2854,6 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND hWnd, UINT uMsg, 
 			if ( g_pData->GetCashShop() != NULL )
 				g_pData->GetCashShop()->ResetUnitViewer( pUnit );
 
-			g_pMain->ResetCrashReport( L"" );
 		}
 
 		if( NULL != g_pData && NULL != g_pData->GetQuestManager() )
@@ -2898,7 +2872,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// �???, ??
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_3_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_3_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_3_NOT kEvent;
@@ -2969,7 +2943,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_3_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// ???? ????, ????, ????, ???
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_4_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_4_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_4_NOT kEvent;
@@ -3091,7 +3065,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_4_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// ETC, 1??? ????
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_5_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_5_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_5_NOT kEvent;
@@ -3138,7 +3112,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_5_NOT( HWND hWnd, UINT uMsg, 
 
 
 /// ????? ???�? ????? ??????? ??? ???? ???? ?? m_iOK �??
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_ACK kEvent;
@@ -3341,7 +3315,7 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_UNIT_ACK kEvent;
@@ -3365,11 +3339,11 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WP
 			pUnit->AccessUnitData().m_trDelAbleDate = kEvent.m_tDelAbleDate;
 
 			CTime tDeleAbleDate(kEvent.m_tDelAbleDate);
-			std::wstring wstrYear = (CStringW)( tDeleAbleDate.Format(_T( "%Y" )) );
-			std::wstring wstrMonth = (CStringW)( tDeleAbleDate.Format(_T( "%m" )) );
-			std::wstring wstrDay = (CStringW)( tDeleAbleDate.Format(_T( "%d" )) );
-			std::wstring wstrHour = (CStringW)( tDeleAbleDate.Format(_T( "%H" )) );
-			std::wstring wstrMinute = (CStringW)( tDeleAbleDate.Format(_T( "%M" )) );
+			std::wstring wstrYear = tDeleAbleDate.Format(_T( "%Y" )).GetString();
+			std::wstring wstrMonth = tDeleAbleDate.Format(_T( "%m" )).GetString();
+			std::wstring wstrDay = tDeleAbleDate.Format(_T( "%d" )).GetString();
+			std::wstring wstrHour = tDeleAbleDate.Format(_T( "%H" )).GetString();
+			std::wstring wstrMinute = tDeleAbleDate.Format(_T( "%M" )).GetString();
 			std::wstring wstrMessage = GET_REPLACED_STRING( ( STR_ID_16103, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str()));
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), wstrMessage.c_str(), this, -1, -1.f, L"DLG_UI_Selection_MessageBox_Ok_Button_New.lua", D3DXVECTOR2 (0, 0), L"UI_PopUp_Negative_01.ogg" );
 			// ChangeUnitButtonInfo();
@@ -3377,7 +3351,7 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WP
 			if ( g_pData->GetMyUser()->GetUnitNum() <= 0 )
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_701 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 			}
 			else
 			{
@@ -3400,11 +3374,11 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WP
 			pUnit->AccessUnitData().m_trDelAbleDate = kEvent.m_tReDelAbleDate;
 
 			CTime tReDeleAbleDate(kEvent.m_tReDelAbleDate);
-			std::wstring wstrYear = (CStringW)( tReDeleAbleDate.Format(_T( "%Y" )) );
-			std::wstring wstrMonth = (CStringW)( tReDeleAbleDate.Format(_T( "%m" )) );
-			std::wstring wstrDay = (CStringW)( tReDeleAbleDate.Format(_T( "%d" )) );
-			std::wstring wstrHour = (CStringW)( tReDeleAbleDate.Format(_T( "%H" )) );
-			std::wstring wstrMinute = (CStringW)( tReDeleAbleDate.Format(_T( "%M" )) );
+			std::wstring wstrYear = tReDeleAbleDate.Format(_T( "%Y" )).GetString();
+			std::wstring wstrMonth = tReDeleAbleDate.Format(_T( "%m" )).GetString();
+			std::wstring wstrDay = tReDeleAbleDate.Format(_T( "%d" )).GetString();
+			std::wstring wstrHour = tReDeleAbleDate.Format(_T( "%H" )).GetString();
+			std::wstring wstrMinute = tReDeleAbleDate.Format(_T( "%M" )).GetString();
 			std::wstring wstrMessage = GET_REPLACED_STRING( ( STR_ID_16109, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str()));
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(305, 375), wstrMessage.c_str(), this, -1, -1.f, L"DLG_UI_Selection_MessageBox_Ok_Button_New.lua",D3DXVECTOR2 (0, 0),  L"UI_PopUp_Negative_01.ogg" );
 		}
@@ -3441,7 +3415,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 //#if 0
 //	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -3485,7 +3459,7 @@ bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_REQ( UidType uid, const 
 }
 
 
-bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_NICK_NAME_ACK kEvent;
@@ -3542,7 +3516,7 @@ bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_ACK( HWND hWnd, UINT uMs
 }
 
 //{{ kimhc // 2010-01-04 // ?????? EGS_SELECT_UNIT_ACK?? ????????? ?????? ???? ?? ????
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_INVENTORY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_INVENTORY_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_INVENTORY_INFO_NOT kEvent;
@@ -3570,7 +3544,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_INVENTORY_INFO_NOT( HWND hWnd
 	return false;
 }
 
-bool CX2StateServerSelect::Handler_EGS_GET_MY_INVENTORY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_GET_MY_INVENTORY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_MY_INVENTORY_ACK kEvent;
@@ -3683,7 +3657,7 @@ bool CX2StateServerSelect::Handler_EGS_RECOMMEND_USER_REQ( const WCHAR* wszNickN
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_RECOMMEND_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_RECOMMEND_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RECOMMEND_USER_ACK kEvent;
@@ -3721,7 +3695,7 @@ void CX2StateServerSelect::OpenRecommendMsgBox( bool bOpen )
 	if ( bOpen == true )
 	{
 		if ( m_pDLGRecommend != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, 0, false );
 
 		m_pDLGRecommend = NULL;
 
@@ -3738,7 +3712,7 @@ void CX2StateServerSelect::OpenRecommendMsgBox( bool bOpen )
 	else
 	{
 		if ( m_pDLGRecommend != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, 0, false );
 
 		m_pDLGRecommend = NULL;
 	}
@@ -3762,7 +3736,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_SERVER_SET_ACK kEvent;
@@ -3781,7 +3755,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_ACK( HWND hWnd, UINT uM
 		{
 			SAFE_DELETE_DIALOG( m_pDLGMsgBox );
 
-			switch( g_pData->GetMyUser()->GetAuthLevel() )
+			switch( static_cast<int>( g_pData->GetMyUser()->GetAuthLevel() ) )
 			{
 			case -2:
 			case -3:
@@ -3848,7 +3822,7 @@ bool CX2StateServerSelect::Handler_EGS_MY_UNIT_AND_INVENTORY_INFO_LIST_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK kEvent;
@@ -3961,7 +3935,7 @@ bool CX2StateServerSelect::Handler_EGS_AGREE_HACK_USER_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_AGREE_HACK_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_AGREE_HACK_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_AGREE_HACK_USER_ACK kEvent;
@@ -3989,7 +3963,6 @@ void CX2StateServerSelect::UpdateChannelListUI()
 
 	SAFE_DELETE_DIALOG( m_pDLGChannelSelectBack );
 
-	int ServerGroupNum = g_pInstanceData->GetServerGroupID();
 	m_pDLGChannelSelectBack = new CKTDGUIDialog( this, L"DLG_UI_Channel_Selection_New.lua" );
 
 
@@ -4246,7 +4219,7 @@ void CX2StateServerSelect::UpdateChannelListUI()
 			wstring wstrLvWordCheck = L"";
 			bool bStrLvWordCheck = false;
 
-			for ( int istrNumCheck = 0; istrNumCheck< wstrChannelLv.length(); ++istrNumCheck )
+			for ( int istrNumCheck = 0; istrNumCheck< static_cast<int>( wstrChannelLv.length() ); ++istrNumCheck )
 			{
 				CKTDGUIControl::CPictureData* pLvPicture = new CKTDGUIControl::CPictureData();
 				CKTDGUIControl::UIPointData* pLvPointData = new CKTDGUIControl::UIPointData();
@@ -4335,7 +4308,6 @@ void CX2StateServerSelect::UnitHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 			if ( g_pData != NULL && m_pUnitViewerUI->GetUnit() != NULL && NULL != m_pUnitViewerUI->GetUnit()->GetUnitTemplet()  )
 			{
 				float fRotY = g_pData->RotateYSelectCharacterType( m_pUnitViewerUI->GetUnit()->GetClass() );
@@ -4451,7 +4423,7 @@ void CX2StateServerSelect::UnitHandling( double fTime, float fElapsedTime )
 				pUnitData->m_bDeletedMotionPlay = true;
 			}
 		}
-		else if( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		else if( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			if( true == m_bPlayDownAnim )
 			{
@@ -4495,7 +4467,7 @@ CX2UnitViewerUI* CX2StateServerSelect::GetUnitViewer( CX2Unit* pUnit )
 
 
 
-void CX2StateServerSelect::DownAnimFrameMove( double fTime, float fElapsedTime )
+void CX2StateServerSelect::DownAnimFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if ( m_bPlayDownAnim == true )
 	{
@@ -4619,7 +4591,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_REQ(bool bForceMove)
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_FIELD_ACK kEvent;
@@ -4668,7 +4640,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT u
 //				}
 //#endif
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 			}
 		}
 		else
@@ -4703,7 +4675,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT u
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_USER_LIST_IN_SECTOR_NOT kEvent;
@@ -4794,7 +4766,7 @@ void CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_REQ()
 	g_pMain->AddServerPacket( EGS_CREATE_TUTORIAL_ROOM_ACK, 40.f );
 }
 
-bool CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_TUTORIAL_ROOM_ACK kEvent;
@@ -4846,7 +4818,7 @@ bool CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND hWnd, UINT
 			if(g_pInstanceData != NULL)
 				g_pInstanceData->SetFirstJoinVillage(true);
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_645 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, 0, false );
 
 			//???? ??????? ????
 			if( NULL != g_pData && NULL != g_pData->GetPartyManager() )
@@ -4890,6 +4862,8 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 	{
 		switch( g_pMain->GetPublisher() )
 		{
+		default:
+			break;
 		}
 	}
 
@@ -4949,7 +4923,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 					m_bCanNotConenctToBusyServer = true;
 					m_sbSelectedServerSet = false;
 					// ConnectToChannelServer(true);
-					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 
 					if ( g_pData->GetServerProtocol()->IsConnected() == true )
 					{
@@ -4977,14 +4951,14 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 		//g_pData->DeleteServerProtocol();
 		//g_pData->DeleteMyUser();
 		g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_INVALID_ID_OR_PASSWORD );
-		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 	}
 
 	m_bWaitingEGS_CONNECT_REQ_ChannelButtonUp = false;
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CONNECT_ACK kEvent;
@@ -5011,13 +4985,13 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM
 			default:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 
 			case NetError::ERR_CONNECT_00:
 				{
 					MessageBox( g_pKTDXApp->GetHWND(), GET_STRING( STR_ID_727 ), L"Quit", MB_OK );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 
 			case NetError::ERR_CONNECT_04:
@@ -5032,7 +5006,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM
 						m_bCanNotConenctToBusyServer = true;
 						m_sbSelectedServerSet = false;
 						// ConnectToChannelServer(true);
-						g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+						g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 
 						if ( g_pData->GetServerProtocol()->IsConnected() == true )
 						{
@@ -5110,7 +5084,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
 #endif
@@ -5223,7 +5197,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 			default:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_VERIFY_ACCOUNT );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 			}
 
@@ -5237,7 +5211,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ENX_USER_LOGIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ENX_USER_LOGIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KENX_USER_LOGIN_NOT kEvent;
@@ -5313,7 +5287,7 @@ bool CX2StateServerSelect::Handler_KXPT_PORT_CHECK_ACK( const KXPT_PORT_CHECK_AC
 	return CX2State::Handler_EGS_STATE_CHANGE_SERVER_SELECT_REQ();
 }
 
-/*virtual*/ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_SERVER_SELECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_SERVER_SELECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_SERVER_SELECT_ACK kEvent;
@@ -5340,7 +5314,7 @@ bool CX2StateServerSelect::Handler_EGS_CURRENT_TIME_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_CURRENT_TIME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CURRENT_TIME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CURRENT_TIME_ACK kEvent;
@@ -5403,7 +5377,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_CHANNEL_LIST_ACK kEvent;
@@ -5419,7 +5393,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_ACK( HWND hWnd, UINT uMs
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_CHANNEL_LIST_NOT kEvent;
@@ -5536,7 +5510,7 @@ bool CX2StateServerSelect::Handler_ECH_DISCONNECT_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_ECH_DISCONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_DISCONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pMain->DeleteServerPacket( ECH_DISCONNECT_ACK ) == true )
 	{
@@ -5581,7 +5555,7 @@ bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pMain->DeleteServerPacket( EGS_DISCONNECT_FOR_SERVER_SELECT_ACK ) == true )
 	{
@@ -5659,7 +5633,7 @@ bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND hW
 			if ( m_pSelectUnit->GetServerGroupID() == SEnum::SGI_GAIA )
 			{
 				m_iTryConnectChannelID = FindAndConnectMatchingLevelGameServer( 1, m_mapGaiaChannelBonusInfo, m_vecGaiaChannelInfo);
-				BOOST_FOREACH ( const KChannelInfo & kChannelInfo , m_vecGaiaChannelInfo )
+				for ( const KChannelInfo & kChannelInfo : m_vecGaiaChannelInfo )
 				{
 					if ( m_iTryConnectChannelID == kChannelInfo.m_iChannelID )
 					{
@@ -5670,7 +5644,7 @@ bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND hW
 			else if ( m_pSelectUnit->GetServerGroupID() == SEnum::SGI_SOLES )
 			{
 				m_iTryConnectChannelID = FindAndConnectMatchingLevelGameServer( 1, m_mapSolesChannelBonusInfo, m_vecSolesChannelInfo);
-				BOOST_FOREACH ( const KChannelInfo & kChannelInfo , m_vecSolesChannelInfo )
+				for ( const KChannelInfo & kChannelInfo : m_vecSolesChannelInfo )
 				{
 					if ( m_iTryConnectChannelID == kChannelInfo.m_iChannelID )
 					{
@@ -5735,7 +5709,7 @@ bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_REQ( UidType unitUID 
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_MY_MESSENGER_SN_ACK kEvent;
@@ -5770,7 +5744,7 @@ bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_ACK( HWND hWnd, UINT 
 }
 
 
-bool CX2StateServerSelect::ConnectToChannelServer( bool bIsReversingConnect /* = false */ )
+bool CX2StateServerSelect::ConnectToChannelServer( bool /*bIsReversingConnect*/ /* = false */ )
 {
 	ASSERT( NULL != g_pData->GetServerProtocol() );
 
@@ -5831,7 +5805,7 @@ bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_VERIFY_ACCOUNT_ACK kEvent;
@@ -5861,7 +5835,7 @@ bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 			case NetError::ERR_VERIFY_20:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 			default:
 				{
@@ -5876,7 +5850,7 @@ bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 
 
 
-bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SECOND_SECURITY_INFO_NOT kEvent;
@@ -5970,7 +5944,7 @@ bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND hWnd, UINT
 			{
 				m_sbSelectedServerSet = false;
 				m_bCanNotConenctToBusyServer = false;
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 		}
 		else
@@ -5989,10 +5963,10 @@ bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND hWnd, UINT
 /*virtual*/ void CX2StateServerSelect::LastMsgPopOk()
 {
 	if ( m_pDLGLastMsgPopUp != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, 0, false );
 	m_pDLGLastMsgPopUp = NULL;
 
-	g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SSSUCM_UNIT_SELECT_EXIT, NULL, false );
+	g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SSSUCM_UNIT_SELECT_EXIT, 0, false );
 }
 
 void CX2StateServerSelect::UnitSelectExit()
@@ -6114,7 +6088,7 @@ bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FINAL_DELETE_UNIT_ACK kEvent;
@@ -6139,7 +6113,7 @@ bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_ACK( HWND hWnd, UINT uM
 			if ( g_pData->GetMyUser()->GetUnitNum() <= 0 )
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_701 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 			}
 			else
 			{
@@ -6172,7 +6146,7 @@ bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESTORE_UNIT_ACK kEvent;
@@ -6205,11 +6179,11 @@ bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_ACK( HWND hWnd, UINT uMsg, W
 			pUnit->AccessUnitData().m_trRestoreAbleDate = kEvent.m_tRestoreAbleDate;
 
 			CTime tRestoreAbleDate(kEvent.m_tRestoreAbleDate);
-			std::wstring wstrYear = (CStringW)( tRestoreAbleDate.Format(_T( "%Y" )) );
-			std::wstring wstrMonth = (CStringW)( tRestoreAbleDate.Format(_T( "%m" )) );
-			std::wstring wstrDay = (CStringW)( tRestoreAbleDate.Format(_T( "%d" )) );
-			std::wstring wstrHour = (CStringW)( tRestoreAbleDate.Format(_T( "%H" )) );
-			std::wstring wstrMinute = (CStringW)( tRestoreAbleDate.Format(_T( "%M" )) );
+			std::wstring wstrYear = tRestoreAbleDate.Format(_T( "%Y" )).GetString();
+			std::wstring wstrMonth = tRestoreAbleDate.Format(_T( "%m" )).GetString();
+			std::wstring wstrDay = tRestoreAbleDate.Format(_T( "%d" )).GetString();
+			std::wstring wstrHour = tRestoreAbleDate.Format(_T( "%H" )).GetString();
+			std::wstring wstrMinute = tRestoreAbleDate.Format(_T( "%M" )).GetString();
 			std::wstring wstrMessage = GET_REPLACED_STRING( ( STR_ID_16113, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str()));
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(305,375), wstrMessage.c_str(), this, -1, -1.f, L"DLG_UI_Selection_MessageBox_Ok_Button_New.lua", D3DXVECTOR2 (0, 0), L"UI_PopUp_Negative_01.ogg" );
 		}
@@ -6226,7 +6200,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_CHANNEL_LIST_ACK kEvent;
@@ -6242,7 +6216,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_ACK( HWND hWnd, UINT
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_SERVERGROUP_LIST_NOT kEvent;
@@ -6408,7 +6382,7 @@ void CX2StateServerSelect::UpdateServerSelectButton( int iID )
 //}}  kimhc // 2009-12-15 // ?????? ?�??? ??? ?????? ???
 
 
-bool CX2StateServerSelect::Handler_EGS_KEYBOARD_MAPPING_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_KEYBOARD_MAPPING_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_KEYBOARD_MAPPING_INFO_NOT kEvent;
@@ -6501,7 +6475,7 @@ void CX2StateServerSelect::SettingUserGamePadMappingInfo( const KKeyboardMapping
 	}
 }
 
-bool CX2StateServerSelect::Handler_EGS_CHAT_OPTION_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CHAT_OPTION_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAT_OPTION_INFO_NOT kEvent;
@@ -6670,7 +6644,7 @@ void CX2StateServerSelect::SetFocusUnitButtonByIndex ( const int iIndex_ )
 			continue;
 
 		CKTDGUIButton* pCharButton = reinterpret_cast<CKTDGUIButton*>( pUnitSlot->GetControl( 0 ) );
-		if ( i == iIndex_ )
+		if ( i == static_cast<UINT>( iIndex_ ) )
 			pCharButton->SetDownStateAtNormal( true );
 		else
 			pCharButton->SetDownStateAtNormal( false );
@@ -6884,7 +6858,7 @@ void CX2StateServerSelect::SetShowSelectUnitInfo( CX2Unit * pUnit )
 				pGameStartStatic->SetShow( true );
 				pGameStartStatic->SetString( 0, wstringstreamLevelInfo.str().c_str() );
 				wstring wstrNickname = pUnit->GetNickName();
-				if ( -1 != wstrNickname.find ( L"__DELETED__") )
+				if ( std::wstring::npos != wstrNickname.find ( L"__DELETED__") )
 				{
 					wstrNickname = GET_STRING(STR_ID_29404);//????? ????
 				}
@@ -6981,7 +6955,6 @@ void CX2StateServerSelect::ChangeSelectUnitStandMeshInstance ( CX2Unit::UNIT_TYP
 
 			if( NULL != pMeshStandInst )
 			{
-				D3DXVECTOR3 vRot = pMeshStandInst->GetRotateLocalDegree();
 				//vRot.y -= 7.45f;
 				//vRot.z -= 2.75f;
 				//pMeshStandInst->SetRotateLocalDegree( vRot );
@@ -7019,7 +6992,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHARACTER_LIST_ACK kEvent;
@@ -7262,6 +7235,8 @@ void CX2StateServerSelect::SetBackgroundImageBySelectUnitType ( CX2Unit::UNIT_TY
 		case CX2Unit::UT_ADD :
 			wstrFileName = L"DLG_Unit_Background_add.tga";
 			break;
+	default:
+		break;
 	}
 
 	if ( NULL != m_pDLGUnitSelectFront->GetStatic_LUA( "Unit_Select_background" ) &&
@@ -7277,7 +7252,6 @@ void CX2StateServerSelect::CreateUnitButtonNew ()
 {
 
 	CKTDGUIDialogType pUnitSlot = NULL;
-	CKTDGUIButton* pButton = NULL;
 
 	for(UINT i=0; i<m_vecUnitSlot.size(); ++i)
 	{
@@ -7441,8 +7415,8 @@ void CX2StateServerSelect::ChangeUnitButtonInfo ()
 			{
 				wstring tempNickName = pUnit->GetNickName();
 
-				if ( tempNickName.find( L"__DELETED__") != -1
-					|| tempNickName.find( GET_STRING(STR_ID_29404) ) != -1
+				if ( tempNickName.find( L"__DELETED__") != std::wstring::npos
+					|| tempNickName.find( GET_STRING(STR_ID_29404) ) != std::string::npos
 					)
 				{
 					if( NULL != pStaticID )
@@ -7561,7 +7535,7 @@ void CX2StateServerSelect::ChangeUnitButtonInfo ()
 	}
 }
 
-bool CX2StateServerSelect::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_CREATE_UNIT_TODAY_COUNT_ACK kEvent;
@@ -7604,7 +7578,7 @@ void CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_REQ ()
 	g_pData->GetServerProtocol()->SendID( EGS_ENTRY_POINT_GET_CHANNEL_LIST_REQ );
 	g_pMain->AddServerPacket( EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK );
 }
-bool CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK kEvent;
@@ -7950,7 +7924,7 @@ void CX2StateServerSelect::PlaySoundSelect( CX2Unit::UNIT_TYPE eUnitType_, SOUND
 		break;
 	}
 
-	if( StrCmp( wstrSoundName.c_str(), L"" ) != 0 )
+	if( wcscmp( wstrSoundName.c_str(), L"" ) != 0 )
 	{
 		if( NULL != m_pSound )
 		{
@@ -7978,11 +7952,10 @@ void CX2StateServerSelect::FindAndConnectLowerUserCountGameServer ( const vector
 {
 	int iLowerUserChannelCount = INT_MIN;
 	int iLowerUserChannelIndex = -1;
-	int iLowerUserChannelID = -1;
 	if ( false == vecChannelInfo.empty () )
 	{
 		int iIndex = 0;
-		BOOST_FOREACH ( const KChannelInfo & kChannelInfo, vecChannelInfo )
+		for ( const KChannelInfo & kChannelInfo : vecChannelInfo )
 		{
 			if ( iLowerUserChannelCount < kChannelInfo.m_iMaxUser - kChannelInfo.m_iCurrentUser )
 			{
@@ -8018,7 +7991,7 @@ void CX2StateServerSelect::FindAndConnectLowerUserCountGameServer ( const vector
 
 
 		g_pData->GetServerProtocol()->DisconnectFromGameServer();
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 	}
 }
 
@@ -8041,9 +8014,9 @@ int CX2StateServerSelect::FindAndConnectMatchingLevelGameServer ( int iMatchingU
 		int iLowerUserChannelCount = INT_MIN;
 		int iPickedChannelID = -1;
 
-		BOOST_FOREACH ( const KChannelInfo & kChannelInfo, vecChannelInfo )
+		for ( const KChannelInfo & kChannelInfo : vecChannelInfo )
 		{
-			BOOST_FOREACH ( const int & iRecommandedLevelChannelID, vecRecommandedLevelChannelID )
+			for ( const int & iRecommandedLevelChannelID : vecRecommandedLevelChannelID )
 			{
 				if ( iRecommandedLevelChannelID == kChannelInfo.m_iChannelID )
 				{

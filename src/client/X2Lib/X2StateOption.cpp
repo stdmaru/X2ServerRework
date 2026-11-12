@@ -7,19 +7,19 @@
 
 CX2StateOption::CX2StateOption(void) :
 // 2009.01.09 김태완 : 초기화 코드정리
+m_DLGWaitKeyConfig(NULL),
+m_fKeyconfigTimer(-1.0f),
+m_eSelectedGameAction( GAME_ACTION_NONE ),
 m_pDLGOptionWindow(NULL),
 m_pDLGBlackList(NULL),
+//m_OldOptionList,
 m_pDLGBlackListAdd(NULL),
 m_pDLGBlackListRemoveOKAndCancel(NULL),
-m_bIsOptionWindowOpen(false),
-//m_OldOptionList,
-m_wstrNickNameForBlackListRemove(L""),
-m_pResolutionChangeConfirmDialog(NULL),
-m_vOriginalResolution(1024.f, 768.f ),			// D3DXVECTOR2
-m_bResetOriginalResolution(true)
-, m_DLGWaitKeyConfig(NULL)
-, m_fKeyconfigTimer(-1.0f)
-, m_eSelectedGameAction( GAME_ACTION_NONE )
+m_bIsOptionWindowOpen(false),			// D3DXVECTOR2
+m_wstrNickNameForBlackListRemove(L"")
+, m_pResolutionChangeConfirmDialog(NULL)
+, m_vOriginalResolution(1024.f, 768.f )
+, m_bResetOriginalResolution(true)
 {
 	// 초기화 코드 //////////////////////////////////////////////////////////////////////////
 
@@ -403,8 +403,8 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIComboBox* pCombo_Graphic_Resoultion = (CKTDGUIComboBox*) m_pDLGOptionWindow->GetControl( L"Option_Resolution" );
 
 
-			DXUTDeviceSettings deviceSettings = DXUTGetDeviceSettings();
-			DWORD dwResolution = PtrToUlong( pCombo_Graphic_Resoultion->GetSelectedData() );
+			[[maybe_unused]] DXUTDeviceSettings deviceSettings = DXUTGetDeviceSettings();
+			DWORD dwResolution = static_cast<DWORD>( reinterpret_cast<uintptr_t>( pCombo_Graphic_Resoultion->GetSelectedData() ) );
 
 			DWORD dwWidth = LOWORD( dwResolution );
 			DWORD dwHeight = HIWORD( dwResolution );
@@ -701,7 +701,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 	case SOUCM_OPTION_COMMUNITY_BLACKLIST_REMOVE_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBlackListRemoveOKAndCancel, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBlackListRemoveOKAndCancel, 0, false );
 			m_pDLGBlackListRemoveOKAndCancel = NULL;
 		}
 		break;
@@ -981,7 +981,6 @@ bool CX2StateOption::OpenOptionWindow()
 
 	m_pDLGOptionWindow->SetPos( D3DXVECTOR2(303.f, 202.f) );
 
-	CX2GameOption::OptionList* pGameOptionList = &g_pMain->GetGameOption().GetOptionList();
 	//m_OldOptionList = *pGameOptionList;
 
 	m_pDLGOptionWindow->SetShow( true );
@@ -1278,6 +1277,8 @@ void CX2StateOption::ShowGraphicOption( bool bShow )
 			pRadio_Graphic_Texture_Middle->SetEnable( false );
 			pRadio_Graphic_Texture_Low->SetEnable( false );
 		} break;
+	default:
+		break;
 	}
 
 	//{{ kimhc // 2010.3.12 //	채팅창 개편
@@ -1626,10 +1627,10 @@ void CX2StateOption::HideBandiCamOption()
 }
 
 
-void CX2StateOption::ShowCommunityOption( bool bShow )
+void CX2StateOption::ShowCommunityOption( bool /*bShow*/ )
 {
 }
-void CX2StateOption::ShowStaticSecurity( bool bShow )
+void CX2StateOption::ShowStaticSecurity( bool /*bShow*/ )
 {
 	return;
 }
@@ -1639,8 +1640,6 @@ void CX2StateOption::InitGraphicOption()
 {
 	CX2GameOption::OptionList* pOptionList = &g_pMain->GetGameOption().GetOptionList();
 
-	CKTDGUIButton* pButton_Grahpic_AutoSetLevel_Left		= (CKTDGUIButton*) m_pDLGOptionWindow->GetControl( L"ButtonLeft_AutoSetLevel" );
-	CKTDGUIButton* pButton_Grahpic_AutoSetLevel_Right		= (CKTDGUIButton*) m_pDLGOptionWindow->GetControl( L"ButtonRight_AutoSetLevel" );
 
 	CKTDGUIStatic* pStatic_Graphic = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"Option_Window_Graphic_Num" );
 	if ( pStatic_Graphic != NULL )
@@ -1675,7 +1674,6 @@ void CX2StateOption::InitGraphicOption()
 	CKTDGUIRadioButton* pRadio_Graphic_Effect_Middle		= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Option_Window_Effect_Middle" );
 	CKTDGUIRadioButton* pRadio_Graphic_Effect_Low			= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Option_Window_Effect_Low" );
 
-	CKTDGUIComboBox* pCombo_Graphic_Resoultion				= (CKTDGUIComboBox*) m_pDLGOptionWindow->GetControl( L"Option_Resolution" );
 
 	CKTDGUIRadioButton* pRadio_Graphic_Field_Low			= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"FieldLow" );
 	CKTDGUIRadioButton* pRadio_Graphic_Field_Middle			= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"FieldMiddle" );
@@ -1985,9 +1983,6 @@ void CX2StateOption::InitCommunityOption()
 	CKTDGUIRadioButton* pRadio_DENY_FRIENDSHIP_ON						= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"SOUCM_OPTION_COMMUNITY_DENY_FRIENDSHIP_ON" );
 	CKTDGUIRadioButton* pRadio_DENY_FRIENDSHIP_OFF						= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"SOUCM_OPTION_COMMUNITY_DENY_FRIENDSHIP_OFF" );
 
-	CKTDGUIRadioButton* pRadio_DENY_WHISPER_ON							= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"SOUCM_OPTION_COMMUNITY_DENY_WHISPER_ON" );
-	CKTDGUIRadioButton* pRadio_DENY_WHISPER_OFF							= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"SOUCM_OPTION_COMMUNITY_DENY_WHISPER_OFF" );
-	CKTDGUIRadioButton* pRadio_DENY_WHISPER_ONLY_FRIENDS				= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"SOUCM_OPTION_COMMUNITY_DENY_WHISPER_ONLY_FRIENDS" );
 
 	CKTDGUIRadioButton* pRadio_DENY_PARTY_ON							= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"SOUCM_OPTION_COMMUNITY_DENY_PARTY_ON" );
 	CKTDGUIRadioButton* pRadio_DENY_PARTY_OFF							= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"SOUCM_OPTION_COMMUNITY_DENY_PARTY_OFF" );
@@ -2231,7 +2226,7 @@ bool CX2StateOption::Handler_EGS_UPDATE_COMMUNITY_OPTION_REQ()
 	return true;
 }
 
-bool CX2StateOption::Handler_EGS_UPDATE_COMMUNITY_OPTION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateOption::Handler_EGS_UPDATE_COMMUNITY_OPTION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_COMMUNITY_OPTION_ACK kEvent;
@@ -2322,7 +2317,7 @@ CX2StateOption::ConfirmDialog::ConfirmDialog( const WCHAR* wszMsgTemplet, float 
 	m_pDLG = g_pMain->KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(300,310), wszText, iYesMsg, pStage, iNoMsg );
 }
 
-void CX2StateOption::ConfirmDialog::OnFrameMove( double fTime, float fElapsedTime )
+void CX2StateOption::ConfirmDialog::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( m_fTimeLeft <= 0.f )
 		return;
@@ -2367,7 +2362,7 @@ void CX2StateOption::ShowKeyConfigDLG( bool bShow )
 	else
 	{
 		if( m_DLGKeyConfig != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyConfig, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyConfig, 0, false );
 	}
 }
 
@@ -2637,9 +2632,8 @@ void CX2StateOption::ShowInputOption( bool bShow )
 	pButtonKeyConfig->SetShowEnable(bShow, bShow);
 }
 
-void CX2StateOption::ShowStaticInput( bool bShow )
+void CX2StateOption::ShowStaticInput( bool /*bShow*/ )
 {
-	CKTDGUIStatic* pStatic_Input = NULL;
 }
 
 void CX2StateOption::InitInputOption()

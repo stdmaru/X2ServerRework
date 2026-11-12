@@ -199,7 +199,6 @@ private:
 	int						m_iNowPageRiding;
 	int						m_iSelectButtonIndex;
 	UidType					m_ViewRidingPetUid;
-	UidType					m_RidingPetUid;
 
 	D3DXVECTOR3				m_vecViewerRidingPetSize;
 	D3DXVECTOR3				m_vecViewerPetSize;

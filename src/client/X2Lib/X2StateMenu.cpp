@@ -1,9 +1,11 @@
 #include "stdafx.h"
+#include "x2/platform/process.h"
 #include "./X2StateMenu.h"
 
 
 CX2StateMenu::CX2StateMenu(void) :
 // 2009.01.09 김태완 : 초기화 코드정리
+m_pDLG2014Confirm( NULL ),
 m_pDLGMenu(NULL),
 m_pDLGMenuWindow(NULL),
 m_pDLGFindUser(NULL),
@@ -19,8 +21,8 @@ m_InviterName(L""),
 m_eSearchUnitConnectionState(CX2Unit::CUS_NONE),
 m_iSearchUnitChannelID(0),
 m_iSearchUnitDungeonID(0),
-m_iSearchUnitRoomUID(0),
 //m_mapHideMouseClickUI;
+m_iSearchUnitRoomUID(0),
 m_fTimeRefreshMenuInfo(0.0f),
 m_CashItemPage(1),
 m_pDLGCashItemUpdate(NULL),
@@ -33,20 +35,19 @@ m_pPicCharMenuPlusInfo(NULL),
 m_pPicCharMenuPlusInfoRed(NULL),
 m_TotalExp(0),
 m_TotalED(0),
-m_TotalAP(0),
 m_TotalLevel(0)
-, m_bShowMainMenuButton(true)
+, m_TotalAP(0)
 , m_fMenuMaxRemainTime( 6.f )
+, m_bShowMainMenuButton(true)
 , m_bShowUI ( true )
 , m_pDLGWarpDestination( NULL )
 , m_iSelectedWarpDest(0)
-, m_SumDelta(0)
-,m_iCurrentVillageWarpIndex(-1)
+,m_SumDelta(0)
 ,m_iSelectedWarpDestIndex(-1)
+,m_iCurrentVillageWarpIndex(-1)
 ,m_bIsEdConsumptionWarp(false)
-,m_fTimeCheckWarpVip(0.f)
 //}}
-,m_pDLG2014Confirm( NULL )
+,m_fTimeCheckWarpVip(0.f)
 {
 	g_pKTDXApp->GetDGManager()->GetCamera().Point( 0,0,-1300, 0,0,0 );
 	g_pKTDXApp->GetDGManager()->SetProjection( g_pKTDXApp->GetDGManager()->GetNear(), g_pKTDXApp->GetDGManager()->GetFar(), false );
@@ -244,10 +245,10 @@ HRESULT CX2StateMenu::OnFrameMove( double fTime, float fElapsedTime )
 
 	//ChatProcess();
 	//m_pCharacterRoom->OnFrameMove( fTime, fElapsedTime );
-    if( m_pCashShop != NULL )
-    {
-	    m_pCashShop->OnFrameMove( fTime, fElapsedTime );
-    }//if
+	if( m_pCashShop != NULL )
+	{
+		m_pCashShop->OnFrameMove( fTime, fElapsedTime );
+	}//if
 
 	if ( g_pMain->GetLVUpEventMgr() != NULL && g_pTFieldGame != NULL)
 		g_pMain->GetLVUpEventMgr()->OnFrameMove( fTime, fElapsedTime );
@@ -255,7 +256,7 @@ HRESULT CX2StateMenu::OnFrameMove( double fTime, float fElapsedTime )
 	//{{ kimhc // 2009-11-02 // 길드 인포머는 던전 플레이 중에도 출력되야 함으로 수정
 	// OnFrameMove 내에서 막는 것으로 변경 함
 	//}} kimhc // 2009-11-02 // 길드 인포머는 던전 플레이 중에도 출력되야 함으로 수정
-		g_pMain->GetInformerManager()->OnFrameMove( fTime, fElapsedTime );
+	g_pMain->GetInformerManager()->OnFrameMove( fTime, fElapsedTime );
 
 // #ifdef NEW_VILLAGE_UI
 // 	if(g_pData->GetUIManager() != NULL )
@@ -581,7 +582,7 @@ bool CX2StateMenu::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 	if ( uMsg == WM_LBUTTONDOWN )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, 0, false );
 		m_pDLGMenuWindow = NULL;
 		m_bShowWindowMenu = false;
 	}
@@ -640,7 +641,7 @@ bool CX2StateMenu::Handler_EGS_SEARCH_UNIT_REQ( const WCHAR* wszNickName )
 }
 
 
-bool CX2StateMenu::Handler_EGS_SEARCH_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_SEARCH_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SEARCH_UNIT_ACK kEvent;
@@ -718,7 +719,7 @@ bool CX2StateMenu::Handler_EGS_GET_CONNECTION_UNIT_INFO_REQ( const WCHAR* wszNic
 }
 
 
-bool CX2StateMenu::Handler_EGS_GET_CONNECTION_UNIT_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_GET_CONNECTION_UNIT_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_CONNECTION_UNIT_INFO_ACK kEvent;
@@ -868,6 +869,8 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 					g_pMain->GetStateAutoChanger().StartStateChange( (int)g_pMain->GetNowStateID(), (int)CX2Main::XS_PVP_LOBBY, targetDetail );
 
 				} break;
+			default:
+				break;
 			}
 
 			return true;
@@ -890,6 +893,8 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 					g_pMain->GetStateAutoChanger().StartStateChange( (int)g_pMain->GetNowStateID(), (int)CX2Main::XS_VILLAGE_MAP, targetDetail );
 
 				} break;
+			default:
+				break;
 			}
 
 			return true;
@@ -944,6 +949,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 				return ToggleSystemMenu(true);
 			}
 		}
+		break;
 
 
 	case SMUCM_VIEW_STUDENT_CANDIDATE_LIST:
@@ -1042,6 +1048,8 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 					CX2StatePVPRoom* pStatePVPRoom = (CX2StatePVPRoom*)g_pMain->GetNowState();
 					return pStatePVPRoom->EnterTutorial();
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1139,7 +1147,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_FIND_USER_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFindUser, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFindUser, 0, false );
 			m_pDLGFindUser = NULL;
 
 			//{{ 2007. 11. 13  최육사  안쓰는 통계정리
@@ -1151,7 +1159,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_USER_INFO_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, 0, false );
 			m_pDLGUserInfo = NULL;
 
 			return true;
@@ -1166,7 +1174,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			targetDetail.m_iDungeonID = m_iSearchUnitDungeonID;
 			targetDetail.m_iRoomUID = m_iSearchUnitRoomUID;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, 0, false );
 			m_pDLGUserInfo = NULL;
 
 			return true;
@@ -1182,7 +1190,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_INVITE_NOT_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteNot, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteNot, 0, false );
 			m_pDLGInviteNot = NULL;
 		}
 		break;
@@ -1335,7 +1343,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 	case SMUCM_PRESENT_ARRIVAL_CLOSE:
 		{
 			if ( m_pDLGPresentArrival != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresentArrival, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresentArrival, 0, false );
 
 			m_pDLGPresentArrival = NULL;
 		}
@@ -1387,16 +1395,16 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_LEAVE_DUNGEON_LOUNGE_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
-			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_DUNGEON_LOUNGE, NULL, false );
+			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_DUNGEON_LOUNGE, 0, false );
 
 			return true;
 		} break;
 
 	case SMUCM_LEAVE_DUNGEON_LOUNGE_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
 
 			return true;
@@ -1405,17 +1413,17 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_LEAVE_PARTY_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
 
-			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_PARTY, NULL, false );
+			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_PARTY, 0, false );
 
 			return true;
 		} break;
 
 	case SMUCM_LEAVE_PARTY_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
 
 			return true;
@@ -1564,13 +1572,13 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		} break;
 	case SMUCM_RAID_FIELD_EXIT_CANCEL:
 		{
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		} break;
 	case SMUCM_SHOW_ADVERTISEMENT:
 		{
@@ -1670,7 +1678,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			// 여기 워프 처리 핸들러 넣자
 			Handler_EGS_WARP_BY_BUTTON_REQ( m_iSelectedWarpDest );
@@ -1688,14 +1696,14 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 case SMUCM_FACEBOOK_MOVE:
 		{
 			wstring wstrURL = L"http://www.facebook.com/ElswordOnlineNA";
-			ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+			x2::platform::OpenUrl( wstrURL );
 			return true;
 		}
 		break;
 	case SMUCM_STEAM_COMMUNITY_MOVE:
 		{
 			wstring wstrURL = L"https://www.facebook.com/Elsword/app_112813808737465";
-			ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+			x2::platform::OpenUrl( wstrURL );
 			return true;
 		}
 		break;
@@ -1730,7 +1738,7 @@ case SMUCM_FACEBOOK_MOVE:
 	case SMUCM_COMPLETE_NEW_YEAR_MISSION_OK:
 		{
 			if ( m_pDLG2014Confirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, 0, false );
 
 			Handler_EGS_2014_EVENT_MISSION_COMPLETE_REQ();
 
@@ -1740,7 +1748,7 @@ case SMUCM_FACEBOOK_MOVE:
 	case SMUCM_COMPLETE_NEW_YEAR_MISSION_CANCEL:
 		{
 			if ( m_pDLG2014Confirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, 0, false );
 
 			m_pDLG2014Confirm		= NULL;
 			return true;
@@ -1763,7 +1771,7 @@ case SMUCM_FACEBOOK_MOVE:
 			std::wstring wstrURL = L"http://apitest.elswordonline.com/aeria/auth/gamesupport?SID=";
 #endif // defined (_SERVICE_) && !defined (_OPEN_TEST_)
 			wstrURL += g_pInstanceData->GetUserSessionID();
-			ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+			x2::platform::OpenUrl( wstrURL );
 			return true;
 		} break;
 
@@ -1896,7 +1904,7 @@ bool CX2StateMenu::Handler_EGS_BILL_PRODUCT_INFO_REQ()
 	return true;
 }
 
-bool CX2StateMenu::Handler_EGS_BILL_PRODUCT_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_BILL_PRODUCT_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BILL_PRODUCT_INFO_ACK kEvent;
@@ -1950,7 +1958,7 @@ bool CX2StateMenu::Handler_EGS_CASH_PRODUCT_INFO_CHANGED_NOT()
 }
 
 //{{ kimhc	// 실시간 엘소드 중 실시간 아이템 획득 관련 임시 인벤토리
-bool CX2StateMenu::Handler_EGS_CLEAR_TEMP_INVENTORY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_CLEAR_TEMP_INVENTORY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	g_pData->GetUIManager()->DestoryUITempInventory();
 
@@ -2184,7 +2192,6 @@ void CX2StateMenu::UpdateUserInfoUI( KEGS_SEARCH_UNIT_ACK &kEvent )
 	}
 
 	// 같이하기 버튼
-	CKTDGUIButton* pButton_PlayTogether = (CKTDGUIButton*) m_pDLGUserInfo->GetControl( L"Button_Play_Together" );
 
 
 	// fix!!!!! 접속 상황
@@ -2358,10 +2365,9 @@ bool CX2StateMenu::InitUI()
 				if( CKTDGUIControl::UCT_BUTTON != pControl->GetType() )
 					continue;
 
-				CKTDGUIButton* pButton = (CKTDGUIButton*) pControl;
 
 
-					pControl->SetEnable(true);
+				pControl->SetEnable(true);
 			}
 
 		} break;
@@ -2414,7 +2420,7 @@ bool CX2StateMenu::InitETC()
 }
 
 
-void CX2StateMenu::PopUpMenuClose( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+void CX2StateMenu::PopUpMenuClose( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	if  ( ( uMsg == CKTDXApp::KM_UI_CONTROL_EVENT ||
 		uMsg == CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT ||
@@ -2426,7 +2432,7 @@ void CX2StateMenu::PopUpMenuClose( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 			CKTDGUIDialogType pDialog = pControl->GetDialog();
 			if ( pDialog != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, 0, false );
 				m_pDLGMenuWindow = NULL;
 
 				m_bShowWindowMenu = false;
@@ -2684,6 +2690,8 @@ bool CX2StateMenu::ShortCutKeyProcess()
 			if ( CameraZoomInAndOutKeyProcess() )
 				return true;
 		} break;
+	default:
+		break;
 	}
 	// 공용키처리
 	return g_pMain->KeyProcess();
@@ -2700,7 +2708,6 @@ void CX2StateMenu::RefreshMenuInfo()
 		UpdateExpGageBar();
 		CKTDGUIStatic* pStatic;
 		pStatic = (CKTDGUIStatic*)m_pDLGMenu->GetControl( L"StaticMenu_Button_Tired_Gage" );
-		float gauagePercentage = (g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSpirit / (float)g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSpiritMax );
 
 		if ( pStatic != NULL && pStatic->GetPicture(0) != NULL )
 		{
@@ -3160,7 +3167,7 @@ void CX2StateMenu::UpdateGuideDescPremiumBuffUI()
 //{{ kimhc // 2011-08-08 // 투니 랜드 채널링 이벤트
 //}} kimhc // 2011-08-08 // 투니 랜드 채널링 이벤트
 
-bool CX2StateMenu::Handler_EGS_ADD_ON_STAT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_ADD_ON_STAT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADD_ON_STAT_ACK kEvent;
@@ -3172,7 +3179,7 @@ bool CX2StateMenu::Handler_EGS_ADD_ON_STAT_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 		return false;
 }
 
-bool CX2StateMenu::Handler_EGS_ADD_ON_STAT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_ADD_ON_STAT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADD_ON_STAT_NOT kEvent;
@@ -3186,7 +3193,7 @@ bool CX2StateMenu::Handler_EGS_ADD_ON_STAT_NOT( HWND hWnd, UINT uMsg, WPARAM wPa
 
 //{{ 2010. 12. 23 김현철	장비 변경 패킷 타입
 
-bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT kEvent;
@@ -3205,7 +3212,7 @@ bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT
 	pUser->SetGameStat( kEvent.m_kGameStat );
 	pUnitData->m_GameStat.SetKStat( kEvent.m_kGameStat );
 
-	pUser->SetMaxHp( static_cast< const float >( kEvent.m_kGameStat.m_iBaseHP ) );
+	pUser->SetMaxHp( static_cast<float>( kEvent.m_kGameStat.m_iBaseHP ) );
 	if ( pUser->GetNowHp() > pUser->GetMaxHp() )
 	{
 		pUser->SetNowHp( pUser->GetMaxHp() );
@@ -3305,8 +3312,6 @@ bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT
 
 	default:
 		{
-			bool bTest = false;
-			bTest = true;
 		}
 		break;
 
@@ -3327,7 +3332,7 @@ bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT
 
 
 
-bool CX2StateMenu::Hander_EGS_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Hander_EGS_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT kEvent;
@@ -3418,7 +3423,7 @@ bool CX2StateMenu::Hander_EGS_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT( HWND hWnd, UINT u
 	return true;
 }
 
-/*virtual*/ bool CX2StateMenu::Handler_EGS_CHAR_LEVEL_UP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateMenu::Handler_EGS_CHAR_LEVEL_UP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAR_LEVEL_UP_NOT kEvent;
@@ -3519,7 +3524,7 @@ bool CX2StateMenu::Hander_EGS_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT( HWND hWnd, UINT u
 	return true;
 }
 
-/*virtual*/ bool CX2StateMenu::Handler_EGS_DECREASE_ENDURANCE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateMenu::Handler_EGS_DECREASE_ENDURANCE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DECREASE_ENDURANCE_NOT kEvent;
@@ -3863,6 +3868,8 @@ void CX2StateMenu::UpdateMenuPosistion()
 			KOGGamePerformanceCheck::GetInstance()->End();
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 		} break;
+	default:
+		break;
 	}
 
 	return true;
@@ -3913,10 +3920,9 @@ void CX2StateMenu::UpdateGuideDescBuffTemplet( CX2PremiumBuffIconPtr pPremiumBuf
 
 		CX2PremiumBuffTempletPtr			ptrTemplet			= g_pData->GetPremiumBuffManager()->GetPremiumBuffTempletPtr( ePremiumBuffID );	//버프 템플릿
 		UINT								uiBuffName			= ptrTemplet->GetStringID();													//버프 이름 String ID
-		int									BuffPeriodSecond	= static_cast<int>( ptrTemplet->GetBuffPeriodSecond() / 60 );					//버프 유지 시간
 		int									iBuffTimeAllSec		= ConvertTimeForBuffTemplet( wstrEndTime );										//남은 버프 유지 시간 ( 실제 초 )
-		int									iBuffTimeMin		= ConvertTimeForBuffTemplet( wstrEndTime ) / 60;								//남은 버프 유지 시간 ( 분 )
-		int									iBuffTimeSec		= ConvertTimeForBuffTemplet( wstrEndTime ) % 60;								//남은 버프 유지 시간 ( 초 )
+		[[maybe_unused]] int									iBuffTimeMin		= ConvertTimeForBuffTemplet( wstrEndTime ) / 60;								//남은 버프 유지 시간 ( 분 )
+		[[maybe_unused]] int									iBuffTimeSec		= ConvertTimeForBuffTemplet( wstrEndTime ) % 60;								//남은 버프 유지 시간 ( 초 )
 		bool								bShowEndTime		= true;																			//남은 버프 시간 표시 여부
 
 		wstreamDesc << GET_STRING( uiBuffName ) << '\n';		/// 버프 이름
@@ -4172,7 +4178,7 @@ bool CX2StateMenu::Handler_EGS_GET_ADVERTISEMENT_EVENT_REQ()
 	return true;
 }
 
-bool CX2StateMenu::Handler_EGS_GET_ADVERTISEMENT_EVENT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_GET_ADVERTISEMENT_EVENT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_ADVERTISEMENT_EVENT_ACK kEvent;
@@ -4555,7 +4561,7 @@ bool CX2StateMenu::Handler_EGS_WARP_BY_BUTTON_REQ( int iWarpDest_ )
 	return true;
 }
 
-bool CX2StateMenu::Handler_EGS_WARP_BY_BUTTON_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_WARP_BY_BUTTON_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4602,7 +4608,7 @@ bool CX2StateMenu::Handler_EGS_WARP_BY_BUTTON_ACK( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 
-bool CX2StateMenu::Handler_EGS_UPDATE_WARP_VIP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_UPDATE_WARP_VIP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4680,7 +4686,7 @@ bool CX2StateMenu::Handler_EGS_2013_EVENT_MISSION_COMPLETE_REQ( IN bool bLevelUp
 
 	return true;
 }
-bool CX2StateMenu::Handler_EGS_2013_EVENT_MISSION_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_2013_EVENT_MISSION_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4726,7 +4732,7 @@ bool CX2StateMenu::Handler_EGS_2014_EVENT_MISSION_COMPLETE_REQ()
 
 	return true;
 }
-bool CX2StateMenu::Handler_EGS_2014_EVENT_MISSION_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateMenu::Handler_EGS_2014_EVENT_MISSION_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;

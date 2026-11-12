@@ -20,4 +20,10 @@ bool IsColorTerminal(std::FILE* stream);
 // are read again from the UTF-16 command line; elsewhere they are argv as it is.
 std::vector<std::string> Utf8Arguments(int argc, char* argv[]);
 
+// The client's debug console (X2_DEV_TOOLS): a GUI program on Windows has none, so this opens one and sends
+// stdout/stderr to it (AllocConsole + CONOUT$); CloseDebugConsole frees it. Elsewhere the program keeps the terminal
+// it was started from, and both do nothing.
+void OpenDebugConsole();
+void CloseDebugConsole();
+
 } // namespace x2::platform

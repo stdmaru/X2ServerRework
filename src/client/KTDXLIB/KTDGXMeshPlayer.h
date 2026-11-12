@@ -14,7 +14,7 @@
 
 struct  CKTDGXMeshPlayer_CXMeshInstance_TAG {};
 typedef KHandleType<int,CKTDGXMeshPlayer_CXMeshInstance_TAG>    CKTDGXMeshPlayer_CXMeshInstanceHandle;
-#define INVALID_MESH_INSTANCE_HANDLE (CKTDGXMeshPlayer_CXMeshInstanceHandle::invalid_handle())
+#define INVALID_MESH_INSTANCE_HANDLE (CKTDGXMeshPlayer_CXMeshInstanceHandle::invalid_handle{})
 
 
 #define MESHPLAYER_TOKEN_LINE_NUMBER
@@ -366,7 +366,7 @@ public:
 			virtual bool FadeAllowed(){ return true; }
 
 			CMinMax<D3DXVECTOR3>	GetPosition()									{ return m_Position; }
-			void					SetPosition(CMinMax<D3DXVECTOR3> &data)	{ m_Position = data; }
+			void					SetPosition(const CMinMax<D3DXVECTOR3> &data)	{ m_Position = data; }
 
 			virtual bool ProcessTokenStream(std::vector<CXMeshPlayerToken>::iterator &TokenIter,
 				std::vector<CXMeshPlayerToken>::iterator &EndIter);

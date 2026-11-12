@@ -5,7 +5,6 @@
 
 namespace _CONST_RAID_MANAGER_
 {
-	const float UPDATE_CYCLE_TIME_CONTRIBUTION_RANKING = 10.f;  // 기여도 순위 갱신 주기
 }
 
 CX2BossRaidManager* CX2BossRaidManager::m_pManager = NULL;
@@ -31,10 +30,10 @@ CX2BossRaidManager::CX2BossRaidManager():
 m_bIsOngoingRaid( false ),
 m_eCurrentRaidMapID( SEnum::VMI_INVALID ),
 m_eBossRaidCreatorMapID( SEnum::VMI_INVALID ),
-m_fRaidFieldClearLimitTime ( 0.f ),
 m_bShowFieldClearTime(false),
+m_bSendIntrudeRestrictionNot(false),
 //m_fBanLeftTimeFromRaidField(-1.f),
-m_bSendIntrudeRestrictionNot(false)
+m_fRaidFieldClearLimitTime ( 0.f )
 //m_bSendNpcLoadReq(false)
 {
 	m_pFontForTime = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( XUF_HEADLINE_30_NORMAL );
@@ -58,7 +57,7 @@ void CX2BossRaidManager::OnFrameMove( double fTime, float fElapsedTime )
 		break;
 	}
 }
-void CX2BossRaidManager::OnFrameMove_BattleField( double fTime, float fElapsedTime )
+void CX2BossRaidManager::OnFrameMove_BattleField( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	CX2BattleFieldManager BattleFieldManager = g_pData->GetBattleFieldManager();
 	// 활성화 중인 배틀필드에서만 동작
@@ -186,7 +185,7 @@ bool CX2BossRaidManager::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 	}
 	return false;
 }
-bool CX2BossRaidManager::Handler_EGS_BATTLE_FIELD_BOSS_GATE_OPEN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_BATTLE_FIELD_BOSS_GATE_OPEN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_BATTLE_FIELD_BOSS_GATE_OPEN_NOT kEvent;
@@ -211,7 +210,7 @@ bool CX2BossRaidManager::Handler_EGS_BATTLE_FIELD_BOSS_GATE_OPEN_NOT( HWND hWnd,
 
 	return true;
 }
-bool CX2BossRaidManager::Handler_EGS_BATTLE_FIELD_BOSS_GATE_CLOSE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_BATTLE_FIELD_BOSS_GATE_CLOSE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_BATTLE_FIELD_BOSS_GATE_CLOSE_NOT kEvent;
@@ -231,7 +230,7 @@ bool CX2BossRaidManager::Handler_EGS_BATTLE_FIELD_BOSS_GATE_CLOSE_NOT( HWND hWnd
 /** @function : Handler_EGS_BOSS_FIELD_CLOSE_PROCESS_NOT
 	@brief : 보스몬스터가 죽거나 / 시간이 종료 되었을 때 받는 패킷
 */
-bool CX2BossRaidManager::Handler_EGS_BOSS_FIELD_CLOSE_PROCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_BOSS_FIELD_CLOSE_PROCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
  	if( NULL != g_pX2Game )
  	{
@@ -252,7 +251,7 @@ bool CX2BossRaidManager::Handler_EGS_BOSS_FIELD_CLOSE_PROCESS_NOT( HWND hWnd, UI
  	}
 	return true;
 }
-bool CX2BossRaidManager::Handler_EGS_BOSS_FIELD_RETURN_PROCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_BOSS_FIELD_RETURN_PROCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( CX2Main::XS_BATTLE_FIELD == g_pMain->GetNowStateID() )
 		static_cast<CX2StateBattleField*>(g_pMain->GetNowState())->MoveToBeforePlaceAtRaidField();
@@ -270,7 +269,7 @@ void CX2BossRaidManager::Handler_EGS_BOSS_FIELD_INTRUDE_RESTRICTION_REQ()
 		}
 	}
 }
-bool CX2BossRaidManager::Handler_EGS_BOSS_FIELD_INTRUDE_RESTRICTION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_BOSS_FIELD_INTRUDE_RESTRICTION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_BOSS_FIELD_INTRUDE_RESTRICTION_ACK kEvent;
@@ -449,7 +448,7 @@ void CX2BossRaidManager::Handler_EGS_ADMIN_BOSS_FIELD_GATE_OPEN_REQ() // 보스 
 		g_pChatBox->AddChatLog( L"필드에서만 사용 할 수 있습니다.", KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
 	}
 }
-bool CX2BossRaidManager::Handler_EGS_ADMIN_BOSS_FIELD_GATE_OPEN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_ADMIN_BOSS_FIELD_GATE_OPEN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ADMIN_BOSS_FIELD_GATE_OPEN_ACK kEvent;
@@ -485,7 +484,7 @@ void CX2BossRaidManager::Handler_EGS_ADMIN_GET_TOTAL_DANGEROUS_VALUE_REQ()
 	}
 }
 // 배틀 필드의 TotalDangerousValue를 알아내기
-bool CX2BossRaidManager::Handler_EGS_ADMIN_GET_TOTAL_DANGEROUS_VALUE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_ADMIN_GET_TOTAL_DANGEROUS_VALUE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ADMIN_GET_TOTAL_DANGEROUS_VALUE_ACK kEvent;
@@ -495,7 +494,6 @@ bool CX2BossRaidManager::Handler_EGS_ADMIN_GET_TOTAL_DANGEROUS_VALUE_ACK( HWND h
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
-			if( kEvent.m_byteTotalDangerousValue >= 0 )
 			{
 				g_pChatBox->AddChatLog( GET_REPLACED_STRING( ( STR_ID_19208, "i", kEvent.m_byteTotalDangerousValue ) ),
 					KEGS_CHAT_REQ::CPT_TOTAL, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
@@ -526,7 +524,7 @@ void CX2BossRaidManager::Handler_EGS_ADMIN_SET_TOTAL_DANGEROUS_VALUE_REQ( int by
 		g_pChatBox->AddChatLog( L"필드에서만 사용 할 수 있습니다.", KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
 	}
 }
-bool CX2BossRaidManager::Handler_EGS_ADMIN_SET_TOTAL_DANGEROUS_VALUE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BossRaidManager::Handler_EGS_ADMIN_SET_TOTAL_DANGEROUS_VALUE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ADMIN_SET_TOTAL_DANGEROUS_VALUE_ACK kEvent;

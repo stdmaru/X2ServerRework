@@ -404,6 +404,8 @@ wstring CX2GUUser::GetCutInFileName(bool IsRight)
 	case CX2Unit::UC_ARA_YAMA_RAJA:
 		wstrCutIn += _CONST_CUTIN_::s_SkillCutInSoma[texID];
 		break;
+	default:
+		break;
 	}
 	return wstrCutIn;
 }
@@ -518,66 +520,56 @@ void CX2GUUser::Debug_RenderHelp( int ix_, int iy_ )
 CX2GUUser::CX2GUUser( int unitIndex, int teamNum,
 	lua_State*   pScriptLuaState,
 	int frameBufferNum, CX2Unit* pUnit )
-: CX2GameUnit( unitIndex, teamNum,
+:
+  CX2GameUnit( unitIndex, teamNum,
 	NULL
 	)
+, m_DeadStageIndex( 0 )
+, m_DeadSubStageIndex( 0 )
 , m_hSeqWeaponCommon1( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_hSeqWeaponCommon2( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_hSeqWeaponCommon3( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_hSeqEnchantedWeaponCommon4( INVALID_PARTICLE_SEQUENCE_HANDLE )
-, m_DeadStageIndex( 0 )
-, m_DeadSubStageIndex( 0 )
 , m_bRotateBone( false )
 , m_fRotateBoneDegree( 0.f )
 , m_eSpecialAttackKeyPressed( SAKP_NONE )
 , m_bSpecialAttackEventProcessedAtThisFrame( false )
 , m_iSkillCutInSetIndex( 0 )
+, m_iSkillCutInSetSubIndex( 0 )
 , m_bHaveSacrificeOfHero( false )
 , m_fPassiveCriticalRate( 0.f )
 , m_fShadowOfDisasterRate( 0.f )
-//#ifdef TRANSFORMER_TEST
-//, m_pTransformer( NULL )
-//#endif TRANSFORMER_TEST
-	//{{ �ӱԼ� �ӱԼ� ���� ��ŸƮ ǥ�� ������ �� , ���� ���� ���� �Ŀ� ������ ��� ���ϵ��� ����
+, m_bIsLimitCrusherCharge( false )
 , m_bStarted( false )
-	//}}
-//{{ kimhc // 2010.4.5 // ��д��� �۾�(��Ʈ������ȿ��)
 , m_fManaRecoveryDurationTime( 0.0f )
 , m_fManaRecoveryVal( 0.0f )
 , m_fIntervalTimeForCureDebuff( 0.0f )
 , m_pBoneShieldData( NULL )
-//}} kimhc // 2010.4.5 // ��д��� �۾�(��Ʈ������ȿ��)
-
-//{{ kimhc // 2010.7.12 // �������� ������ HOLD �� �� �ֵ��� ��
+, m_pTextureRank (NULL)
 , m_iHoldStateID( 0 )
-//}} kimhc // 2010.7.12 // �������� ������ HOLD �� �� �ֵ��� ��
-
-//{{ kimhc // 2010.11.3 // ���� - ��ȭ�� �г�
-, m_bCanChangeHyperModeInHyperModeState( false )
-//}} kimhc // 2010.11.3 // ���� - ��ȭ�� �г�
 , m_bDownForce( false )
-, m_fAddAnimSpeedFactor( 0.0f )
-, m_iGrapStateID( USI_DAMAGE_AIR_FLY_FRONT )
-//{{ kimhc // 2011-08-08 // ���� ���� ä�θ� �̺�Ʈ
-//}} kimhc // 2011-08-08 // ���� ���� ä�θ� �̺�Ʈ
 , m_fCannonBallDamageUp( 0.f )
 , m_fForceDownRelDamageRateBase ( 0.f )
-, m_iDashCount ( 0 )
-
-, m_ElapsedTimeNotBusyState( 2.0f )
-
 , m_bLearnLightningStep( false )
-, m_OldStateId( USI_BASE )
 , m_iAdvancedTeleportationLv( 0 )
-, m_delegatePhysicProcessPortalByGameType( DelegatePhysicProcessPortalByGameType() )
+, m_ComboAndSkillChainSystem()
+, m_fAddAccuaracyPercent(0.f)
+, m_fAddMagicAttackCriticalRate(0.f)
+, m_fAddMagicAttackCriticalDamageRate(0.f)
+, m_bSetCustomRenderParam( false )
+, m_bCanChangeHyperModeInHyperModeState( false )
+, m_iDashCount ( 0 )
 , m_fCurrentFinalDamage( 0 )
+, m_iGrapStateID( USI_DAMAGE_AIR_FLY_FRONT )
+, m_fAddAnimSpeedFactor( 0.0f )
+, m_OldStateId( USI_BASE )
+, m_ElapsedTimeNotBusyState( 2.0f )
+, m_delegatePhysicProcessPortalByGameType( DelegatePhysicProcessPortalByGameType() )
 , m_hEnterCashShop(INVALID_PARTICLE_SEQUENCE_HANDLE)
 , m_bHasHyperModeItem(false)
-, m_pTextureRank (NULL)
 , m_bEnterCashShop( false )
 , m_bCanAvoidance( false)
 , m_bChangeGroggyState( false )		/// ������ ���� ���� �׷α� ������Ʈ ��ȯ ����
-, m_ComboAndSkillChainSystem()
 , m_bRidingOn( false )
 , m_wstrRidingMotionName( L"" )
 , m_ElapsedTimeRidingWaitHabit( 5.f )
@@ -586,28 +578,19 @@ CX2GUUser::CX2GUUser( int unitIndex, int teamNum,
 , m_iAirDashCount( 0 )
 , m_iDoubleJumpCount( 0 )
 , m_RelationshipTargetUID( 0 )
-, m_fAddAccuaracyPercent(0.f)
-, m_fAddMagicAttackCriticalRate(0.f)
-, m_fAddMagicAttackCriticalDamageRate(0.f)
-, m_bSetCustomRenderParam( false )
 , m_uiNowStateSkillLevel( 0 )
 , m_fShowSkillCutInTime(-1.f)
 , m_bChangeWorldColor(false)
-, m_iSkillCutInSetSubIndex( 0 )
-, m_bIsLimitCrusherCharge( false )
-, m_bRightAtThisState( false )
-, m_pHairXSkinMesh(NULL)
-, fPreWorldNear(-1.f)
+, m_fGetFinalDamageValue( 0.f )
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 , m_dwLastRecvFrameMoveCount( 0 )
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
+, m_pHairXSkinMesh(NULL)
+, m_bRightAtThisState( false )
+, fPreWorldNear(-1.f)
 , m_fSlotChangeLeftCoolTime ( -1.f )
-
 , m_bDoubleAttack( false )
-
 , m_bIsPlayAvatarEmotionSoundWithoutEmotion ( false )
-
-, m_fGetFinalDamageValue( 0.f )
 {
 
     m_bFutureCanPassUnit = false;
@@ -1716,6 +1699,8 @@ void	CX2GUUser::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_, CX2Un
 	case CX2Unit::UT_ADD:
 		CX2GUAdd::AppendDeviceToDeviceList( listInOut_ );
 		break;
+	default:
+		break;
 	}
 }
 
@@ -1972,8 +1957,8 @@ void CX2GUUser::InitPosition( bool bUseTeamPos, int startPosIndex )
     DWORD   dwFrameMoveCount = 0;
     if ( m_ReceiveSyncDataList.empty() == false )
         dwFrameMoveCount = m_ReceiveSyncDataList.back().dwFrameMoveCount;
-    else
-        dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
+	else
+		dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 	while( m_FrameBufferNum > (int)m_ReceiveSyncDataList.size() )
 	{
@@ -2177,8 +2162,8 @@ void CX2GUUser::InitPosByBattleFieldPosition()
                 DWORD   dwFrameMoveCount = 0;
                 if ( m_ReceiveSyncDataList.empty() == false )
                     dwFrameMoveCount = m_ReceiveSyncDataList.back().dwFrameMoveCount;
-                else
-                    dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
+				else
+					dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 	            while( m_FrameBufferNum > (int)m_ReceiveSyncDataList.size() )
 	            {
@@ -2888,7 +2873,7 @@ void CX2GUUser::AddExtraDamageImmuneRateFromPassiveSkillToImmuneData()
 	@param : CX2EnchantItem::ENCHANT_TYPE eType (��ġ�� �˰����� ��þƮ Ÿ��)
 	@return : const float (�ش� ��þƮ Ÿ���� ��ġ ��)
 */
-const float CX2GUUser::GetEnchantStatFromPassiveSkillByEnchantType( int iEnchantType )
+float CX2GUUser::GetEnchantStatFromPassiveSkillByEnchantType( int iEnchantType )
 {
 	switch ( static_cast<CX2EnchantItem::ENCHANT_TYPE>( iEnchantType ) )
 	{
@@ -3011,6 +2996,8 @@ void	CX2GUUser::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_, CX
 			break;
 		case CX2Unit::UT_ADD:
 			CX2GUAdd::AppendComponentToDeviceList( listInOut_ );
+			break;
+		default:
 			break;
 		}
 	}
@@ -3362,6 +3349,8 @@ void	CX2GUUser::AppendEffectToDeviceList( CKTDXDeviceDataList& listInOut_, CX2Un
 		case CX2Unit::UT_ADD:
 			CX2GUAdd::AppendEffectToDeviceList( listInOut_, eDamageType );
 			break;
+		default:
+			break;
 		}
 
 	}
@@ -3694,6 +3683,7 @@ void CX2GUUser::InitMotion()
 		{
 		case 2:
 			vecMotion.push_back( GetUnit()->GetUnitTemplet()->m_GameMotion2 );
+			[[fallthrough]];
 		case 1:
 			vecMotion.push_back( GetUnit()->GetUnitTemplet()->m_GameMotion1 );
 			break;
@@ -3861,6 +3851,8 @@ void CX2GUUser::InitEqip()
 
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -4034,13 +4026,13 @@ void CX2GUUser::InitState()
 	for( iter = m_StateList.begin(); iter != m_StateList.end(); iter++ )
 	{
 		UserUnitStateData* pData = &(iter->second);
-		if( pData->StateInit != NULL )
+		if( pData->StateInit != 0 )
 			pData->StateInit();
 	}
 }
 
 
-void CX2GUUser::ProcessAcceleraterBuff( CX2SkillTree::SKILL_ID eSkillID, bool bHyperMode )
+void CX2GUUser::ProcessAcceleraterBuff( CX2SkillTree::SKILL_ID eSkillID, bool /*bHyperMode*/ )
 {
 	if( NULL == GetUnit() )
 		return;
@@ -4449,7 +4441,7 @@ void CX2GUUser::SetEquippedSkillLevelCommon( const CX2Unit::UnitData& kUnitData_
 
 
 
-		const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
+		[[maybe_unused]] const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
 
 		UserUnitStateData& normalStateData = m_StateList[ normalStateID ];
 		normalStateData.m_SPLevel = pSkillSlotData->m_iSkillLevel + pSkillSlotData->m_iSkillLevelPlus;
@@ -4655,8 +4647,12 @@ bool CX2GUUser::CheckSkillUseCondition( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION
 				{
 					return false;
 				} break;
+			default:
+				break;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return true;
@@ -4709,7 +4705,7 @@ void CX2GUUser::DoStateEndStartFuture()
 		bool bTableOpen = m_LuaManager.BeginTableByReference( m_FutureStateData.stateID );
 		{
 			m_FrameDataFuture.syncData.stateChangeNum = m_FrameDataFuture.unitCondition.stateChangeNum ;
-			if( m_FutureStateData.StateEndFuture != NULL )
+			if( m_FutureStateData.StateEndFuture != 0 )
 				m_FutureStateData.StateEndFuture();
 			else
 				CommonStateEndFuture();
@@ -4734,7 +4730,7 @@ void CX2GUUser::DoStateEndStartFuture()
 
 		bTableOpen = m_LuaManager.BeginTableByReference( m_FutureStateData.stateID );
 		{
-			if( m_FutureStateData.StateStartFuture != NULL )
+			if( m_FutureStateData.StateStartFuture != 0 )
 				m_FutureStateData.StateStartFuture();
 			else
 				CommonStateStartFuture();
@@ -4756,7 +4752,7 @@ void CX2GUUser::DoStateEndStart()
 
 		bool bTableOpen = m_LuaManager.BeginTableByReference( m_NowStateData.stateID );
 		{
-			if( m_NowStateData.StateEnd != NULL )
+			if( m_NowStateData.StateEnd != 0 )
 				m_NowStateData.StateEnd();
 			else
 				CommonStateEnd();
@@ -4777,7 +4773,7 @@ void CX2GUUser::DoStateEndStart()
 
 		bTableOpen = m_LuaManager.BeginTableByReference( m_NowStateData.stateID );
 		{
-			if( m_NowStateData.StateStart != NULL )
+			if( m_NowStateData.StateStart != 0 )
 				m_NowStateData.StateStart();
 			else
 				CommonStateStart();
@@ -4796,12 +4792,12 @@ void CX2GUUser::DoFrameMoveFuture()
 
 	bool bTableOpen = m_LuaManager.BeginTableByReference( m_FutureStateData.stateID );
 	{
-		if( m_FutureStateData.OnFrameMoveFuture != NULL )
+		if( m_FutureStateData.OnFrameMoveFuture != 0 )
 			m_FutureStateData.OnFrameMoveFuture();
 		else
 			CommonFrameMoveFuture();
 
-		if( m_FutureStateData.OnEventProcess != NULL )
+		if( m_FutureStateData.OnEventProcess != 0 )
 			m_FutureStateData.OnEventProcess();
 	}
 
@@ -4817,7 +4813,7 @@ void CX2GUUser::DoFrameMove()
 
 	bool bTableOpen = m_LuaManager.BeginTableByReference( m_NowStateData.stateID );
 	{
-		if( m_NowStateData.OnFrameMove != NULL )
+		if( m_NowStateData.OnFrameMove != 0 )
 			m_NowStateData.OnFrameMove();
 		else
 			CommonFrameMove();
@@ -4882,20 +4878,8 @@ HRESULT CX2GUUser::OnFrameMove( double fTime, float fElapsedTime )
 		{
 			if( m_bConnect == false )
 			{
-				//�� ������ P2P ���ӿ� �����ߴ�
-				KEGS_GAME_P2P_CONNECT_RESULT_REQ kPacket;
-				kPacket.m_UnitUID			= m_UnitUID;
-				kPacket.m_bConnectSuccess	= false;
-				//g_pData->GetServerProtocol()->SendPacket( EGS_GAME_P2P_CONNECT_RESULT_REQ, kPacket );
+				// the P2P connection failed
 				ErrorLogMsg( XEM_ERROR87, L"P2PFail" );
-			}
-			else
-			{
-				//�� ������ P2P ���ӿ� �����ߴ�
-				KEGS_GAME_P2P_CONNECT_RESULT_REQ kPacket;
-				kPacket.m_UnitUID			= m_UnitUID;
-				kPacket.m_bConnectSuccess	= true;
-				//g_pData->GetServerProtocol()->SendPacket( EGS_GAME_P2P_CONNECT_RESULT_REQ, kPacket );
 			}
 
 			m_bConnectSend = true;
@@ -5197,7 +5181,7 @@ HRESULT CX2GUUser::OnCameraMove()
 			if( true == m_LuaManager.BeginTableByReference( m_NowStateData.stateID ) )
 			{
 				// �ٸ� ī�޶� ���갡 �ִ� ��� �ڽ��� ���� �Ǵ� �Ÿ��� �����Ÿ� ���� �ִ� ������ �ƴϸ� ī�޶� �ߵ� ����
-				if( m_NowStateData.OnCameraMove != NULL )
+				if( m_NowStateData.OnCameraMove != 0 )
 					//&& ( IsMyUnit() || GetDistance3Sq( g_pX2Game->GetMyUnit()->GetPos(), GetPos() ) ) )
 					m_NowStateData.OnCameraMove();
 				else
@@ -5347,6 +5331,8 @@ RENDER_HINT CX2GUUser::CommonRender_Prepare()
 
 		case CKTDGXRenderer::RT_CARTOON:
 			pRenderParam->renderType = CKTDGXRenderer::RT_ADD_CARTOON;
+			break;
+		default:
 			break;
 		}
 	}
@@ -5523,24 +5509,6 @@ void CX2GUUser::PreRenderForce()
 			pCX2Eqip->OnFrameRender();
 		}
 	}//if
-
-	/* //{{ seojt on 2008-10-18
-	// �Ʒ��� ���� �����Ͽ�����, D3D ������ memory leak�� �����Ǿ� �ϴ� ��ó��
-	// ������� �ǵ��� �ξ���. background thread loading �۾��� ������
-	// �ٽ� ������ ����. - jintaeks on 2008-10-18, 12:03
-	m_pXSkinAnim->PreLoad();
-
-	for( int i = 0; i < (int)m_ViewEqipList.size(); i++ )
-	{
-	CX2Eqip* pCX2Eqip = m_ViewEqipList[i];
-	if ( pCX2Eqip == NULL )
-	continue;
-
-	if( pCX2Eqip->GetEqipType() == CX2Item::ET_SKIN )
-	continue;
-	pCX2Eqip->PreLoad();
-	}
-	/**/ //}} seojt on 2008-10-18
 }//CX2GUUser::PreRenderForce()
 
 
@@ -5756,7 +5724,6 @@ bool CX2GUUser::StateChange( int state, int subState, bool bDirectChange /* = fa
 	if( bDirectChange == true )
 	{
 		m_LuaManager.EndTable();
-		bool bTableOpen = false;
 
 		//m_FrameDataFuture.syncData		= m_FrameDataNow.syncData;
 		//m_FrameDataFuture.unitCondition = m_FrameDataNow.unitCondition;
@@ -5875,6 +5842,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				m_FlyCount++;
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -5986,6 +5955,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			}
 			return;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -6375,6 +6346,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				// fix!! not yet!!
 			} break;
+		default:
+			break;
 		}
 
 		if ( false == g_pMain->GetGameOption().GetFlashEffect() )
@@ -6573,7 +6546,6 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 
 
 
-		float fPercentMPUp = 0.0f;
 		float fMPUp = 0.0f;
 		//��Ʈ�����ۿ����� ��ų �ö󰡴� �༮�� �ִ��� �˻��غ���.
 		if( false == pDamageData->m_bNoDamage )
@@ -7112,6 +7084,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 					/// ������ �����Ϳ� �ǰ� ������ ����
 					SetReverseReactorTransitionDamage( fFinalDamage );
 				} break;
+			default:
+				break;
 			}
 		}
 
@@ -7131,7 +7105,6 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 
 			}
 
-			float fOldHP = GetNowHp();
 
 //#ifdef PVP_BOSS_COMBAT_TEST
 //
@@ -7407,7 +7380,6 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				const CX2Unit::UnitData* pUnitData = &GetUnit()->GetUnitData();
 
-				int iSkillLevel = pUnitData->m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SGM_ADVANCED_KNIGHT_MASTERY, true );
 				const CX2SkillTree::SkillTemplet* pSkillTempletAdvancedKnightMastery = pUnitData->m_UserSkillTree.GetUserSkillTemplet( CX2SkillTree::SI_P_SGM_ADVANCED_KNIGHT_MASTERY );
 
 				if ( NULL != pSkillTempletAdvancedKnightMastery )
@@ -7697,7 +7669,7 @@ void CX2GUUser::LevelCorrectionExtraDamage( const CX2DamageManager::DamageData* 
 		int attackerLv = pDamageData->optrAttackerGameUnit->GetUnitLevel();
 		int defencerLv = pDamageData->optrDefenderGameUnit->GetUnitLevel();
 
-		fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / CX2EnchantItem::EAR_MAX_VALUE));
+		fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE )));
 		if(fPureRate >= 1.f) // oasis907 : ����� [2011.5.25] ��ũ��Ʈ �Ľ̽� ����Ʈ fRate�� 1.f,
 		{					// �ܺο��� Rate������ ���������� ������ �ִ� Rate�� 0.5�� ����
 			if( fRate > 0.5f )
@@ -7999,7 +7971,7 @@ void CX2GUUser::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamage
 			if( null != pDamageData->optrAttackerGameUnit )
 			{
 				const float MAGIC_POWER_RATE = 1.f;
-				CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
+				g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
 					pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition().y );
 
 				UpDownCrashCamera( 20.0f, 0.5f );
@@ -8420,7 +8392,7 @@ void CX2GUUser::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamage
 			if( null != pDamageData->optrAttackerGameUnit )
 			{
 				const float MAGIC_POWER_RATE = 1.f;
-				CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
+				g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
 					pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition().y );
 
 				UpDownCrashCamera( 20.0f, 0.5f );
@@ -9035,6 +9007,8 @@ void CX2GUUser::DamageReactStateChange( CX2DamageManager::DamageData* pDamageDat
 			StateChange( iAvoidance, true );
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -9102,6 +9076,8 @@ void CX2GUUser::DamageReactStateChange( CX2DamageManager::DamageData* pDamageDat
 
 			} // if
 		} break;
+	default:
+		break;
 	}
 
 
@@ -9703,8 +9679,8 @@ void CX2GUUser::AttackResult()
 
 	default:
 		{
-			if( g_pX2Game != NULL && g_pX2Game->GetDamageEffect() != NULL &&
-				( GetHitCreateDamageEffectRate() > 0.f && GetRandomFloat() <= GetHitCreateDamageEffectRate() ) ||
+			if( (g_pX2Game != NULL && g_pX2Game->GetDamageEffect() != NULL &&
+				( GetHitCreateDamageEffectRate() > 0.f && GetRandomFloat() <= GetHitCreateDamageEffectRate() )) ||
 				( m_DamageData.m_fCreateDamageEffectRate > 0.f && GetRandomFloat() <= m_DamageData.m_fCreateDamageEffectRate ) )
 			{
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, m_DamageData.m_wstrCreateDamageEffectName.c_str(),
@@ -9835,7 +9811,7 @@ void CX2GUUser::AttackResult()
 	}
 }
 
-void CX2GUUser::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
+void CX2GUUser::AttackResultByType( CX2DamageManager::DamageData &/*pDamageData*/ )
 {
 	return;
 }
@@ -9845,7 +9821,7 @@ void CX2GUUser::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
 @param : vImpactPoint_( ��ƼŬ ��� ��ġ�� ���۷���)
 @return : void
 */
-void CX2GUUser::PlayRevengeReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
+void CX2GUUser::PlayRevengeReactTypeParticle( const D3DXVECTOR3& /*vImpactPoint_*/ )
 {
 	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMajorParticle();
 
@@ -9871,7 +9847,7 @@ void CX2GUUser::PlayRevengeReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
 @param : vImpactPoint_( ��ƼŬ ��� ��ġ�� ���۷���)
 @return : void
 */
-void CX2GUUser::PlaySmallDamageReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
+void CX2GUUser::PlaySmallDamageReactTypeParticle( const D3DXVECTOR3& /*vImpactPoint_*/ )
 {
 	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMajorParticle();
 
@@ -9890,7 +9866,7 @@ void CX2GUUser::PlaySmallDamageReactTypeParticle( const D3DXVECTOR3& vImpactPoin
 @param : vImpactPoint_( ��ƼŬ ��� ��ġ�� ���۷���)
 @return : void
 */
-void CX2GUUser::PlayEtcReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
+void CX2GUUser::PlayEtcReactTypeParticle( const D3DXVECTOR3& /*vImpactPoint_*/ )
 {
 	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMajorParticle();
 
@@ -9974,6 +9950,8 @@ void CX2GUUser::Lose()
 				g_pKTDXApp->GetDeviceManager()->PlaySound( L"Lose.ogg", false, false );
 
 			} break;
+		default:
+			break;
 		}
 	}
 }
@@ -10266,6 +10244,8 @@ void CX2GUUser::DyingStart()
 									CX2AllyNPCAI* pNPCAI = (CX2AllyNPCAI*) pNPC->GetNPCAI();
 									kPacket.m_KillerUserUnitUID = pNPCAI->GetAllyUnitUID();
 								} break;
+							default:
+								break;
 							}
 							kPacket.m_KillerNPCUID = static_cast<int>( pNPC->GetUnitUID() );
 						}
@@ -10598,7 +10578,6 @@ void CX2GUUser::CommonStateStartFuture()
 			m_LuaManager.EndTable();
 			break;
 		}
-		float fDummy = 0.f;
 		LUA_GET_VALUE( m_LuaManager, 1, m_fEventTime[index].keyInputStart, 0.f );
 		LUA_GET_VALUE( m_LuaManager, 2, m_fEventTime[index].keyInputEnd, 9999.f );
 		LUA_GET_VALUE( m_LuaManager, 3, m_fEventTime[index].stateChange, 9999.f );
@@ -11943,7 +11922,6 @@ void CX2GUUser::CommonFrameMove()
 
 	EmotionFrameMove();
 
-	bool bSuperArmor = m_bSocketSuperArmor || m_bSuperArmorByItem;
 	if( m_fSocketSuperArmor <= 0.f )
 		m_bSocketSuperArmor = false;
 	if( m_fSuperArmorByItem <= 0.f )
@@ -12078,10 +12056,12 @@ void CX2GUUser::CommonFrameMove()
 
 	{
 		if(m_fReverseGravitySpeedDeltaY == 0.f)
+		{
 			if ( true == GetRidingOn() && GetNowStateID() != USI_RIDING_DIE )
 				m_pXSkinAnim->GetMatrix().RotateDegree( GetSaddleDegree() );
 			else
 				m_pXSkinAnim->GetMatrix().RotateDegree( m_FrameDataNow.unitCondition.dirDegree );
+		}
 	}
 
     bool    bXSkinAnimOnFrameMoveCalled = false;
@@ -12128,7 +12108,6 @@ void CX2GUUser::CommonFrameMove()
                     pCX2Eqip->GetItem()->GetItemTemplet() != NULL
                     )
 				{
-					CX2Unit::EQIP_POSITION Epos = pCX2Eqip->GetItem()->GetItemTemplet()->GetEqipPosition();
 					bool bFashion = pCX2Eqip->GetItem()->GetItemTemplet()->GetFashion();
 					if( bFashion == true )
 					{
@@ -12516,7 +12495,6 @@ void CX2GUUser::CommonFrameMove()
 
 	if( m_ExtraDamagePack.m_EnchantPoison.m_fTime > 0.0f && GetNowHp() > 0.0f )
 	{
-		float fBeforeHP = GetNowHp();
 
 		if ( m_ExtraDamagePack.m_EnchantPoison.m_fElapsedTimeToEffectDamage >= 1.0f )
 		{
@@ -12588,7 +12566,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					// oasis907 : ����� [2010.10.5] // �Ӽ� ������ �̵��ӵ� -> �ӵ� ������� ����
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
@@ -12602,7 +12580,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -12616,7 +12594,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -12791,7 +12769,6 @@ void CX2GUUser::CommonFrameMove()
 	/// �� ��� �������� ------------------------------------------------------------------------------------------------------
 	if( m_ExtraDamagePack.m_EnchantBlaze.m_fTime > 0.0f && GetNowHp() > 0.0f )
 	{
-		float fBeforeHP = GetNowHp();
 		//m_GageManager.GetHPGage()->fNow -= m_ExtraDamagePack.m_Fire.m_DamagePerSec * m_fElapsedTime;
 		if ( m_ExtraDamagePack.m_EnchantBlaze.m_fElapsedTimeToEffectDamage >= 1.0f )
 		{
@@ -13019,7 +12996,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -13035,7 +13012,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -13051,7 +13028,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -16079,6 +16056,8 @@ void CX2GUUser::PhysicProcess_Jumping( CKTDGLineMap* pLineMap )
 						}
 					}
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -16103,6 +16082,8 @@ void CX2GUUser::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 					SetCanNotInputTime_ZXArrow( MAGIC_REBIRTH_WAIT_TIME );
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -16138,6 +16119,8 @@ void CX2GUUser::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 						InitPosByLineData( pLineData->m_iTeleportLineIndex );
 
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -16167,6 +16150,7 @@ void CX2GUUser::PhysicProcess_Portal( CKTDGLineMap* pLineMap )
 						false == CX2BossRaidManager::GetInstance()->IsActiveRaidPortal() )// ���� ����Ǵ� ������ �ƴ϶��
 						break;
 				}
+				[[fallthrough]];
 			case CKTDGLineMap::LT_POTAL:
 				{
 					if( true == m_bLeavePortal )
@@ -16238,6 +16222,7 @@ void CX2GUUser::PhysicProcess_PortalInBattleField( CKTDGLineMap* pLineMap )
 						false == CX2BossRaidManager::GetInstance()->IsActiveRaidPortal() )// ���� ����Ǵ� ������ �ƴ϶��
 						break;
 				}
+				[[fallthrough]];
 			case CKTDGLineMap::LT_POTAL:
 				{
 					if( true == m_bLeavePortal )
@@ -16396,7 +16381,7 @@ bool CX2GUUser::CommonSpecialAttackEventProcess( IN const CX2UserSkillTree& cUse
 	@param : ����� ��ų�� ID, ����� ��ų�� ����
 	@return : �Ҹ�� MP ��ġ
 */
-/*virtual*/ float CX2GUUser::GetActualMPConsume( const CX2SkillTree::SKILL_ID eSkillID_, const int iSkillLevel_ ) const
+/*virtual*/ float CX2GUUser::GetActualMPConsume( const CX2SkillTree::SKILL_ID eSkillID_, const int /*iSkillLevel_*/ ) const
 {
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID_ );
@@ -16439,7 +16424,7 @@ bool CX2GUUser::CommonSpecialAttackEventProcess( IN const CX2UserSkillTree& cUse
 	@param : ����� ��ų�� ID, ����� ��ų�� ����
 	@return : �Ҹ�� CB ��ġ
 */
-/*virtual*/ USHORT CX2GUUser::GetActualCBConsume( CX2SkillTree::SKILL_ID eSkill_ID_, int iSkillLevel_ )
+/*virtual*/ USHORT CX2GUUser::GetActualCBConsume( CX2SkillTree::SKILL_ID eSkill_ID_, int /*iSkillLevel_*/ )
 {
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkill_ID_ );
 
@@ -16463,8 +16448,6 @@ bool CX2GUUser::CommonSpecialAttackEventProcess( IN const CX2UserSkillTree& cUse
 		break;
 	}
 
-	if( usCBConsume < 0 )
-		usCBConsume = 0;
 
 	return usCBConsume;
 }
@@ -16622,8 +16605,8 @@ bool CX2GUUser::PopFrameData( bool bPopOnce, OUT bool& bFrameBufferPass )
 		if( (int)m_ReceiveSyncDataList.size() > m_FrameBufferNum + m_AddFrameBuffer )
 		{
 //#ifdef  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
-            if ( m_FrameDataNow.syncData.nowState == USI_WAIT
-                && m_ReceiveSyncDataList.front().nowState == USI_WAIT
+            if ( (m_FrameDataNow.syncData.nowState == USI_WAIT
+                && m_ReceiveSyncDataList.front().nowState == USI_WAIT)
                 || bPopOnce == false )
                 bPopAgain = true;
 //#else   SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
@@ -17143,14 +17126,12 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 
 
 	int iWidthUnitName = 0;
-	int iFinalLeft = 0;
 	int iFinalTop = 0;
 
 	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos(GetPos());
 
 	iWidthUnitName = g_pX2Game->GetFontForUnitName()->GetWidth(GetUnit()->GetNickName());
 
-	iFinalLeft = (int) finalPos.x + (iWidthUnitName / 2);
 	iFinalTop = (int) finalPos.y;
 
 
@@ -17294,7 +17275,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 			//{{ JHKang /  / 2010/11/25
 /// ???
 //////////////////////////////////////////////////////////////////////////
-			StringCchPrintfW( adBuf, ARRAY_SIZE( adBuf ), L"Given: %d", m_iTotalGivenDamamge );
+			StringCchPrintfW( adBuf, ARRAY_SIZE( adBuf ), L"Given: %d", static_cast<int>( m_iTotalGivenDamamge ) );
 
 			vPos.y -= 20.0f;
 			g_pX2Game->GetFontForUnitName()->OutProjectionText( vPos, adBuf,
@@ -17793,7 +17774,7 @@ int CX2GUUser::GetSkillLevelUpNum( CX2SkillTree::SKILL_ID skillID ) const
 	case CX2DamageManager::DT_WEAPON_MIX:
 		if( 0 < GetAddMagicAttackCriticalRate() )
 			fCriticalEffectiveRate += GetAddMagicAttackCriticalRate();
-			fCriticalEffectiveRate += m_fShadowOfDisasterRate;
+		fCriticalEffectiveRate += m_fShadowOfDisasterRate;
 	default:
 		break;
 	}
@@ -17914,19 +17895,18 @@ void CX2GUUser::ActiveSkillShow( const WCHAR* pBoneName, const WCHAR* pBackFaceT
 @param : ��½�̴� ����Ʈ�� ���� ����ġ, ��ų���� �ؽ��ĸ�, �ؽ��� ������, �ؽ��İ� ���� ��ġ, ������������ ����, ���� ���̰� �Ұ����� ����
 @return : void
 */
-void CX2GUUser::ActiveSkillShow( D3DXVECTOR3 bonePos, const WCHAR* pBackFaceTexName, D3DXVECTOR2 size, D3DXVECTOR3 pos, bool bHyper, bool bOnlyLight )
+void CX2GUUser::ActiveSkillShow( D3DXVECTOR3 /*bonePos*/, const WCHAR* pBackFaceTexName, D3DXVECTOR2 size, D3DXVECTOR3 pos, bool /*bHyper*/, bool bOnlyLight )
 {
 	if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
 		return;
 
-	CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 	if( bOnlyLight == false )
 	{
-		pSeq = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"FocusLine", D3DXVECTOR3(0,0,0) );
+		g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"FocusLine", D3DXVECTOR3(0,0,0) );
 		if( GetIsRight() == true )
 		{
-			pSeq = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine", D3DXVECTOR3(0,0,0) );
+			g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine", D3DXVECTOR3(0,0,0) );
 			CKTDGParticleSystem::CParticleEventSequence* pPart = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"CutIn_Right", 0,0,0 );
 			if( pPart != NULL )
 			{
@@ -17966,7 +17946,7 @@ out:
 		}
 		else
 		{
-			pSeq = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine_Left", D3DXVECTOR3(0,0,0) );
+			g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine_Left", D3DXVECTOR3(0,0,0) );
 			CKTDGParticleSystem::CParticleEventSequence* pPart = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"CutIn_Left", 0,0,0 );
 			if( pPart != NULL )
 			{
@@ -18245,7 +18225,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 	// 2010.01.13, dmlee - �ɼ��� ���� return �ϴ� �Ϳ���, �ɼ��߿��� �ְ����� return �ϴ� ������ ���� - ������
 	float fMaxDamageUp = 0.f;
 
-	float fDamageUp = 0.f;
 
 
 	// fix!! ������ ���� �����̳� ������ ���� ���Ͽ� ���� �κ��� �ϴ� ��������. ���߿� �ʿ��ϸ� �߰��ؾ� ��
@@ -18264,7 +18243,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && ( g_pX2Game->GetGameType() == CX2Game::GT_DUNGEON || g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD ) )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 					{
@@ -18277,7 +18255,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && g_pX2Game->GetGameType() == CX2Game::GT_PVP )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 					{
@@ -18288,7 +18265,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			}
 			else
 			{
-				fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 				if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 				{
@@ -18307,7 +18283,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && ( g_pX2Game->GetGameType() == CX2Game::GT_DUNGEON || g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD ) )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 					{
@@ -18320,7 +18295,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && g_pX2Game->GetGameType() == CX2Game::GT_PVP )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
@@ -18332,7 +18306,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			}
 			else
 			{
-				fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 				if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 				{
@@ -18517,6 +18490,8 @@ void CX2GUUser::ProcessEnchantedWeaponEffectAtHand( CX2Unit::UNIT_TYPE unitType 
 			aEmitRate[2] = 60.f;
 			aEmitRate[3] = 25.f;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -18678,6 +18653,8 @@ void	CX2GUUser::AppendEnchantedWeaponEffectAtHandToDeviceList( CKTDXDeviceDataLi
 			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"Weapon_Elsword_Property04_Curse01" );
 			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"Triple_Weapon_Property_Curse01"  );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -18783,6 +18760,8 @@ void CX2GUUser::InitEnchantedWeaponEffectAtHand()
 				L"Weapon_Elsword_Property04_Curse01",
 				L"Triple_Weapon_Property_Curse01" );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -20969,6 +20948,8 @@ bool CX2GUUser::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId, wstring &wstrEmoti
 				case CX2Unit::ET_EMOTION_AVATAR6:
 					m_bMixedEmotion[5] = true;
 					break;
+				default:
+					break;
 				}
 				SAFE_CLOSE( pMixMotion );
 			}
@@ -21017,6 +20998,8 @@ bool CX2GUUser::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId, wstring &wstrEmoti
 					m_bReserveSitReadyEmotion = true;
 				}
 			}break;
+		default:
+			break;
 		}
 	}
 	if( true == GetRidingOn() )
@@ -21399,6 +21382,8 @@ void CX2GUUser::AddEquipToViewList( CX2Item* const pItem )
 	case CX2Unit::EP_WEAPON_SECOND:
 		weaponIndex = 1;
 		break;
+	default:
+		break;
 	}
 
 	// ���ο� ��� Weapon �� ���
@@ -21444,6 +21429,8 @@ void CX2GUUser::AddEquipToViewList( CX2Item* const pItem )
 			m_vecpWeapon.push_back( pWeapon );
 		}
 		break;	// switch ( pItemTemplet->GetEqipPosition() )
+	default:
+		break;
 	}
 }
 void CX2GUUser::RemoveEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int index )
@@ -21464,6 +21451,8 @@ void CX2GUUser::RemoveEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int index
 
 	case CX2Unit::EP_WEAPON_SECOND:
 		weaponIndex = 1;
+		break;
+	default:
 		break;
 	}
 
@@ -21486,6 +21475,8 @@ void CX2GUUser::RemoveEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int index
 		}
 
 		break;	// switch
+	default:
+		break;
 	}
 }
 
@@ -21536,6 +21527,8 @@ bool CX2GUUser::IsSummonSpecialAttack( CX2SkillTree::SKILL_ID iSkillID )
 		{
 			return true;
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -21577,8 +21570,6 @@ bool CX2GUUser::CheckSummonSpecialAttack( CX2SkillTree::SKILL_ID iSkillID_ )
 			if( true == g_pX2Game->GetLastKillCheck() )
 				bCheck = false;
 
-			if( true == true == g_pX2Game->GetLastKillCheck() )
-				bCheck = false;
 		} break;
 	}
 
@@ -21975,7 +21966,7 @@ void CX2GUUser::SetPos( D3DXVECTOR3 vPos )
 
 
 
-void CX2GUUser::SetPositionOnLine( const D3DXVECTOR3& vPosition, const int iLineIndex )
+void CX2GUUser::SetPositionOnLine( [[maybe_unused]] const D3DXVECTOR3& vPosition, [[maybe_unused]] const int iLineIndex )
 {
 #if X2_DEV_TOOLS
 	ASSERT( NULL != g_pX2Game );
@@ -22050,8 +22041,8 @@ void CX2GUUser::SetEnableDash( bool bEnableDash,  CX2GameUnit::ENABLE_DASH_STATE
 
 	if( false == bEnableDash )
 	{
-		if( USI_DASH == GetGameUnitState()
-			|| USI_DASH == GetGameUnitStateFuture()
+		if( USI_DASH == static_cast<int>( GetGameUnitState() )
+			|| USI_DASH == static_cast<int>( GetGameUnitStateFuture() )
 			)
 		{
 			StateChange( USI_WALK, true );
@@ -22483,14 +22474,14 @@ void CX2GUUser::SetUnitReForm()
 	if( m_pXSkinAnim == NULL )
 		return;
 
-	float fMoveBip01 = 10.f;
-	float fMoveFootStep = -15.f;
-	D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] float fMoveBip01 = 10.f;
+	[[maybe_unused]] float fMoveFootStep = -15.f;
+	[[maybe_unused]] D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
 
 #if X2_DEV_TOOLS
 	// �ǽð� �׽�Ʈ��
@@ -22624,6 +22615,7 @@ void CX2GUUser::SetUnitReForm()
 				if ( pFrame_L_Dummy != NULL )
 					SetFrameScale( &vDummyHand, true, pFrame_L_Dummy );
 			}
+			[[fallthrough]];
 
 		case CX2Unit::UT_LIRE:
 			{
@@ -22690,7 +22682,6 @@ void CX2GUUser::SetUnitReForm()
 				D3DXVECTOR3 vThigh = D3DXVECTOR3( 1.05f, 0.94f, 0.92f );
 				D3DXVECTOR3 vCalf = D3DXVECTOR3( 1.065f, 0.93f, 0.9f );
 				D3DXVECTOR3 vFoot = D3DXVECTOR3( 0.93f, 0.85f, 0.83f );
-				D3DXVECTOR3 vDummyHand = D3DXVECTOR3( 1.f, 1.f, 1.f );
 				D3DXVECTOR3 vSpine = D3DXVECTOR3( 0.94f, 0.97f, 1.f );
 
 				CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrameHead = m_pXSkinAnim->GetCloneFrame( L"Bip01_Head" );
@@ -24394,7 +24385,7 @@ bool CX2GUUser::GetAddItemAndRemoveItemToViewList( OUT CX2EqipPtr& pEquipPtrToRe
 		{
 			if ( pItemTempletForItemToRemove->GetEqipPosition() == m_ViewEqipList[numViewEquipInUser]->GetEqipPos() )
 			{
-				switch ( pItemTempletForItemToRemove->GetFashion() )
+				switch ( static_cast<int>( pItemTempletForItemToRemove->GetFashion() ) )
 				{
 				case true:	// ���� �� ��� �м� ���� ���
 					{
@@ -24631,7 +24622,7 @@ float CX2GUUser::GetMpUpRateBySkill()
 {
 	return 0.f;
 }
-/*virtual*/ void CX2GUUser::SetWayOfSwordPoint( float fWayOfSwordPoint_ )
+/*virtual*/ void CX2GUUser::SetWayOfSwordPoint( float /*fWayOfSwordPoint_*/ )
 {
 	return;
 }
@@ -24701,7 +24692,7 @@ void CX2GUUser::StopSpecialItemBuffWind()
 //////////////////////////////////////////////////////////////////////////
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-void CX2GUUser::SyncData::SetData( const KDYNAMIC_UNIT_USER_SYNC& SyncPacket, DWORD dwRealFrameMoveCount, float fMaxHP, float fMaxMP )
+void CX2GUUser::SyncData::SetData( const KDYNAMIC_UNIT_USER_SYNC& SyncPacket, DWORD dwRealFrameMoveCount, float /*fMaxHP*/, float /*fMaxMP*/ )
 {
 	dwFrameMoveCount	= dwRealFrameMoveCount;
 
@@ -25022,7 +25013,7 @@ void CX2GUUser::InitByGameType()
 	}
 }
 
-void CX2GUUser::UpdateBuffInfo( const KStat& kStat_, const vector<KBuffInfo>& vecSetBuffInfo_, const vector<int>& vecEraseBuffInfo_ )
+void CX2GUUser::UpdateBuffInfo( const KStat& /*kStat_*/, const vector<KBuffInfo>& /*vecSetBuffInfo_*/, const vector<int>& /*vecEraseBuffInfo_*/ )
 {
 	//CX2Unit* pUnit = GetUnit();		/// �� ���� �ý���
 	//if ( NULL != pUnit )
@@ -25047,7 +25038,7 @@ void CX2GUUser::UpdateBuffInfo( const KStat& kStat_, const vector<KBuffInfo>& ve
 	//}
 }
 
-void CX2GUUser::UpdateBuffEffect( const vector<KBuffInfo>& vecSetBuffInfo_, const vector<int>& vecEraseBuffInfo_ )
+void CX2GUUser::UpdateBuffEffect( const vector<KBuffInfo>& /*vecSetBuffInfo_*/, const vector<int>& /*vecEraseBuffInfo_*/ )
 {
 	////������� �� ���� ����Ʈ ���� �� ����
 	//for( const int& iBuffID : vecEraseBuffInfo_ )
@@ -25920,7 +25911,7 @@ void CX2GUUser::SetDamageExceptionProcess( CX2DamageManager::DamageData* pDamage
 {
 	CX2GameUnit::SetDamageExceptionProcess(pDamageData_, fPowerRate);
 
-	if( null != pDamageData_->optrAttackerGameUnit != NULL && pDamageData_->optrAttackerGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
+	if( null != pDamageData_->optrAttackerGameUnit && pDamageData_->optrAttackerGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
 	{
 		CX2GUUser *pUser = static_cast<CX2GUUser*>( pDamageData_->optrAttackerGameUnit.GetObservable() );
 		CX2DamageManager::DAMAGE_TYPE eDamageType;
@@ -26112,7 +26103,6 @@ void CX2GUUser::COMMON_RELATIONSHIP_SKILL_FrameMove()
 		}
 		if( false == wstrDamageEffectName.empty() )
 		{
-			CX2DamageEffect::CEffect *pDamageEffect =
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, wstrDamageEffectName.c_str(), GetPowerRate(), vEffectPos, vRotate, vRotate, m_FrameDataNow.unitCondition.landPosition.y );
 		}
 	}
@@ -26705,7 +26695,6 @@ void CX2GUUser::RidingDashEndStart()
 
 void CX2GUUser::RidingDashEndEventProcess()
 {
-	const float TRIGGER_TIME_FACTOR_DASH_ATTACK = 0.3f;
 
 	if( false == IsOnSomethingFuture() )
 	{
@@ -28195,12 +28184,10 @@ void CX2GUUser::ForceDownAndDetonationProcess()
 			CX2SkillTree::SKILL_ID eSkillID = CX2SkillTree::SI_NONE;
 			LUA_GET_VALUE_ENUM( luaManager_, "BUFF_FACTOR_RELATIVE_SKILL_ID", eSkillID,	CX2SkillTree::SKILL_ID,	CX2SkillTree::SI_INVALID );
 
-			bool bIsNowStateSkill = false;
 			// ������Ʈ���� ������ ��ų�� ���ٸ� ���� ������Ʈ ��ų ���
 			if( CX2SkillTree::SI_INVALID == eSkillID )
 			{
 				eSkillID = GetNowStateSkillID();
-				bIsNowStateSkill = true;
 			}
 
 			// ���� ������Ʈ or ������Ʈ���� ������ ��ų�� �ִٸ�
@@ -28230,7 +28217,7 @@ void CX2GUUser::ForceDownAndDetonationProcess()
 		{
 			if( 0.f == it->second )
 			{
-				SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1 ) );
+				SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1u ) );
 				m_mapStateInsertBuffFactor.erase(it++);
 			}
 			else
@@ -28255,7 +28242,7 @@ void CX2GUUser::CommonFrameMove_InsertBuffFactor()
 		// �ִϸ��̼� �ð��� ������ �ð� ���Ķ��
 		if( m_pXSkinAnim->GetNowAnimationTime() >= it->second )
 		{
-			SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1 ) );
+			SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1u ) );
 			m_mapStateInsertBuffFactor.erase(it++);
 		}
 		else
@@ -28429,6 +28416,8 @@ void CX2GUUser::ApplyBuffByUseHyperMode()
 				if ( CX2SocketItem::PUP_DUNGEON_ONLY == ePossible_Use_Place )
 					continue;
 			}
+		default:
+			break;
 		}
 
 		switch ( sInfoByUseHyperMode.m_eHyperModeEffectiveType )
@@ -28904,7 +28893,7 @@ void CX2GUUser::LoadEffectSetFromScript( IN KLuaManager& luaManager, IN const bo
 			if( false == luaManager.GetValue( iValueIndex+1, fStartAnimationTime ) )
 				break;
 
-				m_vecEffectSetToPlay.push_back( EffectSetToPlay( wstrEffectSetName, fStartAnimationTime ) );
+			m_vecEffectSetToPlay.push_back( EffectSetToPlay( wstrEffectSetName, fStartAnimationTime ) );
 			}
 
 
@@ -29153,7 +29142,7 @@ void    CX2GUUser::ClearAnimEventTimerOneshotFuture()
 	@param		: SA Ÿ��, ��ų ���̵�
 	@return		: SA Value
 */
-const float CX2GUUser::GetSpecialAbilityValue( IN const CX2SkillTree::SKILL_ABILITY_TYPE eSAValue, IN const CX2SkillTree::SKILL_ID eSkillID ) const
+float CX2GUUser::GetSpecialAbilityValue( IN const CX2SkillTree::SKILL_ABILITY_TYPE eSAValue, IN const CX2SkillTree::SKILL_ID eSkillID ) const
 {
 	float fReturnValue = 1.f;
 
@@ -29377,7 +29366,7 @@ bool CX2GUUser::IsPlayAvatarEmotionSoundWithouEmotion  ( CX2Unit::EMOTION_TYPE e
 	@param		: ��ų ���̵�
 	@return		: ��ų ����
 */
-const int CX2GUUser::GetSkillLevelValue( IN const CX2SkillTree::SKILL_ID eSkillID_ )
+int CX2GUUser::GetSkillLevelValue( IN const CX2SkillTree::SKILL_ID eSkillID_ )
 {
 	if ( NULL == GetUnit() )
 		return 1;

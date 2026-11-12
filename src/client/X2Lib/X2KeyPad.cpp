@@ -99,7 +99,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 		else
 		{
 			if ( NULL != m_DLGKeyPad )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyPad, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyPad, 0, false );
 		}
 
 		m_bShowKeyPad = bShow_;
@@ -110,7 +110,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 	/** @function 	: UICustomEventProc
 		@brief 		: Ű �е��� ����� ���� �̺�Ʈ�� ó���Ѵ�.
 	*/
-	bool CX2KeyPad::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2KeyPad::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 	{
 		switch ( wParam )
 		{
@@ -186,7 +186,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 	/** @function 	: MsgProc
 		@brief 		: �޽��� ���ν���
 	*/
-	bool CX2KeyPad::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	bool CX2KeyPad::MsgProc(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 	{
 		return false;
 	}
@@ -435,7 +435,6 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 
 		CKTDGUISlot* pSlot = NULL;
 
-		int slotIndex = -1;
 
 		// �׼� Ű ����
 		for( int i = GAMEACTION_ATTACK_FAST; i < GAMEACTION_END; ++i )
@@ -583,6 +582,8 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 									return true;
 								}
 							} break;
+						default:
+							break;
 						}
 					}
 				} break;
@@ -647,6 +648,8 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 									return true;
 								}
 							} break;
+						default:
+							break;
 						}
 					}
 				} break;
@@ -685,7 +688,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 	/** @function 	: Handler_EGS_KEYBOARD_MAPPING_INFO_WRITE_ACK
 		@brief 		: ���� ��û Ȯ��
 	*/
-	bool CX2KeyPad::Handler_EGS_KEYBOARD_MAPPING_INFO_WRITE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2KeyPad::Handler_EGS_KEYBOARD_MAPPING_INFO_WRITE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 	{
 		KSerBuffer* pBuff = (KSerBuffer*)lParam;
 		KEGS_KEYBOARD_MAPPING_INFO_WRITE_ACK kEvent;
@@ -1653,7 +1656,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 
 			if( NULL != g_pData->GetUIManager() && NULL != g_pData->GetUIManager()->GetUIPetList() )
 			{
-				bool IsSetKey = (0 == StrCmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
+				bool IsSetKey = (0 == wcscmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
 				g_pData->GetUIManager()->GetUIPetList()->UpdateRidingButtonGuideDesc( IsSetKey );
 			}
 		}

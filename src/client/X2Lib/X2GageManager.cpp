@@ -215,7 +215,7 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 // GageManager 의 모든 UI 메시지는 이곳을 거칩니다.
 // 해당 메시지는 X2State 의 UICustomEventProc 에서 GageManager Instance 를 불러온 뒤
 // Instance 에서 Call !
-/*virtual*/bool CX2GageManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/bool CX2GageManager::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -223,7 +223,7 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 			{
 				if ( m_vecGageSetPartyMember.size() > 0 )		// m_vecGageSetPartyMember 가 있을 때
 				{
-					BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// vector 의 각 컨테이너에 대해
+					for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// vector 의 각 컨테이너에 대해
 					{
 						CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMember 의 UI 를 얻어온다.
 
@@ -235,7 +235,7 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 
 								if ( NULL != pGUIButton )
 								{
-									if( pPartyMemberGageUI->GetPositionIndex() == pGUIButton->GetDummyInt(0) )
+									if( pPartyMemberGageUI->GetPositionIndex() == static_cast<UINT>( pGUIButton->GetDummyInt(0) ) )
 									{
 										if ( true == Handler_EGS_FORCED_EXIT_VOTE_REQ ( true, pPartyMemberGageUI->GetUidTypeThisPartyMember() ) )
 											return true;
@@ -276,7 +276,7 @@ void CX2GageManager::SetAllPartyMemberVoteButtonType ( const CX2PartyMemberGageU
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )			// 해당 벡터의 사이즈가 0 이 넘는다면
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() ); // PartyMemberGageUI 를 얻어온다.
 
@@ -385,7 +385,7 @@ void CX2GageManager::SetMyGameUnit( CX2GameUnit* pMyGameUnit_ )
 
 void CX2GageManager::SetPartyMemberGameUnit( const UINT uiIndex_, CX2GameUnit* pParyMemberGameUnit_ )
 {
-	if ( uiIndex_ >= 0 && uiIndex_ < m_vecGageSetPartyMember.size() )
+	if ( uiIndex_ < m_vecGageSetPartyMember.size() )
 	{
 		CX2GageSetPtr ptrGageSet = m_vecGageSetPartyMember[uiIndex_];
 		ptrGageSet->SetOwnerGameUnit( pParyMemberGameUnit_ );
@@ -485,7 +485,7 @@ bool CX2GageManager::Handler_EGS_FORCED_EXIT_VOTE_REQ ( const bool IsWantBan_, c
 	return false;
 }
 
-bool CX2GageManager::Handler_EGS_FORCED_EXIT_VOTE_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GageManager::Handler_EGS_FORCED_EXIT_VOTE_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FORCED_EXIT_VOTE_ACK kEvent;
@@ -542,7 +542,7 @@ void CX2GageManager::VoteAllFaultyPlayer ()							// 불량 유저가 불량 유
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )			// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMemberGageUI 를 얻어온다.
 			if ( pPartyMemberGageUI->GetVoteButtonType() == CX2PartyMemberGageUI::BVBT_NEED_VOTE )		// 해당 유저가 투표 대기 중이라면
@@ -557,7 +557,7 @@ CX2PartyMemberGageUI * CX2GageManager::GetPartyMemberDataByNickName ( const wstr
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )			// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMemberGageUI 를 얻어온다.
 
@@ -574,7 +574,7 @@ CX2PartyMemberGageUI * CX2GageManager::GetPartyMemberDataByUID ( const UidType U
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )	// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMemberGageUI 를 얻어온다.
 
@@ -591,11 +591,11 @@ CX2PartyMemberGageUI * CX2GageManager::GetPartyMemberDataByIndex ( const int ind
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )		// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );		// PartyMemberGageUI 를 얻어온다.
 
-			if ( pPartyMemberGageUI->GetPositionIndex() == index_ )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
+			if ( pPartyMemberGageUI->GetPositionIndex() == static_cast<UINT>( index_ ) )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
 			{
 				return pPartyMemberGageUI;		// 해당 클래스를 반환한다.
 			}
@@ -914,7 +914,7 @@ void CX2GageManager::SetMySkillCoolTimeList( const map<int, int>& mapSkillCoolTi
 		const UINT iSlotIndex = cmItr->first;
 
 		// 벡터 범위 내에 있는지 검사
-		if ( m_vecSkillCoolTime.size() > iSlotIndex && 0 <= iSlotIndex )
+		if ( m_vecSkillCoolTime.size() > iSlotIndex )
 			m_vecSkillCoolTime[iSlotIndex] = static_cast<float>( cmItr->second );	// 스킬 쿨타임 셋팅
 
 		++cmItr;
@@ -924,7 +924,7 @@ void CX2GageManager::SetMySkillCoolTimeList( const map<int, int>& mapSkillCoolTi
 void CX2GageManager::SetMySkillCoolTimeList( const UINT uiSlotIndex_, const float fRemainCoolTime_ )
 {
 	// 벡터 범위 내에 있는지 검사
-	if ( m_vecSkillCoolTime.size() > uiSlotIndex_ && 0 <= uiSlotIndex_ )
+	if ( m_vecSkillCoolTime.size() > uiSlotIndex_ )
 		m_vecSkillCoolTime[uiSlotIndex_] = fRemainCoolTime_;
 }
 
@@ -1038,7 +1038,7 @@ void CX2GageManager::SetMyRidingSkillCoolTimeList( const map<int, int>& mapSkill
 		const UINT iSlotIndex = cmItr->first;
 
 		// 벡터 범위 내에 있는지 검사
-		if ( m_vecRidingPetSkillCoolTime.size() > iSlotIndex && 0 <= iSlotIndex )
+		if ( m_vecRidingPetSkillCoolTime.size() > iSlotIndex )
 			m_vecRidingPetSkillCoolTime[iSlotIndex] = static_cast<float>( cmItr->second );	// 스킬 쿨타임 셋팅
 
 		++cmItr;
@@ -1048,7 +1048,7 @@ void CX2GageManager::SetMyRidingSkillCoolTimeList( const map<int, int>& mapSkill
 void CX2GageManager::SetMyRidingSkillCoolTimeList(  const UINT uiSlotIndex_, const float fRemainCoolTime_ )
 {
 	// 벡터 범위 내에 있는지 검사
-	if ( m_vecRidingPetSkillCoolTime.size() > uiSlotIndex_ && 0 <= uiSlotIndex_ )
+	if ( m_vecRidingPetSkillCoolTime.size() > uiSlotIndex_ )
 		m_vecRidingPetSkillCoolTime[uiSlotIndex_] = fRemainCoolTime_;
 }
 
@@ -1306,7 +1306,7 @@ bool CX2OldGageManager::IsMyUnit()
 		return false;
 }
 
-void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
+void CX2OldGageManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -1338,7 +1338,7 @@ void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
 			if( pStaticAir != NULL )
 			{
 				WCHAR keyName[50];
-				wsprintf(keyName, L"AIR_%02d", iGage);
+				swprintf_s(keyName, L"AIR_%02d", iGage);
 				pStaticAir->GetPicture(0)->SetTex( L"DLG_AIR_GAGE.tga", keyName );
 			}
 		}
@@ -1747,19 +1747,14 @@ void CX2OldGageManager::OnFrameRender()
 		{
 			//-- MP
 			ASSERT( GetMPGage()->fMax > 0.f );
-			float fNow = 0.f;
 			if( 0.f != GetMPGage()->fMax )
 			{
-				fNow = (400.0f * GetMPGage()->fNow) / GetMPGage()->fMax;
 			}
 
-			float	fChargeNum = 0.0f;
-			float	fGap = 0.0f;
 
 			if( GetMPChargeGage()->fMax == 0.0f )
 				GetMPChargeGage()->fMax = GetMPGage()->fNow;
 
-			float fCharge = ( (fNow - fGap) * GetMPChargeGage()->fNow ) / GetMPChargeGage()->fMax;
 
 			//-- Charge
 		}
@@ -1813,7 +1808,7 @@ float CX2OldGageManager::FlushMP()
 }
 */
 
-bool CX2OldGageManager::FlushMP( float fMP, bool bForce )
+bool CX2OldGageManager::FlushMP( float fMP, bool /*bForce*/ )
 {
 	if( m_pMPGage->fNow < fMP )
 		return false;
@@ -1866,7 +1861,7 @@ void CX2OldGageManager::UpHP( float fHP, const float hpMinimum /*= 0.f*/ )
 }
 
 
-void CX2OldGageManager::DamagedFaceDraw( int unitClass )
+void CX2OldGageManager::DamagedFaceDraw( int /*unitClass*/ )
 {
 	// kimhc // 2011-12-08 현재 PVP에서만 사용 됨
 	KTDXPROFILE();
@@ -1890,8 +1885,8 @@ bool CX2OldGageManager::OpenScript( const WCHAR* pFileName )
 	lua_tinker::decl( g_pKTDXApp->GetLuaBinder()->GetLuaState(),  "g_pUIDialog", m_pDLGOtherUnit->Get() );
 
 
-    if ( g_pKTDXApp->LoadLuaTinker( pFileName ) == false )
-        return false;
+	if ( g_pKTDXApp->LoadLuaTinker( pFileName ) == false )
+		return false;
 
 
 	return true;
@@ -1899,7 +1894,7 @@ bool CX2OldGageManager::OpenScript( const WCHAR* pFileName )
 }
 
 
-void CX2OldGageManager::UIFrameMove( double fTime, float fElapsedTime )
+void CX2OldGageManager::UIFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if ( m_pGameUnit == NULL )
 		return;
@@ -2185,7 +2180,6 @@ void CX2OldGageManager::UIFrameMove( double fTime, float fElapsedTime )
 
 					D3DXVECTOR2 dialogPos;
 
-					const int widthForArcadeMode = 63;
 
 					if ( bObserver == true )
 					{
@@ -2499,7 +2493,6 @@ void CX2OldGageManager::UIFrameMove( double fTime, float fElapsedTime )
 	}
 	else if( m_pGameUnit->GetGameUnitType() == CX2GameUnit::GUT_NPC )
  	{
-		CX2GUNPC* pNPC = (CX2GUNPC*) m_pGameUnit;
 
 
 
@@ -2660,7 +2653,6 @@ void CX2OldGageManager::UIFrameMove( double fTime, float fElapsedTime )
 					pLineNumber10->SetShow( false );
 					pLineX->pos.x =  pLineNumber10->pos.x;
 				}
-				if ( usBarNumber >= 0 )
 				{
 					iNumOne = usBarNumber % 10;
                     SetNumberIcon( pLineNumber1, iNumOne );
@@ -2733,7 +2725,7 @@ void CX2OldGageManager::CrashMyStateGageUI( const D3DXVECTOR2& _min, const D3DXV
 }
 
 
-void CX2OldGageManager::SetPingLevel( int iLevel )
+void CX2OldGageManager::SetPingLevel( int /*iLevel*/ )
 {
 // 	CKTDGUIStatic* pStatic_Ping = NULL;
 //
@@ -2782,7 +2774,7 @@ void CX2OldGageManager::SetPingLevel( int iLevel )
 }
 
 
-void CX2OldGageManager::TwinkleMPGage( float fTime )
+void CX2OldGageManager::TwinkleMPGage( float /*fTime*/ )
 {
 	ASSERT( !L"Deprecated" );
 	return;
@@ -3510,11 +3502,11 @@ void CX2GageManager::UpdatePvpMemberGageData( const UidType uidPartyMember_, CX2
 	@param		: 검색할 유저 인덱스
 	@return		: PartyGageUI의 인덱스
 */
-const UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex ) const
+UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex ) const
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )		// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
 		{
 			if ( NULL == ptrGageSet_ )
 				continue;
@@ -3524,7 +3516,7 @@ const UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex 
 
 			if ( NULL != pPartyMemberGageUI )
 			{
-				if ( pPartyMemberGageUI->GetPositionIndex() == iIndex )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
+				if ( pPartyMemberGageUI->GetPositionIndex() == static_cast<UINT>( iIndex ) )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
 				{
 					return ptrGageSet_->GetUid();
 				}
@@ -3541,7 +3533,7 @@ const UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex 
 */
 bool CX2GageManager::GetIsExsitancePartyMemberHPLessThanPer( float fHPRate_ )
 {
-	for( const CX2GageSetPtr pGageSetPtr : m_vecGageSetPartyMember )
+	for( const CX2GageSetPtr& pGageSetPtr : m_vecGageSetPartyMember )
 	{
 		if( pGageSetPtr->GetNowHpPercent() > 0.f &&
 			pGageSetPtr->GetNowHpPercent() <= fHPRate_ )
@@ -3553,7 +3545,7 @@ bool CX2GageManager::GetIsExsitancePartyMemberHPLessThanPer( float fHPRate_ )
 	상기 함수를 통해 대전에서는 퍼센트를 저장하지 않도록 예외처리 되어 있었음.
 	예외처리 한 정확한 이유를 알 수 없어서 일단 현재HP와 최대HP를 구하는 방식으로 구현 함
 	*/
-	for( const CX2GageSetPtr pGageSetPtr : m_vecGageSetPvpMyTeam )
+	for( const CX2GageSetPtr& pGageSetPtr : m_vecGageSetPvpMyTeam )
 	{
 		if( NULL != pGageSetPtr->GetGageData() )
 		{

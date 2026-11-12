@@ -8,7 +8,6 @@ namespace _CONST_EL_
 	const float CHIVALRY_BUFF_CONDITION_HP_RATE = 0.5f;	 // ����� ���� ���� ���� ���� ü�� ����
 
 	const float MAX_EXTINCTION_CHARGE_TIME		= 1.f;	 // �ͽ��ü� �ִ� ���� �ð�
-	const float LIMIT_EXTINCTION_POWER_RATE		= 0.2f;  // �ͽ��ü� ���ݷ� ���� ���� ��
 
 	const float MIN_EXTINCTION_DEGREE_Z			= -45.f; // �ͽ��ü� �ּ� ����
 	const float MAX_EXTINCTION_DEGREE_Z			= 0.f;   // �ͽ��ü� �ְ� ����
@@ -73,30 +72,40 @@ static const CX2GUUser::SkillCutInSet s_SkillCutInSet[] =
 
 CX2GUEL::CX2GUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int frameBufferNum, CX2Unit* pUnit )
 : CX2GUUser( unitIndex, teamNum, pScriptLuaState, frameBufferNum, pUnit )
-, m_iPreComboCount( -1 )
+, m_pSkillTemplet(NULL)
 , m_iPressedSkillSlotIndex( -1 )
 , m_fMPConsume ( 0.f )
+, m_iPreComboCount( -1 )
+, m_uiDodgeAndSlashMaxReuseCount(0)
+, m_uiDodgeAndSlashReuseCount(0)
 , m_fFireBallPowerRate(1.f)
 , m_fChivalryBuffCheckTime ( 0.f )
 , m_uiChivalryAttackBuffFactorID ( 0 )
 , m_uiChivalryDefenceBuffFactorID ( 0 )
 , m_uiChivalryLevel( 0 )
 , m_bIsActiveEndurancePower( false )
+, m_fStigmaOfFireCoolTime( 0.f )
+, m_bIsStigmaOfFire( false )
+, m_uiSkillLevelStigmaOfFire( 0 )
+, m_eFireBlossomsSaveDebuffID( BTI_NONE )
+, m_fFireBlossomsCoolTime( 0.f )
+, m_fFireBlossomsCheckTime( -1.f )
+, m_bIsFireBlossoms( false )
+, m_uiFireBlossomsSkillLevel( 0 )
+, m_bIsLearnUnextinguishableFire( false )
+// �׷��� ������ ��� ����
 , m_fExtinctionRemainTime( 0.f )
 , m_fExtinctionDegreeZ ( 30.f )
+, m_hExctionBG(INVALID_PARTICLE_SEQUENCE_HANDLE)
+, m_hExtinctionArrow(INVALID_PARTICLE_SEQUENCE_HANDLE)
+, m_hExtinctionArrowParticle(INVALID_PARTICLE_HANDLE)
 , m_bIsApplyVictoriousSword ( false )
 , m_fDodgeAndSlashCoolTimeDecreaseRate ( 1.f )
-, m_hExtinctionArrow(INVALID_PARTICLE_SEQUENCE_HANDLE)
-, m_hExctionBG(INVALID_PARTICLE_SEQUENCE_HANDLE)
-, m_hExtinctionArrowParticle(INVALID_PARTICLE_HANDLE)
-, m_pSkillTemplet(NULL)
 , m_bIsDashAttackPossible(true)
 , m_uiSPKXZReattakCount(0)
-, m_uiDodgeAndSlashMaxReuseCount(0)
-, m_uiDodgeAndSlashReuseCount(0)
-// �׷��� ������ ��� ����
 , m_iComboXXdownXNowLoopCount (0)
 , m_iComboXXdownXMaxLoopCount (0)
+// ������¡ ��Ʈ ��� ����
 , m_bAbleQuickStand ( false )
 , m_bAbleQuickStandAttack ( false )
 , m_iRushingSwordAddLoopValue ( 0 )
@@ -106,28 +115,18 @@ CX2GUEL::CX2GUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int 
 , m_fDrasticChargeNowLoopTime ( 0 )
 , m_fDrasticChargeLoopDecreaseMPValue ( 0 )
 , m_bIsProvokeStateChange ( false )
-// ������¡ ��Ʈ ��� ����
-, m_fStigmaOfFireCoolTime( 0.f )
-, m_bIsStigmaOfFire( false )
-, m_uiSkillLevelStigmaOfFire( 0 )
-, m_eFireBlossomsSaveDebuffID( BTI_NONE )
-, m_fFireBlossomsCoolTime( 0.f )
-, m_fFireBlossomsCheckTime( -1.f )
-, m_bIsFireBlossoms( false )
-, m_uiFireBlossomsSkillLevel( 0 )
+, m_hSnapCresherLoop ( INVALID_EFFECTSET_HANDLE )
+, m_hSnapCreaherLoopAttack ( INVALID_EFFECTSET_HANDLE )
+, m_hXXDownXLoop ( INVALID_EFFECTSET_HANDLE )
+, m_hDrasticChargeLoop ( INVALID_EFFECTSET_HANDLE )
+, m_hDrasticChargeGroundFire ( INVALID_EFFECTSET_HANDLE )
 , m_fJuggernautBusterNowLoopTime ( 0.f )
 , m_bJuggernautBusterIsStartDirectionRight ( false )
 , m_hSBHScaletRoseDamageEffect( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_bIsThereBlazingDanceTarget( false )
+, m_bIsBlazingDanceLastAttack( false )
 , m_bIsFrameSword( false )
 , m_uiSkillLevelFlameSword( 0 )
-, m_bIsLearnUnextinguishableFire( false )
-, m_bIsBlazingDanceLastAttack( false )
-, m_hSnapCresherLoop ( INVALID_EFFECTSET_HANDLE )
-, m_hSnapCreaherLoopAttack ( INVALID_EFFECTSET_HANDLE )
-, m_hDrasticChargeLoop ( INVALID_EFFECTSET_HANDLE )
-, m_hDrasticChargeGroundFire ( INVALID_EFFECTSET_HANDLE )
-, m_hXXDownXLoop ( INVALID_EFFECTSET_HANDLE )
 
 , m_fWallOfProminenceLifeTime( 0.0f )
 , m_fStigmaOfFireDamageValue( 1.0f )
@@ -146,11 +145,11 @@ CX2GUEL::~CX2GUEL(void)
 {
 }
 
-/*static*/ void CX2GUEL::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUEL::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
-/*static*/ void CX2GUEL::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUEL::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -442,6 +441,7 @@ CX2GUEL::~CX2GUEL(void)
 				}
 			}
 		} // break ������ �ȵ�.
+		[[fallthrough]];
 	// 1-1 ���̹� ����Ʈ
 	case CX2Unit::UC_ELESIS_SABER_KNIGHT:
 		{
@@ -565,6 +565,7 @@ CX2GUEL::~CX2GUEL(void)
 
 
 		} // break ������ �ȵ�.
+		[[fallthrough]];
 	// 1-2 ���̷� ����Ʈ
 	case CX2Unit::UC_ELESIS_PYRO_KNIGHT:
 		{
@@ -609,7 +610,7 @@ CX2GUEL::~CX2GUEL(void)
 }
 /*virtual*/ void CX2GUEL::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -661,6 +662,8 @@ CX2GUEL::~CX2GUEL(void)
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -2710,6 +2713,7 @@ void CX2GUEL::InitStateByUnitClass()
 			m_StateList[stateData.stateID] = stateData;
 			// Ŀ�ǵ�, �޺� ��
 		} //break;
+		[[fallthrough]];
 	case CX2Unit::UC_ELESIS_SABER_KNIGHT:
 		{
 			stateData.Init();
@@ -2806,6 +2810,7 @@ void CX2GUEL::InitStateByUnitClass()
 			stateData.OnFrameMoveFuture	= SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SBH_XXXZ_FrameMoveFuture );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		[[fallthrough]];
 	case CX2Unit::UC_ELESIS_PYRO_KNIGHT:
 		{
 			stateData.Init();
@@ -2937,8 +2942,6 @@ bool CX2GUEL::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAct
 
 		float fCoolTimeLeft = pSkillSlotData->m_fCoolTimeLeft;
 
-		bool bSlotB = (m_iPressedSkillSlotIndex > 3) ? true : false;
-		int iSlotIndex = (m_iPressedSkillSlotIndex > 3) ? m_iPressedSkillSlotIndex-4 : m_iPressedSkillSlotIndex;
 
 
 #if X2_DEV_TOOLS
@@ -3075,10 +3078,10 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 	{
 		if( CX2Game::GT_PVP == g_pX2Game->GetGameType() )
 		{
-			const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+			const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
-			if( GetTeam() == CX2Room::TN_RED && g_pX2Game->GetRedTeamKill() > g_pX2Game->GetBlueTeamKill() ||
-				GetTeam() == CX2Room::TN_BLUE && g_pX2Game->GetRedTeamKill() < g_pX2Game->GetBlueTeamKill() )
+			if( (GetTeam() == CX2Room::TN_RED && g_pX2Game->GetRedTeamKill() > g_pX2Game->GetBlueTeamKill()) ||
+				(GetTeam() == CX2Room::TN_BLUE && g_pX2Game->GetRedTeamKill() < g_pX2Game->GetBlueTeamKill()) )
 			{
 				if( eWayOfSwordState == WSS_VIGOR )
 				{
@@ -3256,7 +3259,7 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 	g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"DamageImpactCoreRed" );
 	g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"DamageImpactSlashRed" );
 }
-/*static*/ void CX2GUEL::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUEL::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 
 }
@@ -3544,7 +3547,7 @@ void CX2GUEL::WayOfSwordStateChange()
 		iNextWayOfSwordState = m_FrameDataNow.syncData.m_CannonBallCount;
 	}
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( iNextWayOfSwordState == WSS_VIGOR &&
 		eWayofSwordState != WSS_VIGOR )
@@ -3807,7 +3810,7 @@ void CX2GUEL::DieFrontStartFuture()
 {
 	CommonStateStartFuture();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();
@@ -3841,7 +3844,7 @@ void CX2GUEL::DieBackStartFuture()
 {
 	CommonStateStartFuture();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();
@@ -8958,7 +8961,7 @@ void CX2GUEL::BlazingDanceFindTargetAndMove()
 		}
 	}
 }
-const bool CX2GUEL::BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const CKTDGLineMap::LineData* pLineData_  )
+bool CX2GUEL::BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const CKTDGLineMap::LineData* pLineData_  )
 {
 	// Ÿ���� ����, ��ġ�� �� ������ �̵���Ű�⿡ �������� üũ
 
@@ -9021,7 +9024,7 @@ const bool CX2GUEL::BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const 
 	return bValiedTargetPosition;
 }
 
-const bool CX2GUEL::GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ )
+bool CX2GUEL::GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ )
 {
 	switch( UnitClassLine_ )
 	{
@@ -9033,6 +9036,8 @@ const bool CX2GUEL::GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ )
 			case CX2Unit::UC_ELESIS_GRAND_MASTER:
 
 				return true;
+				break;
+			default:
 				break;
 			}
 		} break;
@@ -9046,8 +9051,12 @@ const bool CX2GUEL::GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ )
 
 				return true;
 				break;
+			default:
+				break;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;

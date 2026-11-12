@@ -1,4 +1,8 @@
 #include "x2/platform/debug.h"
+
+#include <cstdlib>
+#include <fstream>
+#include <string>
 #include "x2/platform/unicode.h"
 
 #include <cstdio>
@@ -18,6 +22,29 @@ const wchar_t* WidenStatic(const char* name)
         it->second = Utf8ToWide(name ? name : "");
     return it->second.c_str();
 }
+
+#if defined(_WIN32)
+
+bool IsDebuggerAttached()
+{
+    return ::IsDebuggerPresent() != 0;
+}
+
+#else
+
+bool IsDebuggerAttached()
+{
+    std::ifstream status("/proc/self/status");
+    std::string line;
+    while (std::getline(status, line))
+    {
+        if (line.rfind("TracerPid:", 0) == 0)
+            return std::strtol(line.c_str() + 10, nullptr, 10) != 0;
+    }
+    return false;
+}
+
+#endif
 
 } // namespace x2::platform
 

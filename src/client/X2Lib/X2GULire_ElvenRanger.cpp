@@ -11,7 +11,6 @@ namespace _CONST_RENA_
 
 	const int   MAX_PRIOR_PLANNED_BLOW_ACTIVE_NUM = 14;				/// ���� �ϰ� �ִ� ��ø ��
 	const int   MIN_PRIOR_PLANNED_BLOW_ACTIVE_NUM = 5;				/// ���� �ϰ� �ּ� ��ø ��
-	const int	PRIOR_PLANNED_BLOW_ACTIVE_LEVEL_1 = 5;				/// ���� �ϰ� ����Ʈ ���� 1
 	const int	PRIOR_PLANNED_BLOW_ACTIVE_LEVEL_2 = 9;				/// ���� �ϰ� ����Ʈ ���� 2
 	const int	PRIOR_PLANNED_BLOW_ACTIVE_LEVEL_3 = 14;				/// ���� �ϰ� ����Ʈ ���� 3
 
@@ -85,11 +84,11 @@ CX2GULire_ElvenRanger::CX2GULire_ElvenRanger( int unitIndex, int teamNum,
 , m_hWindSneakerFoot( INVALID_EFFECTSET_HANDLE )
 , m_hDESlideKick( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_iArrowMeshPlayerIndex( 0 )
-, m_fPreRenderParamColorA (1.f)
-, m_fRenderParamColorA ( 1.f )
-, m_fSpiralStrikeRemainingTime ( 5.5f )
-
 , m_fPriorPlannedBlowIncreaseHPRate ( 0.f )
+, m_fSpiralStrikeRemainingTime ( 5.5f )
+, m_fPreRenderParamColorA (1.f)
+
+, m_fRenderParamColorA ( 1.f )
 {
 	m_bReAttackZ1Right		= false;
 	m_fReAttackZ1Time		= 0.0f;
@@ -1469,6 +1468,8 @@ void CX2GULire_ElvenRanger::InitState()
 		{
 			m_iSkillCutInSetIndex = 3;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -2327,6 +2328,8 @@ void CX2GULire_ElvenRanger::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		} break;
 
+	default:
+		break;
 	}
 
 
@@ -2581,7 +2584,7 @@ void CX2GULire_ElvenRanger::InitEquippedActiveSkillState(bool bOnlySkillLevel /*
 
 /*virtual*/ void CX2GULire_ElvenRanger::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -2633,6 +2636,8 @@ void CX2GULire_ElvenRanger::InitEquippedActiveSkillState(bool bOnlySkillLevel /*
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -4623,6 +4628,8 @@ RENDER_HINT CX2GULire_ElvenRanger::CommonRender_Prepare()
 				return true;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -4756,7 +4763,7 @@ void CX2GULire_ElvenRanger::DieBackEventProcess()
 }
 
 
-#pragma DMLEE_NOTE( "�� �Լ� �� ĳ���� ���� �����ϰ� �����Ǹ� GUUSER�� �Űܼ� �ϳ��� ��������" )
+// Note: once this function is the same for every character, move it to CX2GUUser.
 
 //LESI_WAIT
 void CX2GULire_ElvenRanger::WaitStartFuture()
@@ -6950,7 +6957,6 @@ void CX2GULire_ElvenRanger::SiegeWaitFrameMove()
 //LESI_SIEGE_WAIT
 void CX2GULire_ElvenRanger::SiegeWaitEventProcess()
 {
-	const float MAGIC_LOOK_AT_IK_ANGLE_MAX = 35.f;
 
 
 	if( false == IsOnSomethingFuture() )
@@ -7135,7 +7141,7 @@ void CX2GULire_ElvenRanger::SiegeAttackXFrontFrameMove()
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 30.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 60.f / 180.f);
 		D3DXVECTOR3 vCoefficient = D3DXVECTOR3(fMaxCoefficient, fMinCoefficient, D3DX_PI * 45.f / 180.f);
-		float fDegree = ( DoAimingTarget( 1000.f, vCoefficient, bAimingTarget, vAimingTargetPos, vAimingTargetLandPos ) * 180.f ) / D3DX_PI;
+		[[maybe_unused]] float fDegree = ( DoAimingTarget( 1000.f, vCoefficient, bAimingTarget, vAimingTargetPos, vAimingTargetLandPos ) * 180.f ) / D3DX_PI;
 
 		if( FlushMp( 27.f * m_fMPConsumeRateSiegeArrow ) == true )
 		{
@@ -9925,7 +9931,6 @@ void CX2GULire_ElvenRanger::LESI_SI3_LE_PHOENIX_STRIKE_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
 	{
 		D3DXVECTOR3 pos = m_pXSkinAnim->GetCloneFramePosition( L"Dummy1_Rhand" );
-		D3DXVECTOR3 degree = GetRotateDegree();
 
 		CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->GetInstanceSequence( GetHandleRenaMajorParticleByEnum( RENA_MAJOR_PII_PHOENIX_START_WAVE ) );
 		if( NULL != pSeq )
@@ -10024,7 +10029,6 @@ void CX2GULire_ElvenRanger::LESI_SI3_LE_PHOENIX_STRIKE_HYPER_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
 	{
 		D3DXVECTOR3 pos = m_pXSkinAnim->GetCloneFramePosition( L"Dummy1_Rhand" );
-		D3DXVECTOR3 degree = GetRotateDegree();
 
 
 		CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->GetInstanceSequence( GetHandleRenaMajorParticleByEnum( RENA_MAJOR_PII_PHOENIX_START_WAVE ) );
@@ -13166,7 +13170,7 @@ void CX2GULire_ElvenRanger::LESI_LGA_DASH_JUMP_Z_EventProcess()
 
 void CX2GULire_ElvenRanger::LESI_LGA_DASH_JUMP_ZX_FrameMoveFuture()
 {
-	if( true == m_pXSkinAnimFuture->GetNowAnimationTime() > 0.72f )
+	if( m_pXSkinAnimFuture->GetNowAnimationTime() > 0.72f )
 	{
 		m_PhysicParam.passiveSpeed.x = -1.f;
 	}
@@ -13218,7 +13222,7 @@ void CX2GULire_ElvenRanger::LESI_LGA_DASH_JUMP_ZX_EventProcess()
 
 	//if( true == m_pXSkinAnimFuture->IsAnimationEnd() &&
 	//	true == IsOnSomethingFuture() )
-	if( true == m_pXSkinAnimFuture->GetNowAnimationTime() > 0.8f &&
+	if( m_pXSkinAnimFuture->GetNowAnimationTime() > 0.8f &&
 		true == IsOnSomethingFuture() )
 	{
 		StateChange( USI_JUMP_LANDING );
@@ -15239,12 +15243,8 @@ void CX2GULire_ElvenRanger::LESI_SA_RNW_GLIDING_STRIKE_FrameMove()
 
 	g_pX2Game->GetWorld()->FadeWorldColor( g_pX2Game->GetWorld()->GetOriginColor(), 1.0f );
 
-	D3DXVECTOR3 posR = m_pXSkinAnim->GetCloneFramePosition( L"Dummy1_Rhand" );
-	D3DXVECTOR3 posL = m_pXSkinAnim->GetCloneFramePosition( L"Dummy2_Lhand" );
 	D3DXVECTOR3 degree = GetRotateDegree();
 
-	D3DXVECTOR3 posRorg = posR;
-	D3DXVECTOR3 posLorg = posL;
 
 	LUA_GET_VALUE( m_LuaManager, "ARROW_DEGREE_Z", degree.z, 0.0f );
 
@@ -15407,7 +15407,7 @@ void CX2GULire_ElvenRanger::SetFatalityData()
 			}
 
 			m_sFatalityData.m_fPowerRate = pSkillTemplet->GetSkillAbilityValue( static_cast<CX2SkillTree::SKILL_ABILITY_TYPE>( CX2SkillTree::SA_SKILLDAMAGE_MULTIPLE_01 +
-				m_sFatalityData.m_eRating ), iSkillLevel );
+				static_cast<int>( m_sFatalityData.m_eRating ) ), iSkillLevel );
 		}
 	}
 }
@@ -15875,7 +15875,6 @@ void CX2GULire_ElvenRanger::DeletePriorPlannedBlowEffect()		/// ���� �
 void CX2GULire_ElvenRanger::UpdateStartOfDelayedFiring( bool bInsertUnit/*= true*/ )	/// �����ڰ� �߻��� ������ ��ȣź ���� ����
 {
 	vector<CX2DamageManager::StartOfDelayedFiringData*> vTempArrowList;
-	int													iArrowByUnitNum	= 0;
 	int													iArrowByGroundNum = 0;
 
 	/// �����ڰ� �����Ų ��� ȭ�� ��ȯ
@@ -15889,7 +15888,6 @@ void CX2GULire_ElvenRanger::UpdateStartOfDelayedFiring( bool bInsertUnit/*= true
 		{
 			vTempArrowList[i]->m_fCoolTime = _CONST_RENA_::START_OF_DELAYED_FIRING_DELAY_ACTIVE_TIME;
 
-			++iArrowByUnitNum;	/// ���ֿ� ����� ȭ��
 
 		}
 		else
@@ -15940,7 +15938,6 @@ void CX2GULire_ElvenRanger::DeleteStartOfDelayedFiring( vector<CX2DamageManager:
 		if( -1 == vTempArrowList[i]->m_iArrowIndex && true == bDeleteUnitArrow )
 		{
             unsigned uUnitNum = g_pX2Game->GetUnitNum();
-			const vector<CX2GameUnit*>& vecUnitList = g_pX2Game->GetUnitList();
 
 			for( UINT j = 0; j < uUnitNum; ++j )								/// ���ֿ��� ����� ȭ�� ���� �˻�
 			{
@@ -16291,8 +16288,6 @@ void CX2GULire_ElvenRanger::ClearStartOfDelayedFiringData()		/// ��� Ȥ�
 		if ( true == vecStart.empty() )
 			continue;
 
-		float fCoolTime	   = 0.01f;
-		bool  bIsExplosion = false;
 
 		for( UINT j = 0; j < vecStart.size(); ++j )		/// �����ڰ� ������ ȭ�� ���� �˻�
 		{
@@ -16324,7 +16319,8 @@ void CX2GULire_ElvenRanger::ClearStartOfDelayedFiringData()		/// ��� Ȥ�
 				/// �����ڰ� ��ġ�ϰ�, ���� �Ÿ� �ȿ� �ִ� ������ ����Ʈ �˻�
 				if( iUnitIndex == kEffect.GetDamageData().optrAttackerGameUnit->GetUnitIndex() )
 				{
-                    g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( kEffect.GetHandle() );
+                    CX2DamageEffect::CEffectHandle hEffect = kEffect.GetHandle();
+                    g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( hEffect );
 				}
 			} break;
 		}
@@ -16576,8 +16572,7 @@ void CX2GULire_ElvenRanger::CreateGuideArrow( bool bMemo_, bool bHyperMode_/* = 
 	}
 
 	//���̵� �ַο� ����Ʈ ����
-	CX2DamageEffect::CEffect* aDamageEffect[4];
-    ZeroMemory( aDamageEffect, sizeof(0) );
+	CX2DamageEffect::CEffect* aDamageEffect[4] = {};
     int iNumDe = 0;
 	aDamageEffect[iNumDe++] = g_pX2Game->GetDamageEffect()->CreateInstance( this, EffectName.c_str() , GetPowerRate(), posR, degree, degree, m_FrameDataNow.unitCondition.landPosition.y );
 	degree.z += fDegreeZ;
@@ -17036,7 +17031,7 @@ void CX2GULire_ElvenRanger::LESI_A_LGA_RAPID_SHOT_READY_StartFuture()
 {
 	CommonStateStartFuture();
 
-	switch( m_RapidShotDataPtr->GetSlotID_RapidShot() )
+	switch( static_cast<USER_STATE_ID>( m_RapidShotDataPtr->GetSlotID_RapidShot() ) )
 	{
 	case USI_SPECIAL_ATTACK_1:
 		m_RapidShotDataPtr->SetSkillKeyPointer( &m_InputData.pureA );
@@ -18350,7 +18345,7 @@ void CX2GULire_ElvenRanger::CommonHyperModeFrameMove( float fTime1_, float fTime
 	CommonFrameMove();
 }
 
-const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GULire_ElvenRanger::GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_)
+CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GULire_ElvenRanger::GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_)
 {
 	CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition = pSkillTemplet_->m_eActiveSkillUseCondtion;
 
@@ -18361,6 +18356,8 @@ const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GULire_ElvenRanger::GetSkillUs
 			if( GetEqippedSkillMemo(CX2SkillTree::SMI_RENA_MEMO22) == true )
 				eActiveSkillUseCondition = CX2SkillTree::ASUT_AIR;
 		} break;
+	default:
+		break;
 	}
 
 

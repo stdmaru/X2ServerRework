@@ -265,7 +265,7 @@ bool CX2StateTrainingGame::QuitGame()
 }
 
 
-bool CX2StateTrainingGame::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingGame::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_ACK kEvent;
@@ -293,7 +293,7 @@ bool CX2StateTrainingGame::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPA
 }
 
 
-bool CX2StateTrainingGame::Handler_EGS_PLAY_TIME_OUT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingGame::Handler_EGS_PLAY_TIME_OUT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	// 타임아웃 됐을때 user가 살아있으면 승리인 조건도 있을 수 있다
 	if( NULL != g_pX2Game && CX2Game::GT_DUNGEON == g_pX2Game->GetGameType() )
@@ -327,7 +327,7 @@ bool CX2StateTrainingGame::Handler_EGS_PLAY_TIME_OUT_NOT( HWND hWnd, UINT uMsg, 
 
 
 
-bool CX2StateTrainingGame::Handler_EGS_REMAINING_PLAY_TIME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingGame::Handler_EGS_REMAINING_PLAY_TIME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	float kEvent;
@@ -363,7 +363,7 @@ bool CX2StateTrainingGame::Handler_EGS_END_TC_GAME_REQ( bool bSuccess )
 	return true;
 }
 
-bool CX2StateTrainingGame::Handler_EGS_END_TC_GAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingGame::Handler_EGS_END_TC_GAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_TC_GAME_ACK kEvent;
@@ -426,7 +426,7 @@ bool CX2StateTrainingGame::Handler_EGS_END_TC_GAME_ACK( HWND hWnd, UINT uMsg, WP
 }
 
 
-/*virtual*/ bool CX2StateTrainingGame::Handler_EGS_END_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateTrainingGame::Handler_EGS_END_GAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_GAME_NOT kEvent;
@@ -455,7 +455,7 @@ bool CX2StateTrainingGame::Handler_EGS_SET_TC_REMAINING_TIME_REQ( bool bEnable )
 	return true;
 }
 
-bool CX2StateTrainingGame::Handler_EGS_SET_TC_REMAINING_TIME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingGame::Handler_EGS_SET_TC_REMAINING_TIME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SET_TC_REMAINING_TIME_ACK kEvent;

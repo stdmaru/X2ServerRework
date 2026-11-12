@@ -5,9 +5,9 @@
 
 CX2UIPetInventory::CX2UIPetInventory( const CKTDXStage* const pNowStage, int iLayer )
 : CX2UIDragable(  const_cast< CKTDXStage* >( pNowStage ), NULL ),
+NowPositionState(NORMAL),
 m_pDlgPetInventory( NULL ),
 m_bShow( false ),
-NowPositionState(NORMAL),
 m_vDlgSize( 0, 0 )
 {
 	InitUIPetInventory(iLayer);
@@ -113,7 +113,7 @@ HRESULT CX2UIPetInventory::OnFrameMove( double fTime, float fElapsedTime )
 	return	S_OK;
 }
 
-bool CX2UIPetInventory::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInventory::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDlgPetInventory ) )
@@ -217,7 +217,7 @@ bool CX2UIPetInventory::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 }
 
-bool CX2UIPetInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInventory::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch ( wParam )
 	{
@@ -529,7 +529,6 @@ bool	CX2UIPetInventory::MouseUp( D3DXVECTOR2 mousePos )
 
 	if ( *m_pSlotBeforeDragging	!= NULL )	// 드래그 앤 드랍 일때
 	{
-		CX2SlotItem*	pSlotItem	= static_cast< CX2SlotItem* >( *m_pSlotBeforeDragging );
 		bool			bCheck		= false;
 		//{{ kimhc // 실시간 엘소드 중 던전내에서 유저가 죽었거나, wait, mpCharge 상태가 아닐때 장비 교체 막기
 		if ( g_pMain->GetNowStateID() == CX2Main::XS_DUNGEON_GAME )
@@ -800,12 +799,14 @@ bool CX2UIPetInventory::OnDropAnyItem( D3DXVECTOR2 mousePos )
 
 		}
 		return true;
+	default:
+		break;
 	}
 
 	return false;
 }
 
-bool CX2UIPetInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
+bool CX2UIPetInventory::OnRClickedItem( D3DXVECTOR2 /*mousePos*/ )
 {
 	// oasis907 : 김상윤 [2010.9.13] // 우클릭 처리 막음
 	/*
@@ -897,7 +898,7 @@ void CX2UIPetInventory::Handler_EGS_SET_AUTO_FEED_PETS_REQ( bool bAutoFeed )
 	return;
 }
 
-bool CX2UIPetInventory::Handler_EGS_SET_AUTO_FEED_PETS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInventory::Handler_EGS_SET_AUTO_FEED_PETS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SET_AUTO_FEED_PETS_ACK kEvent;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "x2/platform/process.h"
 
 
 #include "./X2StateLogin.h"
@@ -184,31 +185,31 @@ bool CX2StateLogin::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			{
 				wstring wstrURL = L"";
 				wstrURL = L"http://www.elswordonline.com";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_REGISTER_MOVE :
 			{
 				wstring wstrURL = L"";
 				wstrURL = L"https://myaccount.elswordonline.com/registration";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_FACEBOOK_MOVE :
 			{
 				wstring wstrURL = L"http://www.facebook.com/ElswordOnlineNA";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_STEAM_COMMUNITY_MOVE :
 			{
 				wstring wstrURL = L"http://steamcommunity.com/sharedfiles/filedetails/?id=93245387";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_CHANGE_STATE_MEMBER_JOIN:
 			{
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_JOIN, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_JOIN, 0, false );
 				return true;
 			}
 			break;
@@ -228,7 +229,7 @@ bool CX2StateLogin::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 				if ( g_pMain->GetManualLogin() == true )
 				{
-					g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SLUCM_LOGIN, NULL, false );
+					g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SLUCM_LOGIN, 0, false );
 				}
 			}
 			break;
@@ -289,7 +290,7 @@ void CX2StateLogin::StateChangeLoading()
 
 	g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_656 ) );
 
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOADING, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOADING, 0, false );
 }
 
 
@@ -315,6 +316,8 @@ void CX2StateLogin::RetrieveUserIDnPassword()
 	{
 		switch( g_pMain->GetPublisher() )
 		{
+		default:
+			break;
 		}
 	}
 
@@ -322,7 +325,7 @@ void CX2StateLogin::RetrieveUserIDnPassword()
 
 #if X2_DEV_TOOLS
 	wstringstream wstrmWindowTitle;
-	wstrmWindowTitle << L"X2_" << g_pMain->GetClientVersion() << L"; " << __DATE__ << L", " << __TIME__ << L"; " << g_pInstanceData->GetUserID().c_str() << L"; " << _getpid();
+	wstrmWindowTitle << L"X2_" << g_pMain->GetClientVersion() << L"; " << __DATE__ << L", " << __TIME__ << L"; " << g_pInstanceData->GetUserID().c_str() << L"; " << x2::platform::CurrentProcessId();
 	SetWindowText( g_pKTDXApp->GetHWND(), wstrmWindowTitle.str().c_str() );
 #endif // _IN_HOUSE_
 
@@ -493,7 +496,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_REQ()
 	// The password Steam logins send: typed by hand without Steam, the client quits (CX2Steam::IsValidSteamUser of the
 	// original; there is no Steam client in the port).
 	if( kPacket.m_wstrPassword == L"J2380DE81621XZ" )
-		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 
 	g_pData->GetServerProtocol()->SendChPacket( ECH_VERIFY_ACCOUNT_REQ, kPacket );
 	g_pMain->AddServerPacket( ECH_VERIFY_ACCOUNT_ACK );
@@ -501,7 +504,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_REQ()
 	return true;
 }
 
-bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	SAFE_DELETE_DIALOG( m_pDLGMsgBox );
 
@@ -562,7 +565,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM
 		{
 			if( kEvent.m_iOK == NetError::ERR_K3RCOMBO_AUTH_02 )
 			{
-				ShellExecuteA(NULL, "open", kEvent.m_strAgreementURL.c_str(), NULL, NULL, SW_SHOW);
+				x2::platform::OpenUrl( x2::platform::Utf8ToWide( kEvent.m_strAgreementURL ) );
 			}
 
 			if( g_pMain->GetManualLogin() == false )
@@ -587,7 +590,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM
 
 
 
-bool CX2StateLogin::Handler_ECH_SECURITY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateLogin::Handler_ECH_SECURITY_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 인증을 기다리지 않도록 처리
 	g_pMain->DeleteServerPacket( ECH_VERIFY_ACCOUNT_ACK );
@@ -601,7 +604,7 @@ bool CX2StateLogin::Handler_ECH_SECURITY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM 
 	return true;
 }
 
-bool CX2StateLogin::Handler_ECH_SECURITY_AUTH_REQ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateLogin::Handler_ECH_SECURITY_AUTH_REQ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	KECH_SECURITY_AUTH_REQ kPacket;
 

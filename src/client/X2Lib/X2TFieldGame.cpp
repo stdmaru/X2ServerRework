@@ -29,10 +29,10 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 //#endif  MODIFY_PORTAL_GATE
 //, m_pInAreaParticle( NULL )
 //, m_pOtherLineParticle( NULL )
-, m_pDLGLoadingState( NULL )
-, m_pCX2GameLoadingTip( NULL )
-//#ifdef MODIFY_PORTAL_GATE
 , m_uiPortalCount(0)
+, m_pDLGLoadingState( NULL )
+//#ifdef MODIFY_PORTAL_GATE
+, m_pCX2GameLoadingTip( NULL )
 //#endif //MODIFY_PORTAL_GATE
 {
 	g_pTFieldGame			= this;
@@ -235,9 +235,9 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 
 	// 마켓리스트 ui 생성
 	m_pSquareUI = new SquareUI( g_pMain->GetNowState() );
-    ASSERT( m_pSquareUI != NULL );
-    if ( m_pSquareUI != NULL )
-	m_pSquareUI->SetShow(false);
+	ASSERT( m_pSquareUI != NULL );
+	if ( m_pSquareUI != NULL )
+		m_pSquareUI->SetShow(false);
 
 	// 갈림길 가이드 생성
 //#ifndef MODIFY_PORTAL_GATE
@@ -305,8 +305,8 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 
 	//{{ kimhc // 2009-12-15 // 이전에 플레이 했던 서버군 저장
 	//SaveScriptServerGroupFile();
-    if ( g_pInstanceData != NULL )
-        g_pInstanceData->SaveScriptServerGroupFile();
+	if ( g_pInstanceData != NULL )
+		g_pInstanceData->SaveScriptServerGroupFile();
 	//}} kimhc // 2009-12-15 // 이전에 플레이 했던 서버군 저장
 
 	//{{ JHKang / 강정훈 / 2011.6.26 / 휴면 복귀 버프 남은 기간 표시
@@ -332,8 +332,9 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 		if ( NULL != g_pChatBox &&
 			NULL != pUnit )
 		{
-			if ( g_pData->GetUIManager() == NULL &&
-				g_pData->GetUIManager()->GetUISkillTree() == NULL )
+			// The original tested GetUIManager() == NULL && GetUIManager()->GetUISkillTree() == NULL, which can only
+			// hold by dereferencing NULL, so these notices never showed. Kept off (docs/original/bugs.md).
+			if ( false )
 			{
 				if( pUnit->IsTradeBlockUnit() == true )
 					g_pChatBox->AddChatLog( pUnit->GetTradeBlockChatMsg().c_str(), KEGS_CHAT_REQ::CPT_TOTAL, D3DXCOLOR( 1,1,0,1 ), L"#CFFFF00" );
@@ -608,6 +609,8 @@ void CX2TFieldGame::OpenSubAni()
 		//m_iSubAniTime = 10;
 		//m_pSubAniMesh = g_pKTDXApp->GetDeviceManager()->OpenXSkinMesh( L"Besma_Peita_Dungeon_Gate_L.X" );
 		break;
+	default:
+		break;
 	}
 
 	if( m_pSubAniMesh != NULL )
@@ -642,6 +645,8 @@ void CX2TFieldGame::OpenSubAniSoundPlay()
 	case SEnum::VMI_ALTERA:
 		break;
 	case SEnum::VMI_PEITA:
+		break;
+	default:
 		break;
 	}
 }
@@ -731,8 +736,8 @@ bool CX2TFieldGame::GetEnableKey()
 void CX2TFieldGame::JoinFieldUnit( KFieldUserInfo* pKFieldUserInfo )
 {
     ASSERT( pKFieldUserInfo != NULL );
-    if ( pKFieldUserInfo == NULL )
-        return;
+	if ( pKFieldUserInfo == NULL )
+		return;
 
 	CX2SquareUnit* pCX2FieldUnit = NULL;
 
@@ -847,14 +852,14 @@ bool    CX2TFieldGame::AddUnitToDeviceList( CX2Unit* pUnit
 CX2SquareUnit* CX2TFieldGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit )
 {
     ASSERT( pUnit != NULL );
-    if ( pUnit == NULL )
-        return NULL;
+	if ( pUnit == NULL )
+		return NULL;
 
 	CX2SquareUnitPtr pCX2FieldUnit = CX2SquareUnit::CreateSquareUnit( bMyUnit, pUnit,
 		CX2SquareUnit::GetSquareUnitScriptFileName( pUnit->GetClass() ), true );
     ASSERT( pCX2FieldUnit != NULL );
-    if ( pCX2FieldUnit == NULL )
-        return NULL;
+	if ( pCX2FieldUnit == NULL )
+		return NULL;
 
 
 
@@ -862,8 +867,8 @@ CX2SquareUnit* CX2TFieldGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit 
 		pCX2FieldUnit->Init();
 
 //#ifdef TITLE_SYSTEM
-    if( bInit == false )
-        pCX2FieldUnit->UpdateEquippedEmblem();
+	if( bInit == false )
+		pCX2FieldUnit->UpdateEquippedEmblem();
 //#endif
 
 
@@ -1123,7 +1128,7 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 //
 // 	D3DXVec3TransformCoord( &vResult, &v3, &mt );
 //
- 	bool bIntersect;
+ 	[[maybe_unused]] bool bIntersect;
 
  	if ( g_pKTDXApp->GetDGManager()->GetFrustum().CheckSphere( v3, 0.0f ) == false )
  		bIntersect = false;
@@ -1207,14 +1212,13 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 
 		D3DXVECTOR3 landPos = GetWorld()->GetLineMap()->GetLandPosition_LUA( m_pMyUnit->GetPos() );
 		landPos.y += 0.5f;
-		bool bOnOtherLine = false;
+		[[maybe_unused]] bool bOnOtherLine = false;
 		if(pLineData->lineType == CKTDGLineMap::LT_OTHER_ROAD)
 			bOnOtherLine = true;
 
 		int iOtherLine;
 		bool bShowOtherLine = false;
 		bool bShowUp = false;
-		float fOtherLineDist = 0.f;
 		m_bFindOtherLine = GetWorld()->GetLineMap()->GetNearOtherLine(landPos, otherLinePos, m_pMyUnit->GetLastTouchLineIndex(), iOtherLine, 200.f);
 
 		const CKTDGLineMap::LineData* pOtherLineData = GetWorld()->GetLineMap()->GetLineData( iOtherLine );
@@ -1236,8 +1240,8 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 		{
 			CKTDGParticleSystem::CParticleEventSequence* pSeqPortal	= GetUiParticle()->GetInstanceSequence( m_hOtherLine );
 			D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos( otherLinePos );
-            if ( pSeqPortal != NULL )
-		        pSeqPortal->SetPosition(D3DXVECTOR3(finalPos.x, finalPos.y - 200.f, 0.f));
+			if ( pSeqPortal != NULL )
+				pSeqPortal->SetPosition(D3DXVECTOR3(finalPos.x, finalPos.y - 200.f, 0.f));
 
 			if(bShowUp == true)
 			{
@@ -1287,11 +1291,10 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 			}
 		}
 
-		fOtherLineDist = GetDistance(landPos, otherLinePos);
 		if( m_bFindOtherLine == true )
 		{
 			// 갈림길 존재
-			if( (bShowUp == true && GET_KEY_STATE( GA_UP ) == TRUE || (bShowUp == false && GET_KEY_STATE( GA_DOWN ) == TRUE ) ) )
+			if( ( bShowUp == true && GET_KEY_STATE( GA_UP ) == TRUE ) || ( bShowUp == false && GET_KEY_STATE( GA_DOWN ) == TRUE ) )
 			{
 				if ( true == m_pMyUnit->GetRidingOn() )
 				{
@@ -1311,15 +1314,10 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 	{
 		if(m_pSubAniXSkinAnim != NULL)
 		{
-			__time64_t t0 = g_pData->GetServerCurrentTime();
-#ifdef	CONVERSION_VS
+			const time_t t0 = static_cast<time_t>( g_pData->GetServerCurrentTime() );
             struct tm   ktm;
             struct tm* ptm = &ktm;
-            bool bOK = _localtime64_s( ptm, &t0 ) == 0;
-#else
-			struct tm* ptm = _localtime64( &t0 );
-			bool bOK = ( ptm != NULL );
-#endif // CONVERSION_VS
+            bool bOK = localtime_s( ptm, &t0 ) == 0;
 			if ( bOK == true )
 			{
 				float fNowSecond = (float)ptm->tm_hour * 3600.f + (float)ptm->tm_min * 60.f + (float) ptm->tm_sec;
@@ -2278,7 +2276,7 @@ bool CX2TFieldGame::Handler_EGS_SQUARE_LIST_REQ(int iPage)
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_SQUARE_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_SQUARE_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SQUARE_LIST_ACK kEvent;
@@ -2380,7 +2378,7 @@ void CX2TFieldGame::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 			talkBox.m_BackTexColor		= coBackColor_;
 
 			talkBox.m_bUseOutLine		 = true;
-			if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+			if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 			{
 				talkBox.m_bUseOutLine = false;
 			}
@@ -2477,7 +2475,7 @@ CX2Unit*    CX2TFieldGame::GetSquareUnitUnitByNickName( const WCHAR* wszNickName
 		CX2SquareUnitPtr pCX2SquareUnit = m_UserUnitList[i];
 		if( pCX2SquareUnit != NULL && pCX2SquareUnit->GetUnit() != NULL )
 		{
-			if( 0 == StrCmp( pCX2SquareUnit->GetUnit()->GetNickName(), wszNickName ) )
+			if( 0 == wcscmp( pCX2SquareUnit->GetUnit()->GetNickName(), wszNickName ) )
 			{
 				return pCX2SquareUnit->GetUnit();
 			}
@@ -2486,7 +2484,7 @@ CX2Unit*    CX2TFieldGame::GetSquareUnitUnitByNickName( const WCHAR* wszNickName
 
     for( const AddUserInUnitLoader& addUser : m_listAddUserInUnitLoader )
     {
-        if ( addUser.m_pUnit != NULL && 0 == StrCmp( addUser.m_pUnit->GetNickName(), wszNickName ) )
+        if ( addUser.m_pUnit != NULL && 0 == wcscmp( addUser.m_pUnit->GetNickName(), wszNickName ) )
         {
             return addUser.m_pUnit;
         }//if
@@ -2542,8 +2540,8 @@ void CX2TFieldGame::SetFreeCamera( bool bFreeCamera )
 
 void CX2TFieldGame::SyncUnitFrame()
 {
-    if ( m_pMyUnit == NULL )
-        return;
+	if ( m_pMyUnit == NULL )
+		return;
 
 	std::vector<CX2SquareUnit::SyncUnitState> syncData;
 	D3DXVECTOR3 unitPos(0,0,0);
@@ -3008,8 +3006,8 @@ void CX2TFieldGame::ByeNpc()
 
 bool CX2TFieldGame::TalkNpc()
 {
-    if ( m_pMyUnit == NULL )
-        return false;
+	if ( m_pMyUnit == NULL )
+		return false;
 
 	// 마켓진입구인지 확인
 	if(m_bJoinMarket == true && m_iJoinMarketIndex >= 0)
@@ -3389,7 +3387,7 @@ bool CX2TFieldGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			IF_EVENT_ENABLED( CEI_READY_TO_SOSUN_EVENT )
 			{
 				CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				return Handler_EGS_READY_TO_SOSUN_EVENT_REQ();
 			}
@@ -3397,7 +3395,7 @@ bool CX2TFieldGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	case RTSEUM_EVENT_CANCEL:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		} break;
 	case REUM_OK:
 		{
@@ -3494,7 +3492,7 @@ bool CX2TFieldGame::Handler_EGS_JOIN_SQUARE_REQ( UidType iSquareUID )
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_JOIN_SQUARE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_JOIN_SQUARE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_SQUARE_ACK kEvent;
@@ -3597,7 +3595,7 @@ bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_REQ()
 
 }
 
-bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_OPEN_PVP_ROOM_LIST_ACK kEvent;
@@ -3616,7 +3614,7 @@ bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WP
 			g_pMain->SetChannelList( kEvent.m_vecChannel );
 
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_437 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 
 		}
 	}
@@ -3626,7 +3624,7 @@ bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WP
 }
 
 //{{ kimhc // 실시간 엘소드 중 실시간 레벨업, 실시간 내구도 감소
-bool CX2TFieldGame::Handler_EGS_CHAR_LEVEL_UP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_CHAR_LEVEL_UP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAR_LEVEL_UP_NOT kEvent;
@@ -3691,7 +3689,7 @@ bool CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_REQ()
 	return true;
 }
 
-bool	CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool	CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
     ASSERT( pBuff != NULL );
@@ -3709,7 +3707,6 @@ bool	CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_ACK( HWND hWnd, UINT u
 			if ( g_pData->GetUIManager()->GetShow( CX2UIManager::UI_MENU_INVEN ) == true )
 				g_pData->GetUIManager()->GetUIInventory()->UpdateInventorySlotList( kEvent.m_vecInventorySlotInfo );
 
-			const int finalEventADay = 5; // 하루에 다섯번 이벤트
 
 			if ( kEvent.m_iRewardCount != 5 ) // 다섯번 째 보상을 받을 경우 팝업을 다르게 출력
 			{
@@ -3795,6 +3792,8 @@ void CX2TFieldGame::LoadFieldImage(wstring &imgL, wstring &imgR)
 		case SEnum::VMI_BATTLE_FIELD_SANDER_REST_00:	/// 윈드스톤 유적지
 			imgL = L"HQ_Loading_SANDER_REST_01.tga";
 			imgR = L"HQ_Loading_SANDER_REST_02.tga";
+			break;
+		default:
 			break;
 		}
 	}
@@ -3900,8 +3899,6 @@ void CX2TFieldGame::LoadUI()
 void CX2TFieldGame::OpenFieldName()
 {
 	//int nFieldMax = 14;
-	bool bDungeonGate = false;
-	bool bLounge = false;
 	int iFieldName = 0;
 
 
@@ -3909,8 +3906,8 @@ void CX2TFieldGame::OpenFieldName()
 
 	m_pDLGFieldName = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_Field_Title.lua" );
     ASSERT( m_pDLGFieldName != NULL );
-    if ( m_pDLGFieldName != NULL )
-    	g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGFieldName );
+	if ( m_pDLGFieldName != NULL )
+		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGFieldName );
 
 	m_fFieldNameTime = 0.f;
 	switch(g_pData->GetLocationManager()->GetCurrentVillageID())
@@ -4418,14 +4415,14 @@ void CX2TFieldGame::SquareUI::UpdateSquareSlotList( KEGS_SQUARE_LIST_ACK& kEvent
 		// 디폴트 커서 지정
 		CKTDGUIButton *pButton = (CKTDGUIButton*)pDialog->GetControl(L"Room_Over");
         ASSERT( pButton != NULL );
-		if(m_iNowIndex == i)
+		if(static_cast<UINT>( m_iNowIndex ) == i)
 			pButton->SetDownStateAtNormal(true);
 		else
 			pButton->SetDownStateAtNormal(false);
 	}
 }
 
-bool CX2TFieldGame::SquareUI::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::SquareUI::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch( uMsg )
 	{
@@ -4487,7 +4484,7 @@ void CX2TFieldGame::SquareUI::SetFocus(int iFocus)
 			{
 				CKTDGUIButton *pButton = (CKTDGUIButton*)pDialog->GetControl(L"Room_Over");
 
-				if(m_iNowIndex == i)
+				if(static_cast<UINT>( m_iNowIndex ) == i)
 					pButton->SetDownStateAtNormal(true);
 				else
 					pButton->SetDownStateAtNormal(false);
@@ -4590,7 +4587,7 @@ CX2TFieldGame::NpcJoinShadow::~NpcJoinShadow()
 	g_pTFieldGame->GetUiParticle()->DestroyInstanceHandle( m_hNpcShadowBottom );
 }
 
-HRESULT CX2TFieldGame::NpcJoinShadow::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2TFieldGame::NpcJoinShadow::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	m_fTimer += fElapsedTime;
 
@@ -4757,8 +4754,8 @@ bool CX2TFieldGame::GetIsRightNpc(int iHouseID)
 {
 	bool bRight = false;
 
-    if ( m_pMyUnit == NULL )
-        return bRight;
+	if ( m_pMyUnit == NULL )
+		return bRight;
 
 	for(UINT i=0; i<m_vecFieldNpc.size(); ++i)
 	{
@@ -4773,13 +4770,13 @@ bool CX2TFieldGame::GetIsRightNpc(int iHouseID)
 				return false;
 
 			D3DXVECTOR3 vFinalDestDir = pNpcNode->GetPos() - m_pMyUnit->GetPos();
-			float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
+			[[maybe_unused]] float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
 			D3DXVec3Normalize( &vFinalDestDir, &vFinalDestDir );
 			const D3DXVECTOR3 vUpVec(0,1,0);
 			D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 			D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-			float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+			[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 			float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 			if( fIsRight > 0.f )
 				bRight = true;
@@ -4847,7 +4844,7 @@ bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_REQ( int iTrainingID )
 
 
 
-bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
     ASSERT( pBuff != NULL );
@@ -4922,7 +4919,7 @@ bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM
 
 			// 게임 바로 시작
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_744 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, 0, false );
 
 
 			const int MAGIC_FREE_TRAINING_ID = 1;
@@ -5064,7 +5061,7 @@ bool CX2TFieldGame::CanNotShowThisUnit( UidType iUnitUID ) const
 	}
 
 
-	switch ( g_pData->GetGuildManager()->DidJoinGuild() )
+	switch ( static_cast<int>( g_pData->GetGuildManager()->DidJoinGuild() ) )
 	{
 	case false:
 		{
@@ -5175,12 +5172,11 @@ void CX2TFieldGame::DisplayLevelUpEffect( UidType Uid )
 	}
 }
 //}} kimhc // 2010.7.14 // 실시간 엘소드 중 마을내에서 레벨업시 이펙트 효과함
-bool CX2TFieldGame::GetLinkVillageInfo(map<int, D3DXVECTOR3>& mapVillageInfo_)
+bool CX2TFieldGame::GetLinkVillageInfo(map<int, D3DXVECTOR3>& /*mapVillageInfo_*/)
 {
 	if( NULL != g_pData && NULL != g_pData->GetLocationManager() )
 	{
-		int iIndex = 0;
-		vector<int>::iterator it = m_vecLinkedPos.begin();
+		[[maybe_unused]] vector<int>::iterator it = m_vecLinkedPos.begin();
 // 		while(it != m_vecLinkedPos.end())
 // 		{
 // 			int iLinkPosID = g_pData->GetLocationManager()->GetStartPosLink(*it) ;
@@ -5206,7 +5202,7 @@ bool CX2TFieldGame::GetLinkVillageInfo(map<int, D3DXVECTOR3>& mapVillageInfo_)
 
 	return true;
 }
-bool CX2TFieldGame::GetLinkVillageList( vector<int>& vecVillageID_ )
+bool CX2TFieldGame::GetLinkVillageList( vector<int>& /*vecVillageID_*/ )
 {
 	if( NULL != g_pData && NULL != g_pData->GetLocationManager() )
 	{
@@ -5256,7 +5252,7 @@ bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_REQ()
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_READY_TO_SOSUN_EVENT_ACK kEvent;
@@ -5279,7 +5275,6 @@ bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND hWnd, UINT uMsg, 
 
 			if( kEvent.m_iFirstUnitClass == 28 )
 			{
-				g_pData->GetUnitManager()->GetUnitTemplet( (CX2Unit::UNIT_CLASS)kEvent.m_iFirstUnitClass )->m_Description;
 
 				// 소선!\n\n당첨! 아라의 1차 전직 이름은 바로 소선입니다. 인벤토리에 보상을 확인하세요.
 				g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_REPLACED_STRING( ( STR_ID_25376, "L", g_pData->GetUnitManager()->GetUnitTemplet( (CX2Unit::UNIT_CLASS)kEvent.m_iFirstUnitClass )->m_Description ) ), (CKTDXStage*) g_pMain->GetNowState() );
@@ -5297,7 +5292,7 @@ bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND hWnd, UINT uMsg, 
 }
 
 
-bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_EVENT_PROPOSE_NOT kEvent;
@@ -5358,7 +5353,7 @@ bool CX2TFieldGame::Send_EGS_EVENT_PROPOSE_AGREE_NOT( CX2RelationshipManager::PR
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_EVENT_PROPOSE_RESULT_NOT kEvent;
@@ -5431,6 +5426,8 @@ bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND hWnd, UINT uMsg, 
 				g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData().SetRelationTargetUserUID( 0 );
 				g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData().SetRelationTargetUserNickname( L"" );
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -5440,7 +5437,7 @@ bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND hWnd, UINT uMsg, 
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_ACCEPTOR_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_ACCEPTOR_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_EVENT_PROPOSE_RESULT_ACCEPTOR_NOT kEvent;

@@ -63,8 +63,8 @@ CX2GUEve::CX2GUEve( int unitIndex, int teamNum,
 	, m_fAddSpectrumTime( 0.f )
 	, m_fAddEnergeticHeartTime( 0.f )
 	, m_bStartLinkOverChargeIllusion( false )
-	, m_fFerdinandLifeTime( -1.f )
 	, m_iFerdinandNPCUID( -1 )
+	, m_fFerdinandLifeTime( -1.f )
 	, m_eReserveEndElCrystalBuffID( BTI_NONE )
 	, m_bIsCheckEndElCrystal ( false )
 	, m_fDecraseInvisibilityMP ( -4.f )
@@ -262,8 +262,8 @@ void CX2GUEve::ReInit( bool bRandom, int startPosIndex )
 	SetSelfDestructSummonedNPC( CX2UnitManager::NUI_SI_HA_FERDINAND );
 
 	ClearThousandStar();
-    if ( m_hEffectSweepParadeTriangle != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeTriangle );
+	if ( m_hEffectSweepParadeTriangle != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeTriangle );
 
 	if ( INVALID_EFFECTSET_HANDLE != m_hEffectEnergeticHeart  )
 	{
@@ -303,7 +303,7 @@ void CX2GUEve::ReInit( bool bRandom, int startPosIndex )
 
 
 /*static*/
-void	CX2GUEve::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUEve::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -1354,6 +1354,8 @@ void CX2GUEve::InitState()
 			m_iSkillCutInSetIndex = 3;
 		} break;
 		//}} kimhc // 2010.2.17 //	�̺� 2�� ���� ��ų ����
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -1454,6 +1456,8 @@ void CX2GUEve::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUEve, ENSI_COMBO_ZZZdownZZ_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -1471,6 +1475,8 @@ void CX2GUEve::InitState()
 
 
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -1496,6 +1502,8 @@ void CX2GUEve::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUEve, ENSI_EPR_COMBO_XXZ_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1697,6 +1705,8 @@ void CX2GUEve::InitState()
 
 		}
 		break;
+	default:
+		break;
 	}
 
 	//{{ kimhc // 2010.1.25 // �̺� 2�� �޺�
@@ -1766,6 +1776,8 @@ void CX2GUEve::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		}
 		break;
+	default:
+		break;
 	}
 	//}} kimhc // 2010.1.25 // �̺� 2�� �޺�
 
@@ -1813,6 +1825,8 @@ void CX2GUEve::InitState()
 			stateData.StateEnd			= SET_CB_FUNC( CX2GUEve, ENSI_DASH_JUMP_COMBO_XZ_End );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1843,7 +1857,7 @@ void CX2GUEve::InitState()
 
 /*virtual*/ void CX2GUEve::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -1895,6 +1909,8 @@ void CX2GUEve::InitState()
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -2927,7 +2943,7 @@ void CX2GUEve::InitState()
 }
 
 /*static*/
-void	CX2GUEve::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUEve::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -3358,7 +3374,6 @@ void CX2GUEve::DeleteEveMinorParticle()
 {
 	CX2GUUser::DeleteGUUserMinorParticle();
 
-	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMinorParticle();
 
 	for ( int index = 0; index < EVE_MINOR_PII_END; index++ )
 	{
@@ -3456,7 +3471,7 @@ void CX2GUEve::InitializeEveMinorParticleArray()
 }
 
 /*static*/
-void	CX2GUEve::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUEve::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -4575,9 +4590,9 @@ void CX2GUEve::CommonFrameMove()
 		bool bSlotB = false;
 		CX2UserSkillTree::GetSlotIndexAndSlotB( m_sTaserPilumData.GetSkillSlotID(), OUT iSlotIndex, OUT bSlotB );
 
-		int iNowState = -1;
+		[[maybe_unused]] int iNowState = -1;
 
-		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > iSlotIndex && 0 < iSlotIndex )
+		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > static_cast<size_t>( iSlotIndex ) && 0 < iSlotIndex )
 		{
 			if( GetRemainHyperModeTime() > 0.f )
 			{
@@ -4628,9 +4643,9 @@ void CX2GUEve::CommonFrameMove()
 		bool bSlotB = false;
 		CX2UserSkillTree::GetSlotIndexAndSlotB( m_sKugelBlitz_Data.GetSkillSlotID(), OUT iSlotIndex, OUT bSlotB );
 
-		int iNowState = -1;
+		[[maybe_unused]] int iNowState = -1;
 
-		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > iSlotIndex && 0 < iSlotIndex )
+		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > static_cast<size_t>( iSlotIndex ) && 0 < iSlotIndex )
 		{
 			if( GetRemainHyperModeTime() > 0.f )
 			{
@@ -7936,6 +7951,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"EG_ComboZ4Down", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 	//}} hoons
 }
@@ -7957,6 +7974,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"EG_ComboZ4Down", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 	//}} hoons
 }
@@ -8137,6 +8156,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZ_EventProcess()
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	//}}
@@ -8171,6 +8192,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_Init()
 	case CX2Unit::UC_EVE_CODE_EMPRESS:
 		XSkinMeshReadyInBackground( L"Eve_AT_ComboZ5a_Mesh.X" );
 		break;
+	default:
+		break;
 	}
 }
 
@@ -8192,6 +8215,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"AT_ComboZ5a", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -8213,6 +8238,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"AT_ComboZ5a", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -8277,6 +8304,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_FrameMove()
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_EG_ZZZdownZZ", GetPowerRate(), vBonePos, vAngle, vAngle );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -8301,6 +8330,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_EventProcess()
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			fSkipTime = 0.45f; // 1/3 ����
+			break;
+		default:
 			break;
 		}
 
@@ -8500,6 +8531,8 @@ void CX2GUEve::ENSI_COMBO_XXZ4_Init()
 			XSkinMeshReadyInBackground( L"DummyAttackBox_50x50x50.X" );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -8521,8 +8554,7 @@ void CX2GUEve::ENSI_COMBO_XXZ4_FrameMove()
 			vDamagePos -= (GetDirVector() * 60.f);
 		}
 
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_ComboX5a_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_ComboX5a_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
 		//g_pX2Game->CreateNPCReq( CX2UnitManager::NUI_GUARDIAN_EVE, 0, true, vBonePos,
 		//	GetIsRight(), 0.f, true, -1, (CX2Room::TEAM_NUM) GetTeam(), CX2NPCAI::NAT_ALLY, GetUnitUID() );
 
@@ -8856,8 +8888,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_End()
 {
 	m_ahMajorMeshInstance[MajorMID_DashComboZ] = INVALID_MESH_INSTANCE_HANDLE;
 
-    if ( m_hEffectElectraDashComboZ != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZ );
+	if ( m_hEffectElectraDashComboZ != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZ );
 
 	CommonStateEnd();
 }
@@ -8942,6 +8974,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_FrameMove()
 		case CX2Unit::UC_EVE_NASOD:
 			pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_DASH_COMBO_Z", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
 			break;
+		default:
+			break;
 		}
 		//}} hoons.
 
@@ -9013,6 +9047,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_EventProcess()
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[4] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	//}} hoons.
@@ -9030,6 +9066,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_EventProcess()
 		{
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			m_FrameDataFuture.stateParam.bEventFlagList[2] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -9073,6 +9111,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_Init()
 	case CX2Unit::UC_EVE_ARCHITECTURE:
 		XSkinMeshReadyInBackground( L"Eve_AT_DashComboZ2_mesh.X" );
 		break;
+	default:
+		break;
 	}
 }
 
@@ -9096,6 +9136,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"AT_DashComboZ2", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 void CX2GUEve::ENSI_DASH_COMBO_ZZ_Start()
@@ -9118,6 +9160,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"AT_DashComboZ2", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 void CX2GUEve::ENSI_DASH_COMBO_ZZ_End()
@@ -9144,6 +9188,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_FrameMove()
 			case CX2Unit::UC_EVE_ARCHITECTURE:
 			case CX2Unit::UC_EVE_CODE_EMPRESS:
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_DASH_COMBO_ZZ", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
+				break;
+			default:
 				break;
 			}
 		}
@@ -9172,6 +9218,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_EventProcess()
 				m_FrameDataFuture.stateParam.bEventFlagList[0] = false;
 			}
 			break;
+		default:
+			break;
 		}
 	}
 	else if( m_InputData.oneZ == true &&
@@ -9188,6 +9236,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_EventProcess()
 		case CX2Unit::UC_EVE_EXOTIC_GEAR:
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			fSkipTime = 0.6f; //1/3 ����
+			break;
+		default:
 			break;
 		}
 
@@ -9226,6 +9276,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"AT_DashComboZ3", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 void CX2GUEve::ENSI_DASH_COMBO_ZZZ_Start()
@@ -9248,6 +9300,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"AT_DashComboZ3", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 
 	m_ahMajorMeshInstance[MajorMID_DashComboZZZ] = INVALID_MESH_INSTANCE_HANDLE;
@@ -9299,6 +9353,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_FrameMove()
 				}
 			}
 		}
+		break;
+	default:
 		break;
 	}
 	// 	if( m_pXSkinAnim->EventTimer( 0.01f ) == true && EventCheck( 0.01f, false ) == true &&
@@ -9368,6 +9424,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_EventProcess()
 		case CX2Unit::UC_EVE_EXOTIC_GEAR:
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			fSkipTime = 1.f; //1/3 ����
+			break;
+		default:
 			break;
 		}
 
@@ -9511,6 +9569,8 @@ void CX2GUEve::ENSI_DASH_COMBO_X_EventProcess()
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	ELSE_IF_KEY_PRESSED_AT_SKIP_POINT_ZXC
@@ -9559,6 +9619,8 @@ void CX2GUEve::ENSI_DASH_COMBO_XZ_EventProcess()
 		case CX2Unit::UC_EVE_EXOTIC_GEAR:
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			fSkipTime = 0.935f;
+			break;
+		default:
 			break;
 		}
 
@@ -9997,6 +10059,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_Z_EventProcess()
 				StateChangeBoostAttackIfPossible();
 			}
 			break;
+		default:
+			break;
 		}
 		m_FrameDataFuture.stateParam.bEventFlagList[1] = false;
 	}
@@ -10009,6 +10073,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_Z_EventProcess()
 			break;
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[1] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -10123,6 +10189,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_ZZ_EventProcess()
 		{
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			m_FrameDataFuture.stateParam.bEventFlagList[1] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -10455,6 +10523,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_X_EventProcess()
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	if( m_InputData.oneZ == true && m_FrameDataFuture.stateParam.bEventFlagList[0] == false )
@@ -10465,6 +10535,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_X_EventProcess()
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[1] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -10488,6 +10560,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_X_EventProcess()
 			break;
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			StateChange( ENSI_EBS_DASH_JUMP_COMBO_XZ );
+			break;
+		default:
 			break;
 		}
 
@@ -10513,11 +10587,10 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_XZ_FrameMove()
 		case CX2Unit::UC_EVE_ARCHITECTURE:
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			{
-				CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 				D3DXVECTOR3 vBonePos = GetPos();
 				vBonePos.y += 290.f;
 
-				pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
+				g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
 
 				CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Particle_Eve_AT_Combo01", vBonePos );
 				if( NULL != pSeq )
@@ -10531,6 +10604,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_XZ_FrameMove()
 				//m_vSummonedUnitBonePos += vBonePos;
 			}
 			break;
+		default:
+			break;
 		}
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.1f ) )
@@ -10543,9 +10618,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_XZ_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.15f ) )
 	{
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 
-		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_BladeWave01", m_vSummonedUnitBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_BladeWave01", m_vSummonedUnitBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	CommonFrameMove();
@@ -11636,7 +11710,6 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.1f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 
 		// ����� ���θʿ��� ����Ʈ ��ġ�� ���ε��� �ö� �������� ���� ������
@@ -11659,7 +11732,7 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_FrameMove()
 		vPos.y += 120.f;
 
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
 		//if( NULL != pSeq ) // ������ ��ƼŬ�� ��� �Ʒ� �ڵ� �����ϸ� �ȵ�
 		//{
 		//	pSeq->SetAddRotate( GetRotateDegree() );
@@ -11909,7 +11982,6 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_HYPER_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.1f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 
 		D3DXVECTOR3 vDirVector = GetDirVector();
@@ -11931,7 +12003,7 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_HYPER_FrameMove()
 		vPos.y += 120.f;
 
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
 		//if( NULL != pSeq ) // ������ ��ƼŬ�� ��� �Ʒ� �ڵ� �����ϸ� �ȵ�
 		//{
 		//	pSeq->SetAddRotate( GetRotateDegree() );
@@ -13156,6 +13228,8 @@ void CX2GUEve::SetSelfDestructSummonedNPC( CX2UnitManager::NPC_UNIT_ID eNPCID /*
 						ResetLinkOverChargeIllusion();
 					}
 					break;
+				default:
+					break;
 				}
 				//}} JHKang / ������ / 2010/11/29
 			}
@@ -13511,7 +13585,6 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 		if( true == GetIsRight() )
@@ -13523,7 +13596,7 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_FrameMove()
 			vPos -= GetDirVector() * 170.f;
 		}
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )
 	{
@@ -13598,7 +13671,6 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 		if( true == GetIsRight() )
@@ -13610,7 +13682,7 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_HYPER_FrameMove()
 			vPos -= GetDirVector() * 220.f;
 		}
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )
 	{
@@ -13916,8 +13988,7 @@ void CX2GUEve::ENSI_SI1_EG_HORNET_STING_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.06f ) )
 	{
 		D3DXVECTOR3 vBonePos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.47f ) )
 	{
@@ -13958,8 +14029,7 @@ void CX2GUEve::ENSI_SI1_EG_HORNET_STING_HYPER_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.06f ) )
 	{
 		D3DXVECTOR3 vBonePos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.47f ) )
 	{
@@ -14555,13 +14625,12 @@ void CX2GUEve::ENSI_SI3_EG_QUEENS_THRONE_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.5f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 
 		vPos.y += 80.f;
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
 
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.3f ) )
@@ -14762,13 +14831,12 @@ void CX2GUEve::ENSI_SI3_EG_QUEENS_THRONE_HYPER_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.5f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 
 		vPos.y += 80.f;
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
 
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.3f ) )
@@ -15123,6 +15191,8 @@ void CX2GUEve::ENSI_A_EN_MEGA_ELECTRONBALL_FrameMove()
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			fMPConsumption *= m_fMPConsumeRateElectronBall;
 			break;
+		default:
+			break;
 		}
 
 		if( FlushMp( fMPConsumption ) == true )
@@ -15370,7 +15440,7 @@ void CX2GUEve::ENSI_SA_EAT_SPACE_WRENCH_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.066f ) )
 	{
-		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH", GetPowerRate() * fStatAtkRateOfSummoned,
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH", GetPowerRate() * fStatAtkRateOfSummoned,
 			GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
@@ -15418,7 +15488,7 @@ void CX2GUEve::ENSI_SA_EAT_SPACE_WRENCH_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.066f ) )
 	{
-		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH_HYPER", GetPowerRate() * fStatAtkRateOfSummoned,
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH_HYPER", GetPowerRate() * fStatAtkRateOfSummoned,
 			GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
@@ -17914,7 +17984,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 		D3DXVECTOR4 v4DirVectorLaser;
 		D3DXVec3Transform( &v4DirVectorLaser, &m_vDirVector, &matRotation );
 
-		D3DXVECTOR3 vDirVectorLaser = v4DirVectorLaser;
+		D3DXVECTOR3 vDirVectorLaser( v4DirVectorLaser.x, v4DirVectorLaser.y, v4DirVectorLaser.z );
 
 
 		pDamageEffect0->SetPos( m_vLaserStartPos );
@@ -18143,6 +18213,8 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 					{
 						++m_iFireCount;
 					} break;
+				default:
+					break;
 				}
 
 				m_hParticleLaserCross = g_pX2Game->GetMajorParticle()->CreateSequenceHandle( (CKTDGObject*) m_pEveElectraSystem->m_pGUEve,  L"eve_spectro_bump_P01", vPlaneIntersectPoint );
@@ -18415,6 +18487,8 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 						}
 					}
 				} break;
+			default:
+				break;
 			}
 			CKTDGParticleSystem::CParticleEventSequence* pSeqLaserCross = g_pX2Game->GetMajorParticle()->GetInstanceSequence( m_hParticleLaserCross );
 			if( pSeqLaserCross != NULL )
@@ -18445,7 +18519,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 							D3DXVECTOR4 v4DirVectorLaser;
 							D3DXVec3Transform( &v4DirVectorLaser, &m_vDirVector, &matRotation );
 
-							D3DXVECTOR3 vDirVectorLaser = v4DirVectorLaser;
+							D3DXVECTOR3 vDirVectorLaser( v4DirVectorLaser.x, v4DirVectorLaser.y, v4DirVectorLaser.z );
 
 							D3DXVECTOR3 vLaserStartPos = vPlaneIntersectPoint;
 
@@ -18568,7 +18642,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 								D3DXVECTOR4 v4DirVectorLaser;
 								D3DXVec3Transform( &v4DirVectorLaser, &m_vDirVector, &matRotation );
 
-								D3DXVECTOR3 vDirVectorLaser = v4DirVectorLaser;
+								D3DXVECTOR3 vDirVectorLaser( v4DirVectorLaser.x, v4DirVectorLaser.y, v4DirVectorLaser.z );
 
 								D3DXVECTOR3 vLaserStartPos = vPlaneIntersectPoint;
 
@@ -18692,7 +18766,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
 										ASSERT( pEffect != NULL );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 2.5f );
@@ -18706,7 +18780,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
 										ASSERT( pEffect != NULL );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 1.0f );
@@ -18794,7 +18868,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve, L"EVE_EBS_INDUCTION_LASER_SPECIAL",
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 2.5f );
@@ -18807,7 +18881,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve, L"EVE_EBS_INDUCTION_LASER",
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 1.0f );
@@ -18869,6 +18943,8 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 							}
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 			//////////// GIGA STREAM ////////////////////////////////////////////////////////}}
@@ -18947,7 +19023,6 @@ void CX2GUEve::EveElectraEffectData::OnFrameMove( float fElapsedTime )
 		else if( m_bPlaneFront == true )
 		{
 
-			D3DXVECTOR3 vPlaneIntersectPoint;
 			D3DXVECTOR3 vEffectEndPos;
 			D3DXPlaneIntersectLine( &vEffectEndPos, &m_pEveElectraSystem->m_PrimaryPlane, &vEffectNowPos, &m_vPlaneIntersectPoint );
 
@@ -19452,6 +19527,8 @@ void CX2GUEve::EveElectraEffectData::OnFrameMove( float fElapsedTime )
 						}
 					}
 				} break;
+			default:
+				break;
 			}
             g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( m_hDamageEffect );
 			m_bDie = true;
@@ -19502,7 +19579,6 @@ void CX2GUEve::EveElectraLockonData::OnFrameMove( float fElapsedTime )
 		else if( m_bPlaneFront == true )
 		{
 
-			D3DXVECTOR3 vPlaneIntersectPoint;
 			D3DXVECTOR3 vEffectEndPos;
 			D3DXPlaneIntersectLine( &vEffectEndPos, &m_pEveElectraSystem->m_PrimaryPlane, &vEffectNowPos, &m_vPlaneIntersectPoint );
 
@@ -19589,11 +19665,11 @@ void CX2GUEve::EveElectraLockonData::OnFrameMove( float fElapsedTime )
 
 						D3DXVECTOR4 v4DirVectorLockon_2;
 						D3DXVec3Transform( &v4DirVectorLockon_2, &m_pEveElectraSystem->m_vPlaneNormal, &matRotation_2 );
-						D3DXVECTOR3 vDirVectorLockon_2 = v4DirVectorLockon_2;
+						D3DXVECTOR3 vDirVectorLockon_2( v4DirVectorLockon_2.x, v4DirVectorLockon_2.y, v4DirVectorLockon_2.z );
 
 						D3DXVECTOR4 v4DirVectorLockon_3;
 						D3DXVec3Transform( &v4DirVectorLockon_3, &m_pEveElectraSystem->m_vPlaneNormal, &matRotation_3 );
-						D3DXVECTOR3 vDirVectorLockon_3 = v4DirVectorLockon_3;
+						D3DXVECTOR3 vDirVectorLockon_3( v4DirVectorLockon_3.x, v4DirVectorLockon_3.y, v4DirVectorLockon_3.z );
 
 						D3DXVECTOR3 vManualDirDegree1;
 						vManualDirDegree1.x = D3DXToDegree(m_pEveElectraSystem->m_vPlaneNormal.x);
@@ -19624,6 +19700,8 @@ void CX2GUEve::EveElectraLockonData::OnFrameMove( float fElapsedTime )
                         }
 					}
 				}
+				break;
+			default:
 				break;
 			}
             g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( m_hDamageEffect );
@@ -19754,15 +19832,12 @@ void CX2GUEve::EveElectraSystem::ProcessPlane( float _fElapsedTime )
 
 		CKTDGXMeshPlayer* pMajorMeshPlayer = g_pX2Game->GetMajorXMeshPlayer();
 		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstCrystal1 = pMajorMeshPlayer->GetMeshInstance( m_hEffectCrystal1 );
-		CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame1 = pMeshInstPlane->GetCloneFrame( L"Dummy02" );
 		pMeshInstCrystal1->SetPos( pMeshInstPlane->GetBonePos( L"Dummy02" ));
 
 		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstCrystal2 = pMajorMeshPlayer->GetMeshInstance( m_hEffectCrystal2 );
-		CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame2 = pMeshInstPlane->GetCloneFrame( L"Dummy03" );
 		pMeshInstCrystal2->SetPos( pMeshInstPlane->GetBonePos( L"Dummy03" ));
 
 		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstCrystal3 = pMajorMeshPlayer->GetMeshInstance( m_hEffectCrystal3 );
-		CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame3 = pMeshInstPlane->GetCloneFrame( L"Dummy04" );
 		pMeshInstCrystal3->SetPos( pMeshInstPlane->GetBonePos( L"Dummy04" ));
 
 
@@ -19845,7 +19920,7 @@ void CX2GUEve::EveElectraSystem::ProcessPlane( float _fElapsedTime )
 
 
 
-void CX2GUEve::EveElectraSystem::ProcessGigaPlane( float _fElapsedTime )
+void CX2GUEve::EveElectraSystem::ProcessGigaPlane( float /*_fElapsedTime*/ )
 {
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hEffectGigaPlane );
 	if( pMeshInstPlane != NULL )
@@ -20014,6 +20089,8 @@ void CX2GUEve::EveElectraSystem::StartFormationEffect()
 			m_hParticleFormationMark[2] = g_pX2Game->GetMajorParticle()->CreateSequenceHandle( (CKTDGObject*) m_pGUEve,
 				L"eve_spectro_MsgMark_Green_03", m_pGUEve->GetBonePos( L"Bip01" ) );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -20335,11 +20412,11 @@ void CX2GUEve::EveElectraSystem::LaserAttackLineSet( CX2DamageEffect::CEffect* _
 	if( _pDamageEffect == NULL )
 		return;
     CKTDGXMeshPlayer::CXMeshInstance* pMainEffect = _pDamageEffect->GetMainEffect();
-    if ( pMainEffect == NULL || pMainEffect->GetXSkinAnim() == NULL )
-        return;
+	if ( pMainEffect == NULL || pMainEffect->GetXSkinAnim() == NULL )
+		return;
 	CKTDXCollision::CollisionDataList* pCollisionDataList = &pMainEffect->GetXSkinAnim()->GetAttackDataListNonConst();
-    if ( pCollisionDataList == NULL )
-        return;
+	if ( pCollisionDataList == NULL )
+		return;
 
 	for( CKTDXCollision::CollisionData* pColA : *pCollisionDataList )
 	{
@@ -20452,7 +20529,7 @@ void CX2GUEve::ShowActiveSkillCutInAndLight( const WCHAR* szBoneName_, const flo
 	}
 }
 
-void CX2GUEve::EveElectraSystem::CreatePlane( float _fZAngle/* = 0.f*/, float _LifeTime/* = 2.f*/, float _fDistance/* = 300.f*/, float _fHeight/* = 130.f*/, wstring PlaneMeshName /*= L""*/ )
+void CX2GUEve::EveElectraSystem::CreatePlane( float _fZAngle/* = 0.f*/, float _LifeTime/* = 2.f*/, float _fDistance/* = 300.f*/, float _fHeight/* = 130.f*/, wstring /*PlaneMeshName*/ /*= L""*/ )
 {
 	if( GetEnableSystem() == false )
 		return;
@@ -20487,21 +20564,21 @@ void CX2GUEve::EveElectraSystem::CreatePlane( float _fZAngle/* = 0.f*/, float _L
 	D3DXMatrixRotationAxis( &matRotationCenter, &vRotationAxis, _fZAngle );
 	D3DXVECTOR4 v4PlaneNormalCenter;
 	D3DXVec3Transform( &v4PlaneNormalCenter, &vZeroYDirVector, &matRotationCenter );
-	D3DXVECTOR3 vPlaneNormalCenter = v4PlaneNormalCenter;
+	D3DXVECTOR3 vPlaneNormalCenter( v4PlaneNormalCenter.x, v4PlaneNormalCenter.y, v4PlaneNormalCenter.z );
 	m_vPlaneNormalCenter = vPlaneNormalCenter;
 
 	D3DXMATRIX matRotationUpper;
 	D3DXMatrixRotationAxis( &matRotationUpper, &vRotationAxis, D3DXToRadian( _fZAngle ) );
 	D3DXVECTOR4 v4PlaneNormalUpper;
 	D3DXVec3Transform( &v4PlaneNormalUpper, &vZeroYDirVector, &matRotationUpper );
-	D3DXVECTOR3 vPlaneNormalUpper= v4PlaneNormalUpper;
+	D3DXVECTOR3 vPlaneNormalUpper( v4PlaneNormalUpper.x, v4PlaneNormalUpper.y, v4PlaneNormalUpper.z );
 	m_vPlaneNormalUpper = vPlaneNormalUpper;
 
 	D3DXMATRIX matRotationLower;
 	D3DXMatrixRotationAxis( &matRotationLower, &vRotationAxis,  D3DXToRadian( _fZAngle ) );
 	D3DXVECTOR4 v4PlaneNormalLower;
 	D3DXVec3Transform( &v4PlaneNormalLower, &vZeroYDirVector, &matRotationLower );
-	D3DXVECTOR3 vPlaneNormalLower= v4PlaneNormalLower;
+	D3DXVECTOR3 vPlaneNormalLower( v4PlaneNormalLower.x, v4PlaneNormalLower.y, v4PlaneNormalLower.z );
 	m_vPlaneNormalLower = vPlaneNormalLower;
 
 
@@ -20624,7 +20701,7 @@ void CX2GUEve::EveElectraSystem::CreateGigaPlane( float _fZAngle/* = 0.f*/, floa
 	D3DXVec3Transform( &v4PlaneNormal, &vZeroYDirVector, &matRotation );
 
 
-	D3DXVECTOR3 vPlaneNormal = v4PlaneNormal;
+	D3DXVECTOR3 vPlaneNormal( v4PlaneNormal.x, v4PlaneNormal.y, v4PlaneNormal.z );
 
 	vPlanePos += (_fDistance * vZeroYDirVector);
 
@@ -20807,8 +20884,7 @@ void CX2GUEve::ClearThousandStar()
 	{
         if ( CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = pTSEffect->GetMainEffect() )
         {
-            CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		    pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"EveThousandStarDie", pMeshInstance->GetPos(), GetRotateDegree(), GetRotateDegree() );
+		    g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"EveThousandStarDie", pMeshInstance->GetPos(), GetRotateDegree(), GetRotateDegree() );
         }
 	}
 
@@ -21873,8 +21949,8 @@ void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZ_FrameMove()
 
 void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZ_End()
 {
-    if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
+	if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
 	g_pX2Game->GetMajorXMeshPlayer()->DestroyInstanceHandle( m_hElectraDashComboZMesh );
 	CommonStateEnd();
 }
@@ -22037,7 +22113,7 @@ void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZZ_FrameMove()
 	{
 		D3DXVECTOR3 vDamageEffectPos = GetBonePos( L"Dummy2_Lhand" );
 		vDamageEffectPos.y += 10.f;
-		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_PR_DASH_COMBO_ZZZ_EXPLOSION", GetPowerRate(), vDamageEffectPos, GetRotateDegree(), GetRotateDegree() );
+		[[maybe_unused]] CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_PR_DASH_COMBO_ZZZ_EXPLOSION", GetPowerRate(), vDamageEffectPos, GetRotateDegree(), GetRotateDegree() );
 
 	}
 
@@ -22068,8 +22144,8 @@ void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZZ_End()
 {
     if ( m_hEffectElectraDashComboZ != INVALID_DAMAGE_EFFECT_HANDLE )
 	    g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZ );
-    if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
-    	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
+	if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
 	CommonStateEnd();
 
 	m_bBlinkInvisibility			= false;
@@ -22633,14 +22709,14 @@ void CX2GUEve::ENSI_SA_EPR_SWEEP_ROLLING_CHARGE_EventProcess()
 		m_FrameDataFuture.syncData.nowAction = UAI_ELECTRA_PLANE_ANGLE_DOWN;
 	}
 
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true
-		|| m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true
-		|| m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true
-		|| m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true
-		|| m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true)
 		)
 	{
 		StateChange( ENSI_SA_EPR_SWEEP_ROLLING_FIRE );
@@ -22655,10 +22731,10 @@ void CX2GUEve::ENSI_SA_EPR_SWEEP_ROLLING_CHARGE_EventProcess()
 
 void CX2GUEve::ENSI_SA_EPR_SWEEP_ROLLING_CHARGE_End()
 {
-    if ( m_hEffectSweepParadeLight != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeLight );
-    if ( m_hEffectSweepParadeElectric != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeElectric );
+	if ( m_hEffectSweepParadeLight != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeLight );
+	if ( m_hEffectSweepParadeElectric != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeElectric );
 	CommonStateEnd();
 	m_FrameDataNow.stateParam.bSuperArmorNotRed = true;
 }
@@ -22972,7 +23048,7 @@ void CX2GUEve::DeleteMinorParticle()
 @param : � ���������Ͱ� �ߵ��ƴ����� ���� ��ų���̵�(eSkillID_)
 @return : �߰��ð�(float)
 */
-/*virtual*/ float CX2GUEve::GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID eSkillID_ ) const
+/*virtual*/ float CX2GUEve::GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID /*eSkillID_*/ ) const
 {
 	float fAdditionalAccelBuffTime = 0.0f;
 
@@ -23853,9 +23929,9 @@ void CX2GUEve::ENSI_A_EBS_TASER_PILUM_FrameMove()
 			const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
 
 			fMPConsumption	= pSkillTemplet->GetSkillMPConsumptionValue( iSkillTempletLevel );
-			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f + 1.f ) );
+			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( static_cast<float>( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f + 1.f ) );
 			iCount			= static_cast<int>( pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_PROJECTILE_PIERCING, iSkillTempletLevel ) *
-				min( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f );
+				min( static_cast<float>( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f );
 			m_sTaserPilumTinyData.m_iAddDamageTime = iCount;
 		}
 		else
@@ -23975,7 +24051,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_START_StartFuture()
 
 	if ( false == GetAbsoluteInvisibility() )
 	{
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 			(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 		//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 	}
@@ -24204,7 +24280,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_EventProcess()
 
 		if ( false == GetAbsoluteInvisibility() )
 		{
-			CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+			g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 				(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 			//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 			PlaySound( L"Eve_BoostDash4.ogg" );
@@ -24216,7 +24292,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_EventProcess()
 
 		if ( false == GetAbsoluteInvisibility() )
 		{
-			CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+			g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 				(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 			//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 			PlaySound( L"Eve_BoostDash4.ogg" );
@@ -24228,7 +24304,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_EventProcess()
 
 		if ( false == GetAbsoluteInvisibility() )
 		{
-			CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+			g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 				(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 			//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 			PlaySound( L"Eve_BoostDash4.ogg" );
@@ -24409,7 +24485,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_AIR_START_EndFuture()
 
 	if ( false == GetAbsoluteInvisibility() )
 	{
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 			(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 		//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 	}
@@ -24799,7 +24875,7 @@ void CX2GUEve::ENSI_EBS_DASH_JUMP_COMBO_ZFrontX_Start()
 	m_bNotEnoughMPDashZX = false;
 	++m_iBoostAttackCount;
 
-    CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+    [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 	pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ),
 		GetRotateDegree(), GetRotateDegree() );
 
@@ -24877,7 +24953,7 @@ void CX2GUEve::ENSI_EBS_DASH_JUMP_COMBO_ZUpX_Start()
 	D3DXVECTOR3 vRot = GetRotateDegree();
 	vRot.z += 45.f;
 
-    CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+    [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 	pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ),
 		vRot, vRot );
 
@@ -24962,7 +25038,7 @@ void CX2GUEve::ENSI_EBS_DASH_JUMP_COMBO_ZDownX_Start()
 	D3DXVECTOR3 vRot = GetRotateDegree();
 	vRot.z -= 45.f;
 
-    CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+    [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 	pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ),
 		vRot, vRot );
 	CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_Seraph_Boost_Dash_Attack", this );
@@ -25306,12 +25382,12 @@ void CX2GUEve::SPECTRO_EL_CRYSTAL_Start()
 			else
 				m_EveElectraSystem.SetSystemOperationTime( pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_TIME, iSkillTempletLevel ) );
 
-				m_EveElectraSystem.SetPlaneFormation( PFT_AMPLIFIER );
-				if ( IsMyUnit() )
-					g_pX2Game->UpdateSkillSlotUI();
+			m_EveElectraSystem.SetPlaneFormation( PFT_AMPLIFIER );
+			if ( IsMyUnit() )
+				g_pX2Game->UpdateSkillSlotUI();
 
-				if ( true == m_EveElectraSystem.GetEnableHyperOpticalResearch() )
-					const_cast<CX2SkillTree::SkillTemplet*>(pSkillTemplet)->m_eActiveSkillUseCondtion = CX2SkillTree::ASUT_ANYTIME;
+			if ( true == m_EveElectraSystem.GetEnableHyperOpticalResearch() )
+				const_cast<CX2SkillTree::SkillTemplet*>(pSkillTemplet)->m_eActiveSkillUseCondtion = CX2SkillTree::ASUT_ANYTIME;
 			}
 		}
 	}
@@ -25537,7 +25613,7 @@ void CX2GUEve::ENSI_SA_EEG_Hornet_Sting_Shaped_Charge_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.06f ) )
 	{
 		D3DXVECTOR3 vBonePos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this, L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos,
 			GetRotateDegree(), GetRotateDegree() );
 	}
@@ -25602,7 +25678,6 @@ void CX2GUEve::ENSI_SA_ENS_Atomic_Blaster_SonicGun_FrameMove()
 
 	ShowActiveSkillCutInAndLight( L"Dummy2_Lhand", 0.01f, 0 );
 
-	D3DXVECTOR3 vUnitPos	= GetPos();
 	D3DXVECTOR3 vBonePos	= GetBonePos( L"Bip01_Pelvis" );
 
 	if ( m_fEffectStartTime <= 1.357f
@@ -25770,10 +25845,10 @@ void CX2GUEve::ENSI_SA_EEL_Sweep_Rolling_Tri_Vulcan_Fire_EventProcess()
 		m_FrameDataFuture.syncData.nowAction = UAI_ELECTRA_PLANE_ANGLE_DOWN;
 	}
 
-	if( ( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true || m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true
-		|| m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true || m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true
-		|| m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true || m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true
-		|| m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true || m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true )
+	if( ( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true) || (m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true) || (m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true) || (m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true) || (m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true) )
 		&& m_fEffectStartTime >= 3.0f )
 	{
 		StateChange( ENSI_SA_EEN_SWEEP_ROLLING_TRI_VULCAN_END );
@@ -25844,7 +25919,6 @@ void CX2GUEve::ENSI_SA_EAT_Heavens_Fist_Sweeper_FrameMove()
 			if ( GetIsRight() )
 			{
 				vPos += GetDirVector() * 300.f;
-				D3DXVECTOR3 vScale = GetVec3ScaleByUnit();
 				//#ifdef ADD_MEMO_1ST_CLASS //��â��   - Effectset_SA_EAT_HEAVENS_FIST_SWEEPER_Nodamage ����Ʈ���� �������� ����. ??? �ϴ� �ּ� ó��
 				/*hFistEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"Effectset_SA_EAT_HEAVENS_FIST_SWEEPER_Nodamage",
 					(CX2GameUnit*)this, NULL, false, GetPowerRate() * fStatAtkRateOfSummoned, -1.f, GetVec3ScaleByUnit(), true,
@@ -26171,9 +26245,9 @@ void CX2GUEve::ENSI_A_EBS_Kugelblitz_FrameMove()
 			}
 
 			fMPConsumption	= pSkillTemplet->GetSkillMPConsumptionValue( iSkillTempletLevel );
-			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f + 1.f ) );
+			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( static_cast<float>( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f + 1.f ) );
 			iCount			= static_cast<int>( pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_PROJECTILE_PIERCING, iSkillTempletLevel ) *
-							  min( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f );
+							  min( static_cast<float>( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f );
 			m_sKugelBlitz_TinyData.m_iAddDamageTime = iCount;
 		}
 		else
@@ -26466,7 +26540,7 @@ void CX2GUEve::ENSI_HA_EEP_LINK_OVERCHARGE_ILLUSION_FrameMove()
 			const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
 
 			m_fFerdinandLifeTime = static_cast<float>(pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_TIME, iSkillTempletLevel ));
-			m_fFerdinandLifeTime = max( 0, m_fFerdinandLifeTime );
+			m_fFerdinandLifeTime = max( 0.f, m_fFerdinandLifeTime );
 
 			if( m_fFerdinandLifeTime > 0.f )
 			{

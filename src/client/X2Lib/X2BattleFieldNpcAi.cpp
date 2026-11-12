@@ -10,8 +10,8 @@ CX2BattleFieldNpcAi::CX2BattleFieldNpcAi( CX2GUNPC* pMasterNpc_, const CNpcCreat
 	: CX2GUNPCAI( pMasterNpc_ ), m_bAggressive( NpcCreatedInfoPtr_->GetAggressive() ), m_bCanTargeting( NpcCreatedInfoPtr_->GetAggressive() ),
 	m_bCanPatrol( true ), m_bBackState01( false ), m_bBackState02( false ), m_bArriveAtDest( false ),
  	m_vecPatrolLineMapIndex( NpcCreatedInfoPtr_->GetPetrolLineIndexList() ),
-	m_ElapsedTimeCheckOnLineMap( 5.0f ), m_ElapsedTimeAfterSuccessToPatrol( 0.0f ), //m_ElapsedTimeUpNowHp( 1.0f ),
- 	m_ElapsedTimeComeBackState( 5.0f ), m_vecPlayLineMapIndex( NpcCreatedInfoPtr_->GetPlayLineIndexList() ),
+	m_vecPlayLineMapIndex( NpcCreatedInfoPtr_->GetPlayLineIndexList() ), m_ElapsedTimeCheckOnLineMap( 5.0f ), //m_ElapsedTimeUpNowHp( 1.0f ),
+ 	m_ElapsedTimeAfterSuccessToPatrol( 0.0f ), m_ElapsedTimeComeBackState( 5.0f ),
 	m_fIncreaseHpPercentBySecond( BASIC_INCREASE_HP_PERCENT_BY_SECOND ), m_iCheckLineMapAtFirst( -1 )
 
 	, m_uiGroupId( NpcCreatedInfoPtr_->GetGroupId() )
@@ -24,7 +24,7 @@ CX2BattleFieldNpcAi::~CX2BattleFieldNpcAi()
 {
 }
 
-/*virtual*/ void CX2BattleFieldNpcAi::OnFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ void CX2BattleFieldNpcAi::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	//*
 	if ( true == m_bNoBrain )
@@ -387,8 +387,8 @@ bool CX2BattleFieldNpcAi::CheckAndResetTargetLost()
 
 void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTargetCandidateUnitList_ )
 {
-    if ( vecTargetCandidateUnitList_.empty() == true )
-        return;
+	if ( vecTargetCandidateUnitList_.empty() == true )
+		return;
 	switch ( GetAIData()->targetData.targetPriority )
 	{
 	case TP_HIGH_LEVEL_FIRST:
@@ -463,7 +463,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 	case TP_RANDOM:
 		{
             float fRate = 0.f;
-            for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
+            for( [[maybe_unused]] CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
             {
                 fRate = fRate * 0.5f + 0.5f;
             }
@@ -505,11 +505,10 @@ bool CX2BattleFieldNpcAi::IsHigherNewTargetGameUnitHp( const CX2GameUnit* pOldTa
 		return false;
 }
 
-bool CX2BattleFieldNpcAi::IsNearNewTargetGameUnit( IN const CX2GameUnit* pOldTargetGameUnit_, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
+bool CX2BattleFieldNpcAi::IsNearNewTargetGameUnit( IN const CX2GameUnit* /*pOldTargetGameUnit_*/, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
 {
 	// 새로운 타겟 대상과의 거리를 구한 후
 	const float fDistanceSqFromNewTargetGameUnit = GetDistance3Sq( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
-	const float fDistance = GetDistance( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
 
 	// 기존의 타겟이 없거나, 새로운 타겟 후보가 더 가까우면
 	if( fDistanceSqFromNewTargetGameUnit < fDistanceSqFromOldTargetUnit_ )
@@ -521,11 +520,10 @@ bool CX2BattleFieldNpcAi::IsNearNewTargetGameUnit( IN const CX2GameUnit* pOldTar
 		return false;
 }
 
-bool CX2BattleFieldNpcAi::IsFarNewTargetGameUnit( IN const CX2GameUnit* pOldTargetGameUnit_, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
+bool CX2BattleFieldNpcAi::IsFarNewTargetGameUnit( IN const CX2GameUnit* /*pOldTargetGameUnit_*/, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
 {
 	// 새로운 타겟 대상과의 거리를 구한 후
 	const float fDistanceSqFromNewTargetGameUnit = GetDistance3Sq( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
-	const float fDistance = GetDistance( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
 
 	// 기존의 타겟이 없거나, 새로운 타겟 후보가 더 멀면
 	if( fDistanceSqFromNewTargetGameUnit > fDistanceSqFromOldTargetUnit_ )
@@ -747,7 +745,6 @@ void CX2BattleFieldNpcAi::GetAIMessageAndUnitDirection( float fElapsedTime, OUT 
 
 			// 현재위치와 목적한 위치 까지의 거리가 MOVE_SPLIT_RANGE 보다 작으면
 			const float fFinalDestDistance3Sq = GetDistance3Sq( GetNowPosition(), GetFinalDest() );
-			const float fDistance = GetDistance( GetNowPosition(), GetFinalDest() );
 
 			if( fFinalDestDistance3Sq < GetAIData()->chaseMoveData.moveSplitRange * GetAIData()->chaseMoveData.moveSplitRange )
 			{
@@ -807,58 +804,6 @@ void CX2BattleFieldNpcAi::CheckArrivedDestination()
 
 		if ( GetNowPatroling() )
 			SetNowPatroling( false );
-	}
-}
-
-/*virtual*/ void CX2BattleFieldNpcAi::RenderStateParam( WCHAR** wDest_ )
-{
-// 	int iTarget = 0;
-// 	if ( null != m_optrTargetGameUnit )
-// 	{
-// 		StateLog( L"Target in RenderStateParam" );
-// 		iTarget = 1;
-// 	}
-//
-// 	int iAttacker = 0;
-// 	if ( null != m_optrAttackerGameUnit )
-// 	{
-// 		StateLog( L"Attacker in RenderStateParam" );
-// 		iAttacker = 1;
-// 	}
-//
-// 	int iBackState01 = 0;
-// 	if ( true == GetBackState01() )
-// 		iBackState01 = 1;
-//
-// 	int iBackState02 = 0;
-// 	if ( true == GetBackState02() )
-// 		iBackState02 = 1;
-
- 	swprintf( *wDest_, L"DestLineIndex: %d",// Target: %d, Attacker: %d, BackState01: %d, BackState02: %d, CheckNum: %d",
- 		GetFinalDestLineIndex() );//, iTarget, iAttacker, iBackState01, iBackState02,	m_iCheckLineMapAtFirst );
-
-//	swprintf( *wDest_, L"GroupID: %d", m_uiGroupId );
-}
-
-/*virtual*/ void CX2BattleFieldNpcAi::RenderPatrolLineIndex( WCHAR** wDest_ )
-{
-	swprintf( *wDest_, L"Patrol: " );
-	for( int index : m_vecPatrolLineMapIndex )
-	{
-		WCHAR wSource[10] = { 0, };
-		swprintf( wSource, L"%d,", index );
-		StrCatW( *wDest_, wSource );
-	}
-}
-
-/*virtual*/ void CX2BattleFieldNpcAi::RenderPlayLineIndex( WCHAR** wDest_ )
-{
-	swprintf( *wDest_, L"Play: " );
-	for( int index : m_vecPlayLineMapIndex )
-	{
-		WCHAR wSource[10] = { 0, };
-		swprintf( wSource, L"%d,", index );
-		StrCatW( *wDest_, wSource );
 	}
 }
 

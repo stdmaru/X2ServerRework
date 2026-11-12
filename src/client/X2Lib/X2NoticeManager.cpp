@@ -141,7 +141,7 @@ bool CX2NoticeManager::AddNotice( KEGS_NOTIFY_MSG_NOT::NOTIFY_TYPE eNotifyType, 
 	return true;
 }
 
-HRESULT	CX2NoticeManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT	CX2NoticeManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// 일반공지
 	for ( int i = 0; i < (int)m_TextListToDelete.size(); i++ )
@@ -244,7 +244,7 @@ void CX2NoticeManager::AddTakeItemNoticeData()
 	if ( tempNotice != NULL )
 	{
 		//각 알림 별 메세지의 컨트롤 얻기
-		CKTDGUIStatic *pStatic[MAX_NOTICE_NUM];
+		CKTDGUIStatic *pStatic[MAX_NOTICE_NUM] = {};
 		for( UINT i = 0; i < MAX_NOTICE_NUM; ++i)
 		{
 			if( NULL != m_pDlgTakeItemBackBg[i] )
@@ -290,7 +290,7 @@ void CX2NoticeManager::CloseItemNotice(int iNum)
 {
 
 	//각 알림 별 메세지의 컨트롤 얻기
-	CKTDGUIStatic *pStatic[MAX_NOTICE_NUM];
+	CKTDGUIStatic *pStatic[MAX_NOTICE_NUM] = {};
 	for( UINT i = 0; i < MAX_NOTICE_NUM; ++i)
 	{
 		if( NULL != m_pDlgTakeItemBackBg[i])

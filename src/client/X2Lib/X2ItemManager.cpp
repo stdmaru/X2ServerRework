@@ -140,7 +140,7 @@ bool CX2ItemManager::OpenScriptFile( const WCHAR* pFileName )
 
 bool    CX2ItemManager::DoMemoryNotEncrypt( const char* pBuffer, long nSize )
 {
-	if( pBuffer != NULL && nSize >= sizeof(CX2Item::KItemFormatHeader) )
+	if( pBuffer != NULL && static_cast<size_t>( nSize ) >= sizeof(CX2Item::KItemFormatHeader) )
     {
         CX2Item::KItemFormatHeader kHeader = *( (const CX2Item::KItemFormatHeader*) ( pBuffer ) );
         if ( kHeader.m_dwMagic == KX2ITEMMANAGER_FORMAT_MAGIC
@@ -172,8 +172,8 @@ bool	CX2ItemManager::OpenItemScriptFile( const WCHAR* pKimFile, unsigned uNumScr
             return true;
     }
 
-    if ( uNumScriptFiles == 0 || apScriptFileName == NULL )
-        return false;
+	if ( uNumScriptFiles == 0 || apScriptFileName == NULL )
+		return false;
 
 	{
 		/* 오현빈 // X2OPTIMIZE_ITEM_TEMPLET_PREPROCESSING주석 // 제가 이해한 내용을 바탕으로 작성 해서 틀린 내용 일 수 있습니다.
@@ -267,7 +267,6 @@ bool CX2ItemManager::AddShopItemList_LUA()
 			iter = m_ShopItemGroup.find(buf);
 			if( iter != m_ShopItemGroup.end() )
 			{
-				ItemIDList* pGroupItemIDList = iter->second;
 				for( int i = 0; i < (int)pItemIDList->m_ItemIDList.size(); i++ )
 				{
 					int itemID = pItemIDList->m_ItemIDList[i];
@@ -305,7 +304,8 @@ bool CX2ItemManager::AddShopItemList_LUA()
 	}
 
 	// 특정 npc만이 판매하는 물품
-	NpcItemIDList* pNpcItemIDList = NULL;
+	NpcItemIDList* pNpcItemIDList;	// split: a goto jumps over it
+	pNpcItemIDList = NULL;
 	if( luaManager.BeginTable( "SALE_ITEM_NPC" ) == true )
 	{
 		int index = 1;
@@ -530,11 +530,13 @@ void CX2ItemManager::ReplaceEmptyToBasic( CX2Unit* pUnit, CKTDGXSkinAnimPtr pAni
 		{
 			ReplaceEmptyToBasic( pUnit, pAnim, pMotion, pAnimXET, viewEqipList, viewEqipPosition, CX2Unit::EP_RAVEN_LEFT_ARM, pUnit->GetUnitTemplet()->m_RavenLeftArmItemID,	bLoad	);
 		} break;
+	default:
+		break;
 	}
 }
 
 void CX2ItemManager::ReplaceEmptyToBasic( CX2Unit* pUnit, CKTDGXSkinAnimPtr pAnim,
-										 CKTDXDeviceXSkinMesh* pMotion, CKTDXDeviceXET* pAnimXET,
+										 CKTDXDeviceXSkinMesh* /*pMotion*/, CKTDXDeviceXET* /*pAnimXET*/,
 										 IN OUT vector<CX2EqipPtr>& viewEqipList, bool* pViewEqipPosition,
 										 CX2Unit::EQIP_POSITION eqipPos, int itemID, bool bLoad )
 {
@@ -643,7 +645,7 @@ std::pair< CX2ItemManager::RandomItemItr, CX2ItemManager::RandomItemItr > CX2Ite
 
 bool CX2ItemManager::IsRandomItem( std::pair< CX2ItemManager::RandomItemItr, CX2ItemManager::RandomItemItr >& pairValue )
 {
-	if ( ( pairValue.first == m_multimapRandomItem.end() ) && ( pairValue.second == m_multimapRandomItem.end() )
+	if ( (( pairValue.first == m_multimapRandomItem.end() ) && ( pairValue.second == m_multimapRandomItem.end() ))
 		 || ( pairValue.first == pairValue.second ) )
 		return false;
 	else
@@ -834,7 +836,7 @@ bool CX2ItemManager::AddCashItem( vector< KBillProductInfo >& vecKBillProductInf
 						bCheckError = true;
 						//에러 로그 찍어보실까낭
 						WCHAR buffer[32];
-						_itow(kBillProductInfo.m_iProductID, buffer, 10);
+						_itow_s(kBillProductInfo.m_iProductID, buffer, 10);
 						ErrorLogMsg( KEM_ERROR354, buffer );
 						break;
 					}
@@ -1166,7 +1168,7 @@ bool CX2ItemManager::AddCashItemEx()
 }
 
 //{{ 2008. 11. 18  최육사
-void CX2ItemManager::AddItemExchangeGroup_LUA( int iSourceItemID, int iResultItemID, float fRate )
+void CX2ItemManager::AddItemExchangeGroup_LUA( int iSourceItemID, int /*iResultItemID*/, float /*fRate*/ )
 {
 	m_mapItemExchange.insert( std::make_pair( iSourceItemID, iSourceItemID ) );
 }
@@ -1581,7 +1583,7 @@ bool CX2ItemManager::IsShowItemTooniland( int iItemId )
 
 
 
-bool CX2ItemManager::AddItemExchangeData( int iHOUSEID, ITEM_EXCHANGE_TYPE eExchangeType, int iSrcItemID, int iDestItemID, int iQuantity, float fDestItemRate /*= 0.f*/ )
+bool CX2ItemManager::AddItemExchangeData( int iHOUSEID, ITEM_EXCHANGE_TYPE eExchangeType, int iSrcItemID, int iDestItemID, int iQuantity, float /*fDestItemRate*/ /*= 0.f*/ )
 {
 	if( CX2LocationManager::HI_INVALID == iHOUSEID )
 		return false;
@@ -1713,7 +1715,7 @@ bool CX2ItemManager::SetItemLevelEnchantData_LUA( int iAtkPhysic, int iAtkMagic,
 	return true;
 }
 
-bool CX2ItemManager::GetItemLevel( IN const KItemInfo& kItemInfo, OUT int& iItemLevel )
+bool CX2ItemManager::GetItemLevel( IN const KItemInfo& /*kItemInfo*/, OUT int& /*iItemLevel*/ )
 {
 	//const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( kItemInfo.m_iItemID );
 	//if( pItemTemplet == NULL )
@@ -2001,7 +2003,7 @@ bool CX2ItemManager::CheckDisCountItemList( int TempProDuct ,bool& bIdexReset )
 	{
 		if( mit->second.m_DisCountProNo == TempProDuct )
 		{
-			for(int i = 0; i < mit->second.m_DisCountKeepItem.size(); ++i)
+			for(int i = 0; i < static_cast<int>( mit->second.m_DisCountKeepItem.size() ); ++i)
 			{
 				if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID(mit->second.m_DisCountKeepItem[i]) == NULL )
 				{
@@ -2013,14 +2015,14 @@ bool CX2ItemManager::CheckDisCountItemList( int TempProDuct ,bool& bIdexReset )
 		}
 		else if( mit->second.m_BasicProNo == TempProDuct )
 		{
-			for(int i = 0; i < mit->second.m_DisCountKeepItem.size(); ++i)
+			for(int i = 0; i < static_cast<int>( mit->second.m_DisCountKeepItem.size() ); ++i)
 			{
 				if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID(mit->second.m_DisCountKeepItem[i]) != NULL )
 				{
 					nCount++;
 				}
 			}
-			if( nCount == mit->second.m_DisCountKeepItem.size() )
+			if( static_cast<size_t>( nCount ) == mit->second.m_DisCountKeepItem.size() )
 			{
 				return false;
 			}

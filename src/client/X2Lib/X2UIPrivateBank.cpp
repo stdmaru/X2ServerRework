@@ -11,7 +11,6 @@ CX2UIPrivateBank::CX2UIPrivateBank( const CKTDXStage* const pNowStage, const WCH
 	, m_vDlgSize( 0, 0 )
 	, m_iMaxNumOfSlot( 0 )
 	, m_iUsedNumOfSlot( 0 )
-	, m_iConfirmED( 0 )
 	, m_pDLGBuyConfirm( NULL )
 {
 	m_bReserveResetDialog = false;
@@ -149,7 +148,7 @@ HRESULT		CX2UIPrivateBank::OnFrameMove( double fTime, float fElapsedTime )
 	return	S_OK;
 }
 
-bool		CX2UIPrivateBank::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIPrivateBank::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// �տ� ��� ���̾�αװ� ������ �޽����� ó������ �ʴ´�
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDlgPrivateBank ) )
@@ -254,7 +253,7 @@ bool		CX2UIPrivateBank::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 }
 
-bool		CX2UIPrivateBank::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIPrivateBank::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch ( wParam )
 	{
@@ -388,7 +387,7 @@ bool		CX2UIPrivateBank::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	case UPBCM_WANT_BUY_SHARING_CASH_ITEM:
 		{
 			if ( m_pDlgWantBuySharingBank != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgWantBuySharingBank, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgWantBuySharingBank, 0, false );
 
 			m_pDlgWantBuySharingBank = NULL;
 			// ���� : ĳ�� ������ �����ش�.( �������� ���� ���� ������ �ִ� ������ )
@@ -415,7 +414,7 @@ bool		CX2UIPrivateBank::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			g_pData->GetServerProtocol()->SendPacket( EGS_CHANGE_INVENTORY_SLOT_ITEM_REQ, g_pData->GetUIManager()->GetUIInventory()->m_kTempChangeSlotInfo );
@@ -487,7 +486,7 @@ void CX2UIPrivateBank::SetLayer( X2_DIALOG_LAYER layer )
 
 }
 
-void CX2UIPrivateBank::SetPosition( D3DXVECTOR2 vec, bool bAbsolute /* = true */ )
+void CX2UIPrivateBank::SetPosition( D3DXVECTOR2 /*vec*/, bool /*bAbsolute*/ /* = true */ )
 {
 
 }
@@ -689,6 +688,8 @@ void	CX2UIPrivateBank::UpdateUICashShopButton()
 			    }
 			    break;
 
+		    default:
+		    	break;
 		    }
 
 		    switch ( pMyInventory->GetBankMembershipGrade() )
@@ -942,7 +943,6 @@ bool	CX2UIPrivateBank::MouseUp( D3DXVECTOR2 mousePos )
 
 	if ( *m_pSlotBeforeDragging	!= NULL )	// �巡�� �� ��� �϶�
 	{
-		CX2SlotItem*	pSlotItem	= static_cast< CX2SlotItem* >( *m_pSlotBeforeDragging );
 		bool			bCheck		= false;
 
 		bCheck			=	OnDropAnyItem( mousePos );	// ������ �ؾ���
@@ -1065,8 +1065,8 @@ bool CX2UIPrivateBank::OnDropAnyItem( D3DXVECTOR2 mousePos )
 		return false;
 
 	const CX2Inventory* pInventory = GetMyInventory();
-    if ( pInventory == NULL )
-        return false;
+	if ( pInventory == NULL )
+		return false;
 
 	switch ( (*m_pSlotBeforeDragging)->GetSlotType() )
 	{
@@ -1129,6 +1129,8 @@ bool CX2UIPrivateBank::OnDropAnyItem( D3DXVECTOR2 mousePos )
 
 		}
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -1193,7 +1195,7 @@ bool CX2UIPrivateBank::OnRClickedItem( D3DXVECTOR2 mousePos )
 	return false;	// ��...���̾�α�??
 }
 
-bool CX2UIPrivateBank::Handler_EGS_GET_MY_BANK_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPrivateBank::Handler_EGS_GET_MY_BANK_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_GET_MY_BANK_INFO_ACK kEvent;
@@ -1232,7 +1234,7 @@ void CX2UIPrivateBank::ResetPrivateBank()
 	SetSlotManagerLayer( static_cast<int>(XDL_NORMAL_3) );
 }
 
-bool CX2UIPrivateBank::Handler_EGS_GET_SHARE_BANK_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPrivateBank::Handler_EGS_GET_SHARE_BANK_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_GET_SHARE_BANK_ACK kEvent;

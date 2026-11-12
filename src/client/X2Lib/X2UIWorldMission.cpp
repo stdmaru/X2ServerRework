@@ -6,7 +6,6 @@
 
 namespace _CONST_UI_WORLD_MISSION_
 {
-	const float MAX_DEFENCE_VALUE							= 100.f;	/// 어둠의 문 UI 최대 진행 수치
 	const float DEFENCE_DUNGEON_WORLD_MISSION_UI_GAGE_WIDTH	= 74.f;		/// 월드 미션 UI의 게이지 길이
 }
 
@@ -18,9 +17,8 @@ m_pDlgTime( NULL )
 //,m_bReservedReward( false )
 //,m_iRewardItemID( 0 )
 //,m_iRewardQuantity( 0 )
-, m_iNumOfCrystalsProtected( 0 )
-, m_bEnableTimeDlg( false )
 , m_bForceUpdate(false)
+, m_bEnableTimeDlg( false )
 , m_bIsFlickerDanger(false)
 
 {
@@ -201,7 +199,7 @@ void CX2UIWorldMission::SetShowTimeDlg( bool bEnable )
 // 	return false;
 // }
 
-bool CX2UIWorldMission::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIWorldMission::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -262,10 +260,10 @@ void CX2UIWorldMission::UpdateTimeDlg( int iTime )
 	const UINT uiSizeOfTextureKey = ARRAY_SIZE( MAGIC_TEXTURE_KEY );
 
 	int iMinTen			= iMin / 10 % 10;
-	if ( uiSizeOfTextureKey <= iMinTen )
+	if ( uiSizeOfTextureKey <= static_cast<UINT>( iMinTen ) )
 		iMinTen = 0;
 	int iSecTen			= iSec / 10 % 10;
-	if ( uiSizeOfTextureKey <= iSecTen )
+	if ( uiSizeOfTextureKey <= static_cast<UINT>( iSecTen ) )
 		iSecTen = 0;
 
 	if( pStaticTime != NULL )

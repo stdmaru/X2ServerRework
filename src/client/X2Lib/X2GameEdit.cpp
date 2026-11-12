@@ -2,7 +2,6 @@
 #include "./X2GameEdit.h"
 
 
-#include    <boost/tokenizer.hpp>
 
 CX2GameEdit::CX2GameEdit(void)
 #if X2_DEV_TOOLS
@@ -231,7 +230,6 @@ bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 		{
 			prevStringIndex = nowStringIndex + 1;
 
-			bool bFirstCheck = false;
 
 			while(1)
 			{
@@ -279,7 +277,6 @@ bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 
 					prevStringIndex = nowStringIndex + 1;
 				}
-				bFirstCheck = true;
 			}
 		}
 
@@ -409,8 +406,8 @@ void CX2GameEdit::PetCheat_LUA( int iCheatType, int iValue )
 void CX2GameEdit::PetActionCheat_LUA( const char *motionName )
 {
 
-    if ( motionName == NULL || motionName[0] == NULL )
-        return;
+	if ( motionName == NULL || motionName[0] == '\0' )
+		return;
 
 	if( g_pData != NULL && g_pData->GetPetManager() != NULL )
 	{
@@ -1114,7 +1111,6 @@ void CX2GameEdit::ToggleClassChangeCheat()
 
 		if ( NULL != m_pDLGClassChangeCheat )
 		{
-			CX2Unit::UNIT_CLASS eUnitClass = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UnitClass;
 			CKTDGUIListBox* pListBox = (CKTDGUIListBox*) m_pDLGClassChangeCheat->GetControl( L"Class_List" );
 
 			if ( NULL != pListBox )

@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "./X2InstanceData.h"
 
-#include <boost/assign.hpp>
 
 CX2InstanceData::CX2InstanceData(void) :
 m_pMiniMapUI( NULL ),
+m_iED( 0 ),
+m_bShowCSPandSlotBDate( false ),
 m_bIsDungeonLounge( false ),
 m_bLoadedDungeonLoungeUnits( false ),
 m_eDungeonLoungeWorldID( CX2World::WI_NONE ),
@@ -13,13 +14,11 @@ m_UserID( L"" ),
 m_UserSessionID( L"" ),
 m_UserPassword( L"" ),
 m_bIDVerified(false),
-m_wstrPurchaseTok( L"" ),
-m_iConnectChannelServerID( -1 ),
-m_bFirstJoinVillage(false)
+m_wstrPurchaseTok( L"" )
 //{{ kimhc // 실시간 엘소드 중 실시간 ED 획득 관련
-, m_iED( 0 )
+, m_iConnectChannelServerID( -1 )
 //}} kimhc // 실시간 엘소드 중 실시간 ED 획득 관련
-, m_bShowCSPandSlotBDate( false )
+, m_bFirstJoinVillage(false)
 , m_bIsChangeChannel(false)
 , m_bRegisteredRank( false )
 //{{ kimhc // 자동결제에서 최근 열리거나 닫힌 웹페이지가 무엇인지를 판단 하는 변수 및 함수 추가
@@ -76,12 +75,9 @@ m_bFirstJoinVillage(false)
 
 #ifdef EXTEND_SERVER_GROUP_MASK
 #else
-	using namespace boost::assign;
-	insert( m_mapServerGroupName )
-		( SGI_INVALID, L"Invalid ServerGroup" )
-		( SGI_SOLES, GET_STRING( STR_ID_4836 ) )
-		( SGI_GAIA, GET_STRING( STR_ID_4835 ) )
-		;
+	m_mapServerGroupName.insert( { SGI_INVALID, L"Invalid ServerGroup" } );
+	m_mapServerGroupName.insert( { SGI_SOLES, GET_STRING( STR_ID_4836 ) } );
+	m_mapServerGroupName.insert( { SGI_GAIA, GET_STRING( STR_ID_4835 ) } );
 #endif // EXTEND_SERVER_GROUP_MASK
 
 
@@ -160,7 +156,7 @@ wstring CX2InstanceData::GetConnectChannelServerName()
 	return GetChannelServerName( m_iConnectChannelServerID );
 }
 #ifdef EXTEND_SERVER_GROUP_MASK
-wstring CX2InstanceData::GetChannelServerName( int ChannelID, int ServerID)
+wstring CX2InstanceData::GetChannelServerName( int ChannelID, int /*ServerID*/)
 {
 	wstring wstrChannelName = L"";
 	if ( m_vecChannelInfo.empty() == false )
@@ -469,7 +465,7 @@ bool    CX2InstanceData::SaveScriptServerGroupFile()
 bool CX2InstanceData::IsConnectedChannel ( int iChannelID_ )
 {
 	// 채널에 접속했었는지 확인한다.
-	BOOST_FOREACH ( int iChannelID, m_vecTryConnectChannelID )
+	for ( int iChannelID : m_vecTryConnectChannelID )
 	{
 		if ( iChannelID == iChannelID_ )
 			return true;

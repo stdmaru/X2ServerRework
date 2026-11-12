@@ -57,6 +57,8 @@ int CX2ComboTree::GetComboIconLayer( COMBO_TREE_ICON eIcon )
 		{
 			return 2;
 		} break;
+	default:
+		break;
 	}
 
 	if( eIcon >= CTI_ICON_JUMP &&
@@ -146,6 +148,8 @@ void CX2ComboTree::ParseComboSet( KLuaManager &luaManager, std::vector<ComboIcon
 				iLayer = GetComboIconLayer( (COMBO_TREE_ICON) CTI_BACKGROUND );
 				vecComboSet.push_back( ComboIcon( fGridX, fGridY, CTI_BACKGROUND, iLayer ) );
 			} break;
+		default:
+			break;
 		}
 	}
 

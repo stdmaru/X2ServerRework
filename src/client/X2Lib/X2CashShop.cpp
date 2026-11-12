@@ -2,7 +2,7 @@
 #include "./X2CashShop.h"
 
 
-struct CashItemSorter : public std::binary_function< int, int, bool >
+struct CashItemSorter
 {
 	bool operator()(const int& lhs, const int& rhs) const
 	{
@@ -36,13 +36,13 @@ struct CashItemSorter : public std::binary_function< int, int, bool >
 CX2CashShop::CX2CashShop( CKTDXStage* pStage, const WCHAR* wszFileName )
 : CX2ItemSlotManager( pStage, wszFileName )
 //{{ kimhc // ���࿡�� ĳ�ü��� ��ġ������ �ٷ� ���� ���� �߰�
-, m_iMenuTypeCallingCashShop( 0 )
-, m_bCheckDialogWarningPlatinumMembership( false )
+, m_pNPCViewerUI ( NULL )
+, m_iPrePetItemID ( -1 )
 //}} kimhc // ���࿡�� ĳ�ü��� ��ġ������ �ٷ� ���� ���� �߰�
-, m_bShowInvenEquip ( true )
-,m_pNPCViewerUI ( NULL )
-,m_pDLGPetPreview ( NULL )
-,m_iPrePetItemID ( -1 )
+, m_pDLGPetPreview ( NULL )
+,m_iMenuTypeCallingCashShop( 0 )
+,m_bCheckDialogWarningPlatinumMembership( false )
+,m_bShowInvenEquip ( true )
 {
 	m_pUnitViewerUI		= NULL;
 	CX2UnitViewerUI::SetUnitClicked( false );
@@ -70,9 +70,8 @@ CX2CashShop::CX2CashShop( CKTDXStage* pStage, const WCHAR* wszFileName )
 
 	m_pDLGMainPage		= NULL;
 	m_pDLGSubPage		= NULL;
-    //{{ seojt // 2009-1-8, 20:43
-    ZeroMemory( m_pDLGSubPageMenu, sizeof(m_pDLGSubPageMenu) );
-    //}} seojt // 2009-1-8, 20:43
+	for ( CKTDGUIDialogType& pDLGSubPageMenu : m_pDLGSubPageMenu )
+		pDLGSubPageMenu = NULL;
 
 	m_bAllCharItem		= false;
 
@@ -161,7 +160,7 @@ CX2CashShop::~CX2CashShop(void)
 	SAFE_DELETE_DIALOG( m_pDLGPetPreview );
 }
 
-bool CX2CashShop::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	if ( GetCheckOperationCondition() == false )
@@ -248,7 +247,7 @@ HRESULT CX2CashShop::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 
 
@@ -691,7 +690,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	case CSCUM_ITEM_TO_INVEN_CHECK_OK:
 		{
 			if ( m_pDLGCheckCashItemToInven != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckCashItemToInven, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckCashItemToInven, 0, false );
 
 			m_pDLGCheckCashItemToInven = NULL;
 
@@ -707,7 +706,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	case CSCUM_ITEM_TO_INVEN_OVERLAP_CHECK_OK:
 		{
 			if ( m_pDLGOverlapCheckCashItemToInven != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, 0, false );
 
 			m_pDLGOverlapCheckCashItemToInven = NULL;
 
@@ -718,7 +717,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	case CSCUM_ITEM_TO_INVEN_OVERLAP_CHECK_OK_PACKAGE:
 		{
 			if ( m_pDLGOverlapCheckCashItemToInven != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, 0, false );
 
 			m_pDLGOverlapCheckCashItemToInven = NULL;
 
@@ -904,7 +903,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 				break;
 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pBuyItemPopUp->SetOpen( false );
 
@@ -919,7 +918,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	case CSCUM_BUY_POP_UP_OVERLAP_CANCEL:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pBuyItemPopUp->SetOpen( false );
 		}
@@ -928,7 +927,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	case CSCUM_BUY_PLATINUM_CARD_OK:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			m_bCheckDialogWarningPlatinumMembership	= true;
 
 			ProcessBuyPopUpOk();
@@ -938,7 +937,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	case CSCUM_BUY_PLATINUM_CARD_CANCEL:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			m_bCheckDialogWarningPlatinumMembership	= false;
 
 			m_pBuyItemPopUp->SetOpen( false );
@@ -1249,6 +1248,8 @@ wstring CX2CashShop::GetSlotCashItemDesc( int itemTID )
 							    slotItemDesc += L"\n";
 							    slotItemDesc += GET_STRING( STR_ID_19 );
 						    }
+                        default:
+                        	break;
                         }//switch
 					}
 				}
@@ -1372,7 +1373,7 @@ void CX2CashShop::SetOpen( bool bOpen )
 			{
 				// # �޸� ���Ÿ� ���� ī�װ����� �̵�
 				SetCashShopState( CX2CashShop::CSS_SUB, CX2CashShop::CSC_CONSUME );
-				CKTDGUIRadioButton* pRadioButton = pRadioButton = static_cast< CKTDGUIRadioButton* >( m_pDLGFront->GetControl( L"tab_Use" ) );
+				CKTDGUIRadioButton* pRadioButton = static_cast< CKTDGUIRadioButton* >( m_pDLGFront->GetControl( L"tab_Use" ) );
 				if ( NULL != pRadioButton )
 					pRadioButton->SetChecked( true );
 
@@ -1496,6 +1497,8 @@ void CX2CashShop::SetOpen( bool bOpen )
 						pBattleFieldGame->GetMinorXMeshPlayer()->SetRenderEffectMadeByGameUnit( false );
 				}
 			} break;
+		default:
+			break;
 		}
 
 		g_pKTDXApp->SkipFrame();
@@ -1620,6 +1623,8 @@ void CX2CashShop::SetOpen( bool bOpen )
 						pBattleFieldGame->GetMinorXMeshPlayer()->SetRenderEffectMadeByGameUnit( true );
 				}
 			} break;
+		default:
+			break;
 		}
 
 		ResetPetViewer();
@@ -1823,6 +1828,8 @@ void CX2CashShop::InitUI( CKTDXStage* pStage )
 			//{{ kimhc // 2009-09-29 // �ڵ����� ī�װ��� �߰�
 				//}} kimhc // 2009-09-29 // �ڵ����� ī�װ��� �߰�
 
+		default:
+			break;
 		}
 
 		if ( pDialog != NULL )
@@ -2073,8 +2080,8 @@ bool CX2CashShop::Handler_EGS_BUY_CASH_ITEM_REQ( vector< unsigned long >& vecPro
 			if( itemID == UNLIMITED_SECOND_CHANGE_JOB_ITEM_ID )
 			{
 				if( g_pData->GetMyUser()->GetSelectUnit() != NULL
-					&& g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( itemID ) != NULL
-					|| 2 != g_pData->GetMyUser()->GetSelectUnit()->GetClassLevel()
+					&& ( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( itemID ) != NULL
+					|| 2 != g_pData->GetMyUser()->GetSelectUnit()->GetClassLevel() )
 					)
 				{
 					//���� �������� ���� �� �� �����ϴ�. ��� �޽����� �ٿ���
@@ -2123,7 +2130,7 @@ bool CX2CashShop::Handler_EGS_BUY_CASH_ITEM_REQ( vector< unsigned long >& vecPro
 	return true;
 }
 
-bool CX2CashShop::Handler_EGS_BUY_CASH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_BUY_CASH_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -2269,7 +2276,7 @@ bool CX2CashShop::Handler_EGS_BUY_CASH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wP
 	return false;
 }
 
-bool CX2CashShop::Handler_EGS_BILL_INVENTORY_INQUIRY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_BILL_INVENTORY_INQUIRY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -2360,7 +2367,7 @@ bool CX2CashShop::Handler_EGS_BILL_GET_PURCHASED_CASH_ITEM_REQ()
 
 	return true;
 }
-bool CX2CashShop::Handler_EGS_BILL_GET_PURCHASED_CASH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_BILL_GET_PURCHASED_CASH_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BILL_GET_PURCHASED_CASH_ITEM_ACK kEvent;
@@ -2550,7 +2557,7 @@ bool CX2CashShop::Handler_EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ()
 	return true;
 }
 
-bool CX2CashShop::Handler_EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_PURCHASED_PACKAGE_CASH_ITEM_ACK kEvent;
@@ -2599,7 +2606,7 @@ bool CX2CashShop::Handler_EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_ACK( HWND hWnd, UI
 }
 
 
-bool CX2CashShop::Handler_EGS_GET_WISH_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_GET_WISH_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_WISH_LIST_ACK kEvent;
@@ -2672,7 +2679,7 @@ bool CX2CashShop::Handler_EGS_MODIFY_WISH_LIST_REQ( bool bAdd, vector< int >& ve
 
 }
 
-bool CX2CashShop::Handler_EGS_MODIFY_WISH_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_MODIFY_WISH_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MODIFY_WISH_LIST_ACK kEvent;
@@ -2753,7 +2760,7 @@ bool CX2CashShop::Handler_EGS_PRESENT_CASH_ITEM_REQ( const WCHAR* wszReceiverNic
 	return true;
 }
 
-bool CX2CashShop::Handler_EGS_PRESENT_CASH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_PRESENT_CASH_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PRESENT_CASH_ITEM_ACK kEvent;
@@ -2801,7 +2808,7 @@ bool CX2CashShop::Handler_EGS_CHECK_PRESENT_CASH_INVENTORY_NOT( unsigned long ul
 
 
 
-bool CX2CashShop::Handler_EGS_EXPAND_CHAR_SLOT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2CashShop::Handler_EGS_EXPAND_CHAR_SLOT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EXPAND_CHAR_SLOT_NOT kEvent;
@@ -3156,6 +3163,8 @@ void CX2CashShop::SetCashShopState( CASH_SHOP_STATE cashShopState, CASH_SHOP_CAT
 				//ī�װ����� ������ �����ؼ� �������� ����~
 			}
 			break;
+		default:
+			break;
 		}
 
 		//{{ kimhc // 2009-10-12 // �ڵ����� �� ����, �� ��ư �Ⱥ��̰� �ϱ� ���� �߰�
@@ -3168,7 +3177,7 @@ void CX2CashShop::SetCashShopState( CASH_SHOP_STATE cashShopState, CASH_SHOP_CAT
 	}
 }
 
-void CX2CashShop::ResetItemSlot( CX2Slot::SLOT_TYPE slotType, vector<int>& vecItemID )
+void CX2CashShop::ResetItemSlot( CX2Slot::SLOT_TYPE slotType, const vector<int>& vecItemID )
 {
 	for ( int i = 0; i < (int)m_SlotList.size(); i++ )
 	{
@@ -3458,7 +3467,7 @@ vector<int> CX2CashShop::GetItemByCategory( CASH_SHOP_CATEGORY categoryID )
 							TempItemID.clear();
 							if( g_pData->GetItemManager()->CheckKeepShowItem( itemID , TempItemID ) == true )
 							{
-								for( int i = 0; i < TempItemID.size(); ++i )
+								for( int i = 0; i < static_cast<int>( TempItemID.size() ); ++i )
 								{
 									if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempItemID[i] ) == NULL )
 									{
@@ -3593,7 +3602,7 @@ vector<int> CX2CashShop::GetItemByCategory( CASH_SHOP_CATEGORY categoryID, CASH_
 							TempItemID.clear();
 							if( g_pData->GetItemManager()->CheckKeepShowItem( itemID , TempItemID ) == true )
 							{
-								for( int i = 0; i < TempItemID.size(); ++i )
+								for( int i = 0; i < static_cast<int>( TempItemID.size() ); ++i )
 								{
 									if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempItemID[i] ) == NULL )
 									{
@@ -3700,7 +3709,6 @@ void CX2CashShop::ChangeSubCategory( CKTDGUIRadioButton* pRadioButton )
 vector<int> CX2CashShop::GetHotItemList( vector<int>& vecItemID, int maxItemNum )
 {
 	vector< int > vecHotItemID;
-	int iHotItemCheck = 0;
 	vector< int > vecTempHotCashItem =  g_pData->GetItemManager()->GetHotCashItemList();
 
 	for ( int i = 0; i < (int)vecTempHotCashItem.size(); i++ )
@@ -3938,7 +3946,6 @@ void CX2CashShop::ResetSellCashItemByPreEquip()
 {
 	for ( int iS = 0; iS < (int)m_vecPreEquipItemID.size(); ++iS )
 	{
-		int itemTID = m_vecPreEquipItemID[iS];
 		//CX2Item::ItemTemplet* pItemTemplet = g_pData->GetItemManager()->GetItemTemplet( itemTID );
 
 		for ( int j = 0; j < (int)m_SlotList.size(); j++ )
@@ -4569,7 +4576,7 @@ const wstring CX2CashShop::GetClassNameByClassChangeItem( int itemID )
 	return L"";
 }
 
-bool CX2CashShop::GetCanByeSkillNoteItem( int itemID )
+bool CX2CashShop::GetCanByeSkillNoteItem( int /*itemID*/ )
 {
 	if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( SKILL_NOTE_ITEM_ID, true ) != NULL )
 	{
@@ -4930,7 +4937,7 @@ void CX2CashShop::SetOpenTooniCashChargePage( OUT string& strURL_, OUT RECT& rcW
 //{{ ������ // 2012-04-09 // �Ǹ�����
 //}} ������ // 2012-04-09 // �Ǹ�����
 
-bool CX2CashShop::GetCahBuyExpandQuickSlotItem( int itemID )
+bool CX2CashShop::GetCahBuyExpandQuickSlotItem( int /*itemID*/ )
 {
 	if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( EXPAND_QUICK_SLOT_ITEM_ID, true ) != NULL )
 	{
@@ -5009,7 +5016,7 @@ CX2CashShop::CashShopSlot::CashShopSlot( CX2Slot::SLOT_TYPE cashShopSlotType, in
 CX2CashShop::CashShopSlot::~CashShopSlot()
 {
 	if ( m_pDLGCashShopSlot != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCashShopSlot, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCashShopSlot, 0, false );
 
 	m_pDLGCashShopSlot = NULL;
 }
@@ -5022,7 +5029,7 @@ void CX2CashShop::CashShopSlot::SetShow( bool bShow )
 
 //{{ kimhc // 2009-10-12 // �ڵ����� �� ����, �� ��ư �Ⱥ��̰� �ϱ� ���� �߰�
 //#ifdef	AUTO_PAYMENT
-void CX2CashShop::CashShopSlot::SetInfo( bool bAutoPayment /*= false*/ )
+void CX2CashShop::CashShopSlot::SetInfo( bool /*bAutoPayment*/ /*= false*/ )
 //#else	AUTO_PAYMENT
 //void CX2CashShop::CashShopSlot::SetInfo()
 //#endif	AUTO_PAYMENT
@@ -5085,7 +5092,7 @@ void CX2CashShop::CashShopSlot::SetInfo( bool bAutoPayment /*= false*/ )
 		int TempProDuctNo = 0;
 		if( pkKBillProductInfo != NULL && (g_pData->GetItemManager()->DisCountItemID_Find(m_ItemID,TempList,TempProDuctNo) == true) )
 		{
-			for(int i = 0; i < TempList.size(); ++i)
+			for(int i = 0; i < static_cast<int>( TempList.size() ); ++i)
 			{
 				if( NULL == g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempList[i] ) )
 				{
@@ -5259,7 +5266,7 @@ bool CX2CashShop::CashShopSlotManager::IsPossibleUsedByMyBankMembership( int ite
 
 
 // bPossibleItemOnly : ���� ����� �� �ִ� �����۸� ���̰� ����
-void CX2CashShop::CashShopSlotManager::Reset( vector<int>& vecItemID, bool bAutoPayment /* = false */, bool bPossibleItemOnly /*= false*/ )
+void CX2CashShop::CashShopSlotManager::Reset( const vector<int>& vecItemID, bool /*bAutoPayment*/ /* = false */, bool bPossibleItemOnly /*= false*/ )
 {
 	m_NowPage = 1;
 
@@ -5307,7 +5314,7 @@ void CX2CashShop::CashShopSlotManager::Reset( vector<int>& vecItemID, bool bAuto
 					TempItemID.clear();
 					if( g_pData->GetItemManager()->CheckKeepShowItem( vecItemID[i] , TempItemID ) == true )
 					{
-						for( int i = 0; i < TempItemID.size(); ++i )
+						for( int i = 0; i < static_cast<int>( TempItemID.size() ); ++i )
 						{
 							if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempItemID[i] ) == NULL )
 							{
@@ -5395,7 +5402,7 @@ void CX2CashShop::CashShopSlotManager::Reset( vector<int>& vecItemID, bool bAuto
 
 //{{ kimhc // 2009-10-12 // �ڵ����� �� ����, �� ��ư �Ⱥ��̰� �ϱ� ���� �߰�
 //#ifdef	AUTO_PAYMENT
-void CX2CashShop::CashShopSlotManager::SetOpen( bool bOpen, bool bAutoPayment /*= false*/ )
+void CX2CashShop::CashShopSlotManager::SetOpen( bool bOpen, bool /*bAutoPayment*/ /*= false*/ )
 //#else	AUTO_PAYMENT
 //void void CX2CashShop::CashShopSlotManager::SetOpen( bool bOpen )
 //#endif	AUTO_PAYMENT
@@ -5432,7 +5439,7 @@ void CX2CashShop::CashShopSlotManager::SetOpen( bool bOpen, bool bAutoPayment /*
 	}
 }
 
-bool CX2CashShop::CashShopSlotManager::NextPage( bool bAutoPayment /* = false */ )
+bool CX2CashShop::CashShopSlotManager::NextPage( bool /*bAutoPayment*/ /* = false */ )
 {
 	if ( m_NowPage >= m_MaxPage )
 		return false;
@@ -5446,7 +5453,7 @@ bool CX2CashShop::CashShopSlotManager::NextPage( bool bAutoPayment /* = false */
 	return true;
 }
 
-bool CX2CashShop::CashShopSlotManager::PrevPage( bool bAutoPayment /* = false */ )
+bool CX2CashShop::CashShopSlotManager::PrevPage( bool /*bAutoPayment*/ /* = false */ )
 {
 	if ( m_NowPage <= 1 )
 		return false;
@@ -5495,7 +5502,7 @@ int CX2CashShop::CashShopSlotManager::GetItemID( CKTDGUIDialogType pDialog )
 
 //{{ kimhc // 2009-10-12 // �ڵ����� �� ĳ�� - �� ���� ǥ��
 //#ifdef	AUTO_PAYMENT
-void CX2CashShop::CashShopSlotManager::ResetNowPage( bool bAutoPayment )
+void CX2CashShop::CashShopSlotManager::ResetNowPage( bool /*bAutoPayment*/ )
 //#else	AUTO_PAYMENT
 //void CX2CashShop::CashShopSlotManager::ResetNowPage()
 //#endif	AUTO_PAYMENT
@@ -5568,7 +5575,7 @@ void CX2CashShop::BuyItemPopupSlot::UpdateUI()
 
 	{
 		wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 97, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, tempName.c_str() );
 		}
@@ -5583,7 +5590,7 @@ void CX2CashShop::BuyItemPopupSlot::UpdateUI()
 	if ( pItemName != NULL && pItemName->GetString(0) != NULL )
 	{
 			wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 97, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, L"" );
 
@@ -5729,7 +5736,7 @@ void CX2CashShop::CashItemToInvenPopupSlot::UpdateUI()
 	if ( pItemName != NULL && pItemName->GetString(0) != NULL )
 	{
 		wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 224, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, tempName.c_str() );
 		}
@@ -5744,7 +5751,7 @@ void CX2CashShop::CashItemToInvenPopupSlot::UpdateUI()
 	if ( pItemName != NULL && pItemName->GetString(0) != NULL )
 	{
 		wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 224, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, L"" );
 
@@ -5976,7 +5983,7 @@ void CX2CashShop::BuyItemPopup::ChangeItemPeriod( CKTDGUIDialogType pDialog, int
 			int TempProDuctNum = 0;
 			if(g_pData->GetItemManager()->DisCountItemID_Find(itemID,TempVec,TempProDuctNum) == true)
 			{
-				for(int i = 0; i < TempVec.size(); ++i)
+				for(int i = 0; i < static_cast<int>( TempVec.size() ); ++i)
 				{
 					if( NULL == g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempVec[i] ) )
 					{
@@ -6044,7 +6051,7 @@ void CX2CashShop::BuyItemPopup::UpdateCashUI()
 					int nTempProDuctNum = 0;
 					if(g_pData->GetItemManager()->DisCountItemID_Find(itemID,nTempVec,nTempProDuctNum) == true)
 					{
-						for(int i = 0; i < nTempVec.size(); ++i)
+						for(int i = 0; i < static_cast<int>( nTempVec.size() ); ++i)
 						{
 							if( NULL == g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( nTempVec[i] ) )
 							{
@@ -6141,7 +6148,7 @@ bool CX2CashShop::BuyItemPopup:: RestCashCheck()
 				}
 			}
 
-			int restCash = 0;
+			[[maybe_unused]] int restCash = 0;
 			switch(GetUseCashType())
 			{
 			case KGlobalCashInfo::GCT_PUBLISHER_ELSWORD_CASH:
@@ -6437,7 +6444,6 @@ void CX2CashShop::CashItemToInvenPopup::GetCheckedPackageInfo( vector< KBillPack
  				//kKBillPackageInfo.m_ulProductNo == kKBillOrderInfo.m_kBillProductInfo.m_iProductNo
 				)
  			{
- 				KBillProductInfo* pKBillProductInfo = g_pData->GetItemManager()->GetCashItemProduct( kKBillPackageInfo.m_ulProductNo );
 
 
  				if ( std::find( m_vecCheckedItem.begin(), m_vecCheckedItem.end(), kKBillPackageInfo.m_iProductID ) != m_vecCheckedItem.end() )
@@ -6577,7 +6583,6 @@ void CX2CashShop::CashItemToInvenPopup::ResetNowPage()
 				//CX2ItemManager::CashItem* pCashItem = g_pData->GetItemManager()->GetCashItem( kKBillOrderInfo.m_kBillProductInfo.m_iProductID );
 				KBillProductInfo* pKBillProductInfo = &kKBillOrderInfo.m_kBillProductInfo;
 
-				int test = m_vecItemID[packageIndex];
 
  				if ( NULL != pKBillProductInfo &&
  					//**OrderNo kKBillPackageInfo.m_ulOrderNo == kKBillOrderInfo.m_ulOrderNo &&
@@ -6622,7 +6627,7 @@ void CX2CashShop::CashItemToInvenPopup::GetPackageInfo( unsigned long ulTranNo, 
 	for ( int i = 0; i < (int)m_vecKBillPackageInfo.size(); i++ )
 	{
 		KBillPackageInfo& kKBillPackageInfo = m_vecKBillPackageInfo[i];
-		if ( kKBillPackageInfo.m_iPackageNo == ulTranNo )
+		if ( static_cast<size_t>( kKBillPackageInfo.m_iPackageNo ) == ulTranNo )
 			vecKBillPackageInfo.push_back( kKBillPackageInfo );
 	}
 }
@@ -6658,7 +6663,7 @@ void CX2CashShop::PresentItemPopup::SetOpen( bool bOpen, int itemID )
 	else
 	{
 		if ( m_pDLGPresent != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, 0, false );
 
 		m_pDLGPresent = NULL;
 	}
@@ -6688,7 +6693,6 @@ void CX2CashShop::PresentItemPopup::UpdateCash()
 			unsigned long productNo = GetSelectedProductNo();
 			if ( productNo == 0 )
 			{
-				int restCash = 0;
 				switch(GetUseCashType())
 				{
 				case KGlobalCashInfo::GCT_PUBLISHER_ELSWORD_CASH:
@@ -6860,7 +6864,7 @@ wstring CX2CashShop::PresentItemPopup::GetPassword()
 void CX2CashShop::PresentItemPopup::InitUI()
 {
 	if ( m_pDLGPresent != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, 0, false );
 
 	m_pDLGPresent = NULL;
 	m_pDLGPresent = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Cash_Shop_Popup_Present.lua" );
@@ -6992,7 +6996,6 @@ void CX2CashShop::MyUniyHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 			m_pUnitViewerUI->GetXSkinAnim()->SetApplyMotionOffset( false );
 
 
@@ -7100,7 +7103,7 @@ void CX2CashShop::MyUniyHandling( double fTime, float fElapsedTime )
 
 		m_pUnitViewerUI->OnFrameMove( fTime, fElapsedTime );
 
-		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			m_pUnitViewerUI->PlayByMotionType( CX2UnitViewerUI::UVUMT_WAIT );
 		}
@@ -7480,7 +7483,7 @@ std::wstring CX2CashShop::GetWstrConnectChargePage()
 
 //}}
 
-bool CX2CashShop::GetCahBuySharingBankItem( int itemID )
+bool CX2CashShop::GetCahBuySharingBankItem( int /*itemID*/ )
 {
 	if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( SHARING_BANK_OPEN_CASH_ITEM_ID, true ) != NULL )
 	{
@@ -7702,7 +7705,7 @@ void CX2CashShop::RemoveUnitClassChangeItemInChoice( const CX2Unit::UNIT_CLASS e
 	}
 }
 // ������ �ش��ϴ� ���� ������ ID�� ��ȯ��.
-const int CX2CashShop::GetUnitClassChangeItemID( const CX2Unit::UNIT_CLASS eUnitClass_ )
+int CX2CashShop::GetUnitClassChangeItemID( const CX2Unit::UNIT_CLASS eUnitClass_ )
 {
 	int ItemId = -1;
 

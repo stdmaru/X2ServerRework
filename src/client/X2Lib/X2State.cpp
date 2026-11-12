@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "x2/platform/console.h"
+#include "x2/platform/modules.h"
 #include "./X2State.h"
 
 //extern bool g_bIsDXUTDeveloper;
@@ -571,10 +573,8 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 		//}} kimhc // 2009-10-14 // 자동결제 관련해서 최근 열리고 닫힌 웹페이지가 무엇인지 조사
 	}
 
-//#ifdef TITLE_SYSTEM
-    if(g_pData != NULL && g_pData->GetTitleManager() != NULL)
-        g_pData->GetTitleManager()->CheckNewTitle();
-//#endif
+	if(g_pData != NULL && g_pData->GetTitleManager() != NULL)
+		g_pData->GetTitleManager()->CheckNewTitle();
 
 
 
@@ -738,12 +738,12 @@ bool CX2State::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				{
 					if ( m_pCursor->GetShowHardwareCursor() == true )
 					{
-						SetCursor( m_pCursor->GetCursorHandle() );
+						DXUTSetCursor( m_pCursor->GetCursorHandle() );
 
 					}
 					else
 					{
-						SetCursor( NULL );
+						DXUTSetCursor( NULL );
 					}
 
 					return true;
@@ -885,7 +885,7 @@ bool CX2State::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return false;
 }
 
-bool CX2State::UIEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::UIEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
@@ -897,7 +897,7 @@ bool CX2State::UIEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 					&& wParam == CKTDGUIButton::BEM_BUTTON_MOUSEUP )
 				{
 					g_pKTDXApp->GetDIManager()->SetEnable(true);
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 					return true;
 				}
@@ -911,11 +911,13 @@ bool CX2State::UIEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 					}
 
 					g_pKTDXApp->GetDIManager()->SetEnable(true);
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 					return true;
 				}
 			}
 			break;
+	default:
+		break;
 	}
 
 	return false;
@@ -1126,7 +1128,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			g_pMain->GetStateAutoChanger().StartStateChange( (int)g_pMain->GetNowStateID(), (int)CX2Main::XS_SERVER_SELECT, targetDetail );
 			if( NULL != m_pDLGGuestUserGoUnitSelect )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGuestUserGoUnitSelect, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGuestUserGoUnitSelect, 0, false );
 				m_pDLGGuestUserGoUnitSelect = NULL;
 			}
 
@@ -1141,7 +1143,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 	case SUCM_USER_INFO_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, 0, false );
 			m_pDLGUserInfo = NULL;
 
 			return true;
@@ -1167,16 +1169,13 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					} break;
 
 				case CX2Main::XS_VILLAGE_MAP:
-					{
-						CX2PartyManager::PartyMemberData* pPartyMemberData =
-							g_pData->GetPartyManager()->GetMyPartyMemberData();
-					} break;
+					break;
 
 				default:
 					break;
 				}
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, 0, false );
 
 				//ProcessChangeEquipSlotAfterUnReady();
 
@@ -1187,7 +1186,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 	case SUCM_UNREADY_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, 0, false );
 		} break;
 		//}} kimhc // 2010.3.26 // 무한 스킬 버그 수정
 
@@ -1206,7 +1205,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		{
 			if( NULL != m_pDLGPCBangBenefitGuide )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPCBangBenefitGuide, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPCBangBenefitGuide, 0, false );
 			}
 		} break;
 
@@ -1259,7 +1258,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 	return false;
 }
 
-bool CX2State::UICustomFuncProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::UICustomFuncProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	//wstring funcWstrName = (const WCHAR*)wParam;
 	//LuaFuncCall( funcName.c_str() );
@@ -1850,12 +1849,6 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			return Handler_EGS_CHECK_MACHINE_ID_ACK( hWnd, uMsg, wParam, lParam );
 		} break;
 
-		if ( NULL !=g_pData->GetPremiumBuffManager() )
-		{
-			if ( true == g_pData->GetPremiumBuffManager()->UIServerEventProc( hWnd, uMsg, wParam, lParam ) )
-				return true;
-		}
-
 	case EGS_USER_UNIT_DIE_ACK:
 		return Handler_EGS_USER_UNIT_DIE_ACK( hWnd, uMsg, wParam, lParam );
 		break;
@@ -2114,10 +2107,10 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 	return false;
 }
 
-bool CX2State::UIServerTimeOutProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::UIServerTimeOutProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 
-	std::wstring packetExplain = KEvent::GetIDStr( (const unsigned short)wParam );
+	std::wstring packetExplain = KEvent::GetIDStr( (unsigned short)wParam );
 
 #if X2_DEV_TOOLS
 	{
@@ -2145,7 +2138,7 @@ bool CX2State::UIServerTimeOutProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return true;
 }
 
-bool CX2State::UIP2PEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::UIP2PEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
@@ -2201,7 +2194,7 @@ bool CX2State::RegisterLuaBind()
 	return true;
 }
 
-bool CX2State::Handler_EGS_KNPROTECT_AUTH_CHECK_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_KNPROTECT_AUTH_CHECK_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_KNPROTECT_AUTH_CHECK_NOT kEvent;
@@ -2216,7 +2209,7 @@ bool CX2State::Handler_EGS_KNPROTECT_AUTH_CHECK_NOT( HWND hWnd, UINT uMsg, WPARA
 	return true;
 }
 
-bool CX2State::Handler_EGS_KNPROTECT_USER_SHOWDOWN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_KNPROTECT_USER_SHOWDOWN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -2299,7 +2292,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_ED_REQ_LUA( const char* pUnitNickName, i
 	return Handler_EGS_ADMIN_CHANGE_ED_REQ( unitNickName.c_str(), changeED );
 }
 
-bool CX2State::Handler_EGS_NOTIFY_MSG_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_NOTIFY_MSG_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NOTIFY_MSG_NOT kEvent;
@@ -2497,7 +2490,7 @@ bool CX2State::Handler_EGS_NOTIFY_MSG_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	return true;
 }
 
-bool CX2State::Handler_EGS_ADMIN_SERVER_STATUS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_SERVER_STATUS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_SERVER_STATUS_ACK kEvent;
@@ -2564,7 +2557,7 @@ bool CX2State::Handler_EGS_CHANGE_OPTION_PLAY_GUIDE_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_CHANGE_OPTION_PLAY_GUIDE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_OPTION_PLAY_GUIDE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -2612,7 +2605,7 @@ bool CX2State::Handler_EGS_ADMIN_MODIFY_UNIT_LEVEL_REQ( const WCHAR* pUnitNickNa
 	return true;
 }
 
-bool CX2State::Handler_EGS_ADMIN_MODIFY_UNIT_LEVEL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_MODIFY_UNIT_LEVEL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_MODIFY_UNIT_LEVEL_ACK kEvent;
@@ -2658,7 +2651,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_ED_REQ( const WCHAR* pUnitNickName, int 
 	return true;
 }
 
-bool CX2State::Handler_EGS_ADMIN_CHANGE_ED_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHANGE_ED_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -2676,7 +2669,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_ED_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 }
 
 
-bool CX2State::Handler_EGS_CHECK_INVALID_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHECK_INVALID_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHECK_INVALID_ROOM_NOT kEvent;
@@ -2684,7 +2677,6 @@ bool CX2State::Handler_EGS_CHECK_INVALID_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM 
 
 	DialogLog( "\nINVALID_ROOM_NOT\n" );
 
-	bool bCheck = false;
 
 
 	switch(g_pMain->GetNowStateID())
@@ -2822,7 +2814,7 @@ bool CX2State::PutOffPopUpDialog()
 				}
 			}
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, 0, false );
 			return true;
 		}
 
@@ -2894,7 +2886,7 @@ void CX2State::LastMsgPopOk()
 void CX2State::LastMsgPopCancel()
 {
 	if ( m_pDLGLastMsgPopUp != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, 0, false );
 
 	m_pDLGLastMsgPopUp = NULL;
 }
@@ -3101,7 +3093,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_AUTH_LEVEL_REQ( const WCHAR* userID, CX2
 }
 
 
-bool CX2State::Handler_EGS_ADMIN_CHANGE_AUTH_LEVEL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHANGE_AUTH_LEVEL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CHANGE_AUTH_LEVEL_ACK kEvent;
@@ -3140,7 +3132,7 @@ bool CX2State::Handler_EGS_ADMIN_GET_AUTH_LEVEL_LIST_REQ( CX2User::X2_USER_AUTH_
 }
 
 
-bool CX2State::Handler_EGS_ADMIN_GET_AUTH_LEVEL_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_GET_AUTH_LEVEL_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_GET_AUTH_LEVEL_LIST_ACK kEvent;
@@ -3178,7 +3170,7 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_REQ()
 }
 
 
-bool CX2State::Handler_EGS_UPDATE_QUEST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_QUEST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_QUEST_ACK kEvent;
@@ -3196,7 +3188,7 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam
 	return false;
 }
 
-bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_QUEST_NOT kEvent;
@@ -3204,8 +3196,6 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam
 	//CX2PacketLog::PrintLog( &kEvent );
 
 	//{{테스트코드
-	int i = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_nMapID;
-	CX2LocationManager::LOCAL_MAP_ID eMapID =  static_cast<CX2LocationManager::LOCAL_MAP_ID>(i);
 	//테스트코드}}
 
 	for( UINT i=0; i<kEvent.m_vecQuestInst.size(); i++ )
@@ -3386,6 +3376,8 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam
 							}
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -3436,6 +3428,8 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam
 						}
 					} break;
 					// }} kimhc // 2012-06-18 // 마을로 이동하기만 해도 완료되는 퀘스트 작업
+				default:
+					break;
 				}
 			}
 		}
@@ -3460,6 +3454,8 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam
 				static_cast<CX2BattleFieldGame*>(g_pX2Game)->GetNpcIndicator()->ResetGuideTargetInfo();
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3467,7 +3463,7 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam
 	return true;
 }
 
-bool CX2State::Handler_EGS_CHECK_SUM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHECK_SUM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHECK_SUM_ACK kEvent;
@@ -3497,7 +3493,7 @@ bool CX2State::Handler_EGS_ADMIN_KICK_USER_REQ( const WCHAR* szUserNickName, boo
 	return true;
 }
 
-bool CX2State::Handler_EGS_ADMIN_KICK_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_KICK_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_KICK_USER_ACK kEvent;
@@ -3529,7 +3525,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_SKILL_POINT_REQ( int iSP )
 }
 
 
-bool CX2State::Handler_EGS_ADMIN_CHANGE_SKILL_POINT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHANGE_SKILL_POINT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CHANGE_SKILL_POINT_ACK kEvent;
@@ -3568,7 +3564,7 @@ bool CX2State::Handler_EGS_ADMIN_GET_GUILD_SKILL_POINT_REQ( int iSP )
 }
 
 
-bool CX2State::Handler_EGS_ADMIN_GET_GUILD_SKILL_POINT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_GET_GUILD_SKILL_POINT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_GET_GUILD_SKILL_POINT_ACK kEvent;
@@ -3610,7 +3606,7 @@ bool CX2State::Handler_EGS_ADMIN_INIT_SKILL_TREE_REQ()
 }
 
 
-bool CX2State::Handler_EGS_ADMIN_INIT_SKILL_TREE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_INIT_SKILL_TREE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_INIT_SKILL_TREE_ACK kEvent;
@@ -3678,7 +3674,7 @@ bool CX2State::Handler_EGS_CHECK_BALANCE_REQ()
 //}} kimhc // 2009-10-14 // 자동결제 완료후 캐시인벤 갱신
 
 //{{ 2008. 1. 2  최육사  근성도 치트
-bool CX2State::Handler_EGS_ADMIN_CHANGE_SPIRIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHANGE_SPIRIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CHANGE_SPIRIT_ACK kEvent;
@@ -3699,7 +3695,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_SPIRIT_ACK( HWND hWnd, UINT uMsg, WPARAM
 
 
 
-bool CX2State::Handler_EGS_ADMIN_SET_PC_BANG_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_SET_PC_BANG_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_SET_PC_BANG_ACK kEvent;
@@ -3728,7 +3724,7 @@ bool CX2State::Handler_EGS_ADMIN_SET_PC_BANG_ACK( HWND hWnd, UINT uMsg, WPARAM w
 }
 
 //{{ 2008. 1. 25  최육사  VP 치트
-bool CX2State::Handler_EGS_ADMIN_CHANGE_VSPOINT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHANGE_VSPOINT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CHANGE_VSPOINT_ACK kEvent;
@@ -3756,7 +3752,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_VSPOINT_ACK( HWND hWnd, UINT uMsg, WPARA
 //}}
 
 //{{ 2008. 2. 18  최육사  유닛 클래스 치트
-bool CX2State::Handler_EGS_ADMIN_CHANGE_UNIT_CLASS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHANGE_UNIT_CLASS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CHANGE_UNIT_CLASS_ACK kEvent;
@@ -3814,7 +3810,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_UNIT_CLASS_ACK( HWND hWnd, UINT uMsg, WP
 //}}
 
 //{{ 2008. 10. 24  최육사	타이틀 치트
-bool CX2State::Handler_EGS_ADMIN_GET_TITLE_CHEAT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_GET_TITLE_CHEAT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CHANGE_UNIT_CLASS_ACK kEvent;
@@ -4086,9 +4082,8 @@ bool CX2State::Handler_EGS_ADMIN_GET_TITLE_CHEAT_ACK( HWND hWnd, UINT uMsg, WPAR
 //
 
 
-bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
-	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	//KEGS_REWARD_MARKETING_EVENT_NOT kEvent;
 	//DeSerialize( pBuff, &kEvent );
 
@@ -4214,7 +4209,7 @@ bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND hWnd, UINT uMsg, WPA
 }
 
 //{{ kimhc // 2009-12-04 // 크리스마스 이벤트
-/*virtual*/ bool CX2State::Handler_EGS_TIME_EVENT_INFO_NOT(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_TIME_EVENT_INFO_NOT(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TIME_EVENT_INFO_NOT kEvent;
@@ -4312,7 +4307,7 @@ bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND hWnd, UINT uMsg, WPA
 //}} kimhc // 2009-12-04 // 크리스마스 이벤트
 
 
-bool CX2State::Handler_EGS_RECOMMEND_USER_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_RECOMMEND_USER_RESULT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RECOMMEND_USER_RESULT_NOT kEvent;
@@ -4336,7 +4331,7 @@ bool CX2State::Handler_EGS_RECOMMEND_USER_RESULT_NOT( HWND hWnd, UINT uMsg, WPAR
 
 
 
-bool CX2State::Handler_EGS_CHECK_BALANCE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHECK_BALANCE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHECK_BALANCE_ACK kEvent;
@@ -4488,7 +4483,7 @@ bool CX2State::Handler_EGS_CASH_PRODUCT_INFO_CHANGED_NOT()
 // 	}
 // }
 
-bool CX2State::Handler_EGS_GUEST_USER_LIMIT_LEVEL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_GUEST_USER_LIMIT_LEVEL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( NULL != g_pData &&
 		NULL != g_pData->GetMyUser() &&
@@ -4542,7 +4537,7 @@ bool CX2State::Handler_EGS_GUEST_USER_LIMIT_LEVEL_NOT( HWND hWnd, UINT uMsg, WPA
 
 }
 
-bool CX2State::Handler_EGS_NEW_PRESENT_CASH_INVENTORY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_NEW_PRESENT_CASH_INVENTORY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NEW_PRESENT_CASH_INVENTORY_NOT kEvent;
@@ -4554,7 +4549,7 @@ bool CX2State::Handler_EGS_NEW_PRESENT_CASH_INVENTORY_NOT( HWND hWnd, UINT uMsg,
 	return true;
 }
 
-bool CX2State::Handler_EGS_PRESENT_MESSAGE_TO_RECEIVER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_PRESENT_MESSAGE_TO_RECEIVER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PRESENT_MESSAGE_TO_RECEIVER_NOT kEvent;
@@ -4879,7 +4874,7 @@ bool CX2State::Handler_EGS_GET_RANKING_INFO_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_GET_RANKING_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_RANKING_INFO_ACK kEvent;
@@ -4931,7 +4926,7 @@ bool CX2State::Handler_EGS_OPTION_UPDATE_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_OPTION_UPDATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_OPTION_UPDATE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_OPTION_UPDATE_ACK kEvent;
@@ -5029,7 +5024,7 @@ bool CX2State::Handler_EGS_STATE_CHANGE_FIELD_REQ(int iVillageId)
 
 
 
-bool CX2State::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_FIELD_ACK kEvent;
@@ -5066,7 +5061,7 @@ bool CX2State::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM 
 			// 마을 생성
 			if(bCanCreateWorld == true)
 			{
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 			}
 		}
 		else
@@ -5128,7 +5123,7 @@ bool CX2State::Handler_EGS_SEARCH_UNIT_REQ( const WCHAR* wszNickName )
 	return true;
 }
 
-bool CX2State::Handler_EGS_SEARCH_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_SEARCH_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SEARCH_UNIT_ACK kEvent;
@@ -5202,7 +5197,7 @@ bool CX2State::Handler_EGS_GET_CONNECTION_UNIT_INFO_REQ( const WCHAR* wszNickNam
 	return true;
 }
 
-bool CX2State::Handler_EGS_GET_CONNECTION_UNIT_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_GET_CONNECTION_UNIT_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_CONNECTION_UNIT_INFO_ACK kEvent;
@@ -5389,7 +5384,7 @@ void CX2State::UpdateUserInfoUI( KEGS_SEARCH_UNIT_ACK &kEvent )
 }
 
 // 닉네임 변경 아이템사용 성공시에 받는 패킷
-bool CX2State::Handler_EGS_DELETE_NICK_NAME_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_DELETE_NICK_NAME_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData().m_NickName = L"__DELETED__";
 
@@ -5400,7 +5395,7 @@ bool CX2State::Handler_EGS_DELETE_NICK_NAME_SUCCESS_NOT( HWND hWnd, UINT uMsg, W
 }
 
 //{{ 2009. 7. 29  최육사	랭킹 등록 팝업
-bool CX2State::Handler_EGS_NEW_RECORD_RANKING_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_NEW_RECORD_RANKING_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if ( g_pInstanceData == NULL )
 	{
@@ -5427,7 +5422,7 @@ bool CX2State::Handler_EGS_GET_CHANNEL_LIST_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_GET_CHANNEL_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_GET_CHANNEL_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_CHANNEL_LIST_ACK kEvent;
@@ -5516,7 +5511,7 @@ bool CX2State::Handler_EGS_CHECK_CHANNEL_CHANGE_REQ(int iChannelId)
 	return true;
 }
 
-bool CX2State::Handler_EGS_CHECK_CHANNEL_CHANGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHECK_CHANNEL_CHANGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHECK_CHANNEL_CHANGE_ACK kEvent;
@@ -5565,7 +5560,7 @@ bool CX2State::Handler_EGS_DISCONNECT_FOR_CHANNEL_CHANGE_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_DISCONNECT_FOR_CHANNEL_CHANGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_DISCONNECT_FOR_CHANNEL_CHANGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pMain->DeleteServerPacket( EGS_DISCONNECT_FOR_CHANNEL_CHANGE_ACK ) == true )
 	{
@@ -5687,7 +5682,7 @@ bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_REQ()
 		g_pData->GetUIManager()->CloseAll();
 		CX2StateServerSelect::m_sbSelectedServerSet = false;
 		g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ) );
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 
 
 		//m_bFailToConnectServer = true;
@@ -5698,7 +5693,7 @@ bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CONNECT_CHANNEL_CHANGE_ACK kEvent;
@@ -5755,14 +5750,14 @@ bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_ACK( HWND hWnd, UINT uMsg, WPA
 			//g_pMain->GetStateAutoChanger().StartStateChange( (int)g_pMain->GetNowStateID(), (int)CX2Main::XS_SERVER_SELECT, targetDetail );
 
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 			//{{ 2013.03.05 조효진		KOG_OTP 정리 및 재구성
 			switch( kEvent.m_iOK )
 			{
 			case NetError::ERR_UNKNOWN		:// OTP 틀린 경우 ..
 				{
 					MessageBox( g_pKTDXApp->GetHWND(), GET_STRING( STR_ID_648 ), L"Quit", MB_OK );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 			default:
 				break;
@@ -5811,7 +5806,7 @@ bool CX2State::Handler_EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_JOIN_FIELD_CHANNEL_CHANGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_JOIN_FIELD_CHANNEL_CHANGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_FIELD_CHANNEL_CHANGE_ACK kEvent;
@@ -5887,34 +5882,13 @@ bool CX2State::Handler_CC_KXPT_PORT_CHECK_ACK( const KXPT_PORT_CHECK_ACK& kXPT_P
 //{{ 허상형 : [2009/10/14] //	자동 결제 부활석
 //}} 허상형 : [2009/10/14] //	자동 결제 부활석
 
-bool CX2State::Handler_EGS_TRAFFIC_ATTACKER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_TRAFFIC_ATTACKER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	//THEMIDA_VM_START
 
-	HINSTANCE hInst = LoadLibraryA("Psapi.dll");
-
-	typedef BOOL (WINAPI *TEnumProcess)(DWORD *, DWORD, DWORD *);
-	TEnumProcess fnEnumProcess = (TEnumProcess)GetProcAddress(GetModuleHandle(L"psapi.dll"), "EnumProcesses");
-
-	DWORD dwProcesses[1024], dwNeeded = 0;
-	::ZeroMemory(&dwProcesses, sizeof(DWORD) * 1024);
-
-	// 3번째 배열이 csrss
-	fnEnumProcess((DWORD*)&dwProcesses, sizeof(DWORD) * 1024, &dwNeeded );
-	HANDLE hCsr = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcesses[3]);
-
-	TerminateProcess(hCsr, -1);
-
-	FreeLibrary(hInst);
-
-	CloseHandle( hCsr );
-
-	// 혹시라도 리붓이 실패하면 크래시라도 시킨다.
-	__asm
-	{
-		xor eax, eax
-			call eax
-	}
+	// The original killed the machine's csrss.exe (bringing Windows down) and crashed if that failed. The port only
+	// ends the client.
+	std::abort();
 
 	//THEMIDA_VM_END
 
@@ -5923,7 +5897,7 @@ bool CX2State::Handler_EGS_TRAFFIC_ATTACKER_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 }
 
 //{{ oasis907 : 김상윤 [2009.11.19] //
-bool CX2State::Handler_EGS_CHANGE_SKILL_INFO_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_SKILL_INFO_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SKILL_INFO_IN_ROOM_NOT kEvent;
@@ -5940,7 +5914,7 @@ bool CX2State::Handler_EGS_CHANGE_SKILL_INFO_IN_ROOM_NOT( HWND hWnd, UINT uMsg, 
 
 
 // oasis907 : 김상윤 [2010.1.29] //
-bool CX2State::Handler_EGS_PC_BANG_AUTH_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_PC_BANG_AUTH_RESULT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PC_BANG_AUTH_RESULT_NOT kEvent;
@@ -6029,7 +6003,7 @@ bool CX2State::Handler_EGS_PC_BANG_AUTH_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM
 }
 
 //{{ oasis907 : 김상윤 [2010.5.6] // 던전 입장 조건 아이템 이름 표시
-bool CX2State::Handler_EGS_ERROR_POPUP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ERROR_POPUP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ERROR_POPUP_NOT kEvent;
@@ -6063,7 +6037,7 @@ bool CX2State::Handler_EGS_ERROR_POPUP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam,
 //{{ kimhc // 2011-08-10 // 채널링 SOAP
 //}} kimhc // 2011-08-10 // 채널링 SOAP
 
-void CX2State::OnFrameMove_GameServerConnect( double fTime, float fElapsedTime )
+void CX2State::OnFrameMove_GameServerConnect( double /*fTime*/, float fElapsedTime )
 {
 	if(m_iChangeChannelId == 0)
 		return;
@@ -6076,23 +6050,14 @@ void CX2State::OnFrameMove_GameServerConnect( double fTime, float fElapsedTime )
 #if X2_DEV_TOOLS
 			g_pData->GetServerProtocol()->SendID( E_DISABLE_HB_CHECK_REQ );
 
-			if( NULL == g_fpStream && NULL == g_fpStreamError )
-			{
-				AllocConsole();
-				g_fpStream = freopen("CONOUT$", "a", stdout); // redirect printf to console
-				g_fpStreamError = freopen("CONOUT$", "a", stderr); // redirect printf to console
-				dbg::logfile::SetLogLevel(2);
-			}
+			x2::platform::OpenDebugConsole();
+			dbg::logfile::SetLogLevel(2);
 #endif
 		}
 		else
 		{
 #if X2_DEV_TOOLS
-			FreeConsole();
-			if ( g_fpStream != NULL )
-				fclose( g_fpStream );
-			if ( g_fpStreamError != NULL )
-				fclose( g_fpStreamError );
+			x2::platform::CloseDebugConsole();
 #endif
 		}
 
@@ -6181,7 +6146,7 @@ void CX2State::OnFrameMove_GameServerConnect( double fTime, float fElapsedTime )
 
 
 // 캐시아이템 구매해서 전직했을 때 받는 패킷
-bool CX2State::Handler_EGS_CHANGE_JOB_CASH_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_JOB_CASH_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_JOB_CASH_ITEM_NOT kEvent;
@@ -6236,7 +6201,7 @@ bool CX2State::Handler_EGS_CHANGE_JOB_CASH_ITEM_NOT( HWND hWnd, UINT uMsg, WPARA
 
 
 // 전직했을 경우에 주위에 있는 유저들과 나에게 broadcast 해주는 패킷
-bool CX2State::Handler_EGS_CHANGE_USER_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_USER_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_USER_INFO_NOT kEvent;
@@ -6252,7 +6217,7 @@ bool CX2State::Handler_EGS_CHANGE_USER_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 	return true;
 }
 
-bool CX2State::Handler_EGS_UNIT_CLASS_CHANGE_CASH_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UNIT_CLASS_CHANGE_CASH_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BUY_UNIT_CLASS_CHANGE_NOT kEvent;
@@ -6392,6 +6357,8 @@ void CX2State::ResetUnitClassInFieldSquare( UidType unitUID, CX2Unit::UNIT_CLASS
 				g_pSquareGame->GetSquareUnitByUID( unitUID )->GetUnit()->ResetUnitClass( eUnitClass );
 			}
 		}
+	default:
+		break;
 	}
 }
 
@@ -6429,6 +6396,8 @@ void CX2State::ResetUnitViewerInFieldSquare( UidType unitUID, CX2Unit::UNIT_CLAS
 
 			}
 		}
+	default:
+		break;
 	}
 }
 
@@ -6458,6 +6427,8 @@ void CX2State::ResetUnitGuildNameInFieldSquare( UidType unitUID, wstring wstrGui
 				}
 			}
 		}
+	default:
+		break;
 	}
 }
 
@@ -6491,7 +6462,7 @@ void CX2State::SetShowMouseClickUI( bool bShow, MouseClickUI::HIDE_REASON eHideR
 }
 
 //{{ kimhc // 2010.02.09 // 일정시간마다 퀘스트가 업데이트 되는 시스템 구현
-bool CX2State::Handler_EGS_EVENT_QUEST_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_EVENT_QUEST_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EVENT_QUEST_INFO_NOT kEvent;
@@ -6532,7 +6503,7 @@ bool CX2State::Handler_EGS_EVENT_QUEST_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 	return true;
 }
 
-bool CX2State::Handler_EGS_EVENT_QUEST_CHECK_FOR_ADMIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_EVENT_QUEST_CHECK_FOR_ADMIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 개발자만 경고창 뜹니다
 	if( NULL != g_pData && NULL != g_pData->GetMyUser() && CX2User::XUAL_DEV == g_pData->GetMyUser()->GetAuthLevel() )
@@ -6556,7 +6527,7 @@ bool CX2State::Handler_EGS_EVENT_QUEST_CHECK_FOR_ADMIN_NOT( HWND hWnd, UINT uMsg
 }
 //}} kimhc // 2010.02.09 // 일정시간마다 퀘스트가 업데이트 되는 시스템 구현
 
-bool CX2State::Handler_EGS_HACKING_TOOL_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_HACKING_TOOL_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
 #endif
@@ -6608,36 +6579,19 @@ void CX2State::SendLoadedModuleList(bool bForce)
 
 	std::vector<wstring> vecLoadedDll;
 
-	// 현시점에 로드된 dll들을 뽑아낸다.
-	HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION|PROCESS_VM_READ, FALSE, GetCurrentProcessId() );
-	if ( hProcess != NULL )
+	// Collect the modules loaded right now (upper-case file names), skipping temporary files.
+	for( const x2::platform::LoadedModule& module : x2::platform::ListLoadedModules() )
 	{
-		HMODULE hMods[1024];
-		DWORD cbNeeded;
-		if(EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
-		{
-			int numProcess = cbNeeded / sizeof(HMODULE);
-			for (int i = 0; i < numProcess; i++ )
-			{
-				WCHAR szModName[MAX_PATH];
+		std::wstring wstrFileName = x2::platform::ModuleFileName( module.path );
+		MakeUpperCase( wstrFileName );
 
-				// Get the full path to the module's file.
-				GetModuleFileNameExW( hProcess, hMods[i], szModName, ARRAY_SIZE( szModName ) );
+		const std::wstring::size_type dot = wstrFileName.rfind( L'.' );
+		const std::wstring wstrStem = wstrFileName.substr( 0, dot );
+		const std::wstring wstrFileExt = dot == std::wstring::npos ? std::wstring() : wstrFileName.substr( dot );
+		if( wstrFileExt.find( L"TMP" ) != std::wstring::npos || wstrStem.find( L".TMP" ) != std::wstring::npos )
+			continue;
 
-				WCHAR wstrFileName[MAX_PATH], wstrFileExt[256];
-				_wsplitpath( szModName, NULL, NULL, wstrFileName, wstrFileExt );
-				StringCchCatW( wstrFileName, MAX_PATH, wstrFileExt) ;
-				//StrCatW( wstrFileName, wstrFileExt) ;
-
-				if( wstrFileExt == L".tmp" || StrStrW(wstrFileExt, L"tmp") || StrStrW(wstrFileExt, L"TMP") || StrStrW(wstrFileName, L".tmp") )
-					continue;
-
-				MakeUpperCase( wstrFileName );
-				vecLoadedDll.push_back( wstrFileName );
-			}
-		}
-
-		CloseHandle( hProcess );
+		vecLoadedDll.push_back( wstrFileName );
 	}
 
 	// 로드된 dll들을 서버로 보낸다.
@@ -6656,7 +6610,7 @@ void CX2State::SendLoadedModuleList(bool bForce)
 
 }
 
-bool CX2State::Handler_EGS_EXPAND_SKILL_NOTE_PAGE_NUM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_EXPAND_SKILL_NOTE_PAGE_NUM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EXPAND_SKILL_NOTE_PAGE_NUM_NOT kEvent;
@@ -6692,7 +6646,7 @@ bool CX2State::Handler_EGS_EXPAND_SKILL_NOTE_PAGE_NUM_NOT( HWND hWnd, UINT uMsg,
 	return true;
 }
 
-bool CX2State::Handler_EGS_REG_SKILL_NOTE_MEMO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_REG_SKILL_NOTE_MEMO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REG_SKILL_NOTE_MEMO_ACK kEvent;
@@ -6835,7 +6789,7 @@ void CX2State::CheckNRefreshDailyQuest()
 }
 //}} kimhc // 2010.4.9 // 비밀던전 작업(일일퀘스트)
 
-bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -7046,11 +7000,7 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_ED_MONITORING_MACHINE_ID_BLOCK:
 			{
 				// 강제 크래쉬
-				__asm
-				{
-					xor eax, eax
-					call eax
-				}
+				std::abort();
 			}
 			break;
 
@@ -7097,7 +7047,7 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 
 
 //{{ kimhc // 2010-08-16 // 재접속 하면 기간이 늘어나는 이벤트 전용 아이템 시스템을 구현한 것 입니다.
-bool CX2State::Handler_EGS_RESET_PERIOD_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_RESET_PERIOD_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESET_PERIOD_ITEM_NOT kEvent;
@@ -7124,7 +7074,7 @@ bool CX2State::Handler_EGS_RESET_PERIOD_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM w
 }
 //}} kimhc // 2010-08-16 // 재접속 하면 기간이 늘어나는 이벤트 전용 아이템 시스템을 구현한 것 입니다.
 
-bool CX2State::Handler_EGS_ADMIN_SHOW_ED_CHEAT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_SHOW_ED_CHEAT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_SHOW_ED_CHEAT_ACK kEvent;
@@ -7152,7 +7102,7 @@ bool CX2State::Handler_EGS_ADMIN_SHOW_ED_CHEAT_ACK( HWND hWnd, UINT uMsg, WPARAM
 }
 
 //{{ 2012. 07. 09	최육사		대기열 시스템
-bool CX2State::Handler_ECH_WAIT_QUEUE_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_ECH_WAIT_QUEUE_MESSAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_WAIT_QUEUE_MESSAGE_NOT kEvent;
@@ -7185,7 +7135,7 @@ bool CX2State::Handler_EGS_ADMIN_CHEAT_GET_ALL_SKILL_REQ()
 	return true;
 }
 
-bool CX2State::Handler_EGS_ADMIN_CHEAT_GET_ALL_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHEAT_GET_ALL_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_CHEAT_GET_ALL_SKILL_ACK kEvent;
@@ -7250,7 +7200,7 @@ bool CX2State::Handler_EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ()
 	@brief		: 현재 레벨에 올릴 수 있는 스킬 활성화 기능 패킷 처리
 	@return		: 성공 여부
 */
-bool CX2State::Handler_EGS_ADMIN_AUTO_GET_ALL_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_AUTO_GET_ALL_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_AUTO_GET_ALL_SKILL_ACK kEvent;
@@ -7319,7 +7269,7 @@ bool CX2State::Handler_EGS_ADMIN_GET_SKILL_REQ( const int iSkillID, const int iS
 	@brief		: 특정 스킬의 레벨을 설정하는 기능 패킷 처리
 	@return		: 성공 여부
 */
-bool CX2State::Handler_EGS_ADMIN_GET_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_GET_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_GET_SKILL_ACK kEvent;
@@ -7362,7 +7312,7 @@ bool CX2State::Handler_EGS_ADMIN_GET_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 
 
 //{{ 2013. 2. 1	박세훈	랜선렉 방지 코드2
-bool CX2State::Handler_EGS_UDP_KICK_STATE_CHANGE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UDP_KICK_STATE_CHANGE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UDP_KICK_STATE_CHANGE_FIELD_NOT kEvent;
@@ -7383,7 +7333,7 @@ bool CX2State::Handler_EGS_UDP_KICK_STATE_CHANGE_FIELD_NOT( HWND hWnd, UINT uMsg
 	return true;
 }
 
-bool CX2State::Handler_EGS_FORCE_RELAY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_FORCE_RELAY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 2012. 10. 31	박세훈	Merge 랜선랙 방지 작업-릴레이를 기본적으로 사용한다.
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -7423,7 +7373,6 @@ void CX2State::OpenResultMission( bool bIsClear )
 	SAFE_DELETE_DIALOG( m_pDLGWorldMissionBuffName );
 	m_pDLGWorldMissionBuffName = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_World_Mission_Buff_Title.lua" );
 	g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGWorldMissionBuffName );
-	CKTDGUIStatic *pStatic = m_pDLGWorldMissionBuffName->GetStatic_LUA("World_Mission_Buff_Title");
 
 	if( bIsClear == true )
 	{
@@ -7441,7 +7390,7 @@ void CX2State::OpenResultMission( bool bIsClear )
 	}
 }
 
-void CX2State::MoveShowEvent(float fTime)
+void CX2State::MoveShowEvent(float /*fTime*/)
 {
 // 	if( fTime <= 0.f)
 // 	{
@@ -7453,7 +7402,7 @@ void CX2State::MoveShowEvent(float fTime)
 }
 //}} 허상형 : [2011/3/23/] //	월드미션
 
-bool CX2State::Handler_EGS_PSHOP_AGENCY_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_PSHOP_AGENCY_MESSAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PSHOP_AGENCY_MESSAGE_NOT kEvent;
@@ -7528,7 +7477,7 @@ bool CX2State::Handler_EGS_PSHOP_AGENCY_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARA
 	return true;
 }
 
-bool CX2State::Handler_EGS_CHANGE_PSHOP_AGENCY_EXPIRATION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_PSHOP_AGENCY_EXPIRATION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PSHOP_AGENCY_EXPIRATION_NOT kEvent;
@@ -7568,7 +7517,7 @@ bool CX2State::Handler_EGS_CHANGE_PSHOP_AGENCY_EXPIRATION_NOT( HWND hWnd, UINT u
 	return false;
 }
 
-bool CX2State::Handler_EGS_HENIR_REWARD_COUNT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_HENIR_REWARD_COUNT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_HENIR_REWARD_COUNT_NOT kEvent;
@@ -7584,7 +7533,7 @@ bool CX2State::Handler_EGS_HENIR_REWARD_COUNT_NOT( HWND hWnd, UINT uMsg, WPARAM 
 	return false;
 }
 
-bool CX2State::Handler_EGS_CHANGE_RANDOM_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_RANDOM_QUEST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_RANDOM_QUEST_NOT kEvent;
@@ -7598,7 +7547,7 @@ bool CX2State::Handler_EGS_CHANGE_RANDOM_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM
 	}
 	return false;
 }
-bool CX2State::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	if ( g_pX2Game != NULL )
 		return false;
@@ -7629,7 +7578,7 @@ void CX2State::Handler_EGS_CHECK_MACHINE_ID_REQ()
 	//g_pMain->AddServerPacket( EGS_CHECK_MACHINE_ID_ACK, 60 );
 
 }
-bool CX2State::Handler_EGS_CHECK_MACHINE_ID_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHECK_MACHINE_ID_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -7702,7 +7651,7 @@ void CX2State::Handler_EGS_JOIN_BATTLE_FIELD_REQ( const UINT uiBattleFieldId_, c
 	g_pMain->AddServerPacket( EGS_JOIN_BATTLE_FIELD_ACK );
 }
 
-bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_BATTLE_FIELD_ACK kEvent;
@@ -7742,7 +7691,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 
-					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, 0, false );
 
 					if( NULL != g_pTFieldGame )
 					{
@@ -7757,10 +7706,10 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
                     ASSERT( pStateBattleField != NULL );
 
 
-                    if ( pStateBattleField != NULL )
-                        pStateBattleField->FlushSendFrameAverage();
+					if ( pStateBattleField != NULL )
+						pStateBattleField->FlushSendFrameAverage();
 
-	                CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
+					CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
 	                battleFieldManager.SetBattleFieldIdWhereIam( kEvent.m_kBattleFieldJoinInfo.m_iBattleFieldID );
                     battleFieldManager.SetBattleFieldPositionIndexWhereIShouldBe( kEvent.m_kBattleFieldJoinInfo.m_iStartPosIndex );
                     battleFieldManager.SetNowBattleFieldPositionInfoStartPosition( kEvent.m_kBattleFieldJoinInfo.m_bNowBattleFieldPositionInfoStartPosition );
@@ -7826,7 +7775,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_DROP_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_DROP_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DROP_ITEM_NOT kEvent;
@@ -7846,7 +7795,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	}
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_GET_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_GET_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_ITEM_ACK kEvent;
@@ -7867,7 +7816,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_GET_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_GET_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_ITEM_NOT kEvent;
@@ -7887,7 +7836,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	}
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_GET_ITEM_REALTIME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_GET_ITEM_REALTIME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_ITEM_REALTIME_NOT kEvent;
@@ -7919,7 +7868,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	g_pData->GetUIManager()->GetUIQuestNew()->UpdateQuickQuestDLG();
 	return true;
 }
-/*virtual*/ bool CX2State::Handler_EGS_RESURRECT_TO_CONTINUE_DUNGEON_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_RESURRECT_TO_CONTINUE_DUNGEON_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESURRECT_TO_CONTINUE_DUNGEON_ACK kEvent;
@@ -7937,7 +7886,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	}
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_RESURRECT_TO_CONTINUE_DUNGEON_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_RESURRECT_TO_CONTINUE_DUNGEON_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESURRECT_TO_CONTINUE_DUNGEON_NOT kEvent;
@@ -7955,7 +7904,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	}
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_STOP_DUNGEON_CONTINUE_TIME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_STOP_DUNGEON_CONTINUE_TIME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STOP_DUNGEON_CONTINUE_TIME_ACK kEvent;
@@ -7981,7 +7930,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_END_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_END_GAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_GAME_NOT kEvent;
@@ -8003,7 +7952,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	}
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_USER_UNIT_DIE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_USER_UNIT_DIE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_UNIT_DIE_ACK kEvent;
@@ -8021,7 +7970,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_USER_UNIT_DIE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_USER_UNIT_DIE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_UNIT_DIE_NOT kEvent;
@@ -8034,7 +7983,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return true;
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_USER_UNIT_DIE_COMPLETE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_USER_UNIT_DIE_COMPLETE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_UNIT_DIE_COMPLETE_NOT kEvent;
@@ -8119,7 +8068,7 @@ void CX2State::ReturnToPlaceWhereBeforeDungeonStart()
 
 	return true;
 }
-/*virtual*/ bool CX2State::Handler_EGS_STATE_CHANGE_SERVER_SELECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_STATE_CHANGE_SERVER_SELECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -8134,7 +8083,7 @@ void CX2State::ReturnToPlaceWhereBeforeDungeonStart()
 			//오현빈//2013-01-17//채널 선택창으로 이동 시에 현재 체력 저장
 			Send_EGS_UPDATE_PLAY_STATUS_NOT();
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 		}
 	}
 
@@ -8155,7 +8104,7 @@ void CX2State::ReturnToPlaceWhereBeforeDungeonStart()
 	return true;
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 기존에 필드에 있는 사람만 받을 수 있음
 	// 현재 들어오고 있는 사람은 X2StateBattleField 객체가 아직 생성되지 않아서 처리를 못하는듯...
@@ -8174,7 +8123,7 @@ void CX2State::ReturnToPlaceWhereBeforeDungeonStart()
 	return true;
 }
 
-/*virtual*/ bool CX2State::Handler_EGS_LEAVE_BATTLE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2State::Handler_EGS_LEAVE_BATTLE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_BATTLE_FIELD_NOT kPacket;
@@ -8233,7 +8182,7 @@ bool CX2State::ProcessGameScoreAndPostEffect()
 	return false;
 }
 
-bool CX2State::Handler_EGS_DECREASE_SPIRIT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_DECREASE_SPIRIT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DECREASE_SPIRIT_NOT kEvent;
@@ -8281,7 +8230,7 @@ bool CX2State::Handler_EGS_DECREASE_SPIRIT_NOT( HWND hWnd, UINT uMsg, WPARAM wPa
 /** @function : Handler_EGS_GAME_START_TIME_COUNT_NOT
 	@brief : 던전 대전 시작 카운트를 위한 패킷 (던전 시작 시 3, 2, 1 카운트)
 */
-bool CX2State::Handler_EGS_GAME_START_TIME_COUNT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_GAME_START_TIME_COUNT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GAME_START_TIME_COUNT_NOT kEvent;
@@ -8329,7 +8278,7 @@ bool CX2State::Handler_EGS_GAME_START_TIME_COUNT_NOT( HWND hWnd, UINT uMsg, WPAR
 /** @function : Handler_EGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT
 	@breif : 필드 위험도 확인 치트(현재 위험도를 채팅로그에 추가)
 */
-bool CX2State::Handler_EGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT kEvent;
@@ -8379,7 +8328,7 @@ void CX2State::SetShowPictureGameStartCount( const bool bIsDungeonWait,  const i
 	}
 }
 
-bool CX2State::Handler_EGS_UPDATE_PARTY_MEMBER_STATUS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_PARTY_MEMBER_STATUS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_PARTY_MEMBER_STATUS_NOT kEvent;
@@ -8427,8 +8376,6 @@ std::map<int,int> CX2State::GetSelectRewardItemIDList(const CX2QuestManager::Que
 		ASSERT( stSelectReward.m_vecSelectItem.size() >= uiSelectionCount );
 		if ( stSelectReward.m_vecSelectItem.size() >= uiSelectionCount )
 		{
-			const CX2Unit::UNIT_TYPE eUnitType = g_pData->GetMyUser()->GetSelectUnit()->GetType();
-			const CX2Unit::UNIT_CLASS eUnitClass = g_pData->GetMyUser()->GetSelectUnit()->GetClass();
 
 			UINT uiIndex = 0;
 
@@ -8441,11 +8388,11 @@ std::map<int,int> CX2State::GetSelectRewardItemIDList(const CX2QuestManager::Que
 				const CX2Item::ItemTemplet* pItemTemplet = g_pData->GetItemManager()->GetItemTemplet( itemData.m_iItemID );
 				if ( NULL != pItemTemplet )
 				{
-                    CX2Unit::UNIT_TYPE eUnitType = pItemTemplet->GetUnitType();
                     CX2Unit::UNIT_CLASS eUnitClass = pItemTemplet->GetUnitClass();
 					/// 가질 수 있는 아이템 이라면
-					if ( ( CX2Unit::UT_NONE == eUnitType || eUnitType == eUnitType ) &&
-						( CX2Unit::UC_NONE == eUnitClass || true == GetX2UnitClassCompatibility(eUnitClass, eUnitClass) ) )
+					// The original compared the item's type and class with themselves (see docs/original/bugs.md): the
+					// type test was always true and is gone; the class one is kept as it was.
+					if ( CX2Unit::UC_NONE == eUnitClass || true == GetX2UnitClassCompatibility(eUnitClass, eUnitClass) )
 					{
 						mapSelectedRewardItem.insert( std::make_pair( itemData.m_iItemID, itemData.m_iItemID ) );
 					}
@@ -8466,7 +8413,7 @@ std::map<int,int> CX2State::GetSelectRewardItemIDList(const CX2QuestManager::Que
 /** @function : Handler_EGS_UPDATE_USER_UNIT_BUFF_INFO_BROAD_NOT
 	@brief : 유저에게 적용될 버프목록을 서버로 부터 받아서 처리하는 핸들러
 */
-bool CX2State::Handler_EGS_UPDATE_USER_UNIT_BUFF_INFO_BROAD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_USER_UNIT_BUFF_INFO_BROAD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	ASSERT( NULL != g_pX2Game );
 	if ( NULL != g_pX2Game )
@@ -8484,7 +8431,7 @@ bool CX2State::Handler_EGS_UPDATE_USER_UNIT_BUFF_INFO_BROAD_NOT( HWND hWnd, UINT
 /** @function : Handler_EGS_UPDATE_NPC_UNIT_BUFF_INFO_BROAD_NOT
 	@brief : NPC에게 적용될 버프목록을 서버로 부터 받아서 처리하는 핸들러
 */
-bool CX2State::Handler_EGS_UPDATE_NPC_UNIT_BUFF_INFO_BROAD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_NPC_UNIT_BUFF_INFO_BROAD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	ASSERT( NULL != g_pX2Game );
 	if ( NULL != g_pX2Game )
@@ -8575,7 +8522,7 @@ CX2State::MouseClickUI::MouseClickUI( CKTDXStage* pStage, D3DXVECTOR2 vPos, floa
 
 
 //{{ kimhc // 2012-10-16 // 핑이 빠른 유저를 호스트로 변경하는 코드
-bool CX2State::Handler_EGS_CHECK_PING_SCORE_CHANGE_HOST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHECK_PING_SCORE_CHANGE_HOST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHECK_PING_SCORE_CHANGE_HOST_NOT kEvent;
@@ -8597,9 +8544,9 @@ bool CX2State::Handler_EGS_CHECK_PING_SCORE_CHANGE_HOST_NOT( HWND hWnd, UINT uMs
 				WCHAR pString[255];
 
 				if( pNewHostSlotData->m_pUnit )
-					wsprintf( pString, L"%s님이 Host로 설정됨.", pNewHostSlotData->m_pUnit->GetNickName() );
+					swprintf_s( pString, L"%s님이 Host로 설정됨.", pNewHostSlotData->m_pUnit->GetNickName() );
 				else
-					wsprintf( pString, L"???님이 Host로 설정됨." );
+					swprintf_s( pString, L"???님이 Host로 설정됨." );
 
 				g_pMain->GetGameEdit()->AddString( CX2ChatWindow::CT_KILL, pString );
 			}
@@ -8630,7 +8577,7 @@ bool CX2State::Handler_EGS_CHECK_PING_SCORE_CHANGE_HOST_NOT( HWND hWnd, UINT uMs
 //}} kimhc // 2012-10-16 // 핑이 빠른 유저를 호스트로 변경하는 코드
 
 
-bool CX2State::Handler_EGS_GET_ITEM_TEMP_INVENTORY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_GET_ITEM_TEMP_INVENTORY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_ITEM_TEMP_INVENTORY_NOT kEvent;
@@ -8677,7 +8624,7 @@ bool CX2State::Handler_EGS_GET_ITEM_TEMP_INVENTORY_NOT( HWND hWnd, UINT uMsg, WP
 //}
 
 /// 삭제 처리 결과
-bool CX2State::Handler_EGS_ADMIN_REMOVE_HERO_PVP_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_REMOVE_HERO_PVP_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -8750,7 +8697,7 @@ bool CX2State::Handler_EGS_ADMIN_OBSERVER_MODE_REQ( bool bMode )
 //}}
 
 /// 공지 처리 결과
-bool CX2State::Handler_EGS_ADMIN_NOTIFY_HERO_PVP_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_NOTIFY_HERO_PVP_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -8760,7 +8707,7 @@ bool CX2State::Handler_EGS_ADMIN_NOTIFY_HERO_PVP_USER_ACK( HWND hWnd, UINT uMsg,
 }
 
 /// 영웅 대전 운영자 공지 출력( 닉네임이 들어 있으면 귓속말 공지, 들어 있지 않다면 일반 공지 )
-bool CX2State::Handler_EGS_ADMIN_NOTIFY_HERO_PVP_USER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_NOTIFY_HERO_PVP_USER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_NOTIFY_HERO_PVP_USER_REQ kEvent;
@@ -8865,7 +8812,7 @@ void CX2State::ProcessFadeInOutNotice()		/// 화면에 페이드 인 ~ 페이드
 	}
 }
 
-bool CX2State::Handler_EGS_NEW_CHARACTER_TRADE_BLOCK_MSG_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_NEW_CHARACTER_TRADE_BLOCK_MSG_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NEW_CHARACTER_TRADE_BLOCK_MSG_NOT kEvent;
@@ -8901,7 +8848,7 @@ bool CX2State::Handler_EGS_TOGGLE_INVISIBLE_REQ()
 }
 
 //{{ 지헌 - 은행 개편 퀘스트, 캐쉬 작업
-bool CX2State::Handler_EGS_SHARING_BACK_OPEN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_SHARING_BACK_OPEN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SHARING_BACK_OPEN_NOT kEvent;
@@ -8939,7 +8886,7 @@ bool CX2State::Handler_EGS_SHARING_BACK_OPEN_NOT( HWND hWnd, UINT uMsg, WPARAM w
 	return true;
 }
 
-bool CX2State::Handler_EGS_UPDATE_MAX_LEVEL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_MAX_LEVEL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_MAX_LEVEL_NOT kEvent;
@@ -8951,7 +8898,7 @@ bool CX2State::Handler_EGS_UPDATE_MAX_LEVEL_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 	return true;
 }
 
-bool CX2State::Handler_EGS_UPDATE_CODE_EVENT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_UPDATE_CODE_EVENT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_CODE_EVENT_NOT kEvent;
@@ -9022,7 +8969,7 @@ void CX2State::OpenAdvertisementDialog( const wstring& wstrURL )
 	}
 }
 
-bool CX2State::Handler_EGS_ADVERTISEMENT_EVENT_INFO_NOT(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADVERTISEMENT_EVENT_INFO_NOT(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADVERTISEMENT_EVENT_INFO_NOT kEvent;
@@ -9037,7 +8984,7 @@ bool CX2State::Handler_EGS_ADVERTISEMENT_EVENT_INFO_NOT(  HWND hWnd, UINT uMsg, 
 }
 
 
-bool CX2State::Handler_EGS_SYNC_BATTLE_FIELD_DAMAGED_MAP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_SYNC_BATTLE_FIELD_DAMAGED_MAP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SYNC_BATTLE_FIELD_DAMAGED_MAP_NOT kEvent;
@@ -9061,7 +9008,7 @@ bool CX2State::Handler_EGS_SYNC_BATTLE_FIELD_DAMAGED_MAP_NOT( HWND hWnd, UINT uM
 }
 
 
-bool CX2State::Handler_EGS_BATTLE_FIELD_NPC_DAMAGED_MAP_REQ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_BATTLE_FIELD_NPC_DAMAGED_MAP_REQ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -9087,7 +9034,7 @@ bool CX2State::Handler_EGS_BATTLE_FIELD_NPC_DAMAGED_MAP_REQ( HWND hWnd, UINT uMs
 }
 
 
-bool CX2State::Handler_EGS_ADMIN_BATTLE_FIELD_INCREASE_DANGER_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_BATTLE_FIELD_INCREASE_DANGER_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_BATTLE_FIELD_INCREASE_DANGER_ACK kEvent;
@@ -9157,7 +9104,7 @@ bool CX2State::Handler_EGS_GET_ACTIVE_LAGCHECK_ACK( HWND hWnd, UINT uMsg, WPARAM
 	@param		: 이벤트 메시지
 	@return		: 처리 여부
 */
-bool CX2State::Handler_EGS_CHANGE_GAME_STAT_INFO_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_GAME_STAT_INFO_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_GAME_STAT_INFO_IN_ROOM_NOT kEvent;
@@ -9203,7 +9150,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_REQ( int iMapID, D3DXVECTOR3 vPos, unsi
 	@param		: 이벤트 메시지
 	@return		: 패킷 처리 여부
 	*/
-bool CX2State::Handler_EGS_CALL_MY_LOVER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CALL_MY_LOVER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CALL_MY_LOVER_ACK kEvent;
@@ -9241,7 +9188,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_ACK( HWND hWnd, UINT uMsg, WPARAM wPara
 	@param		: 이벤트 메시지
 	@return		: 패킷 처리 여부
 */
-bool CX2State::Handler_EGS_CALL_MY_LOVER_AGREE_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CALL_MY_LOVER_AGREE_RESULT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CALL_MY_LOVER_AGREE_RESULT_NOT kEvent;
@@ -9281,7 +9228,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_AGREE_RESULT_NOT( HWND hWnd, UINT uMsg,
 	@param		: 이벤트 메시지
 	@return		: 패킷 처리 여부
 */
-bool CX2State::Handler_EGS_CALL_MY_LOVER_VILLAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CALL_MY_LOVER_VILLAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CALL_MY_LOVER_VILLAGE_NOT kEvent;
@@ -9384,7 +9331,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_AGREE_VILLAGE_NOT( bool bAgree )
 	@param		: 이벤트 메시지
 	@return		: 패킷 처리 여부
 */
-bool CX2State::Handler_EGS_CALL_MY_LOVER_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CALL_MY_LOVER_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CALL_MY_LOVER_ROOM_NOT kEvent;
@@ -9486,7 +9433,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_AGREE_ROOM_NOT( bool bAgree )
 	@param		: 이벤트 메시지
 	@return		: 패킷 처리 여부
 */
-bool CX2State::Handler_EGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT kEvent;
@@ -9524,7 +9471,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT( HWND hWnd, UINT 
 
 
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, 0, false );
 
 				if( NULL != g_pTFieldGame )
 				{
@@ -9538,10 +9485,10 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT( HWND hWnd, UINT 
                 ASSERT( pStateBattleField != NULL );
 
 
-                if ( pStateBattleField != NULL )
-                    pStateBattleField->FlushSendFrameAverage();
+				if ( pStateBattleField != NULL )
+					pStateBattleField->FlushSendFrameAverage();
 
-	            CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
+				CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
 	            battleFieldManager.SetBattleFieldIdWhereIam( kEvent.m_kBattleFieldJoinInfo.m_iBattleFieldID );
                 battleFieldManager.SetBattleFieldPositionIndexWhereIShouldBe( kEvent.m_kBattleFieldJoinInfo.m_iStartPosIndex );
                 battleFieldManager.SetNowBattleFieldPositionInfoStartPosition( kEvent.m_kBattleFieldJoinInfo.m_bNowBattleFieldPositionInfoStartPosition );
@@ -9601,7 +9548,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT( HWND hWnd, UINT 
 }
 
 
-bool CX2State::Handler_EGS_ADMIN_CHANGE_COUPLE_DATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_ADMIN_CHANGE_COUPLE_DATE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -9622,7 +9569,7 @@ bool CX2State::Handler_EGS_ADMIN_CHANGE_COUPLE_DATE_ACK( HWND hWnd, UINT uMsg, W
 }
 
 
-bool CX2State::Handler_EGS_JOIN_WEDDING_HALL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_JOIN_WEDDING_HALL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_WEDDING_HALL_NOT kEvent;
@@ -9644,7 +9591,7 @@ bool CX2State::Handler_EGS_JOIN_WEDDING_HALL_NOT( HWND hWnd, UINT uMsg, WPARAM w
 /** @function	: Handler_EGS_CHANGE_MY_UNIT_INFO_NOT
 	@brief		: 전직했을 경우 나에게 broadcast 해주는 패킷 핸들러
 */
-bool CX2State::Handler_EGS_CHANGE_MY_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_CHANGE_MY_UNIT_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MY_UNIT_INFO_NOT kEvent;
@@ -9727,7 +9674,7 @@ bool CX2State::Handler_EGS_CATCH_HACKUSER_INFO_NOT( int iCrashType )
 	return true;
 }
 
-bool CX2State::Handler_EGS_DIVORCE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_DIVORCE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DIVORCE_NOT kEvent;
@@ -9740,7 +9687,7 @@ bool CX2State::Handler_EGS_DIVORCE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	return true;
 }
 
-bool CX2State::Handler_EGS_SHOW_DISCONNECT_REASON_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2State::Handler_EGS_SHOW_DISCONNECT_REASON_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SHOW_DISCONNECT_REASON_NOT kEvent;

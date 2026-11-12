@@ -80,7 +80,7 @@ void CX2TutorSystem::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-bool CX2TutorSystem::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -337,7 +337,7 @@ bool CX2TutorSystem::Handler_EGS_DEL_TUTORIAL_REQ( UidType unitUID )
 	return true;
 }
 
-bool CX2TutorSystem::Handler_EGS_DEL_TUTORIAL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::Handler_EGS_DEL_TUTORIAL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DEL_TUTORIAL_ACK kEvent;
@@ -355,7 +355,7 @@ bool CX2TutorSystem::Handler_EGS_DEL_TUTORIAL_ACK( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 
-bool CX2TutorSystem::Handler_EGS_DEL_TUTORIAL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::Handler_EGS_DEL_TUTORIAL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DEL_TUTORIAL_NOT kEvent;
@@ -392,7 +392,7 @@ bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_REQ( UidType unitUID )
 	return true;
 }
 
-bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REQUEST_TUTORIAL_ACK kEvent;
@@ -412,7 +412,7 @@ bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_ACK( HWND hWnd, UINT uMsg, WPA
 	return false;
 }
 
-bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 체험 아이디 제한
 	if( true == g_pData->GetMyUser()->GetUserData().m_bIsGuestUser )
@@ -453,6 +453,8 @@ bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_NOT( HWND hWnd, UINT uMsg, WPA
 		{
 			return true;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -478,7 +480,7 @@ bool CX2TutorSystem::Send_Handler_EGS_REQUEST_TUTORIAL_REPLY_NOT( bool bAccept, 
 	return true;
 }
 
-bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_REPLY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::Handler_EGS_REQUEST_TUTORIAL_REPLY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -525,7 +527,7 @@ bool CX2TutorSystem::Handler_EGS_TUTORIAL_STUDENT_LIST_REQ( int iPageIndex )
 	return true;
 }
 
-bool CX2TutorSystem::Handler_EGS_TUTORIAL_STUDENT_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::Handler_EGS_TUTORIAL_STUDENT_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -563,7 +565,7 @@ bool CX2TutorSystem::Handler_EGS_TUTORIAL_STUDENT_LIST_ACK( HWND hWnd, UINT uMsg
 }
 
 
-bool CX2TutorSystem::Handler_EGS_TUTORIAL_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TutorSystem::Handler_EGS_TUTORIAL_UPDATE_UNIT_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TUTORIAL_UPDATE_UNIT_INFO_NOT kEvent;
@@ -631,8 +633,8 @@ bool CX2TutorSystem::OpenScriptFile( const WCHAR* pFileName )
 	// TutorSystem.lua 파일을 읽어서 UTF-8 포맷이 아니면 변환한다
 
     KLuaManagerProxy luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
-    if ( g_pKTDXApp->LoadAndDoMemory_LocalFile( &luaManager, pFileName ) == false )
-        return false;
+	if ( g_pKTDXApp->LoadAndDoMemory_LocalFile( &luaManager, pFileName ) == false )
+		return false;
 
 
 	int iUnitIndex = 0;
@@ -1058,7 +1060,7 @@ CX2TutorSystem::TutorInviting::~TutorInviting()
 	SAFE_DELETE_DIALOG( m_pDLGInviting );
 }
 
-void CX2TutorSystem::TutorInviting::OnFrameMove( double fTime, float fElapsedTime )
+void CX2TutorSystem::TutorInviting::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -1099,8 +1101,8 @@ void CX2TutorSystem::TutorInviting::OnFrameMove( double fTime, float fElapsedTim
 
 
 //////////////////////////////////////////////////////////////////////////
-CX2TutorSystem::TutorInvited::TutorInvited( UidType InviterUnitUID, wstring& wstrInviterName,
-											float fTimeLeft, int YesMsgID, int NoMsgID, CKTDXStage* pNowStage )
+CX2TutorSystem::TutorInvited::TutorInvited( UidType InviterUnitUID, const wstring& wstrInviterName,
+											float fTimeLeft, int /*YesMsgID*/, int /*NoMsgID*/, CKTDXStage* pNowStage )
 {
 	m_pDLGInvited		= NULL;
 	m_InviterUnitUID	= InviterUnitUID;
@@ -1124,7 +1126,7 @@ CX2TutorSystem::TutorInvited::~TutorInvited()
 	SAFE_DELETE_DIALOG( m_pDLGInvited );
 }
 
-void CX2TutorSystem::TutorInvited::OnFrameMove( double fTime, float fElapsedTime )
+void CX2TutorSystem::TutorInvited::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 }

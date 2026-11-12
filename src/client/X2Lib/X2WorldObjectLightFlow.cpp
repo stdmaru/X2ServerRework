@@ -31,7 +31,7 @@ CX2WorldObjectLightFlow::CX2WorldObjectLightFlow( bool bBackgroundLoad_ )
 }
 
 
-HRESULT CX2WorldObjectLightFlow::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2WorldObjectLightFlow::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 

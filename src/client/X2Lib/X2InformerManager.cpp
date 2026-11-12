@@ -31,7 +31,7 @@ CX2InformerManager::~CX2InformerManager(void)
 //{{ kimhc // 2009-11-02 // 길드 추가
 CX2InformerGuildExp* CX2InformerManager::GetGuildInformer()
 {
-	CX2InformerGuildExp* pInformer;
+	CX2InformerGuildExp* pInformer = NULL;
 	if ( IsCreatedInformerType( CX2Informer::XIT_GUILD_EXP ) == true )
 	{
 		pInformer = static_cast< CX2InformerGuildExp* >( GetInformerByType( CX2Informer::XIT_GUILD_EXP ) );
@@ -49,7 +49,7 @@ CX2InformerGuildExp* CX2InformerManager::GetGuildInformer()
 
 CX2InformerSkill* CX2InformerManager::GetSkillInformer()
 {
-	CX2InformerSkill* pInformer;
+	CX2InformerSkill* pInformer = NULL;
 	if ( IsCreatedInformerType( CX2Informer::XIT_SKILL ) == true )
 	{
 		pInformer = (CX2InformerSkill*)GetInformerByType( CX2Informer::XIT_SKILL );
@@ -67,7 +67,7 @@ CX2InformerSkill* CX2InformerManager::GetSkillInformer()
 
 CX2InformerQuest* CX2InformerManager::GetQuestInformer()
 {
-	CX2InformerQuest* pInformer;
+	CX2InformerQuest* pInformer = NULL;
 	if ( IsCreatedInformerType( CX2Informer::XIT_QUEST ) == true )
 	{
 		pInformer = (CX2InformerQuest*)GetInformerByType( CX2Informer::XIT_QUEST );
@@ -84,7 +84,7 @@ CX2InformerQuest* CX2InformerManager::GetQuestInformer()
 
 CX2InformerInven* CX2InformerManager::GetInvenInformer()
 {
-	CX2InformerInven* pInformer;
+	CX2InformerInven* pInformer = NULL;
 	if ( IsCreatedInformerType( CX2Informer::XIT_INVEN ) == true )
 	{
 		pInformer = (CX2InformerInven*)GetInformerByType( CX2Informer::XIT_INVEN );
@@ -101,7 +101,7 @@ CX2InformerInven* CX2InformerManager::GetInvenInformer()
 
 CX2InformerCashShop* CX2InformerManager::GetCashShopInformer()
 {
-	CX2InformerCashShop* pInformer;
+	CX2InformerCashShop* pInformer = NULL;
 	if ( IsCreatedInformerType( CX2Informer::XIT_CASH_SHOP ) == true )
 	{
 		pInformer = (CX2InformerCashShop*)GetInformerByType( CX2Informer::XIT_CASH_SHOP );
@@ -125,7 +125,7 @@ void CX2InformerManager::Reset()
 	}
 }
 
-void CX2InformerManager::CheckInfo( bool bStateChange )
+void CX2InformerManager::CheckInfo( bool /*bStateChange*/ )
 {
 }
 

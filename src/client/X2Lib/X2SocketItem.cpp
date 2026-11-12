@@ -248,6 +248,8 @@ bool CX2SocketItem::AddSocketData_LUA()
 					/// 디버프 설정 않하셨는데요!!
 					ASSERT( !"EDT_ACTIVE_DEBUFF - Not Setting Buff Factor!!" );
 			} break;
+		default:
+			break;
 		}
 
 		luaManager.EndTable();
@@ -303,7 +305,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 			if ( stringIndex != -1 )
 			{
 				wstring tempMonsterID;
-				while( monsterIDDamageReduced.find( L" ", stringIndex + 1 ) != -1 )
+				while( monsterIDDamageReduced.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 				{
 					int debugIndex = monsterIDDamageReduced.find( L" ", stringIndex + 1 );
 					tempMonsterID = monsterIDDamageReduced.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -415,7 +417,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 		if ( stringIndex != -1 )
 		{
 			wstring tempSkillID;
-			while( skillGroupID.find( L" ", stringIndex + 1 ) != -1 )
+			while( skillGroupID.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 			{
 				int debugIndex = skillGroupID.find( L" ", stringIndex + 1 );
 				tempSkillID = skillGroupID.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -477,7 +479,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 			if ( stringIndex != -1 )
 			{
 				wstring tempMonsterID;
-				while( monsterIDForDamageUp.find( L" ", stringIndex + 1 ) != -1 )
+				while( monsterIDForDamageUp.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 				{
 					int debugIndex = monsterIDForDamageUp.find( L" ", stringIndex + 1 );
 					tempMonsterID = monsterIDForDamageUp.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -511,7 +513,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 			if ( stringIndex != -1 )
 			{
 				wstring tempMonsterID;
-				while( monsterIDForEvade.find( L" ", stringIndex + 1 ) != -1 )
+				while( monsterIDForEvade.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 				{
 					int debugIndex = monsterIDForEvade.find( L" ", stringIndex + 1 );
 					tempMonsterID = monsterIDForEvade.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -628,7 +630,7 @@ bool CX2SocketItem::GetIsPossibleSocketItemByOnlyItemType( int itemID )
 //}} 최민철 [2013/1/4]  게임내 정보 스트링을 엑셀파일로 출력
 
 //{{ kimhc // 2011-07-05 // 옵션데이타 수치화 작업
-	wstring CX2SocketItem::SocketData::GetSocketDesc( const int iSocketLevel_, bool bCompact /*= false*/, CX2Unit::UNIT_CLASS eUnitClass_ /*= CX2Unit::UC_NONE */ ) const
+	wstring CX2SocketItem::SocketData::GetSocketDesc( const int iSocketLevel_, bool /*bCompact*/ /*= false*/, CX2Unit::UNIT_CLASS eUnitClass_ /*= CX2Unit::UC_NONE */ ) const
 //}} kimhc // 2011-07-05 // 옵션데이타 수치화 작업
 {
 	wstringstream wstrstm;
@@ -888,7 +890,7 @@ bool CX2SocketItem::GetIsPossibleSocketItemByOnlyItemType( int itemID )
 
 		if( pSkillTemplet != NULL )
 		{
-			if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == -1 )
+			if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == std::wstring::npos )
 			{
 				wstrstm << pSkillTemplet->m_wstrName.c_str() << L" ";
 				wstrstm << GET_REPLACED_STRING ( (STR_ID_25218, "i", sSkillLevelUpIDAndNum.second ) );
@@ -917,7 +919,7 @@ bool CX2SocketItem::GetIsPossibleSocketItemByOnlyItemType( int itemID )
 
 				if( pSkillTemplet != NULL )
 				{
-					if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == -1 )
+					if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == std::wstring::npos )
 					{
 						wstrstm << pSkillTemplet->m_wstrName.c_str() << L" ";
 						wstrstm << GET_REPLACED_STRING ( (STR_ID_25218, "i", SkillLevelUPIDAndNumList.second ) );
@@ -1588,6 +1590,8 @@ wstring CX2SocketItem::SocketData::GetSocketDescEx() const
 					wstrStatUpType += GET_STRING( STR_ID_5005 );		// 해외팀 수정
 					//}}
 				} break;
+			default:
+				break;
 			}
 
 			wstrStream << GET_REPLACED_STRING( (STR_ID_4996, "iiLi", static_cast<int>( m_fProbability * 100 ),

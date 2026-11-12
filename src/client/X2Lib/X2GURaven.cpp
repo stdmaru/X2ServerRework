@@ -9,7 +9,6 @@ namespace _CONST_RAVEN_
 	const float OVERHEAT_HP_LIMIT = 0.25f;
 	const float MAGIC_NUMBER_MULTIPLY_LINE_RADIUS = 1.5f;
 	const float DEFAULT_OVERHEAT_HP_PENALTY = 0.2f;
-	const float OVERHEAT_DAMAGE_BUFF_RATE = 1.1f;
 
 	const int OVERHEAT_KEY_PRESS_TIME = 5;
 
@@ -304,7 +303,7 @@ CX2GURaven::~CX2GURaven(void)
 }
 
 /*static*/
-void	CX2GURaven::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GURaven::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -562,6 +561,8 @@ void CX2GURaven::InitState()
 		{
 			m_iSkillCutInSetIndex = 3;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -642,6 +643,8 @@ void CX2GURaven::InitState()
 		{
 			InitStateWeaponTaker();
 		} break;
+	default:
+		break;
 	}
 
 	// Ư�� Ŭ�������� �ְų� Ư�� Ŭ������ �⺻ Ŭ������ �ٸ� ����
@@ -691,6 +694,8 @@ void CX2GURaven::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		}
 		break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -733,6 +738,8 @@ void CX2GURaven::InitState()
 			stateData.StateEndFuture	= SET_CB_FUNC( CX2GURaven, RWT_COMBO_ZZZX_EndFuture );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -902,6 +909,8 @@ void CX2GURaven::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -917,6 +926,8 @@ void CX2GURaven::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GURaven, RSI_SOUL_TAKER_DASH_COMBO_ZZ_EventProcess );
 			m_StateList[ stateData.stateID ] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1908,7 +1919,6 @@ void CX2GURaven::InitStateWeaponTaker()
 		if ( NULL == GetUnit()  )
 			return;
 
-		const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
 
 		if( NULL != pSkillTemplet )
 		{
@@ -1953,7 +1963,6 @@ void CX2GURaven::InitStateWeaponTaker()
 			if ( NULL == GetUnit()  )
 				return;
 
-			const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
 
 			m_bEnableShadowStepThrustEnhance = true;
 			m_fAttackPowerRateShadowStepThrustEnhance *= pSkillTempletEnhanceThrust->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_REL, iShadowThrustSkillLevel );
@@ -1991,7 +2000,6 @@ void CX2GURaven::InitStateWeaponTaker()
 			if ( NULL == GetUnit()  )
 				return;
 
-			const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
 
 			m_bEnableShadowStepPunisher = true;
 			m_fAttackPowerRateShadowStepPunisher *= pSkillTempletShadowPunisher->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_REL, iShadowPunisherSkillLevel );
@@ -2302,7 +2310,7 @@ void CX2GURaven::InitStateWeaponTaker()
 
 /*virtual*/ void CX2GURaven::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -2354,6 +2362,8 @@ void CX2GURaven::InitStateWeaponTaker()
 						hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 						hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 					} break;
+				default:
+					break;
 				}
 				return;
 			} break;
@@ -4101,7 +4111,7 @@ void CX2GURaven::InitStateWeaponTaker()
 }
 
 /*static*/
-void	CX2GURaven::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GURaven::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -4273,7 +4283,7 @@ void CX2GURaven::InitializeRavenMinorParticleArray()
 }
 
 /*static*/
-void	CX2GURaven::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GURaven::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -6591,8 +6601,8 @@ void CX2GURaven::RSI_COMBO_ZZZ_EventProcess()
 
 		if( ( CX2Unit::UC_RAVEN_WEAPON_TAKER == GetUnit()->GetUnitData().m_UnitClass ||
 			CX2Unit::UC_RAVEN_VETERAN_COMMANDER == GetUnit()->GetUnitData().m_UnitClass ) &&
-			( m_InputData.pureRight == true && m_FrameDataFuture.syncData.bIsRight == true ||
-			m_InputData.pureLeft == true && m_FrameDataFuture.syncData.bIsRight == false ) )
+			( (m_InputData.pureRight == true && m_FrameDataFuture.syncData.bIsRight == true) ||
+			(m_InputData.pureLeft == true && m_FrameDataFuture.syncData.bIsRight == false) ) )
 			StateChange( RSI_COMBO_ZZZX );
 
 		else if( CX2Unit::UC_RAVEN_WEAPON_TAKER == GetUnit()->GetUnitData().m_UnitClass ||
@@ -7636,7 +7646,6 @@ void CX2GURaven::RSI_SI1_MAXIMUM_CANNON_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.55f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 		D3DXVECTOR3 vBonePos = GetBonePos( L"Dummy2_Lhand" );
 		D3DXVECTOR3 vDirVec = GetDirVector();
 		bool bIsRight = GetIsRight();
@@ -7765,7 +7774,6 @@ void CX2GURaven::RSI_SI1_MAXIMUM_CANNON_HYPER_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.55f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 		D3DXVECTOR3 vBonePos = GetBonePos( L"Dummy2_Lhand" );
 		D3DXVECTOR3 vDirVec = GetDirVector();
 		bool bIsRight = GetIsRight();
@@ -8509,8 +8517,7 @@ void CX2GURaven::RSI_SI1_EARTH_BREAKER_FrameMove()
 		else
 			vEffPos = GetPos() + vDirVec * -40.f;
 		vEffPos += vZVec * -45.f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
 
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.433f ) )
@@ -8651,8 +8658,7 @@ void CX2GURaven::RSI_SI1_EARTH_BREAKER_HYPER_FrameMove()
 		else
 			vEffPos = GetPos() + vDirVec * -40.f;
 		vEffPos += vZVec * -45.f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.433f ) )
 	{
@@ -10672,25 +10678,25 @@ void CX2GURaven::RSI_SI2_OVER_TAKER_ARC_ENEMY_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.6666f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_01",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.8f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_02",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_03",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.1333f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_04",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
@@ -10817,25 +10823,25 @@ void CX2GURaven::RSI_SI2_OVER_TAKER_ARC_ENEMY_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.6666f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_01",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.8f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_02",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_03",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.1333f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_04",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
@@ -11369,7 +11375,7 @@ void CX2GURaven::Init( bool bUseTeamPos_, int iStartPosIndex_ )
 }
 
 
-void CX2GURaven::DoHyper(bool bFullHyper)
+void CX2GURaven::DoHyper(bool /*bFullHyper*/)
 {
 }
 
@@ -11404,10 +11410,9 @@ void CX2GURaven::CreateNasodBall()
 		if( m_pNasodBall != NULL )
 			m_pNasodBall->m_vOffsetPos = D3DXVECTOR3( -180*0.9f, 42*3.f, 0.f );
 	}
-    if ( m_pNasodBall == NULL )
-        return;
+	if ( m_pNasodBall == NULL )
+		return;
 
-	bool bNewNasodBall = false;
 
 	if(
         ( m_pNasodBall->m_hEffect == INVALID_DAMAGE_EFFECT_HANDLE
@@ -11434,7 +11439,6 @@ void CX2GURaven::CreateNasodBall()
 			return;
 		}
 
-		bNewNasodBall = true;
         m_pNasodBall->m_hEffect = pNasodBall->GetHandle();
 
         CKTDGXMeshPlayer::CXMeshInstance* pNasodBallMeshInstance = pNasodBall->GetMainEffect();
@@ -11587,8 +11591,8 @@ void CX2GURaven::RestoreNasodBall()
     if ( m_pNasodBall == NULL )
         return;
     CX2DamageEffect::CEffect* pNasodBallEffect = g_pX2Game->GetDamageEffect()->GetInstance( m_pNasodBall->m_hEffect );
-    if ( pNasodBallEffect == NULL )
-        return;
+	if ( pNasodBallEffect == NULL )
+		return;
 
 	m_pNasodBall->m_vOffsetPos = D3DXVECTOR3( -180*0.9f, 42*3.f, 0.f);
 
@@ -11775,8 +11779,8 @@ void CX2GURaven::ChangePowerRateNasodBall()
     if ( m_pNasodBall == NULL )
         return;
     CX2DamageEffect::CEffect* pNasodBallEffect = g_pX2Game->GetDamageEffect()->GetInstance( m_pNasodBall->m_hEffect );
-    if (pNasodBallEffect == NULL )
-        return;
+	if (pNasodBallEffect == NULL )
+		return;
 	pNasodBallEffect->GetDamageData().damage.fPhysic = fPhysic * fBallPowerRate;
 	pNasodBallEffect->GetDamageData().damage.fMagic = fMagic * fBallPowerRate;
 }
@@ -13375,7 +13379,7 @@ void CX2GURaven::SI_A_RRF_GROUND_IMPACT_FrameMove()
 			fScale = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_PROJECTILE_SIZE, iSkillTempletLevel );
 		}
 
-		CX2EffectSet::Handle hGroundImpact = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_RAVEN_GROUND_IMPACT", this, NULL, false, -1.f, 01.f, D3DXVECTOR3(fScale, fScale, fScale) );
+		[[maybe_unused]] CX2EffectSet::Handle hGroundImpact = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_RAVEN_GROUND_IMPACT", this, NULL, false, -1.f, 01.f, D3DXVECTOR3(fScale, fScale, fScale) );
 // 			if( hGroundImpact != INVALID_EFFECTSET_HANDLE )
 // 			{
 // 				CX2EffectSet::EffectSetInstance *pInst = g_pX2Game->GetEffectSet()->GetEffectSetInstance(hGroundImpact);
@@ -13699,21 +13703,21 @@ void CX2GURaven::RBM_EMERGENCY_ESCAPE_StartFuture()
 		iSkillLevel = 1;
 
 
-		pSkillTemplet =  const_cast<CX2SkillTree::SkillTemplet*>( g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_A_RF_SHADOW_STEP ) );
+	pSkillTemplet =  const_cast<CX2SkillTree::SkillTemplet*>( g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_A_RF_SHADOW_STEP ) );
 
-		if( NULL != pSkillTemplet )
+	if( NULL != pSkillTemplet )
+	{
+		ASSERT( m_PhysicParam.passiveSpeed.x > 0.f );
+		if( 0.f != m_PhysicParam.passiveSpeed.x )
 		{
-			ASSERT( m_PhysicParam.passiveSpeed.x > 0.f );
-			if( 0.f != m_PhysicParam.passiveSpeed.x )
-			{
-				m_fShadowStepTimeLeft = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_TELEPORT_RANGE_ABS,
-					min( iSkillLevel + GetSkillLevelUpNum( CX2SkillTree::SI_A_RF_SHADOW_STEP ), MAX_LIMITED_SKILL_LEVEL ) ) * 100.f / m_PhysicParam.passiveSpeed.x;
+			m_fShadowStepTimeLeft = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_TELEPORT_RANGE_ABS,
+				min( iSkillLevel + GetSkillLevelUpNum( CX2SkillTree::SI_A_RF_SHADOW_STEP ), MAX_LIMITED_SKILL_LEVEL ) ) * 100.f / m_PhysicParam.passiveSpeed.x;
 
-				if( GetEqippedSkillMemo( CX2SkillTree::SMI_RAVEN_MEMO6 ) == true )
-				{
-					m_PhysicParam.passiveSpeed.x *= 1.3f;
-				}
+			if( GetEqippedSkillMemo( CX2SkillTree::SMI_RAVEN_MEMO6 ) == true )
+			{
+				m_PhysicParam.passiveSpeed.x *= 1.3f;
 			}
+		}
 	}
 
 }
@@ -13798,7 +13802,7 @@ void CX2GURaven::RSI_SA_RRF_WILD_CHARGE_READY_StateStartFuture()
 	CommonStateStartFuture();
 
 	// m_eSlotID_WildCharge�� ��� normal ������Ʈ�� �����̳Ŀ� ����, �����ϴ� Ű�� �������� �˾Ƴ�
-	switch ( m_WildChargeDataPtr->GetSlotID_WildCharge() )
+	switch ( static_cast<USER_STATE_ID>( m_WildChargeDataPtr->GetSlotID_WildCharge() ) )
 	{
 	case USI_SPECIAL_ATTACK_1:
 		m_WildChargeDataPtr->SetChargeKeyPointer( &m_InputData.pureA );
@@ -14471,7 +14475,6 @@ void CX2GURaven::RSI_WEAPON_TAKER_COMBO_XXX_LOOP_FrameMove()
 		}
 		else
 		{
-			CX2DamageEffect::CEffect* pEffect =
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RWT_COMBO_XXX_LOOP",
 				GetPowerRate(), GetBonePos( L"Bip01_L_Hand" ), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		}
@@ -14521,7 +14524,6 @@ void CX2GURaven::RSI_WEAPON_TAKER_COMBO_XXX_FINISH_FrameMove()
 void CX2GURaven::RSI_WEAPON_TAKER_COMBO_XXX_FINISH_EventProcess()
 {
 	// �� �ð� ���ĺ��� ĵ�� �Է� ����
-	const float LOWER_BOUND_INPUT_TIME_CANCEL = 0.440f;
 
 	// �߹ؿ� ���θ��� ������
 	if( false == IsOnSomethingFuture() )
@@ -15276,14 +15278,14 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_FrameMove()
 
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 			++m_iOverheatKeyPressTime;
@@ -15318,7 +15320,6 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_LOOP_StateStart()
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_LOOP_FrameMove()
 {
 	// �̺�Ʈ �÷��װ� ������ ��Ÿ������ �˱� ���� �ϵ���
-	bool &bOverheat = m_FrameDataFuture.stateParam.bEventFlagList[0];
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
 	{
@@ -15371,14 +15372,14 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_LOOP_FrameMove()
 }
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_LOOP_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 		{
@@ -15477,14 +15478,14 @@ void CX2GURaven::RSI_SA_RWT_HARPOON_SPEAR_FrameMove()
 
 void CX2GURaven::RSI_SA_RWT_HARPOON_SPEAR_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true)||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 			++m_iRVCComboLoopInputCount;
@@ -15595,14 +15596,14 @@ void CX2GURaven::RSI_SA_RWT_HELLFIRE_GATLING_FrameMove()
 
 void CX2GURaven::RSI_SA_RWT_HELLFIRE_GATLING_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 			++m_iOverheatKeyPressTime;
@@ -15701,14 +15702,14 @@ void CX2GURaven::RSI_SA_RWT_HELLFIRE_GATLING_LOOP_FrameMove()
 }
 void CX2GURaven::RSI_SA_RWT_HELLFIRE_GATLING_LOOP_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 		{
@@ -15801,14 +15802,14 @@ void CX2GURaven::RSI_SA_RWT_GIGA_PROMINENCE_FrameMove()
 
 void CX2GURaven::RSI_SA_RWT_GIGA_PROMINENCE_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 			++m_iOverheatKeyPressTime;
@@ -15910,14 +15911,14 @@ void CX2GURaven::RSI_SA_RWT_GIGA_PROMINENCE_LOOP_FrameMove()
 }
 void CX2GURaven::RSI_SA_RWT_GIGA_PROMINENCE_LOOP_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 		{
@@ -16664,14 +16665,14 @@ void CX2GURaven::RVC_SI_SA_DEADLY_RAID_FrameMove()
 
 void CX2GURaven::RVC_SI_SA_DEADLY_RAID_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		++m_iRVCComboLoopInputCount;		/// ��ų Ű �Է� �� ���� �Է� ī��Ʈ ����
 
@@ -16734,14 +16735,14 @@ void CX2GURaven::RVC_SI_SA_DEADLY_RAID_LOOP_EventProcess()
 {
 	if( 0.21 > m_pXSkinAnim->GetNowAnimationTime() )
 	{
-		if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-			m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-			m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-			m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-			m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-			m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-			m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-			m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+		if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 		{
 			++m_iRVCComboLoopInputCount;		/// ��ų Ű �Է� �� ���� �Է� ī��Ʈ ����
 
@@ -16818,14 +16819,14 @@ void CX2GURaven::RVC_SI_SA_DEADLY_RAID_LOOP_OVERHEAT_EventProcess()
 {
 	if( 0.21 > m_pXSkinAnim->GetNowAnimationTime() )
 	{
-		if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-			m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-			m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-			m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-			m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-			m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-			m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-			m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+		if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 		{
 			++m_iRVCComboLoopInputCount;		/// ��ų Ű �Է� �� ���� �Է� ī��Ʈ ����
 
@@ -17176,14 +17177,14 @@ void CX2GURaven::RVC_SI_SA_IGNITION_CROW_EventProcess()
 {
 	if( 2.01f > m_pXSkinAnimFuture->GetNowAnimationTime() )
 	{
-		if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-			m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-			m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-			m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-			m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-			m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-			m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-			m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+		if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 		{
 			++m_iRVCComboLoopInputCount;		/// ��ų Ű �Է� �� ���� �Է� ī��Ʈ ����
 
@@ -17510,9 +17511,9 @@ void CX2GURaven::RVC_SI_P_SHADOW_STEP_FINISH_Start()
 	if ( m_pAfterImage != NULL )
 		m_pAfterImage->SetAfterImageColor( 0xffcccccc );
 
-		m_bActiveShadowStepCombo = true;	/// ������ ���� ����� ����
+	m_bActiveShadowStepCombo = true;	/// ������ ���� ����� ����
 
-		++m_iRVCComboLoopCount;
+	++m_iRVCComboLoopCount;
 }
 
 void CX2GURaven::RVC_SI_P_SHADOW_STEP_FINISH_FrameMove()
@@ -18747,7 +18748,7 @@ void CX2GURaven::RSI_A_RRF_LIMIT_CRUSHER_CHARGE_EventProcess()
 
 	/// ����� �����ų�, ���� ����� ���� ���ķ� ��ų Ű�� ���Ҵٸ�
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true ||
-		0.45f <= m_pXSkinAnimFuture->GetNowAnimationTime() && true == m_sCurrentSkillKeyManager.IsUnpressedCurrentSkillKey( m_InputData ) )
+		(0.45f <= m_pXSkinAnimFuture->GetNowAnimationTime() && true == m_sCurrentSkillKeyManager.IsUnpressedCurrentSkillKey( m_InputData )) )
 	{
 		StateChange( RSI_A_RRF_LIMIT_CRUSHER_REVENGE_ATTACK );
 	}
@@ -19074,14 +19075,14 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_FrameMove()
 
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 			++m_iOverheatKeyPressTime;
@@ -19112,7 +19113,6 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_LOOP_StateStart()
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_LOOP_FrameMove()
 {
 	// �̺�Ʈ �÷��װ� ������ ��Ÿ������ �˱� ���� �ϵ���
-	bool &bOverheat = m_FrameDataFuture.stateParam.bEventFlagList[0];
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
 	{
@@ -19177,14 +19177,14 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_LOOP_FrameMove()
 }
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_LOOP_EventProcess()
 {
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-		m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-		m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-		m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-		m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 	{
 		if( _CanOverheat() )
 		{
@@ -19287,14 +19287,14 @@ void CX2GURaven::RVC_SI_SA_IGNITION_CROW_INCINERATION_EventProcess()
 {
 	if( 2.01f > m_pXSkinAnimFuture->GetNowAnimationTime() )
 	{
-		if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true ||
-			m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true ||
-			m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true ||
-			m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true ||
-			m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true ||
-			m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true ||
-			m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true ||
-			m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true )
+		if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.oneA == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.oneS == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.oneD == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.oneC == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.oneQ == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.oneW == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.oneE == true) ||
+			(m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.oneR == true) )
 		{
 			++m_iRVCComboLoopInputCount;		/// ��ų Ű �Է� �� ���� �Է� ī��Ʈ ����
 
@@ -19626,7 +19626,6 @@ void CX2GURaven::RSI_HA_RBM_EXTREM_BLADE_ATTACK_FrameMove()
 		SetInvisibility( true );
 		TransformScale( PROTECT_VECTOR3( 0.01f, 0.01f, 0.01f ) );
 
-		CX2EffectSet::Handle hEffectSset =
 			g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SA_RBM_Extrem_Blade_Middle", this, NULL, false, GetPowerRate() );
 
 		D3DXVECTOR3 vMyPos = GetPos();

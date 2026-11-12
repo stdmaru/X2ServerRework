@@ -213,7 +213,7 @@ HRESULT CX2StatePVPResult::OnFrameMove( double fTime, float fElapsedTime )
 			else
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 			}
 		}
 		else
@@ -275,9 +275,6 @@ HRESULT CX2StatePVPResult::OnFrameMove( double fTime, float fElapsedTime )
 	else
 	{
 		CX2PVPGame::PVPResultInfo* pPVPResultInfo = g_pData->GetPVPResultInfo();
-		int winTeam = pPVPResultInfo->m_WinTeam;
-		int winTeamNum = 0;
-		int loseTeamNum = 4;
 
 		for ( int i = 0; i < (int)pPVPResultInfo->m_PVPResultUnitInfoList.size(); i++ )
 		{
@@ -416,7 +413,7 @@ bool CX2StatePVPResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	@param : HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	@return : 패킷 처리에 성공한 경우 true, 실패한 경웨 false
 */
-bool CX2StatePVPResult::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT kEvent;
@@ -446,7 +443,7 @@ bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_REQ()
 	return true;
 }
 
-bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK Start" );
 
@@ -467,7 +464,7 @@ bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg, WP
 	return false;
 }
 
-bool CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT Start" );
 
@@ -487,14 +484,14 @@ bool CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND hWnd, UINT
 	{
 		g_pMain->CreateStateChangeDLG( GET_STRING(STR_ID_438  ) );
 		DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false" );
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 		DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT End" );
 	}
 
 	return true;
 }
 
-bool CX2StatePVPResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -504,7 +501,7 @@ bool CX2StatePVPResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM
 	return g_pX2Room->Handler_EGS_LEAVE_ROOM_NOT( kEvent );
 }
 
-bool CX2StatePVPResult::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -528,7 +525,7 @@ bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_REQ( bool bAcceptRematch )
 	return true;
 }
 
-bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PVP_REMATCH_ACK kEvent;
@@ -554,7 +551,7 @@ bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_ACK( HWND hWnd, UINT uMsg, WPARA
 	}
 	return false;
 }
-bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PVP_REMATCH_NOT kEvent;
@@ -968,7 +965,7 @@ bool CX2StatePVPResult::InitUI()
 				if( bMatchPvp == false )
 				{
 					CKTDGUIStatic* pStaticRank = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"Static_Result_Rank" );
-					_itow( pPVPResultUnitInfo->m_Rank, buff, 10 );
+					_itow_s( pPVPResultUnitInfo->m_Rank, buff, 10 );
 					pStaticRank->GetString(0)->msg = buff;
 					if ( pSlotData->m_TeamNum == CX2Room::TN_RED )
 						pStaticRank->GetString( 0 )->outlineColor = redTeamColor;
@@ -1002,7 +999,7 @@ bool CX2StatePVPResult::InitUI()
 					pStaticAssist->GetString( 0 )->color = myColor;
 
 				CKTDGUIStatic* pStaticDEATH = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"StaticDEATH" );
-				wsprintf( buff, L"%d", pPVPResultUnitInfo->m_DieNum );
+				swprintf_s( buff, L"%d", pPVPResultUnitInfo->m_DieNum );
 				StringCchPrintf( buff, 256, L"%d", pPVPResultUnitInfo->m_DieNum );
 				pStaticDEATH->GetString( 0 )->msg = buff;
 
@@ -1191,7 +1188,7 @@ bool CX2StatePVPResult::InitUI()
 				if( bMatchPvp == false )
 				{
 					CKTDGUIStatic* pStaticRank = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"Static_Result_Rank" );
-					_itow( pPVPResultUnitInfo->m_Rank, buff, 10 );
+					_itow_s( pPVPResultUnitInfo->m_Rank, buff, 10 );
 					pStaticRank->GetString(0)->msg = buff;
 					if ( pSlotData->m_TeamNum == CX2Room::TN_RED )
 						pStaticRank->GetString( 0 )->outlineColor = redTeamColor;
@@ -1531,7 +1528,7 @@ bool CX2StatePVPResult::InitUI()
 
 			WCHAR buff[256] = {0,};
 			CKTDGUIStatic* pStaticRank = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"Static_Result_Rank" );
-			_itow( pPVPResultUnitInfo->m_Rank, buff, 10 );
+			_itow_s( pPVPResultUnitInfo->m_Rank, buff, 10 );
 			pStaticRank->GetString(0)->msg = buff;
 
 			if ( pSlotData->m_bMySlot == true )
@@ -1670,10 +1667,7 @@ bool CX2StatePVPResult::InitUI()
 	else
 	{
 		CX2PVPGame::PVPResultInfo* pPVPResultInfo = g_pData->GetPVPResultInfo();
-		int winTeam = pPVPResultInfo->m_WinTeam;
-		int winTeamNum = 0;
-		int loseTeamNum = 4;
-		const int nNumPlayer = (int)pPVPResultInfo->m_PVPResultUnitInfoList.size();
+		[[maybe_unused]] const int nNumPlayer = (int)pPVPResultInfo->m_PVPResultUnitInfoList.size();
 
 		for ( int i = 0; i < (int)pPVPResultInfo->m_PVPResultUnitInfoList.size(); i++ )
 		{

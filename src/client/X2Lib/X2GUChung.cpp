@@ -13,8 +13,6 @@ namespace _CONST_CHUNG_
 	const float MAGIC_MOBILE_MODE_Z_COOLTIME		= 0.4f;
 	const float MAGIC_MOBILE_MODE_X_COOLTIME		= 1.1f;
 	const float MAGIC_MOBILE_MODE_X_MAX_RANGE		= 1200.f;
-	const float MAGIC_MOBILE_MODE_X_MIN_RANGE		= 650.f;
-	const float	MAX_TACTICAL_FIELD_RANGE			= 660.f;			/// ��Ƽ�� �ʵ� �ִ� ���� �ݰ�
 
 	const int MAX_NUMBER_OF_RAPID_CANNON_BULLET   = 12;		// ���ǵ� ĳ���� �Ҹ� ������ �ִ� źȯ ����
 	const int MIN_NUMBER_OF_RAPID_CANNON_BULLET   = 3;		// ���ǵ� ĳ���� �Ҹ� ������ �ּ� źȯ ����
@@ -107,20 +105,20 @@ CX2GUChung::CX2GUChung( int iUnitIndex_, int iTeamNum_,
 : CX2GUUser( iUnitIndex_, iTeamNum_,
 	pScriptLuaState,
 iFrameBufferNum_, pUnit_ )
-, m_bBerserkMode( false ), MAX_ANIMATION_LOOP_COUNT_AT_THIS_STATE(5)
-, m_ucCannonBallCountToBeUpUsingReLoadCannon(1), m_ucBasicCannonBallCount(0)
-, m_bAimingTarget(false), m_vAimingTargetPos( D3DXVECTOR3(0.f, 0.f, 0.f) ), m_vAimingTargetLandPos( D3DXVECTOR3(0.f, 0.f, 0.f) )
-, m_fDamageRelByCannonBallMastery( 1.0f )
+, m_uiCountToCallSetDamageReducePercentFuncInCommonStateStart( 0 ), m_uiCountToCallSetDamageReducePercentFuncInCommonStateEnd( 0 )
+, m_bVerifyGuardSystem( true ), m_bBerserkMode( false )
+, MAX_ANIMATION_LOOP_COUNT_AT_THIS_STATE(5), m_ucCannonBallCountToBeUpUsingReLoadCannon(1), m_fDamageRelByCannonBallMastery( 1.0f )
+, m_ucBasicCannonBallCount(0)
 //{{ kimhc // 2011.1.14 // û 1�� ����
-, m_fForceDownRelAtMeleeAttack( 1.0f ), m_fProbabilityBigDamageAtGuardMastery( 0.0f )
-, m_fIncreaseRangeSubWeaponShot( 1.0f ), m_fCriticalDamageRate( 0.0f )
+, m_bAimingTarget(false), m_vAimingTargetPos( D3DXVECTOR3(0.f, 0.f, 0.f) )
+, m_vAimingTargetLandPos( D3DXVECTOR3(0.f, 0.f, 0.f) ), m_fForceDownRelAtMeleeAttack( 1.0f )
 //}} kimhc // 2011.1.14 // û 1�� ����
-, m_iCountbyCsgComboDashJumpXXMiniGun(0)
+, m_fProbabilityBigDamageAtGuardMastery( 0.0f )
 
 //{{ kimhc // 2011-04-13 // û ���� ���� �׽�Ʈ
-, m_uiCountToCallSetDamageReducePercentFuncInCommonStateStart( 0 )
-, m_uiCountToCallSetDamageReducePercentFuncInCommonStateEnd( 0 )
-, m_bVerifyGuardSystem( true )
+, m_fIncreaseRangeSubWeaponShot( 1.0f )
+, m_fCriticalDamageRate( 0.0f )
+, m_iCountbyCsgComboDashJumpXXMiniGun(0)
 //}} kimhc // 2011-04-13 // û ���� ���� �׽�Ʈ
 , m_fProbabilityIronWill( 0.f )
 , m_bApplyLandDemolisher( false )
@@ -162,30 +160,30 @@ iFrameBufferNum_, pUnit_ )
 , m_bMobileArmoredModeXFired( false )
 , m_bInStateMobileArmoredMode( false )
 , m_iExtraCannonBallReloadCount( 0 )
-, m_fMobileArmoredModeStepDustElapsedTime( 0.f )
 , m_fMobileArmoredModeDistance( 0.f )
 , m_fMobileArmoredModeDamageRel( 0.f )
-, m_fMobileArmoredModeFireZCoolTime( 0.f )
+, m_fMobileArmoredModeStepDustElapsedTime( 0.f )
 , m_fMobileArmoredModeFireXCoolTime( 0.f )
+, m_fMobileArmoredModeFireZCoolTime( 0.f )
 , m_hMobileArmoredModeEffect( INVALID_EFFECTSET_HANDLE )
 , m_iRemoteMortarNPCUID( -1 )			/// ��ġ�� �ڰ��� ���̵�
 , m_fCannonBallExtraChargeRate( 0.f )	/// ĳ���� �߰� ���� Ȯ��
 , m_fMiniGunHeadShotRate( 0.f )
+, m_eArtilleryStrikeType ( CAST_NONE )
 , m_fRateGasPistonSystemAutoRecharge ( 0.f )
 , m_iArtilleryStrikeNowPlayCount ( 0 )
-, m_eArtilleryStrikeType ( CAST_NONE )
 , m_bArtilleryStrikeFire ( false )
+, m_fArtilleryStrikePowerRate ( 0 )
 , m_iBombardServiceTarget ( 0 )
 , m_hBombardServiceEffect( INVALID_EFFECTSET_HANDLE )
-, m_fArtilleryStrikePowerRate ( 0 )
 , m_iFireCount( 0 )
 , m_fChargeTime( 0.f )
 , m_fPassiveCriticalRateChung( 0.f )
 
 , m_hSateliteRainBigMissileSummonEffect ( INVALID_EFFECTSET_HANDLE )
-, m_hCEffectSateliteRain ( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_bSateliteRainFire ( false )
 , m_fSateliteRainPowerRate ( 0.f )
+, m_hCEffectSateliteRain ( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_fSateliteRainPhase ( 0.f )
 , m_bIsFireSateliteRainBigMissile ( false )
 
@@ -235,7 +233,7 @@ iFrameBufferNum_, pUnit_ )
 
 
 /*static*/
-void	CX2GUChung::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUChung::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -636,6 +634,8 @@ void	CX2GUChung::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
 		{
 			m_iSkillCutInSetIndex = 6;
 		} break;
+	default:
+		break;
 	} // switch
 
 	InitStateID();
@@ -2636,7 +2636,7 @@ void CX2GUChung::InitStateByUnitClass()
 */
 /*virtual*/ void CX2GUChung::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -2688,6 +2688,8 @@ void CX2GUChung::InitStateByUnitClass()
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -4381,7 +4383,7 @@ void CX2GUChung::SetEquippedSkillLevelStateData( const CX2SkillTree::SkillTemple
 */
 
 /*static*/
-void	CX2GUChung::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUChung::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -4626,7 +4628,7 @@ void CX2GUChung::InitializeChungMinorParticleArray()
 }
 
 /*static*/
-void	CX2GUChung::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUChung::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -4999,7 +5001,7 @@ RENDER_HINT CX2GUChung::CommonRender_Prepare()
 	bool bGuardDamageReact = false;
 	if( GetEqippedSkillMemo(CX2SkillTree::SMI_CHUNG_MEMO12) == true )
 	{
-		if( GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_SMALL_FRONT || GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_BIG_FRONT )
+		if( static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_SMALL_FRONT || static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_BIG_FRONT )
 		{
 			if( pSkillTempletUsing->m_eID == CX2SkillTree::SI_A_CFG_GUARD )
 				bGuardDamageReact = true;
@@ -5146,7 +5148,7 @@ RENDER_HINT CX2GUChung::CommonRender_Prepare()
 	@param : IN const CX2SkillTree::SkillTemplet* (����� ��ų�� ��ų ���ø� ������)
 	@return : ������Ʈ ���� ����
 */
-/*virtual*/ bool CX2GUChung::SpecialAttackNoStageChange( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ )
+/*virtual*/ bool CX2GUChung::SpecialAttackNoStageChange( IN const CX2SkillTree::SkillTemplet* /*pSkillTemplet_*/ )
 {
 	// pSkillTemplet_ NULL ó�� ����, ���� �Լ����� ȣ��� �̹� ó���Ͽ���
 
@@ -5341,7 +5343,7 @@ __forceinline bool CX2GUChung::IsFullCannonBallCount()
 	@brief : ���� ������ ĳ������ ������ ������
 	@return : int ������ ĳ������ ����
 */
-__forceinline int	CX2GUChung::GetCannonBallCount()
+int	CX2GUChung::GetCannonBallCount()
 {
 	return GetChungGageData()->GetNowCannonBallCount();
 }
@@ -6972,7 +6974,7 @@ void CX2GUChung::DamageSmallEventProcess()
 	}
 	else if(  GetEqippedSkillMemo(CX2SkillTree::SMI_CHUNG_MEMO12) == true &&
 		g_pMain->GetNowStateID() != CX2Main::XS_PVP_GAME &&
-		GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_SMALL_FRONT &&
+		static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_SMALL_FRONT &&
 		SpecialAttackEventProcess() == true )
 	{
 	}
@@ -7014,7 +7016,7 @@ void CX2GUChung::DamageBigEventProcess()
 	}
 	else if(  GetEqippedSkillMemo(CX2SkillTree::SMI_CHUNG_MEMO12) == true &&
 		g_pMain->GetNowStateID() != CX2Main::XS_PVP_GAME &&
-		GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_BIG_FRONT &&
+		static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_BIG_FRONT &&
 		SpecialAttackEventProcess() == true )
 	{
 	}
@@ -10425,7 +10427,6 @@ void CX2GUChung::CSGComboDashJumpXEventProcess()
 	{
 		bool &bCanChangeStateCSGComboDashJumpX = m_FrameDataFuture.stateParam.bEventFlagList[0];
 
-		const float LOWER_BOUND_INPUT_TIME_COMBO = 0.5f;	// CSI_CSG_COMBO_DASH_JUMP_XX �� �б���
 
 		if ( true == m_InputData.oneX )
 			bCanChangeStateCSGComboDashJumpX = true;
@@ -12190,7 +12191,7 @@ void CX2GUChung::CSI_SI_A_CFG_GUARD_READY_StartFuture()
 	CommonStateStartFuture();
 
 	// m_eSlotID_WildCharge�� ��� normal ������Ʈ�� �����̳Ŀ� ����, �����ϴ� Ű�� �������� �˾Ƴ�
-	switch ( m_GuardForFuryGuardianPtr->GetSkillSlotID_Guard() )
+	switch ( static_cast<USER_STATE_ID>( m_GuardForFuryGuardianPtr->GetSkillSlotID_Guard() ) )
 	{
 	case USI_SPECIAL_ATTACK_1:
 		m_GuardForFuryGuardianPtr->SetGuardKeyPointer( &m_InputData.pureA );
@@ -13360,8 +13361,7 @@ void CX2GUChung::CDCComboXFrameMove()
 	{
 		D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01_L_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	// �� �߻� 1��
@@ -13480,7 +13480,6 @@ void CX2GUChung::CDCComboXXFrameMove()
 			m_LuaManager.EndTable();
 		}
 	}
-	int iExtraChargeCannonBall = 0;
 	UpCannonBallCountAtThisAnimationTime( 1.232f, 1 );
 
 	CommonFrameMove();
@@ -14258,8 +14257,7 @@ void CX2GUChung::CSI_SI_A_CDC_LEG_SHOT_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosR = GetBonePos( L"Bip01_R_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# ���� �� �߻� ����Ʈ
@@ -15064,8 +15062,7 @@ void CX2GUChung::CSI_SI_SA_CDC_BULLET_BLITZ_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosL = GetBonePos( L"Bip01_L_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# �߻�
@@ -15186,8 +15183,7 @@ void CX2GUChung::CSI_SI_SA_CDC_BULLET_BLITZ_HYPER_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosL = GetBonePos( L"Bip01_L_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# �߻�
@@ -15708,7 +15704,7 @@ else if( m_pXSkinAnim->EventTimerOneshot( 1.1f ) &&
 		else
 			vTargetPos = GetPos() + GetDirVector() * -400.f;
 
-		CX2DamageEffect::CEffect* pPEffectInDamage = NULL;
+		[[maybe_unused]] CX2DamageEffect::CEffect* pPEffectInDamage = NULL;
 
 		pPEffectInDamage = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CIP_BURST_WOLF", GetPowerRate(), vTargetPos,
 			GetRotateDegree(), GetRotateDegree(), vTargetPos.y, true);
@@ -16423,6 +16419,8 @@ void CX2GUChung::SetSelfDestructSummonedNPC( CX2UnitManager::NPC_UNIT_ID eNPCID 
 					pNPC->StartSelfDestruction( fDeleteTime );
 					pNPC->AttachParticle_LUA( true, "CountDown3", "Bip01_Head", D3DXVECTOR3( 0, 80, 0 ) );
 					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -16501,7 +16499,7 @@ void CX2GUChung::CHG_ComboXXFrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 
 		m_bRotateBone = false;
@@ -16617,7 +16615,7 @@ void CX2GUChung::CHG_ComboDashZZXFrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 	}
 
@@ -16829,7 +16827,7 @@ void CX2GUChung::CSI_SI_A_SIEGE_SHELLING_X_FrameMove()
     // 	else if( m_pXSkinAnim->EventTimerOneshot( 0) )
 // 		bBoneRotate = true;
 
-	if( bBoneRotate = true )
+	if( (bBoneRotate = true) )
 	{
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 10.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 60.f / 180.f);
@@ -16975,7 +16973,7 @@ void CX2GUChung::CSI_SI_A_SIEGE_SHELLING_X_Finish_FrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CSI_SI_A_SIEGE_SHELLING_FINISH_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CSI_SI_A_SIEGE_SHELLING_FINISH_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 	}
 
@@ -18350,14 +18348,14 @@ void CX2GUChung::CTT_DashComboXXFrameMove()
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 10.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 30.f / 180.f);
 		D3DXVECTOR3 vCoefficient = D3DXVECTOR3(fMaxCoefficient, fMinCoefficient, D3DX_PI * 45.f / 180.f);
-		float fDegree = ( DoAimingTarget( 800.f, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
+		[[maybe_unused]] float fDegree = ( DoAimingTarget( 800.f, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
 	}
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.8333f ) )
 	{
 		if( m_bAimingTarget == true && ( GetCannonBallCount() >= 1 || IsFullHyperMode() ) )
 		{
-			CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_CTT_ATTACK_DASH_XX", this );
+			[[maybe_unused]] CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_CTT_ATTACK_DASH_XX", this );
 		}
 		else
 		{
@@ -18375,7 +18373,7 @@ void CX2GUChung::CTT_DashComboXXFrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CTT_ATTACK_DASH_XX", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CTT_ATTACK_DASH_XX", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 	}
 
@@ -18812,7 +18810,7 @@ void CX2GUChung::CTT_MobileArmoredModeZFrameMove()
 }
 void CX2GUChung::CTT_MobileArmoredModeZEventProcess()
 {
-	if ( true == m_pXSkinAnimFuture->GetNowAnimationTime() > 0.06666f )
+	if ( m_pXSkinAnimFuture->GetNowAnimationTime() > 0.06666f )
 	{
 		StateChange( CSI_CTT_MOBILE_ARMORED_MODE_LOOP );
 	}
@@ -18859,7 +18857,7 @@ void CX2GUChung::CTT_MobileArmoredModeXFrameMove()
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 15.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 15.f / 180.f);
 		D3DXVECTOR3 vCoefficient = D3DXVECTOR3(fMaxCoefficient, fMinCoefficient, D3DX_PI * 25.f / 180.f);
-		float fDegree = ( DoAimingTarget( _CONST_CHUNG_::MAGIC_MOBILE_MODE_X_MAX_RANGE * m_fMobileArmoredModeDistance, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
+		[[maybe_unused]] float fDegree = ( DoAimingTarget( _CONST_CHUNG_::MAGIC_MOBILE_MODE_X_MAX_RANGE * m_fMobileArmoredModeDistance, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
 		if( GetExtraCannonBallCount() >= 1 )
 		{
 			CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_CTT_MOBILE_MODE_X", this );
@@ -19277,7 +19275,6 @@ void CX2GUChung::CSI_SA_CHUNG_IMPACT_DETONATION_LOOP_FrameMove()
 			if ( 1 < GetCannonBallCount() || IsFullHyperMode() )
 			{
 				// ����Ʈ ���
-				CX2EffectSet::Handle hEffectSetDetonation =
 					g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_SA_CHUNG_IMPACT_DETONATION_LOOP", this,
 					NULL, false, GetPowerRate() );
 				UseCannon( 1 );
@@ -19456,7 +19453,6 @@ void CX2GUChung::CSI_A_CIP_ARTILLERY_NOVA_FIRE_FrameMove()
 
 void CX2GUChung::CSI_A_CIP_ARTILLERY_NOVA_FIRE_EventProcess()
 {
-	const float LOWER_BOUND_INPUT_TIME_TO_CANCEL = 2.133f;
 	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 		if( false == IsOnSomethingFuture() )
@@ -19657,8 +19653,7 @@ void CX2GUChung::CSI_A_CSG_DOUBLE_FIRE_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosR = GetBonePos( L"Bip01_R_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# �� 1�� �߻�
@@ -19677,7 +19672,6 @@ void CX2GUChung::CSI_A_CSG_DOUBLE_FIRE_FrameMove()
 			{
 				vBonePos_MiniGun = pMeshInst_MiniGun->GetXSkinAnim()->GetCloneFramePosition(L"Gun_R_Dummy03");
 			}
-			CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame = m_pXSkinAnim->GetCloneFrame( L"Bip01_R_Hand" );
 		}
 
 		CX2DamageEffect::CEffect* pEffect =
@@ -20237,7 +20231,6 @@ void CX2GUChung::CSI_A_CTT_BOMBARD_SERVICE_FrameMove()
 			m_hBombardServiceEffect = INVALID_EFFECTSET_HANDLE;
 		}
 		m_iBombardServiceTarget = -1;
-		CX2GameUnit *pFrontNearestUnit = NULL;
 
 		for( int i = 0; i < g_pX2Game->GetUnitNum(); ++i )
 		{

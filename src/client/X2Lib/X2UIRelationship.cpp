@@ -5,9 +5,9 @@
 
 CX2UIRelationship::CX2UIRelationship () :
 	m_pDLGInviteCoupleMessage ( NULL ),
+	m_pDLGChangeLoveMessage ( NULL ),
 	m_pDLGInviteWedding ( NULL ),
 	m_pDLGInviteWeddingUserList ( NULL ),
-	m_pDLGChangeLoveMessage ( NULL ),
 	m_pDLGJoinWedding ( NULL )
 {
 //	m_vecInviteUserIDStringList.clear();
@@ -32,12 +32,12 @@ CX2UIRelationship::~CX2UIRelationship()
 
 
 
-HRESULT	CX2UIRelationship::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT	CX2UIRelationship::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 	return S_OK;
 }
-bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -156,7 +156,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			g_pData->GetServerProtocol()->SendID ( EGS_BREAK_UP_REQ );
 			g_pMain->AddServerPacket( EGS_BREAK_UP_ACK, 60.f );
@@ -185,7 +185,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			//마을이 아니면 채팅 로그 추가
 			if( g_pX2Game != NULL && g_pMain->GetNowStateID() != CX2Main::XS_BATTLE_FIELD )
@@ -346,7 +346,6 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 					if ( pReserveTimeCombo != NULL )
 					{
 						CTime ctNowTime = g_pData->GetServerCurrentTime();
-						CTime ctNowTimeOnStarted = CTime ( ctNowTime.GetYear(), ctNowTime.GetMonth(), ctNowTime.GetDay(), 0, 0, 0, 0 );
 						CTimeSpan ctsSpandTime = CTimeSpan( pReserveTimeCombo->GetSelectedItemIndex(), 23, 59, 0 );
 						CTime ctReserveTime = ctNowTime + ctsSpandTime;
 						kEvent.m_tWeddingDate = static_cast<__int64> ( ctReserveTime.GetTime() );
@@ -360,7 +359,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 					}
 				}
 
-				BOOST_FOREACH ( const InviteWeddingUserInfo & InviteUserInfo, m_vecInvitedWeddingUserList )
+				for ( const InviteWeddingUserInfo & InviteUserInfo : m_vecInvitedWeddingUserList )
 					kEvent.m_vecInviteUnitList.push_back ( InviteUserInfo.m_uiUserUID );
 
 				replace(kEvent.m_wstrWeddingMsg.begin(), kEvent.m_wstrWeddingMsg.end(), L'\'', L'`');
@@ -452,7 +451,6 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 									if ( NULL != g_pData->GetRelationshipManager() &&
 										NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 									{
-										CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 										wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() ) << L" / " << GetMaxWeddingInviteNumber();
 									}
 
@@ -546,7 +544,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			{
 				if ( NULL != g_pData->GetGuildManager() &&
 					 NULL != g_pData->GetGuildManager()->GetMyGuildInfo() &&
-					 NULL != g_pData->GetGuildManager()->GetMyGuildInfo()->m_iGuildUID > 0 )
+					 g_pData->GetGuildManager()->GetMyGuildInfo()->m_iGuildUID > 0 )
 				{
 					g_pData->GetRelationshipManager()->Send_EGS_GET_GUILD_USER_LIST_REQ();
 					ShowInviteWeddingUserListDlg(true, false, RIT_GUILD);
@@ -631,6 +629,8 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 						}
 					}
 					break;
+				default:
+					break;
 				}
 			}
 			return true;
@@ -673,6 +673,8 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 							ShowInvitedWeddingUserListControlListDlg ( true );
 						}
 					}
+					break;
+				default:
 					break;
 				}
 			}
@@ -796,7 +798,6 @@ void CX2UIRelationship::UnCheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBo
 	if ( NULL != g_pData->GetRelationshipManager() &&
 		NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 	{
-		CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 		int iPossibleInviteMany = GetMaxWeddingInviteNumber();
 
 		if ( m_eRelationInviteUserListType == RIT_ADDED )
@@ -840,7 +841,6 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 		if ( NULL != g_pData->GetRelationshipManager() &&
 			NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 		{
-			CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 			int iPossibleInviteMany = GetMaxWeddingInviteNumber();
 
 			switch ( m_eRelationInviteUserListType  )
@@ -877,7 +877,7 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 						else
 						{
 							pCheckBox_->SetChecked ( true );
-							BOOST_FOREACH ( const InviteWeddingUserInfo & InvitedUserInfo , m_vecInvitedWeddingUserList )
+							for ( const InviteWeddingUserInfo & InvitedUserInfo : m_vecInvitedWeddingUserList )
 							{
 								if ( InvitedUserInfo.m_uiUserUID == it->m_uiUserUID )
 								{
@@ -905,6 +905,8 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 					}
 				}
 				break;
+			default:
+				break;
 			}
 
 			wstringstream wstrUserMany;
@@ -914,7 +916,7 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 		}
 	}
 }
-bool CX2UIRelationship::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIRelationship::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 
 	return false;
@@ -931,7 +933,6 @@ bool CX2UIRelationship::ShowInvitedWeddingUserListControlListDlg ( bool bEnable 
 		if ( NULL != g_pData->GetRelationshipManager() &&
 			NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 		{
-			CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 			pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
 
 		}
@@ -943,7 +944,6 @@ bool CX2UIRelationship::ShowInvitedWeddingUserListControlListDlg ( bool bEnable 
 				if ( NULL != g_pData->GetRelationshipManager() &&
 					 NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 				{
-					CKTDGUIComboBox * pComboBox = static_cast<CKTDGUIComboBox*> ( m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" ) );
 
 					m_pDLGInviteWeddingUserList->OpenScriptFile(L"DLG_UI_Invite_Wedding_ControlList.lua");
 					for(int i=0; i<(int) _CONST_UI_RELATIONSHIP_::g_iMaxInviteUserViewCount; ++i)
@@ -967,7 +967,6 @@ bool CX2UIRelationship::ShowInvitedWeddingUserListControlListDlg ( bool bEnable 
 						pCheckBox->SetChecked( false );
 
 						int iPossibleInviteMany = GetMaxWeddingInviteNumber();
-						CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 						wstringstream wstrUserMany;
 						wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() )  << L" / " << iPossibleInviteMany;
 						pStatic_Many->SetString( 0, wstrUserMany.str().c_str() );
@@ -1119,6 +1118,8 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 					ShowInvitedWeddingUserListControlListDlg(true);
 					pDeleteButton->SetShowEnable( true , true );
 					break;
+			default:
+				break;
 			}
 
 
@@ -1149,8 +1150,6 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 					{
 						m_vecInvitedWeddingUserList.clear();
 
-						CKTDGUIStatic * pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
-						CKTDGUIComboBox * pComboBox = (CKTDGUIComboBox*)m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" );
 
 						int iFixedValue = 0;
 						m_pDLGInviteWeddingUserList->OpenScriptFile(L"DLG_UI_Invite_Wedding_ControlList.lua");
@@ -1167,11 +1166,9 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 
 							StringCchPrintf(wFriendID, 256, L"Map_Static_%d", i);
 
-							CKTDGUIStatic *pStatic = (CKTDGUIStatic*)m_pDLGInviteWeddingUserList->GetControl( wFriendID );
 
 							StringCchPrintf(wFriendID, 256, L"Map_Button_%d", i);
 
-							CKTDGUIButton *pButton = (CKTDGUIButton*)m_pDLGInviteWeddingUserList->GetControl( wFriendID );
 
 							StringCchPrintf(wFriendID, 256, L"Map_CheckBox_%d", i);
 							CKTDGUICheckBox *pCheckBox = (CKTDGUICheckBox *)m_pDLGInviteWeddingUserList->GetControl( wFriendID );
@@ -1190,6 +1187,8 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 						return true;
 					}
 					break;
+				default:
+					break;
 				}
 			}
 
@@ -1198,7 +1197,6 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 				if ( NULL != g_pData->GetRelationshipManager() &&
 					NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 				{
-					CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 					CKTDGUIStatic * pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
 					CKTDGUIStatic * pStatic_ManyUserList = (CKTDGUIStatic*)m_pDLGInviteWeddingUserList->GetControl( L"InvitingNumber" );
 
@@ -1216,7 +1214,7 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 				}
 			}
 		}
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWeddingUserList, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWeddingUserList, 0, false );
 		m_pDLGInviteWeddingUserList = NULL;
 
 
@@ -1239,7 +1237,7 @@ void CX2UIRelationship::ShowChangeLoveMessageDlg( bool bEnable, UidType ItemUid_
 	{
 		if(m_pDLGChangeLoveMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeLoveMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeLoveMessage, 0, false );
 			m_pDLGChangeLoveMessage = NULL;
 		}
 	}
@@ -1258,7 +1256,7 @@ bool CX2UIRelationship::ShowInviteCoupleDlg( bool bEnable )
 	{
 		if(m_pDLGInviteCoupleMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteCoupleMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteCoupleMessage, 0, false );
 			m_pDLGInviteCoupleMessage = NULL;
 		}
 		return true;
@@ -1363,7 +1361,7 @@ bool CX2UIRelationship::ShowJoinWeddingDlg( bool bEnable, bool bIsWeddingHeroine
 	{
 		if(m_pDLGJoinWedding != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinWedding, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinWedding, 0, false );
 			m_pDLGJoinWedding = NULL;
 		}
 		return true;
@@ -1399,7 +1397,6 @@ bool CX2UIRelationship::ShowInviteWeddingDlg ( bool bEnable )
 		if ( NULL != g_pData->GetRelationshipManager() &&
 			 NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 		{
-			CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 			wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() ) << L" / " << GetMaxWeddingInviteNumber();
 		}
 
@@ -1453,7 +1450,7 @@ bool CX2UIRelationship::ShowInviteWeddingDlg ( bool bEnable )
 	{
 		if(m_pDLGInviteWedding != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWedding, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWedding, 0, false );
 			m_pDLGInviteWedding = NULL;
 		}
 		return true;
@@ -1469,7 +1466,7 @@ void CX2UIRelationship::ResetInvitingUserInfo ( )
 	CKTDGUIComboBox * pComboBox = (CKTDGUIComboBox*)m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" );
 	pComboBox->RemoveAllItems();
 
-	BOOST_FOREACH ( const InviteWeddingUserInfo & UserInfo , m_vecInvitedWeddingUserList )
+	for ( const InviteWeddingUserInfo & UserInfo : m_vecInvitedWeddingUserList )
 	{
 		pComboBox->AddItem ( (const WCHAR * ) UserInfo.m_wstrUserName.c_str(), NULL );
 	}
@@ -1499,7 +1496,6 @@ void CX2UIRelationship::AddInvitingUserInfo ( InviteWeddingUserInfo UserInfo_, R
 		if ( it == m_vecInvitedWeddingUserList.end()  )
 		{
 			m_vecInvitedWeddingUserList.push_back( UserInfo_ );
-			CKTDGUIComboBox * pComboBox = (CKTDGUIComboBox*)m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" );
 
 			if ( eType_ == RIT_NICKNAME )
 			{
@@ -1507,7 +1503,6 @@ void CX2UIRelationship::AddInvitingUserInfo ( InviteWeddingUserInfo UserInfo_, R
 					NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 				{
 					CKTDGUIStatic * pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
-					CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 					int iPossibleInviteMany = GetMaxWeddingInviteNumber();
 					wstringstream wstrUserMany;
 					wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() )  << L" / " << iPossibleInviteMany;

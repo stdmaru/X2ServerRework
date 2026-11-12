@@ -182,6 +182,8 @@ void CX2DungeonSubStage::OnFrameMove( double fTime, float fElapsedTime )
 						CX2StateTrainingGame* pStateTrainingGame = (CX2StateTrainingGame*) g_pMain->GetNowState();
 						pStateTrainingGame->Handler_EGS_END_TC_GAME_REQ( true );
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -556,6 +558,8 @@ void CX2DungeonSubStage::SetMonsterCountForSubStageClearCheck()
 					monsterCount.m_iOriginalCount = g_pX2Game->LiveNPCNumType_LUA( (CX2UnitManager::NPC_UNIT_ID) monsterCount.m_iKey );
 				}
 			} break;
+		default:
+			break;
 		}
 
 	}
@@ -853,6 +857,8 @@ void CX2DungeonSubStage::CheckIfSubStageCleared_NotHost()
 					}
 				}
 			} break;
+		default:
+			break;
 		}
 
 		if( true == bCleared )
@@ -1019,7 +1025,7 @@ void CX2DungeonSubStage::DeleteNPCBySubStageEnd()
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-bool CX2DungeonSubStage::SubStageData::LoadData( KLuaManager& luaManager, bool bIsNpcLoad )
+bool CX2DungeonSubStage::SubStageData::LoadData( KLuaManager& luaManager, bool /*bIsNpcLoad*/ )
 {
 	//이 서브 스테이지에 사용할 라인 그룹
 	LUA_GET_VALUE( luaManager, "MAIN_LINE_SET",		m_MainLineSet,		0 );
@@ -1355,7 +1361,6 @@ void CX2DungeonSubStage::SubStageData::LoadNPCData( KLuaManager& luaManager )
 				{
 					if( i != iSelectedSubNPCIndex )
 					{
-						NPCData* pNPCData = m_NPCDataList[i];
 						//pNPCData->m_Rate = 0;
 					}
 				}

@@ -24,7 +24,7 @@ m_fTimeLeftStartReq( 0.f ),
 m_fElapsedIdleTime( 0.f ),
 m_bCheckSendLeaveRoomByRequireLevel( false ),
 m_pDLG_Dungeon_Help( NULL ),
-m_bReserveCashShopOpen( NULL )
+m_bReserveCashShopOpen( 0 )
 {
 	DialogLog( "\nCX2StateDungeonRoom::CX2StateDungeonRoom Start\n" );
 
@@ -295,7 +295,6 @@ HRESULT CX2StateDungeonRoom::OnFrameMove( double fTime, float fElapsedTime )
 		POINT mousePoint;
 		GetCursorPos( &mousePoint );
 		ScreenToClient( g_pKTDXApp->GetHWND(), &mousePoint );
-		D3DXVECTOR2 mousePos = D3DXVECTOR2( (float)mousePoint.x, (float)mousePoint.y );
 
 		int selectSlot = m_pCX2DungeonRoom->GetClickSlot( mousePoint.x, mousePoint.y );
 		if( selectSlot != -1 )
@@ -380,9 +379,9 @@ HRESULT CX2StateDungeonRoom::OnFrameRender()
 
 				wstring ipAndPort = pSlotData->m_pUnit->GetUnitData().m_IP + L":";
 				WCHAR szPort[256] = {0};
-				swprintf( szPort, L"%d", pSlotData->m_pUnit->GetUnitData().m_Port );
+				swprintf_s( szPort, L"%d", pSlotData->m_pUnit->GetUnitData().m_Port );
 				ipAndPort += szPort;
-				swprintf( szPort, L"\n%d", (int)pSlotData->m_PingTime );
+				swprintf_s( szPort, L"\n%d", (int)pSlotData->m_PingTime );
 				ipAndPort += szPort;
 
 				if( true == pSlotData->m_pUnit->GetUnitData().m_bMan )
@@ -512,7 +511,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 		{
 			g_pX2Room->Handler_EGS_BAN_USER_REQ( m_UnitUIDToBan );
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		}
 		break;
 
@@ -596,7 +595,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 			}
 
 			if ( m_pDLG_Dungeon_Help != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, 0, false );
 
 			m_pDLG_Dungeon_Help = NULL;
 			return true;
@@ -606,7 +605,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 	case DRUCM_CLOSE_DUNGEON_GUIDE:
 		{
 			if ( m_pDLG_Dungeon_Help != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, 0, false );
 
 			m_pDLG_Dungeon_Help = NULL;
 			return true;
@@ -616,7 +615,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 	case DRUCM_CHANGE_DIFFICULTY_OK:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pCX2DungeonRoom->SetCharLvLimit(false);
 			ChangeDifficulty(m_bChangeDifficultyLower);
@@ -626,7 +625,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 	case DRUCM_BAN_CHANGE_DIFFICULTY_OK:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			ChangeDifficulty(m_bChangeDifficultyLower);
 			return true;
@@ -660,7 +659,7 @@ bool CX2StateDungeonRoom::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 		return true;
 
 
-	bool bRetVal = false;
+	[[maybe_unused]] bool bRetVal = false;
 	switch( wParam )
 	{
 	case EGS_JOIN_ROOM_NOT:
@@ -933,7 +932,7 @@ void CX2StateDungeonRoom::LastMsgPopOk()
 	Handler_EGS_LEAVE_ROOM_REQ();
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -977,7 +976,7 @@ bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_REQ()
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -1008,7 +1007,7 @@ bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPAR
 	return bRetVal;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -1062,7 +1061,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_LOCAL_MAP_REQ()
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_LOCAL_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_LOCAL_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return true;
 }
@@ -1095,7 +1094,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_REQ( wstring buttonName )
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_SLOT_OPEN_REQ( slotIndex );
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SLOT_OPEN_ACK kEvent;
@@ -1110,7 +1109,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND hWnd, UINT uMsg
 	return bRetVal;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SLOT_OPEN_NOT kEvent;
@@ -1141,7 +1140,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_REQ( CX2Dungeon:
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_START_ACK kEvent;
@@ -1156,7 +1155,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_ACK( HWND hWnd, 
 	return false;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_DUNGEON_DIFFICULTY_NOT kEvent;
@@ -1168,7 +1167,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_NOT( HWND hWnd, 
 
 
 
-	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID) ( m_pCX2DungeonRoom->GetDungeonID() + m_pCX2DungeonRoom->GetDifficulty() );
+	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID) ( m_pCX2DungeonRoom->GetDungeonID() + static_cast<int>( m_pCX2DungeonRoom->GetDifficulty() ) );
 	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( dungeonID );
 	if( NULL != pDungeonData &&
 		pDungeonData->m_fTimeLimit > 0.f )
@@ -1237,7 +1236,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_REQ()
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -1256,7 +1255,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND hWnd, UI
 	return false;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_START_NOT kEvent;
@@ -1284,7 +1283,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND hWnd, UI
 		if( m_pCX2DungeonRoom->GetMySlot()->m_bHost == true	|| m_pCX2DungeonRoom->GetMySlot()->m_bReady == true )
 		{
 			DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, 0, false );
 		}
 	}
 	else
@@ -1324,7 +1323,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_REQ()
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_READY_REQ();
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_READY_ACK kEvent;
@@ -1337,7 +1336,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_ACK( HWND hWnd, UINT uMsg, WP
 	return bRetVal;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_READY_NOT kEvent;
@@ -1374,7 +1373,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_REQ()
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_PITIN_REQ();
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_ACK kEvent;
@@ -1384,7 +1383,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND hWnd, UINT uMsg, WP
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_PITIN_ACK( kEvent );
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_NOT kEvent;
@@ -1405,7 +1404,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_REQ( KEGS_CHANGE_MOTION_REQ&
 
 	return true;
 }
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam  )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam  )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MOTION_ACK kEvent;
@@ -1420,7 +1419,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND hWnd, UINT uMsg, W
 
 	return true;
 }
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam  )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam  )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MOTION_NOT kEvent;
@@ -1439,7 +1438,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND hWnd, UINT uMsg, W
 
 			if ( pSlotData->m_pUnit->GetUID() == kEvent.m_UnitUID )
 			{
-				if ( pSlotData->m_bHost == true || pSlotData->GetSlotState() == CX2Room::SS_WAIT && pSlotData->m_bReady == false )
+				if ( pSlotData->m_bHost == true || (pSlotData->GetSlotState() == CX2Room::SS_WAIT && pSlotData->m_bReady == false) )
 				{
 					//wstring motionName = g_pX2Room->GetMotionName( (CX2Room::ROOM_MOTION)kEvent.m_cMotionID );
 					//pSlotData->m_pUnitViewer->PlayAnim(  motionName.c_str(), CKTDGXSkinAnim::XAP_ONE_WAIT, true );
@@ -1456,7 +1455,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND hWnd, UINT uMsg, W
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT kEvent;
@@ -1523,7 +1522,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWn
 //#endif //NOT_USE_DICE_ROLL
 
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_TRADE_NOT kEvent;
@@ -1541,7 +1540,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND hWnd, UINT uMsg, WP
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_RESTORE_SPIRIT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_RESTORE_SPIRIT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESTORE_SPIRIT_NOT kEvent;
@@ -1560,7 +1559,7 @@ bool CX2StateDungeonRoom::Handler_EGS_RESTORE_SPIRIT_NOT( HWND hWnd, UINT uMsg, 
 }
 
 //{{ 2008. 10. 29  최육사
-bool CX2StateDungeonRoom::Handler_EGS_DUNGEON_REQUIRE_ITEM_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_DUNGEON_REQUIRE_ITEM_MESSAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_REQUIRE_ITEM_MESSAGE_NOT kEvent;
@@ -1954,10 +1953,6 @@ void CX2StateDungeonRoom::UISetting()
 																			g_pData->GetDungeonRoom()->GetDifficulty(),
 																			g_pData->GetSelectUnitLevel() );
 
-	D3DXCOLOR limitLevelColor = g_pData->GetDungeonManager()->GetLimitLevelColor(
-		g_pData->GetDungeonRoom()->GetDungeonID(),
-		g_pData->GetDungeonRoom()->GetDifficulty(),
-		g_pData->GetSelectUnitLevel() );
 
 	CKTDGUIStatic* pStaticRecommendLevel = (CKTDGUIStatic*)m_pDLGDungeonRoomBack->GetControl(L"Static_Dungeon_RecommendLevel");
 // 	pStaticRecommendLevel->GetString( 0 )->msg = GET_REPLACED_STRING( ( STR_ID_384, "ii",
@@ -1965,11 +1960,9 @@ void CX2StateDungeonRoom::UISetting()
 //         ( int )m_pCX2DungeonRoom->GetRecommendLevel( ( int )difficulty ).y ) );
 	pStaticRecommendLevel->GetString( 0 )->color = diffColor;
 
-	int requireLevel = 0;
-	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
+	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + static_cast<int>( g_pData->GetDungeonRoom()->GetDifficulty() ) ) );
 	if ( pDungeonData != NULL )
 	{
-		requireLevel = pDungeonData->m_MinLevel;
 	}
 
 	//wsprintf( buff, L"제한레벨 : %d", requireLevel );
@@ -2183,8 +2176,7 @@ void CX2StateDungeonRoom::UISetting()
 
 
 
-	CKTDGUIStatic* pStaticDungeon_Room_Map = (CKTDGUIStatic*)m_pDLGDungeonRoomBack->GetControl( L"StaticDungeon_Room_Map" );
-	CKTDGUIControl::UITextureData* pTexture = new CKTDGUIControl::UITextureData();
+	[[maybe_unused]] CKTDGUIControl::UITextureData* pTexture = new CKTDGUIControl::UITextureData();
 
 // 	pTexture->pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( m_pCX2DungeonRoom->GetMapTextureName() );
 // 	if( pTexture->pTexture == NULL )
@@ -2322,7 +2314,7 @@ void CX2StateDungeonRoom::SetUIOXButton()
 		StringCchPrintf( keyX, 100,  L"Dungeon_Room_BlueX_%d", (i+1) );
 
 		/*wsprintf( keyO, L"Dungeon_Room_BlueO_%d", (i+1) );
-		wsprintf( keyX, L"Dungeon_Room_BlueX_%d", (i+1) );*/
+		swprintf_s( keyX, L"Dungeon_Room_BlueX_%d", (i+1) );*/
 
 		pTempOButton = (CKTDGUIButton*)m_pDLGDungeonRoomBack->GetControl( keyO );
 		pTempXButton = (CKTDGUIButton*)m_pDLGDungeonRoomBack->GetControl( keyX );
@@ -2375,7 +2367,6 @@ void CX2StateDungeonRoom::SetUIOXButton()
 
 void CX2StateDungeonRoom::UIFrameMove()
 {
-	SEnum::DUNGEON_ID dungeonID = g_pData->GetDungeonRoom()->GetDungeonID();
 
 	////방 번호, 이름 찍기
 	//CKTDGUIControl::UIStringData* pStringData = NULL;
@@ -2451,7 +2442,7 @@ void CX2StateDungeonRoom::UIFrameMove()
 
 		CX2DungeonRoom::SlotData* pSlotData = m_pCX2DungeonRoom->GetSlotData( i );
 
-		if( pSlotData != NULL && pSlotData->m_SlotState == CX2DungeonRoom::SS_LOADING
+		if( (pSlotData != NULL && pSlotData->m_SlotState == CX2DungeonRoom::SS_LOADING)
 			|| pSlotData->m_SlotState == CX2DungeonRoom::SS_PLAY
 			|| pSlotData->m_SlotState == CX2DungeonRoom::SS_WAIT )
 		{
@@ -2734,10 +2725,6 @@ void CX2StateDungeonRoom::UIFrameMove()
 		g_pData->GetDungeonRoom()->GetDifficulty(),
 		g_pData->GetSelectUnitLevel() );
 
-	D3DXCOLOR limitLevelColor = g_pData->GetDungeonManager()->GetLimitLevelColor(
-		g_pData->GetDungeonRoom()->GetDungeonID(),
-		g_pData->GetDungeonRoom()->GetDifficulty(),
-		g_pData->GetSelectUnitLevel() );
 
 	ASSERT( !L"Wrong Path" );
 	CKTDGUIStatic* pStaticRecommendLevel = (CKTDGUIStatic*)m_pDLGDungeonRoomBack->GetControl(L"Static_Dungeon_RecommendLevel");
@@ -2746,8 +2733,8 @@ void CX2StateDungeonRoom::UIFrameMove()
 //         ( int )m_pCX2DungeonRoom->GetRecommendLevel( ( int )difficulty ).y ) );
 	pStaticRecommendLevel->GetString( 0 )->color = diffColor;
 
-	int requireLevel = 0;
-	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
+	[[maybe_unused]] int requireLevel = 0;
+	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + static_cast<int>( g_pData->GetDungeonRoom()->GetDifficulty() ) ) );
 	if ( pDungeonData != NULL )
 		requireLevel = pDungeonData->m_MinLevel;
 
@@ -2836,12 +2823,12 @@ bool CX2StateDungeonRoom::SetUserBox( CX2Room::SlotData* pSlotData )
 		pDialog->SetPos( D3DXVECTOR2( dummyPos.x, dummyPos.y ) );
 		CKTDGUIStatic* pStaticSlotIndex = (CKTDGUIStatic*)pDialog->GetControl( L"StaticDungeon_Room_SlotIndex" );
 		WCHAR buf[256] = {0};
-		_itow( pSlotData->m_Index, buf, 10 );
+		_itow_s( pSlotData->m_Index, buf, 10 );
 		if ( pStaticSlotIndex != NULL )
 			pStaticSlotIndex->GetString( 0 )->msg = buf;
 
 		CKTDGUIStatic* pStaticUserInfo = (CKTDGUIStatic*)pDialog->GetControl( L"StaticDungeon_Room_UserInfo" );
-		_itow( (int)pSlotData->m_pUnit->GetUnitData().m_Level, buf, 10 );
+		_itow_s( (int)pSlotData->m_pUnit->GetUnitData().m_Level, buf, 10 );
 		if ( pStaticUserInfo != NULL )
 		{
 			pStaticUserInfo->GetString( 1 )->msg = buf;

@@ -91,7 +91,7 @@ void CX2Room::ConnectRelayServer( const WCHAR* pIP, int port )
 	}
 }
 
-HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2Room::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 	m_fElapsedTime = fElapsedTime;
@@ -154,14 +154,11 @@ HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
 	{
 		CX2Room::ROOM_TYPE roomType = GetRoomType();
 
-		int otherUserNum = 0;
-		bool bCheckAllReadyExceptMe = true;
-		bool bCheckAllReadyExceptMeAndOpponentToTrade = true;
+		[[maybe_unused]] bool bCheckAllReadyExceptMe = true;
 
 		int bRedTeamNum = 0;
 		int bBlueTeamNum = 0;
 
-		bool bCheckPlayWarning = false;
 
 		for( int i = 0; i < (int)m_SlotDataList.size(); i++ )
 		{
@@ -182,7 +179,6 @@ HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
 					if ( pSlotData->m_pUnit != NULL &&
 						pSlotData->m_pUnit->GetUID() != g_pData->GetMyUser()->GetSelectUnit()->GetUID() )
 					{
-						otherUserNum++;
 
 						if ( pSlotData->GetIsHost() == false && pSlotData->GetIsReady() == false )
 						{
@@ -194,7 +190,6 @@ HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
 
 						if ( pSlotData->GetIsReady() == false && pSlotData->m_bTrade == false )
 						{
-							bCheckAllReadyExceptMeAndOpponentToTrade = false;
 						}
 					}
 
@@ -208,10 +203,11 @@ HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
 					}
 				}
 				break;
+			default:
+				break;
 			}
 		}
 
-		bool bCheckBalance = true;
 
 		if ( roomType == CX2Room::RT_PVP )
 		{
@@ -221,7 +217,6 @@ HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
 			{
 				if ( bRedTeamNum != bBlueTeamNum )
 				{
-					bCheckBalance = false;
 				}
 			}
 		}
@@ -1534,7 +1529,7 @@ bool CX2Room::Handler_EGS_BAN_USER_REQ( UidType unitUID )
 	return true;
 }
 
-bool CX2Room::Handler_EGS_BAN_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Room::Handler_EGS_BAN_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -1628,6 +1623,8 @@ void CX2Room::PlayMotionByID( ROOM_MOTION motionID, CX2UnitViewerUI* pUnitViewer
 	case RM_WAIT2:
 		//motionName = L"LobbyWait2";
 		pUnitViewerUI->PlayByMotionType( CX2UnitViewerUI::UVVMT_WAIT2 );
+		break;
+	default:
 		break;
 	}
 }
@@ -2372,7 +2369,7 @@ bool CX2Room::Handler_EGS_CHANGE_GAME_STAT_INFO_IN_ROOM_NOT( KEGS_CHANGE_GAME_ST
 
 	kUnitData.m_GameStat.SetKStat( kEvent_.m_kGameStat );
 
-	pUser->SetMaxHp( static_cast< const float >( kEvent_.m_kGameStat.m_iBaseHP ) );
+	pUser->SetMaxHp( static_cast<float>( kEvent_.m_kGameStat.m_iBaseHP ) );
 	if ( pUser->GetNowHp() > pUser->GetMaxHp() )
 	{
 		pUser->SetNowHp( pUser->GetMaxHp() );

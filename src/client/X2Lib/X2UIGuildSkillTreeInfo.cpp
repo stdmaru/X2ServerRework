@@ -46,7 +46,6 @@ CX2GuildSkillTreeInfoSlotData::CX2GuildSkillTreeInfoSlotData()
 	//const CX2UIGuildSkillTreeInfo::SkillSlotUI& refSkillSlotUI = it->second; // oasis
 	const CX2UIGuildSkillTreeInfo::SkillSlotUI& refSkillSlotUI = it->second;
 
-	bool bRemoveMode = g_pData->GetUIManager()->GetUIGuildBoard()->GetUIGuildSkillTreeInfo()->GetRemoveMode();
 
 
 	// 1. 슬롯 업데이트
@@ -257,10 +256,9 @@ void CX2GuildSkillTreeInfoSlotData::ShowSlotPicture(bool bShow, CKTDGUISlot* pSl
 //////////////////////////////////////////////////////////////////////////
 
 
-CX2UIGuildSkillTreeInfo::CX2UIGuildSkillTreeInfo( CKTDXStage* pNowStage ) :
+CX2UIGuildSkillTreeInfo::CX2UIGuildSkillTreeInfo( CKTDXStage* /*pNowStage*/ ) :
 m_bShow(false),
 m_bSkillRemoveMode(false),
-m_bClassInfoVaild(false),
 //m_MovedPosition(0,0),
 //m_DLGPosition(0,0),
 m_DLGSize(0,0),
@@ -270,9 +268,7 @@ m_pDLGSkillUnsealInform(NULL),
 m_pDLGSkillUnsealed( NULL ),
 m_SumDelta(0),
 m_iPrevSP(-1),
-m_pUserSkillTree(NULL),
-m_pTalkBoxManager(NULL),
-m_bUsingCSP( false )		// 이것도 안쓰이는거 같은데...
+m_pTalkBoxManager(NULL)
 {
 	m_pTalkBoxManager = CX2TalkBoxManager::CreateTalkBoxManger();
 	g_pKTDXApp->GetDGManager()->AddObjectChain( m_pTalkBoxManager );
@@ -313,7 +309,7 @@ void CX2UIGuildSkillTreeInfo::SetPosition( D3DXVECTOR2 vec )
 
 }
 
-HRESULT CX2UIGuildSkillTreeInfo::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2UIGuildSkillTreeInfo::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 	return S_OK;
@@ -375,7 +371,7 @@ bool CX2UIGuildSkillTreeInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	return bFlag;
 }
 
-bool CX2UIGuildSkillTreeInfo::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2UIGuildSkillTreeInfo::OnMouseWheel(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	CKTDGUIContolList* pControlList = (CKTDGUIContolList*) m_pDLGUISkillTree->GetControl( L"SkillTreeControlList" );
 	if( pControlList == NULL )
@@ -404,7 +400,7 @@ bool CX2UIGuildSkillTreeInfo::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, 
 	return true;
 }
 
-bool CX2UIGuildSkillTreeInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildSkillTreeInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -427,8 +423,6 @@ bool CX2UIGuildSkillTreeInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wP
 			if(g_pData->GetMyUser() != NULL &&
 				g_pData->GetMyUser()->GetSelectUnit() != NULL )
 			{
-				int iSPoint = 0;
-				int iCSPoint = 0;
 
 				// oasis907 : 김상윤 [2009.12.3] // 길드 기간제 포인트 출력
 				int iMaxCSPoint = g_pData->GetUIManager()->GetUIGuildBoard()->m_iMaxGuildCSPoint;
@@ -836,7 +830,7 @@ void CX2UIGuildSkillTreeInfo::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 
 }
 
-void CX2UIGuildSkillTreeInfo::UpdateUI( bool bEquipped, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
+void CX2UIGuildSkillTreeInfo::UpdateUI( bool /*bEquipped*/, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
 {
 
 	if(bSP)
@@ -997,7 +991,6 @@ void CX2UIGuildSkillTreeInfo::UpdateSPInfo()
 		CTime cTime;
 		// oasis907 : 김상윤 [2009.12.3] //
 		KncUtil::ConvertStringToCTime( g_pData->GetUIManager()->GetUIGuildBoard()->m_wstrGuildCSPointEndDate, cTime );
-		CTime tCurrentTime = g_pData->GetServerCurrentTime();
 
 		if( bUsingCSP )
 		{
@@ -1357,7 +1350,7 @@ void CX2UIGuildSkillTreeInfo::SetArrowColor( CX2SkillTree::SKILL_ID eSkillID, D3
 // 아직 스킬 봉인해제 자체가 미구현이므로 기반만 닦아 둔다.
 // 다이얼로그 닫는 경우까지만 만들어 뒀습니다. 구매 버튼을 눌렀을 때는 아무것도 안 하게 되어 있으니 다음 작업자 분께서는
 // UICustomMsgProc에서 case GSTICM_UNSEAL_SKILL_BUY 항목에 그 부분을 작업해 주세요.
-void CX2UIGuildSkillTreeInfo::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* pSkillTemplet, D3DXVECTOR2 SlotCenterPos )
+void CX2UIGuildSkillTreeInfo::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* /*pSkillTemplet*/, D3DXVECTOR2 SlotCenterPos )
 {
 	SAFE_DELETE_DIALOG( m_pDLGSkillUnsealInform );
 
@@ -1500,7 +1493,6 @@ void CX2UIGuildSkillTreeInfo::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID 
 		m_pDLGSkillToolTip->GetStatic_LUA( "SkillDesc" )->GetPicture(0)->SetSize( D3DXVECTOR2( (float)itemDescWidth, (float)itemDescHeight) );
 		m_pDLGSkillToolTip->GetStatic_LUA( "SkillDesc" )->GetPicture(0)->pPoint->color = D3DXCOLOR( 1,1,1,0.7f );
 
-		bool bCheckEquipping = false;
 
 
 		m_pDLGSkillToolTip->GetStatic_LUA( "SkillDesc" )->GetString(0)->msg = SkillDesc.c_str();

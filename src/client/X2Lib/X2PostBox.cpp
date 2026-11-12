@@ -357,7 +357,7 @@ HRESULT CX2PostBox::OnFrameMove(double fTime, float fElapsedTime)
 		{
 			for (int i=0;i<6;++i)
 			{
-				swprintf( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
+				swprintf_s( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
 				pCheckDlg = (CKTDGUICheckBox*)m_pDlgMailListSlot->GetControl( t_ControlName );        // 체크박스
 
 				if ( pCheckDlg->GetEnable() == true )
@@ -373,7 +373,7 @@ HRESULT CX2PostBox::OnFrameMove(double fTime, float fElapsedTime)
 			bool bIsChecked = true;
 			for (int i=0;i<6;++i)
 			{
-				swprintf( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
+				swprintf_s( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
 				pCheckDlg = (CKTDGUICheckBox*)m_pDlgMailListSlot->GetControl( t_ControlName );        // 체크박스
 
 				if ( pCheckDlg->GetEnable() == true && pCheckDlg->GetChecked() == false )  // 체크 되지 않은 편지가 있는 경우
@@ -395,8 +395,8 @@ HRESULT CX2PostBox::OnFrameMove(double fTime, float fElapsedTime)
 	}
 	//}} 김상훈 : 2010.10.06 전체선택 체크박스
 
-    if( false == GetEnable() )
-        return S_OK;
+	if( false == GetEnable() )
+		return S_OK;
 
 	if( (m_pDLGMailSend != NULL && m_pDLGMailSend->GetIsOverControl() == true) ||
 		(m_pDlgMailReceive != NULL && m_pDlgMailReceive->GetIsOverControl() == true) ||
@@ -519,7 +519,7 @@ void CX2PostBox::InitPostSend()
     ClearMailList();
 }
 
-void CX2PostBox::AddNewLetter( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+void CX2PostBox::AddNewLetter( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     if(m_bNewLetterNotify == true)
     {
@@ -570,7 +570,7 @@ void CX2PostBox::ClearNewLetter()
     m_iNewLetter = 0;
 }
 
-bool CX2PostBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 
     switch(wParam)
@@ -632,7 +632,7 @@ bool CX2PostBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     case PBQM_SEND_ACCEPT:
 		{
 			if(m_pDLGQuery != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 			m_pDLGQuery = NULL;
 			//{{ kimhc // 2009-09-03 // 봉인된 아이템 보낼때 확인 창 뜨도록 처리
 
@@ -657,7 +657,7 @@ bool CX2PostBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		//{{ kimhc // 2009-09-03 // 봉인된 아이템 보낼때 확인 창 OK
 	case PBQM_SEAL_ITEM_SEND_ACCEPT:
 		if(m_pDLGQuery != NULL)
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 		m_pDLGQuery = NULL;
 		m_bProcess = true;
 
@@ -671,12 +671,12 @@ bool CX2PostBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     case PBQM_SEND_CANCEL:
     case PBQM_DELETE_CANCEL:
         if(m_pDLGQuery != NULL)
-            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
         break;
     case PBQM_DELETE_OK:
         if(m_pDLGQuery != NULL)
-            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
         m_bProcess = true;
         Handler_EGS_DELETE_LETTER_REQ();
@@ -862,7 +862,7 @@ bool CX2PostBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	case PBSUM_REGISTER_QUANTITY_CONFIRM:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 			m_EnrollItemUid = 0;
@@ -875,7 +875,7 @@ bool CX2PostBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	case PBSUM_REGISTER_QUANTITY_CANCEL:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 			m_nQuantity = 1;		// 수량성 아이템을 버리는 Dialog Text 1로 고정
@@ -1134,7 +1134,6 @@ void CX2PostBox::AttachItem()
 
 void CX2PostBox::CheckEdChange()
 {
-    bool bChange = false;
     CKTDGUIIMEEditBox *pDialogEd = (CKTDGUIIMEEditBox*)m_pDLGMailSend->GetControl(L"IME_Add_Ed");
 
     wstring						wstrMessage;
@@ -1143,18 +1142,15 @@ void CX2PostBox::CheckEdChange()
     if( m_nED < 0 )
     {
         m_nED = 0;
-        bChange = true;
     }
     else if( m_nED > MAX_ED_FOR_LETTER )
     {
         m_nED = MAX_ED_FOR_LETTER;
-        bChange = true;
     }
 
     if(m_nED >= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED)
     {
         m_nED = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED;
-        bChange = true;
     }
 
     //if(bChange) // 숫자 입력할 때마다 쉼표위치 변경을 위해서
@@ -1354,8 +1350,8 @@ bool CX2PostBox::OnRClickedItemInInven( D3DXVECTOR2 mousePos )
     }
 
 
-    if ( pItemSlot->GetSlotType() != CX2SlotManager::CX2Slot::ST_INVENTORY )
-        return false;
+	if ( pItemSlot->GetSlotType() != CX2SlotManager::CX2Slot::ST_INVENTORY )
+		return false;
 
 	return false;
 }
@@ -1366,10 +1362,10 @@ void CX2PostBox::RegisterItem(CX2SlotItem* pItemSlot)
 		return;
 
     CX2Item* pkItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItem( pItemSlot->GetItemUID() );
-    if ( pkItem == NULL ||
-        NULL == pkItem->GetItemTemplet()
-        )
-        return;
+	if ( pkItem == NULL ||
+		NULL == pkItem->GetItemTemplet()
+		)
+		return;
 
 	//{{ kimhc // 2009-09-03 // 봉인 아이템 우편 전송 가능하도록
 
@@ -1464,25 +1460,21 @@ void CX2PostBox::SetSlotItem(CX2Item *pkItem)
 {
     CKTDGUIIMEEditBox *pDialogEd = (CKTDGUIIMEEditBox*)m_pDLGMailSend->GetControl(L"IME_Add_Ed");
 
-    bool                        bChange = false;
     wstring						wstrMessage;
 
 	m_nED = g_pMain->GetEDFromString( pDialogEd->GetText() );
     if( m_nED < 0 )
     {
         m_nED = 0;
-        bChange = true;
     }
     else if( m_nED > MAX_ED_FOR_LETTER )
     {
         m_nED = MAX_ED_FOR_LETTER;
-        bChange = true;
     }
 
     if(m_nED >= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED)
     {
         m_nED = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED;
-        bChange = true;
     }
 
     if(m_nED > 0)
@@ -1552,12 +1544,12 @@ void CX2PostBox::MouseMove( D3DXVECTOR2 mousePos )
 bool CX2PostBox::MouseUp( D3DXVECTOR2 mousePos )
 {
     if(m_bProcess || m_bRegisteredTrade || m_bAttachItem == false || m_CurrentState == 0)
-        return false;
+		return false;
 
-    //we-need-any-personal-item-slot-find
+	//we-need-any-personal-item-slot-find
 
-    // 마우스업된 위치가 임의의 인벤토리 슬롯인 경우
-    // No Change Inven
+	// 마우스업된 위치가 임의의 인벤토리 슬롯인 경우
+	// No Change Inven
 
 	if ( *m_pSlotBeforeDragging != NULL )
 	{
@@ -1679,8 +1671,8 @@ bool CX2PostBox::MouseUp( D3DXVECTOR2 mousePos )
 bool CX2PostBox::MouseDown( D3DXVECTOR2 mousePos )
 {
     // 현재 메일관련 기능 수행중이거나 수량등록, 아이템등록, 메일확인/뷰 중일때는 처리하지 않는다.
-    if(m_bProcess || m_bRegisteredTrade || m_bAttachItem == false || m_CurrentState == 0)
-        return false;
+	if(m_bProcess || m_bRegisteredTrade || m_bAttachItem == false || m_CurrentState == 0)
+		return false;
 
 	return CX2ItemSlotManager::MouseDown( mousePos );
 }
@@ -1754,7 +1746,6 @@ bool CX2PostBox::DrawSlotMouseOverImageInEquipRect()
         if ( itemType == CX2Item::IT_WEAPON || itemType == CX2Item::IT_DEFENCE || itemType == CX2Item::IT_ACCESSORY ||
             itemType == CX2Item::IT_SKILL )
         {
-            CX2Unit::EQIP_POSITION equipPosition = pkItemTemplet->GetEqipPosition();
             for ( int i = 0; i < (int)m_SlotList.size(); i++ )
             {
                 CX2SlotItem* pItemSlot = (CX2SlotItem*)GetSlot(i);
@@ -2126,13 +2117,13 @@ void CX2PostBox::SetDialogShow( bool bShow )
 
         if(m_pDLGQuery != NULL)
         {
-            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
             m_pDLGQuery = NULL;
         }
 
         if(m_pProcessDlg != NULL)
         {
-            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+            g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
             m_pProcessDlg = NULL;
         }
 
@@ -2306,7 +2297,7 @@ wstring CX2PostBox::GetSlotItemDesc()
     return itemDesc;
 }
 
-/*vitual*/ std::wstring CX2PostBox::GetSlotItemDescExtra_RBtn( int itemTID, CX2Item* pItem )
+/*vitual*/ std::wstring CX2PostBox::GetSlotItemDescExtra_RBtn( int /*itemTID*/, CX2Item* /*pItem*/ )
 {
     std::wstring slotItemDesc = L"";
 
@@ -2528,7 +2519,6 @@ void CX2PostBox::OpenItemQuantityDLG( UidType sellItemUID )
     CX2Item* pItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItem( sellItemUID );
     if ( pItem != NULL )
     {
-        WCHAR buff[256] = {0};
         CKTDGUIStatic* pStaticItemName = (CKTDGUIStatic*)m_pDLGMyTradeWindow->GetControl( L"Item_Name" );
         if ( pStaticItemName != NULL && pStaticItemName->GetString(0) != NULL )
         {
@@ -2713,7 +2703,6 @@ void CX2PostBox::SetListSlot(int inx)
 	CKTDGUIStatic	*pStaticDlg3 = NULL;
     CKTDGUIButton	*pButtonDlg = NULL;
     CKTDGUICheckBox *pCheckDlg = NULL;
-    CKTDGUIStatic *pStaticDlg = m_pDLGMailSend->GetStatic_LUA("g_pStaticPost_SendWindow");
 
     CKTDGUIStatic *pStaticDlgRead = m_pDlgMailListSlot->GetStatic_LUA("Staticpost_ItemSlot_Read");
     CKTDGUIStatic *pStaticDlgNotRead = m_pDlgMailListSlot->GetStatic_LUA("Staticpost_ItemSlot_NotRead");
@@ -2930,7 +2919,7 @@ void CX2PostBox::RequestList()
 
     if(m_pDLGQuery != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
     }
 
@@ -2954,7 +2943,7 @@ void CX2PostBox::OpenMail(int inx)
 
     if(m_pDLGQuery != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
     }
 
@@ -3008,8 +2997,8 @@ void CX2PostBox::OpenMail(int inx)
 
 void CX2PostBox::SetMailView(int inx)
 {
-    if(inx < 0 || inx >= 6)
-        return;
+	if(inx < 0 || inx >= 6)
+		return;
 
 	m_pDlgMailView->SetShowEnable(false, false);
 	if( IsSystemMail() == true)
@@ -3205,7 +3194,7 @@ void CX2PostBox::CheckDeleteMail(int inx)
 
     if(m_pDLGQuery != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
 
     }
@@ -3275,15 +3264,15 @@ void CX2PostBox::GetItemLetter(int inx)
 
     if(m_pDLGQuery != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
     }
 
-    if(inx < 0 || inx >= 6)
-        return;
+	if(inx < 0 || inx >= 6)
+		return;
 
-    if(m_listSlot[inx].m_ItemId <= 0 || m_listSlot[inx].m_postID <= 0)
-        return;
+	if(m_listSlot[inx].m_ItemId <= 0 || m_listSlot[inx].m_postID <= 0)
+		return;
 
 	//{{ 09.04.28 태완 : ED 한계초과 체크
 	if(m_listSlot[inx].m_ItemId == 127000 || m_listSlot[inx].m_ItemId == 127040)
@@ -3314,7 +3303,7 @@ void CX2PostBox::ReplyMail(int inx)
 
     if(m_pDLGQuery != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
     }
 
@@ -3368,7 +3357,7 @@ void CX2PostBox::SendMail()
 
     if(m_pDLGQuery != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
         m_pDLGQuery = NULL;
 
     }
@@ -3723,13 +3712,13 @@ bool CX2PostBox::Handler_EGS_SEND_LETTER_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_SEND_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_SEND_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
 
         CX2ItemSlotManager::SetEnable(CX2Slot::ST_INVENTORY, true);
         CX2ItemSlotManager::SetEnable(CX2Slot::ST_POST_SEND, true);
@@ -3771,7 +3760,6 @@ bool CX2PostBox::Handler_EGS_DELETE_LETTER_REQ()
 {
     KEGS_DELETE_LETTER_REQ kPacket;
 
-    UidType postID = 0;
     m_nUnReadDeleteMail = 0;
     for(int i=0; i<6; ++i)
     {
@@ -3797,13 +3785,13 @@ bool CX2PostBox::Handler_EGS_DELETE_LETTER_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_DELETE_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_DELETE_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
     }
     m_pProcessDlg = NULL;
 
@@ -3883,13 +3871,13 @@ bool CX2PostBox::Handler_EGS_READ_LETTER_REQ(UidType postId)
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_READ_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_READ_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
     }
     m_pProcessDlg = NULL;
 
@@ -3944,13 +3932,13 @@ bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
     }
     m_pProcessDlg = NULL;
 
@@ -4031,13 +4019,13 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_REQ(UidType postId)
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
     }
     m_pProcessDlg = NULL;
 
@@ -4081,7 +4069,6 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND hWnd, UINT uMsg, WPA
 					else
 						bIsFirstCheck = false;		/// 처음 검사 여부 해제
 					int resultItem1 = iter->first;
-					int resultItem2 = iter->second;
 
                     wstring itemName = g_pData->GetItemManager()->GetItemTemplet(resultItem1)->GetFullName_();
 					strResultItem = strResultItem + itemName;
@@ -4104,7 +4091,6 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND hWnd, UINT uMsg, WPA
                 wstring itemName = GET_STRING( STR_ID_401 );
                 pStaticDlg->GetString(0)->msg = itemName;     // 첨부물
 
-                int inx = -1;
                 for(int i=0; i<6; ++i)
                 {
                     if(m_listSlot[i].m_postID == kEvent.m_iPostNo)
@@ -4127,7 +4113,7 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND hWnd, UINT uMsg, WPA
     return false;
 }
 
-bool CX2PostBox::Handler_EGS_RECEIVE_LETTER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_RECEIVE_LETTER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4223,13 +4209,13 @@ bool CX2PostBox::Handler_EGS_NEW_POST_BLACK_LIST_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_NEW_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_NEW_POST_BLACK_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
     }
     m_pProcessDlg = NULL;
 
@@ -4301,13 +4287,13 @@ bool CX2PostBox::Handler_EGS_DEL_POST_BLACK_LIST_REQ()
     return false;
 }
 
-bool CX2PostBox::Handler_EGS_DEL_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_DEL_POST_BLACK_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
     }
     m_pProcessDlg = NULL;
 
@@ -4356,13 +4342,13 @@ bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
     if(m_pProcessDlg != NULL)
     {
-        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, NULL, false );
+        g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pProcessDlg, 0, false );
     }
     m_pProcessDlg = NULL;
 
@@ -4385,7 +4371,7 @@ bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPAR
     return false;
 }
 
-bool CX2PostBox::Handler_EGS_NEW_POST_LETTER_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_NEW_POST_LETTER_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4419,7 +4405,7 @@ bool CX2PostBox::Handler_EGS_RENEWAL_LETTER_REQ()
 	return true;
 }
 
-bool CX2PostBox::Handler_EGS_RENEWAL_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_RENEWAL_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4459,7 +4445,7 @@ void CX2PostBox::UpdateUnReadMailNotice()
 }
 
 //{{ 허상형 : [2010/8/25/] //	우편 수량 UI 개편
-void CX2PostBox::OpenRegisterQuantityDLG( D3DXVECTOR2 pos )
+void CX2PostBox::OpenRegisterQuantityDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	SAFE_DELETE_DIALOG(m_pDLGItemEnroll);
@@ -4520,7 +4506,7 @@ void CX2PostBox::UpdateRegisterQuantityDLG( bool bReadIME )
 		m_nQuantity = pItem->GetItemData().m_Quantity;
 
 	WCHAR buff[256] = {0};
-	_itow( m_nQuantity, buff, 10 );
+	_itow_s( m_nQuantity, buff, 10 );
 
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str() );

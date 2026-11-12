@@ -7,7 +7,6 @@
 CX2UIItemExchangeShop::CX2UIItemExchangeShop( const CKTDXStage* const pNowStage, const WCHAR* const pFileName )
 : CX2ItemSlotManager( const_cast< CKTDXStage* >( pNowStage ), NULL ),
 m_bShow( false ),
-m_pNowStage( NULL ),
 m_iHouseID( CX2LocationManager::HI_INVALID ),				// X2LocationManager::HOUSE_ID
 m_pDlgBackground( NULL ),									// 아이템 교환 다이얼로그
 //m_pDlgSelectedSlot( NULL ),
@@ -129,7 +128,7 @@ HRESULT		CX2UIItemExchangeShop::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool		CX2UIItemExchangeShop::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIItemExchangeShop::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDlgBackground ) )
@@ -205,7 +204,7 @@ bool		CX2UIItemExchangeShop::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 	return	bFlag;
 }
 
-bool		CX2UIItemExchangeShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIItemExchangeShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch ( wParam )
 	{
@@ -328,7 +327,7 @@ bool		CX2UIItemExchangeShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPa
 
 			if ( m_pDlgExchangeConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, 0, false );
 				m_pDlgExchangeConfirm = NULL;
 			}
 
@@ -366,7 +365,7 @@ bool		CX2UIItemExchangeShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPa
 		{
 			if ( m_pDlgExchangeConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, 0, false );
 				m_pDlgExchangeConfirm = NULL;
 			}
 			if ( g_pData->GetUIManager()->GetShow( CX2UIManager::UI_MENU_INVEN ) == true )
@@ -1084,7 +1083,7 @@ bool		CX2UIItemExchangeShop::Handler_EGS_ITEM_EXCHANGE_REQ( int iItemID, int iSe
 
 	return true;
 }
-bool		CX2UIItemExchangeShop::Handler_EGS_ITEM_EXCHANGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIItemExchangeShop::Handler_EGS_ITEM_EXCHANGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ITEM_EXCHANGE_ACK kEvent;

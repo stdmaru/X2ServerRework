@@ -24,9 +24,9 @@ CX2EmblemManager* CX2EmblemManager::m_pEmblemManager = NULL;
 
 CX2EmblemManager::CX2EmblemManager():
 m_bHasNextPlayEmblem( false ),
+m_fWaitTime(0.f),
 m_hCurrentEmblem(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_hCurrentEmblem2nd(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_fWaitTime(0.f)
+m_hCurrentEmblem2nd(INVALID_PARTICLE_SEQUENCE_HANDLE)
 , m_fSoundPlayingCheckTime ( 0.f )
 {
 
@@ -220,8 +220,7 @@ CKTDGParticleSystem::CParticleEventSequence* CX2EmblemManager::CreateEventSequen
 	pParticleSequence->m_EventList.push_back(pEventTexture);
 
 	// 사이즈 설정
-	CKTDXDeviceTexture* pTexture =
-		pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrTextureFile_ );
+	CKTDXDeviceTexture* pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrTextureFile_ );
 
 	if( NULL != pTexture )
 	{
@@ -294,7 +293,7 @@ void CX2EmblemManager::PlayEmblemEffect( const EmblemTemplet& sEmblemTemplet_ )
 			vector<EmblemPopupSound> vecEmblemPopupSoundPickJustOneUnitType;
 			m_vecNowPlayEmblemSound.clear();
 			m_fSoundPlayingCheckTime = 0.f;
-			BOOST_FOREACH ( EmblemPopupSound sEmblemPopupSound, sEmblemTemplet_.m_vecPlayEmblemSoundTemplet )
+			for ( EmblemPopupSound sEmblemPopupSound : sEmblemTemplet_.m_vecPlayEmblemSoundTemplet )
 			{
 				switch ( sEmblemPopupSound.m_eEmblemPopupSoundType )
 				{
@@ -387,7 +386,7 @@ void CX2EmblemManager::OnFrameMove( float fElpaseTime )
 	{
 		m_fSoundPlayingCheckTime += fElpaseTime;
 
-		BOOST_FOREACH ( EmblemPopupSound & sEmblemPopupSound, m_vecNowPlayEmblemSound )
+		for ( EmblemPopupSound & sEmblemPopupSound : m_vecNowPlayEmblemSound )
 		{
 			if ( m_fSoundPlayingCheckTime >= sEmblemPopupSound.m_fStartTime && false == sEmblemPopupSound.m_bIsPlaying)
 			{

@@ -24,9 +24,9 @@ static const CKTDGStateManager::KState s_akStates[] =
 CX2StateBattleField::CX2StateBattleField()
 	: m_pBattleFieldGame( NULL ),
 	m_vOldEyePt( 0.0f, 0.0f, 0.0f ), m_vOldLookAtPt( 0.0f, 0.0f, 0.0f ),
-	m_bNowMovingToOtherPlace( false ), m_TimerWaitingPortal( 3.0f ), m_RenderStateID( s_akStates ),
-	m_TexDataMovingGageBG( L"DLG_LOADING_BAR.tga", L"LOADING_BG" ),
-	m_TexDataMovingGage( L"DLG_LOADING_BAR.tga", L"LOADING_BAR" )
+	m_bNowMovingToOtherPlace( false ), m_TimerWaitingPortal( 3.0f ), m_TexDataMovingGageBG( L"DLG_LOADING_BAR.tga", L"LOADING_BG" ),
+	m_TexDataMovingGage( L"DLG_LOADING_BAR.tga", L"LOADING_BAR" ),
+	m_RenderStateID( s_akStates )
 	, m_SumDelta( 0 )
 {
 	g_pData->DeleteDungeonResultInfo();
@@ -606,7 +606,7 @@ bool CX2StateBattleField::Handler_EGS_GAME_LOADING_REQ( const int iLoadingProgre
 	return true;
 }
 
-bool CX2StateBattleField::Handler_EGS_GAME_LOADING_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_GAME_LOADING_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -656,7 +656,7 @@ bool CX2StateBattleField::Handler_EGS_GAME_LOADING_ACK( HWND hWnd, UINT uMsg, WP
 	return false;
 }
 
-bool CX2StateBattleField::Handler_EGS_GAME_LOADING_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_GAME_LOADING_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GAME_LOADING_NOT kPacket;
@@ -673,7 +673,7 @@ bool CX2StateBattleField::Handler_EGS_GAME_LOADING_NOT( HWND hWnd, UINT uMsg, WP
 	return true;
 }
 
-bool CX2StateBattleField::Handler_EGS_PLAY_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_PLAY_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PLAY_START_NOT kPacket;
@@ -682,7 +682,7 @@ bool CX2StateBattleField::Handler_EGS_PLAY_START_NOT( HWND hWnd, UINT uMsg, WPAR
 	return true;
 }
 
-/*virtual*/ bool CX2StateBattleField::Handler_EGS_JOIN_BATTLE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateBattleField::Handler_EGS_JOIN_BATTLE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 기존에 필드에 있는 사람만 받을 수 있음
 	// 현재 들어오고 있는 사람은 X2StateBattleField 객체가 아직 생성되지 않아서 처리를 못하는듯...
@@ -694,7 +694,7 @@ bool CX2StateBattleField::Handler_EGS_PLAY_START_NOT( HWND hWnd, UINT uMsg, WPAR
 	return m_pBattleFieldGame->Handler_EGS_JOIN_BATTLE_FIELD_NOT( kPacket );
 }
 
-bool CX2StateBattleField::Handler_EGS_LEAVE_BATTLE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_LEAVE_BATTLE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_BATTLE_FIELD_NOT kPacket;
@@ -722,7 +722,7 @@ bool CX2StateBattleField::Handler_EGS_USE_FINALITY_SKILL_ACK( HWND hWnd, UINT uM
 
 
 
-bool CX2StateBattleField::Handler_EGS_SYNC_BATTLE_FIELD_DAMAGED_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_SYNC_BATTLE_FIELD_DAMAGED_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 // 대미지 맵 전달 ACK
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -747,7 +747,7 @@ bool CX2StateBattleField::Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_ACK( HWN
 	return m_pBattleFieldGame->Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_ACK( hWnd, uMsg, wParam, lParam );
 }
 
-bool CX2StateBattleField::Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NPC_UNIT_CREATE_MIDDLE_BOSS_NOT kEvent;
@@ -780,7 +780,7 @@ bool CX2StateBattleField::Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_NOT( HWN
 }
 
 
-bool CX2StateBattleField::Handler_EGS_NPC_UNIT_CREATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_NPC_UNIT_CREATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NPC_UNIT_CREATE_NOT kEvent;
@@ -793,7 +793,7 @@ bool CX2StateBattleField::Handler_EGS_NPC_UNIT_CREATE_NOT( HWND hWnd, UINT uMsg,
 	return true;
 }
 
-/*virtual*/ bool CX2StateBattleField::Handler_EGS_STATE_CHANGE_FIELD_REQ( const UINT uiVillageId_, const USHORT usBattleFieldStartLineIndex_ )
+/*virtual*/ bool CX2StateBattleField::Handler_EGS_STATE_CHANGE_FIELD_REQ( const UINT /*uiVillageId_*/, const USHORT usBattleFieldStartLineIndex_ )
 {
 	KEGS_STATE_CHANGE_FIELD_REQ kPacket;
 
@@ -870,7 +870,7 @@ void CX2StateBattleField::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 				talkBox.m_BackTexColor		= coBackColor_;
 
 				talkBox.m_bUseOutLine		 = true;
-				if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+				if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 				{
 					talkBox.m_bUseOutLine = false;
 				}
@@ -1016,7 +1016,7 @@ void CX2StateBattleField::MoveToOtherPlace( float fElapsedTime )
 
 				if ( NULL != pBattleFieldPortalMovingInfoPtr )
 				{
-					const CX2BattleFieldManager::PORTAL_MOVE_TYPE ePortalMoveType = static_cast<const CX2BattleFieldManager::PORTAL_MOVE_TYPE>( pBattleFieldPortalMovingInfoPtr->GetPortalMoveType() );
+					const CX2BattleFieldManager::PORTAL_MOVE_TYPE ePortalMoveType = static_cast<CX2BattleFieldManager::PORTAL_MOVE_TYPE>( pBattleFieldPortalMovingInfoPtr->GetPortalMoveType() );
 
 					switch ( ePortalMoveType )
 					{
@@ -1058,7 +1058,7 @@ void CX2StateBattleField::MoveToOtherPlace( float fElapsedTime )
 		m_TimerWaitingPortal.ResetSumOfElapsedTime();
 }
 
-bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_LOAD_NOT( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_LOAD_NOT( HWND /*hwnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BATTLE_FIELD_NPC_LOAD_NOT kPacket;
@@ -1100,7 +1100,7 @@ void CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_LOAD_COMPLETE_REQ()
 	//CX2BossRaidManager::GetInstance()->SetSendNpcLoadReq(true);
 }
 
-bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_LOAD_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_LOAD_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BATTLE_FIELD_NPC_LOAD_COMPLETE_ACK kPacket;
@@ -1119,7 +1119,7 @@ bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_LOAD_COMPLETE_ACK( HWND h
 	return false;
 }
 
-bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT kPacket;
@@ -1179,7 +1179,6 @@ bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT( HWND hWnd, 
 			vTempUserList.push_back( make_pair( pPetManager->GetMyPet()->GetPetInfo().m_PetUid, true ) );
 
 		const UINT		uiUnitListSize = g_pX2Game->GetUserUnitListSize();
-		const UidType	uidMyGUUserUID = g_pX2Game->GetMyUnit()->GetUnitUID();
 
 		for( UINT i = 0; i < uiUnitListSize; ++i )
 		{
@@ -1210,7 +1209,7 @@ bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT( HWND hWnd, 
 	}
 }
 
-/*virtual*/ bool CX2StateBattleField::Handler_EGS_END_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateBattleField::Handler_EGS_END_GAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_END_GAME_NOT kEvent;
@@ -1279,7 +1278,7 @@ bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT( HWND hWnd, 
 	CX2GageManager::GetInstance()->SetShow( bShow );
 }
 
-bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_EVENT_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_EVENT_MESSAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BATTLE_FIELD_EVENT_MESSAGE_NOT kEvent;
@@ -1345,8 +1344,6 @@ void CX2StateBattleField::DrawFace( const float fX_, const float fY_, const CKTD
 	float X2 = fX_ + fWidth_ * fWidthPercent_;
 	float Y2 = fY_ + fHeight_;
 
-	float UMax = 1.0f;
-	float VMax = 1.0f;
 
 	DRAWFACE_RHW_VERTEX vertex[4];
 	ZeroMemory( vertex, sizeof(DRAWFACE_RHW_VERTEX) * 4 );
@@ -1445,7 +1442,7 @@ bool CX2StateBattleField::ProcessStateChangeServerSelectWithOptionWindow()
 		return CX2StateMenu::ProcessStateChangeServerSelectWithOptionWindow();
 }
 
-bool CX2StateBattleField::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_UNIT_INFO_NOT kEvent;
@@ -1460,7 +1457,7 @@ bool CX2StateBattleField::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg
 /** @function : Handler_EGS_VISIT_CASH_SHOP_NOT
 	@brief : 배틀필드에서 캐시샵에 들어가거나 나온 유저가 누구인지 알려주는 패킷
 */
-bool CX2StateBattleField::Handler_EGS_VISIT_CASH_SHOP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_VISIT_CASH_SHOP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_VISIT_CASH_SHOP_NOT kEvent;
@@ -1472,7 +1469,7 @@ bool CX2StateBattleField::Handler_EGS_VISIT_CASH_SHOP_NOT( HWND hWnd, UINT uMsg,
 	return true;
 }
 
-bool CX2StateBattleField::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 
 	// 인벤토리가 열려 있을 때는 인벤토리의 휠 처리만 하기
@@ -1525,7 +1522,7 @@ bool CX2StateBattleField::Handler_EGS_CHECK_EXIST_MONSTER_UID_ACK( HWND hWnd, UI
 	@return		: 패킷 처리 여부
 */
 
-bool CX2StateBattleField::Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateBattleField::Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT kEvent;
@@ -1555,7 +1552,7 @@ bool CX2StateBattleField::Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND
 		{
 			g_pData->GetLocationManager()->SetVillage( eVillageId, vPos, iLastTouchLineIndex );
 
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 		}
 	}
 	else

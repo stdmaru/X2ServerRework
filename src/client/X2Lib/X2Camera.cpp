@@ -1069,7 +1069,7 @@ void CX2Camera::FixedCamera( CX2GameUnit* pFocusUnit, D3DXVECTOR3 vLookAt, D3DXV
 			lookAt = m_vArcadeCameraLookAt;
 			float fTrackingTime = 2.f;
 			float fDistX = fabs(m_vArcadeCameraLookAt.x - vUnitPos.x );
-			float fDistY = fabs(m_vArcadeCameraLookAt.y - vUnitPos.y );
+			[[maybe_unused]] float fDistY = fabs(m_vArcadeCameraLookAt.y - vUnitPos.y );
 
 			// horizontal scroll
 			if( fDistX > MAGIC_HORIZONTAL_THRESHOLD1 )
@@ -1122,7 +1122,7 @@ void CX2Camera::FixedCamera( CX2GameUnit* pFocusUnit, D3DXVECTOR3 vLookAt, D3DXV
 		{
 			lookAt = m_vArcadeCameraLookAt;
 			float fTrackingTime = 2.f;
-			float fDistX = fabs(m_vArcadeCameraLookAt.x - vUnitPos.x );
+			[[maybe_unused]] float fDistX = fabs(m_vArcadeCameraLookAt.x - vUnitPos.x );
 			float fDistY = fabs(m_vArcadeCameraLookAt.y - vUnitPos.y );
 
 			// vertical scroll
@@ -1251,7 +1251,6 @@ const D3DXVECTOR3 CX2Camera::CalcNormalCameraPosition( CX2GameUnit* pFocusUnit, 
 	if( pFocusUnit == NULL )
 		return D3DXVECTOR3( 0, 0, 0 );
 
-	float fCameraHeightCompensation = 400.f;
 
 	if( g_pX2Game != NULL
 #ifdef PVP_ZOOM_CAMERA_1
@@ -1262,15 +1261,12 @@ const D3DXVECTOR3 CX2Camera::CalcNormalCameraPosition( CX2GameUnit* pFocusUnit, 
 	{
 		if( distance <= 800.f )
 		{
-			fCameraHeightCompensation = 100.f;
 		}
 		if( distance <= 900.f )
 		{
-			fCameraHeightCompensation = 200.f;
 		}
 		else if( distance <= 1200.f )
 		{
-			fCameraHeightCompensation = 300.f;
 		}
 	}
 
@@ -1346,6 +1342,8 @@ CFirstPersonCamera* CX2Camera::GetFPSCamera()
 			if( g_pX2Game != NULL )
 				return g_pX2Game->GetFPSCamera();
 		} break;
+	default:
+		break;
 	}
 	return NULL;
 }
@@ -1402,17 +1400,17 @@ void CX2Camera::SetViewNowKeyFrame()
 		m_kCamera.LookAt( vLookAtPos.x, vLookAtPos.y, vLookAtPos.z );
 
 		int iCoordX = (int)vLookAtPos.x;
-		_itow( iCoordX, buff, 10 );
+		_itow_s( iCoordX, buff, 10 );
 		m_pIMEEditCoordX->SetText(buff, false);
 		m_iLastCoordX = iCoordX;
 
 		int iCoordY = (int)vLookAtPos.y;
-		_itow( iCoordY, buff, 10 );
+		_itow_s( iCoordY, buff, 10 );
 		m_pIMEEditCoordY->SetText(buff, false);
 		m_iLastCoordY = iCoordY;
 
 		int iCoordZ = (int)vLookAtPos.z;
-		_itow( iCoordZ, buff, 10 );
+		_itow_s( iCoordZ, buff, 10 );
 		m_pIMEEditCoordZ->SetText(buff, false);
 		m_iLastCoordZ = iCoordZ;
 	}
@@ -1441,12 +1439,12 @@ void CX2Camera::SetViewNowKeyFrame()
 
 	WCHAR buff[256] = {0};
 	int iMoveVelocity = (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData[m_iEditKeyFrameIndex].m_fMoveVelocity;
-	_itow( iMoveVelocity, buff, 10 );
+	_itow_s( iMoveVelocity, buff, 10 );
 	m_pIMEEditMoveVelocity->SetText(buff, false);
 	m_iLastMoveVelocity = iMoveVelocity;
 
 	int iRotateVelocity = (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData[m_iEditKeyFrameIndex].m_fRotateTime;
-	_itow( iRotateVelocity, buff, 10 );
+	_itow_s( iRotateVelocity, buff, 10 );
 	m_pIMEEditRotateTime->SetText(buff, false);
 	m_iLastRotateTime = iRotateVelocity;
 
@@ -1455,10 +1453,10 @@ void CX2Camera::SetViewNowKeyFrame()
 
 
 	CKTDGUIStatic *pStaticKeyFrameState = static_cast< CKTDGUIStatic* >( m_pDlgWorldCameraEdit->GetControl( L"StaticKeyFrameState" ) );
-	_itow( m_iEditKeyFrameIndex+1, buff, 10 );
+	_itow_s( m_iEditKeyFrameIndex+1, buff, 10 );
 	pStaticKeyFrameState->SetString(0, buff);
 	pStaticKeyFrameState->SetString(1, L"/");
-	_itow( (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData.size(), buff, 10 );
+	_itow_s( (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData.size(), buff, 10 );
 	pStaticKeyFrameState->SetString(2, buff);
 
 
@@ -1530,7 +1528,6 @@ void CX2Camera::AddKeyFrame()
 	m_iEditKeyFrameIndex++;
 
 	int iNowKeyFrame = m_iEditKeyFrameIndex;
-	int iPrevKeyFrame = m_iEditKeyFrameIndex - 1;
 
 	// 키 프레임 구간의 길이 근사
 	// 복사하였기 때문에 같은 Position이므로 0
@@ -1950,7 +1947,6 @@ void CX2Camera::WorldCameraKeyProcess()
 				fwprintf(fp, L"},\n");
 
 
-				float a = m_vecWorldCameraData[0].m_vecKeyFrameCameraData[i].m_fCurveLength;
 			}
 			fwprintf(fp, L"}\n");
 			fclose(fp);
@@ -2142,6 +2138,7 @@ bool CX2Camera::AddWorldCameraData_LUA()
 
 	LUA_GET_VALUE( luaManager, "WORLD_CAMERA_DURATION", kWorldCameraData.m_fWorldCameraDuration,	30.f	);	// play duration time
 
+	{
 	int index = 1;
 	while( luaManager.BeginTable( index ) == true )
 	{
@@ -2197,6 +2194,7 @@ bool CX2Camera::AddWorldCameraData_LUA()
 	m_vecWorldCameraData.push_back(kWorldCameraData);
 	return true;
 
+	}
 LoadFail:
 	wstringstream wstrStream;
 	wstrStream << L"WorldCameraLoadFail m_iWorldCameraID = " << kWorldCameraData.m_iWorldCameraID;
@@ -2206,7 +2204,7 @@ LoadFail:
 	return false;
 }
 
-void CX2Camera::WorldCameraFrameMove( double fTime, float fElapsedTime )
+void CX2Camera::WorldCameraFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if(true == m_bWorldCameraEdit &&  true == m_bEnableWorldCamera)
 	{
@@ -2678,7 +2676,7 @@ void CX2Camera::EndWorldCamera()
 	return;
 }
 
-bool CX2Camera::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Camera::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -2857,20 +2855,20 @@ bool CX2Camera::ParsingEyeTypeAndPos( KLuaManager& luaManger_, const CX2GameUnit
 	//{{ 2009.01.19 김태완 : 코드정리
 	switch ( eEyeType )
 	{
-	case LT_BONE:
+	case ET_BONE:
 		{
 			vEyePos_ = pFocusUnit_->GetBonePos( wstrEyeParts.c_str() );
 		} break;
-	case LT_IMPACT_POINT:
+	case ET_IMPACT_POINT:
 		{
 			vEyePos_ = pFocusUnit_->GetImpactPos();
 		}break;
-	case LT_WEAPON:
+	case ET_WEAPON:
 		{
 			// fix!! 일단은 0번 무기의 0번째 메시를 보는 걸로 하드코딩
 			vEyePos_ = pFocusUnit_->GetWeaponBonePos( 0, wstrEyeParts.c_str(), 0 );
 		} break;
-	case LT_UNIT_POSITION:
+	case ET_UNIT_POSITION:
 		{
 			vEyePos_ = pFocusUnit_->GetPos();
 		} break;

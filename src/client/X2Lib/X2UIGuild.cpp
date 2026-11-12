@@ -11,11 +11,11 @@ m_pDlgGuildInfo( NULL ),
 m_pDlgInviteGuild( NULL ),
 m_pDlgChangeGuildMessage( NULL ),
 m_pDlgChangeGuildMemberMessage( NULL ),
+m_pGuildSkillTree( NULL),
+m_pDlgChangeGuildName( NULL ),
 m_cGuildInfoTabType( GIT_GUILD_INFO ),
 m_pGuildInfoControl( NULL ),
 m_pGuildMemberInfoControl( NULL ),
-m_pGuildSkillTree( NULL),
-m_pDlgChangeGuildName( NULL ),
 m_cNowMemberInfoPage( 1 ),
 m_cMaxMemberInfoPage( 1 )
 {
@@ -35,7 +35,7 @@ CX2UIGuild::~CX2UIGuild()
 	SAFE_DELETE_DIALOG( m_pDlgInviteGuild );
 
 	if ( m_pDlgGuildInfo != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildInfo, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildInfo, 0, false );
 	m_pDlgGuildInfo = NULL;
 
 	SAFE_DELETE( m_pGuildInfoControl );
@@ -64,7 +64,7 @@ bool CX2UIGuild::SetShowChangeGuildNameDlg( bool bEnable )
 	{
 		if(m_pDlgChangeGuildName != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildName, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildName, 0, false );
 			m_pDlgChangeGuildName = NULL;
 		}
 		return true;
@@ -88,7 +88,7 @@ bool CX2UIGuild::SetShowCreateGuildDlg( bool bEnable, UidType iUID )
 	{
 		if(m_pDlgCreateGuild != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgCreateGuild, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgCreateGuild, 0, false );
 			g_pData->GetGuildManager()->SetUseGuildItemUID( 0 );
 			m_pDlgCreateGuild = NULL;
 		}
@@ -133,7 +133,7 @@ bool CX2UIGuild::SetShowCreateGuildNoticeDlg( bool bEnable, const WCHAR *pGuildN
 	{
 		if(m_pDlgCreateGuildNotice != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgCreateGuildNotice, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgCreateGuildNotice, 0, false );
 			m_pDlgCreateGuildNotice = NULL;
 		}
 
@@ -155,7 +155,7 @@ bool CX2UIGuild::SetShowInviteGuildMemberDlg( bool bEnable )
 	{
 		if(m_pDlgInviteGuild != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgInviteGuild, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgInviteGuild, 0, false );
 			m_pDlgInviteGuild = NULL;
 		}
 
@@ -349,7 +349,7 @@ bool	CX2UIGuild::SetShowChangeGradeMenu( bool bEnable, int iTargetGrade )
 	{
 		if(m_pDlgChangeGradeMenu != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGradeMenu, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGradeMenu, 0, false );
 			m_pDlgChangeGradeMenu = NULL;
 		}
 
@@ -420,7 +420,7 @@ bool		CX2UIGuild::SetShowChangeGuildMessageDlg( bool bEnable )
 	{
 		if(m_pDlgChangeGuildMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildMessage, 0, false );
 			m_pDlgChangeGuildMessage = NULL;
 		}
 
@@ -980,7 +980,7 @@ bool		CX2UIGuild::SetShowChangeGuildMemberMessageDlg( bool bEnable )
 	{
 		if(m_pDlgChangeGuildMemberMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildMemberMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildMemberMessage, 0, false );
 			m_pDlgChangeGuildMemberMessage = NULL;
 		}
 
@@ -1062,7 +1062,7 @@ bool		CX2UIGuild::SetFieldUserIcon(int i, bool bShow)
 	if(m_pGuildInfoControl!= NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgGuildInfo->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgGuildInfo->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgGuildInfo->GetPos();
 		m_pGuildMemberIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 

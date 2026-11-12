@@ -9,10 +9,6 @@ CX2PVPResultTable::CX2PVPResultTable(void)
 
 CX2PVPResultTable::~CX2PVPResultTable(void)
 {
-	for( int i = 0; i < (int)RT_END; ++i )
-	{
-		m_mapResultData[i].end();
-	}
 }
 
 void CX2PVPResultTable::RegisterLuaBind()

@@ -182,7 +182,6 @@ public:
 private:
 	bool					m_bShow;
 	bool					m_bSkillRemoveMode;
-	bool					m_bClassInfoVaild;
 	//D3DXVECTOR2				m_MovedPosition;
 	//D3DXVECTOR2				m_DLGPosition;
 	D3DXVECTOR2				m_DLGSize;
@@ -207,7 +206,6 @@ private:
 
 	// ToolTip : TalkBox 이용해서.
 	CX2TalkBoxManager*		m_pTalkBoxManager;
-	bool					m_bUsingCSP;
 
 
 };

@@ -9,8 +9,8 @@ CX2PETAI::CX2PETAI( CX2PET* pPet )
 , m_pPet( pPet )
 , m_eAIState( NAS_WAIT )
 , m_TargetUnitUID( -1 )
-, m_fElapsedTimeAfterLastTargeting( 0.f )
 , m_fElapsedTimeAfterLastMoving( 0.f )
+, m_fElapsedTimeAfterLastTargeting( 0.f )
 , m_fElapsedTimeAfterLastRandomJump( 0.f )
 , m_fElapsedTimeAfterLastWalkRunUpdate( 0.f )
 , m_fElapsedTimeAfterLastDirChange( 0.f )
@@ -55,7 +55,7 @@ CX2PETAI::~CX2PETAI(void)
 	SAFE_DELETE(m_pAIData);
 }
 
-void CX2PETAI::OnFrameMove( double fTime, float fElapsedTime )
+void CX2PETAI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -68,7 +68,6 @@ void CX2PETAI::OnFrameMove( double fTime, float fElapsedTime )
 		return;
 	}
 
-	CX2PET::STATE_CHANGE_TYPE message = CX2PET::SCT_NO_CHANGE;
 	SetMasterUnitData();
 
 
@@ -249,7 +248,7 @@ void CX2PETAI::UpdateJumpSpeed()
 	}
 }
 
-void CX2PETAI::Targeting( float fElapsedTime )
+void CX2PETAI::Targeting( float /*fElapsedTime*/ )
 {
 	KTDXPROFILE();
 
@@ -468,7 +467,8 @@ void CX2PETAI::Moving( float fElapsedTime )
 //#ifdef SERV_PET_SYSTEM
 
 	// 자 타게팅된 목적지로 이동을 해보자~
-	float fDestGap = (float)m_pAIData->chaseMoveData.destGap;
+	float fDestGap;	// split: a goto jumps over it
+	fDestGap = (float)m_pAIData->chaseMoveData.destGap;
 	bool bIsTargetOnRight;
 	if( false == m_bFleeing )
 	{
@@ -482,21 +482,21 @@ void CX2PETAI::Moving( float fElapsedTime )
 
 			m_PathFinder.SimpleFollowTargetPathFly( fElapsedTime, m_vPosition, m_iLastTouchLineIndex, vDistPos, iFinalDestLineIndex,
 				m_fMaxJumpUp * 2.f, m_fMaxJumpRight,
-				(const float)m_pAIData->flymovedata.fDestHeight, (const float)m_pAIData->flymovedata.fDestArea,
-				pLineMap, (const float)m_pAIData->flymovedata.fDestGap, (const float)m_pAIData->chaseMoveData.moveGap,
+				(float)m_pAIData->flymovedata.fDestHeight, (float)m_pAIData->flymovedata.fDestArea,
+				pLineMap, (float)m_pAIData->flymovedata.fDestGap, (float)m_pAIData->chaseMoveData.moveGap,
 				m_bFootOnLine, bStayOnCurrLineGroup, bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 		else
 		{
 			m_PathFinder.SimpleFollowTargetPath( fElapsedTime, m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)fDestGap, (const float)m_pAIData->chaseMoveData.moveGap,
+				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)fDestGap, (float)m_pAIData->chaseMoveData.moveGap,
 				m_bFootOnLine, bStayOnCurrLineGroup, bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 	}
 	else
 	{
 		m_PathFinder.SimpleFollowTargetPath( fElapsedTime, m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)fDestGap, (const float)m_pAIData->chaseMoveData.moveGap,
+			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)fDestGap, (float)m_pAIData->chaseMoveData.moveGap,
 			m_bFootOnLine, bStayOnCurrLineGroup, bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 	}
 
@@ -512,6 +512,7 @@ void CX2PETAI::Moving( float fElapsedTime )
 
 	bAIIsRight = m_bIsRight;
 	vDist = vFinalDest - m_vPosition;
+	{
 	const float fFinalDestDist = D3DXVec3LengthSq( &vDist );
 
 	switch( m_PathFinder.GetMoveState() )
@@ -795,6 +796,7 @@ void CX2PETAI::Moving( float fElapsedTime )
 		}
 	}
 
+	}
 SEND_AI_MESSAGE:
 
 	if( m_PrevAIMessage == message || CX2PET::SCT_NO_CHANGE == message )

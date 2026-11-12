@@ -1761,6 +1761,13 @@ void CKTDGUIControl::CMovieData::SetRect_LUA( const float fX_, const float fY_, 
 // }
 
 
+CKTDGUIControl::CMovieData::MOVIE_STATUS CKTDGUIControl::CMovieData::GetStatus() const
+{
+	if ( !m_Player.IsOpen() )
+		return MOVIE_STATUS_ERROR;
+	return m_Player.GetStatus() == x2::movie::MoviePlayer::Status::Playing ? MOVIE_STATUS_PLAYING : MOVIE_STATUS_READY;
+}
+
 void CKTDGUIControl::CMovieData::OnFrameMove()
 {
 	if ( !m_Player.IsOpen() )

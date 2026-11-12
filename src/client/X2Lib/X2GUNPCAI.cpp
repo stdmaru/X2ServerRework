@@ -47,7 +47,7 @@ CX2NPCAI( pMasterNPC, CX2NPCAI::NAT_NORMAL )
 	//}} oasis : 김상윤 // 2009-10-7 ////////////////
 }
 
-void CX2GUNPCAI::OnFrameMove( double fTime, float fElapsedTime )
+void CX2GUNPCAI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -57,10 +57,8 @@ void CX2GUNPCAI::OnFrameMove( double fTime, float fElapsedTime )
 	if( false == m_bEnabled )
 		return;
 
-	CX2GUNPC::STATE_CHANGE_TYPE message = CX2GUNPC::SCT_NO_CHANGE; // FieldFix: 사용안함
 	SetMasterUnitData();
 
-	CKTDGLineMap* pLineMap = g_pX2Game->GetWorld()->GetLineMap();	//FieldFix: 이것도 가지고 있어도 될듯
 
 
 	// 루아 Function에 의해 타겟팅을 하는 것이면
@@ -775,8 +773,8 @@ void CX2GUNPCAI::TargetingNPC( float fElapsedTime )
     // 1번씩 trigger 되어 실행된다. 따라서 random 계산할 때는 CX2GUNPC::EstimateFrameOneshotPercent 을 이용하도록 한다
     // <- 기존의 random 계산법과 동일
 
-    if( CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->targetData.targetSuccessRate ) == false )
-        return TargetUpdate( false );
+	if( CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->targetData.targetSuccessRate ) == false )
+		return TargetUpdate( false );
 
 
 	// 이전 타겟을 유지할까요?
@@ -1020,8 +1018,8 @@ void CX2GUNPCAI::TargetUpdate( bool bAccumulate_ )
 			m_vPivotPoint = m_vPosition;	// 현재 자리를 기점으로 패트롤?
 			m_iPivotPointLineIndex = m_iLastTouchLineIndex;
 
-            if( bAccumulate_ == true && m_pMasterNPC->EstimateFrameAccumPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true
-                || bAccumulate_ == false && CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true )
+            if( (bAccumulate_ == true && m_pMasterNPC->EstimateFrameAccumPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true)
+                || (bAccumulate_ == false && CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true) )
 				SetNowPatroling( true );
 			else
 				SetNowPatroling( false );
@@ -1281,9 +1279,11 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 	//}}oasis:김상윤////2009-10-7////
 
 	// 자 타게팅된 목적지로 이동을 해보자~
-	float fDestGap = 0.f;
+	float fDestGap;	// split: a goto jumps over it
+	fDestGap = 0.f;
 	//{{oasis:김상윤////2009-10-7////
-	float fMoveGap = 0.f;
+	float fMoveGap;	// split: a goto jumps over it
+	fMoveGap = 0.f;
 
 	// 그룹AI의 GAI_CMD_FORCED_MOVE를 수행 중이면
 	if(m_pMasterNPC->GetGroupAICommand_LUA() == CX2GUNPC::GAI_CMD_FORCED_MOVE)
@@ -1323,23 +1323,23 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 
 			m_PathFinder.FollowTargetPathFly( /*IN fElapsedTime,*/ m_vPosition, IN m_iLastTouchLineIndex, IN vDistPos, IN iFinalDestLineIndex,
 				IN m_fMaxJumpUp * 2.f, IN m_fMaxJumpRight,
-				IN (const float)m_pAIData->flymovedata.fDestHeight, IN (const float)m_pAIData->flymovedata.fDestArea,
-				pLineMap, IN (const float)m_pAIData->flymovedata.fDestGap, /*IN (const float)m_pAIData->chaseMoveData.moveGap,*/
+				IN (float)m_pAIData->flymovedata.fDestHeight, IN (float)m_pAIData->flymovedata.fDestArea,
+				pLineMap, IN (float)m_pAIData->flymovedata.fDestGap, /*IN (float)m_pAIData->chaseMoveData.moveGap,*/
 				/*IN m_bFootOnLine,*/ /*IN bStayOnCurrLineGroup,*/ OUT bIsTargetOnRight, IN m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 		else	// FLY 상태가 아니면
 		{
 			m_PathFinder.FollowTargetPath( /*fElapsedTime,*/ m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)fDestGap, (const float)fMoveGap,
+				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)fDestGap, (float)fMoveGap,
 				m_bFootOnLine, bStayOnCurrLineGroup, OUT bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 	}
 	else	// 그룹 AI를 수행하지 않으면서 도망 중이면
 	{
 		// FLY는 처리 없나?
-		// oasis  fDestGap -> 150.f  원본: (const float)fDestGap,
+		// oasis  fDestGap -> 150.f  원본: (float)fDestGap,
 		m_PathFinder.EscapeTargetPath( /*fElapsedTime,*/ m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)150.f, /*(const float)m_pAIData->chaseMoveData.moveGap,*/
+			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)150.f, /*(float)m_pAIData->chaseMoveData.moveGap,*/
 			m_bFootOnLine, /*bStayOnCurrLineGroup,*/ OUT bIsTargetOnRight, m_bIsRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 	}
 
@@ -1355,6 +1355,7 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 
 
 	bAIIsRight = m_bIsRight;
+	{
 	const float fFinalDestDist = GetDistance( m_vPosition, vFinalDest );
 
 	switch( m_PathFinder.GetMoveState() )
@@ -1692,6 +1693,7 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 		}
 	}
 
+	}
 SEND_AI_MESSAGE:
 
 	// 혼자 안드로메다로 가는 일 없도록 강제 고도조절한다.

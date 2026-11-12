@@ -4,19 +4,19 @@
 CX2Community::CX2Community(void) :
 m_pDlgGuild( NULL )
 //{{ kimhc // 2009-09-17 // 초기화
+, m_pDlgRelation ( NULL )
+, m_pDlgRelationOnlyNotCouple ( NULL )
+, m_pDlgRelationOnlyPartnerShowing ( NULL )
 , m_eNowGuildViewInfo(CX2Community::GVI_LOCATION )
 , m_uiNowGuildPage( 1 )
-, m_uiMaxGuildPage( 1 )
-, m_uiNowNumberOfGuildMembersPlayingGame( 0 )
-, m_uiAllNumberOfGuildMembers( 0 )
 //}} kimhc // 2009-09-17 // 초기화
 
 //{{ kimhc // 2009-01-06 // 가이아 서버에만 추천인 리스트 보이는 기능
 //}} kimhc // 2009-01-06 // 가이아 서버에만 추천인 리스트 보이는 기능
 
-, m_pDlgRelation ( NULL )
-, m_pDlgRelationOnlyNotCouple ( NULL )
-, m_pDlgRelationOnlyPartnerShowing ( NULL )
+, m_uiMaxGuildPage( 1 )
+, m_uiNowNumberOfGuildMembersPlayingGame( 0 )
+, m_uiAllNumberOfGuildMembers( 0 )
 
 , m_fInviteCoolTime( 0.f )
 {
@@ -121,7 +121,7 @@ CX2Community::~CX2Community(void)
 	//{{ kimhc // 2009-01-06 // 가이아 서버에만 추천인 리스트 보이는 기능
 		//}} kimhc // 2009-01-06 // 가이아 서버에만 추천인 리스트 보이는 기능
 
-	BOOST_FOREACH ( CX2UnitViewerUI * pUnitViewerUI, m_vecUnitViewerUI )
+	for ( CX2UnitViewerUI * pUnitViewerUI : m_vecUnitViewerUI )
 		SAFE_DELETE_KTDGOBJECT ( pUnitViewerUI );
 	SAFE_DELETE_DIALOG ( m_pDlgRelation );
 	SAFE_DELETE_DIALOG ( m_pDlgRelationOnlyPartnerShowing );
@@ -144,7 +144,7 @@ CX2Community::~CX2Community(void)
 
 	SAFE_CLOSE( m_pSoundAlarm );
 
-	g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+	g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 	m_pDLGQuery = NULL;
 
 	//{{ kimhc // 2009-09-30 // 길드원들의 UID와 등급을 가진 map 제거
@@ -298,7 +298,7 @@ bool CX2Community::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return bFlag;
 }
 
-bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch( wParam )
 	{
@@ -417,7 +417,7 @@ bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case XCCUM_BAN_TUTOR_UNIT:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 			m_pDLGQuery = NULL;
 
 			if( NULL != g_pMain->GetTutorSystem() )
@@ -1325,8 +1325,9 @@ bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 				return true;
 			}
 		}
+		break;
 
-		// 전체탭 초대하기 버튼
+		// "All" tab: invite button
 	case XCCUM_PVP_INVITE:
 		{
 			if( m_iPickedUserUID == g_pData->GetMyUser()->GetSelectUnit()->GetUID() )
@@ -1435,7 +1436,7 @@ bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			if ( m_pDLGQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 				m_pDLGQuery = NULL;
 			}
 
@@ -1449,7 +1450,7 @@ bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			if ( m_pDLGQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 				m_pDLGQuery = NULL;
 			}
 
@@ -1726,7 +1727,7 @@ bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return g_pData->GetGuildManager()->Handler_EGS_KICK_GUILD_MEMBER_REQ( GetSelectedGuildMemberUID() );
 		}
@@ -1736,7 +1737,7 @@ bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -1881,6 +1882,8 @@ bool CX2Community::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 						}
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}
@@ -2143,7 +2146,7 @@ void CX2Community::SetOpen( bool bCheck )
 		}
 
 
-		BOOST_FOREACH ( CX2UnitViewerUI * pUnitViewer, m_vecUnitViewerUI )
+		for ( CX2UnitViewerUI * pUnitViewer : m_vecUnitViewerUI )
 		{
 			pUnitViewer->SetShowObject( false );
 		}
@@ -2167,7 +2170,7 @@ void CX2Community::SetOpen( bool bCheck )
 
 }
 
-bool CX2Community::ChangeUserListTab( const WCHAR* pUserListTabName )
+bool CX2Community::ChangeUserListTab( const WCHAR* /*pUserListTabName*/ )
 {
 	return true;
 }
@@ -2465,7 +2468,7 @@ void CX2Community::OnFrameMove( double fTime, float fElapsedTime )
 
 	if ( m_MessengerUserTab == XMUT_RELATION )
 	{
-		BOOST_FOREACH ( CX2UnitViewerUI* pUnitViewer, m_vecUnitViewerUI )
+		for ( CX2UnitViewerUI* pUnitViewer : m_vecUnitViewerUI )
 		{
 			if ( NULL != pUnitViewer && true == pUnitViewer->GetShowObject() )
 			{
@@ -2502,7 +2505,7 @@ bool CX2Community::OpenSearchFriendWindow( bool bOpen )
 	else
 	{
 		if(m_pDLGSearchFriend != NULL)
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriend, 0, false );
 		m_pDLGSearchFriend = NULL;
 		return true;
 	}
@@ -2547,7 +2550,7 @@ bool CX2Community::SearchFriendReq()
 bool CX2Community::CloseSearchFriendResultWindow()
 {
 	if(m_pDLGSearchFriendResult != NULL)
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriendResult, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriendResult, 0, false );
 	m_pDLGSearchFriendResult = NULL;
 	SAFE_DELETE_DIALOG(m_pDLGSearchFriendResultCharIcon);
 	m_bSearchUnitUnitInfoValid = false;
@@ -2578,7 +2581,6 @@ bool CX2Community::OpenSearchFriendResultWindow( KEGS_SEARCH_UNIT_ACK kEvent )
 		CKTDGUIStatic* pStatic_Channel = (CKTDGUIStatic*) m_pDLGSearchFriendResult->GetControl( L"Static_channel_name" );
 		CKTDGUIStatic* pStatic_State = (CKTDGUIStatic*) m_pDLGSearchFriendResult->GetControl( L"Static_State" );
 
-		CKTDGUIButton* pButton_AddFriend = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Friend_add" );
 		CKTDGUIButton* pButton_MoveChannel = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Channel_Move" );
 		CKTDGUIButton* pButton_PartyInvite = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Party_Invnte" );
 		CKTDGUIButton* pButton_PartyRequest = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Party_Request" );
@@ -2888,7 +2890,7 @@ bool CX2Community::OpenAddFriendWindow( bool bCheck )
 	else
 	{
 		if(m_pDLGAddFriend != NULL)
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAddFriend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAddFriend, 0, false );
 		m_pDLGAddFriend = NULL;
 	}
 
@@ -3025,7 +3027,7 @@ bool CX2Community::OpenCreateGroupWindow( bool bCheck )
 	{
 		if ( m_pDLGCreateGroup != NULL )
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateGroup, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateGroup, 0, false );
 			m_pDLGCreateGroup = NULL;
 		}
 	}
@@ -3119,7 +3121,7 @@ bool CX2Community::OpenGroupMoveWindow( bool bOpen )
 	{
 		if ( m_pDLGGroupMove != NULL )
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGroupMove, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGroupMove, 0, false );
 			m_pDLGGroupMove = NULL;
 		}
 	}
@@ -3139,7 +3141,7 @@ bool CX2Community::OpenGroupNameChangeWindow( bool bOpen )
 	{
 		if ( m_pDLGChangeGroupName != NULL )
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeGroupName, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeGroupName, 0, false );
 			m_pDLGChangeGroupName = NULL;
 		}
 	}
@@ -3245,7 +3247,7 @@ bool CX2Community::SelectUserListItem( CKTDGUIListBox::LIST_BOX_EVENT_MSG listBo
 					if ( pListBoxItem->itemType == CKTDGUIListBox::LBIT_DEFAULT ||
 						pListBoxItem->itemType == CKTDGUIListBox::LBIT_NOT_ENABLE)
 					{
-						if(StrCmpW(pListBoxItem->strText, GET_STRING( STR_ID_84 )) != 0)
+						if(wcscmp(pListBoxItem->strText, GET_STRING( STR_ID_84 )) != 0)
 							return OpenUserMenu();
 					}
 					else if ( pListBoxItem->itemType == CKTDGUIListBox::LBIT_GROUP_PLUS ||
@@ -3357,6 +3359,8 @@ wstring CX2Community::GetSelectedUnitName()
 
 
 		//}} kimhc // 2009-01-06 // 가이아 서버에만 추천인 리스트 보이는 기능
+	default:
+		break;
 	}
 
 	return nickName;
@@ -5160,6 +5164,8 @@ bool CX2Community::OpenUserMenu(int idummy)
 							++countMenuHeight;
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 
@@ -5290,6 +5296,8 @@ bool CX2Community::OpenUserMenu(int idummy)
 						pUserMenu[21]->SetOffsetPos_LUA(menuPosX, menuPosY + (menuHegith * countMenuHeight));
 						++countMenuHeight;
 					} break;
+				default:
+					break;
 				}
 			}
 
@@ -5423,6 +5431,8 @@ bool CX2Community::OpenUserMenu(int idummy)
 							++countMenuHeight;
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 			pUserMenu[6]->SetShowEnable(true, true);
@@ -5496,6 +5506,8 @@ bool CX2Community::OpenUserMenu(int idummy)
 							++countMenuHeight;
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 
@@ -5595,6 +5607,8 @@ bool CX2Community::OpenUserMenu(int idummy)
 								++countMenuHeight;
 							}
 						} break;
+					default:
+						break;
 					}
 				}
 			}
@@ -5811,7 +5825,7 @@ UidType CX2Community::GetFriendUID(wstring &nickName)
 	return 0;
 }
 
-void CX2Community::MessengerUser::Update( const KFriendInfo& friendInfo, bool &bRefresh )
+void CX2Community::MessengerUser::Update( const KFriendInfo& friendInfo, bool &/*bRefresh*/ )
 {
 	m_UnitUID = friendInfo.m_iUnitUID;
 	m_NickName = CX2Community::ConvertOrgName( friendInfo.m_wstrNickName.c_str() );
@@ -5909,7 +5923,7 @@ bool CX2Community::Handler_EGS_COMMUNITY_USER_LIST_REQ(int iPage)
 	return true;
 }
 
-bool CX2Community::Handler_EGS_COMMUNITY_USER_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_COMMUNITY_USER_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_COMMUNITY_USER_LIST_ACK kEvent;
@@ -6050,10 +6064,12 @@ void CX2Community::CheckButton(CKTDGUIButton* pButton)
 			}
 		}
 		break;
+	default:
+		break;
 	}
 }
 
-void CX2Community::UpdateFieldUserList(int iPage)
+void CX2Community::UpdateFieldUserList(int /*iPage*/)
 {
 	const int MAGIC_MAX_USER_PER_PAGE = 8;
 	WCHAR wszText[64] = L"";
@@ -6177,7 +6193,7 @@ void CX2Community::UpdateMarketUserList(int iPage)
 	if(m_iNowFieldPage < 1)
 		m_iNowFieldPage = m_iMaxFieldPage;
 
-	vector<CX2SquareUnit*>& vecUnitList = g_pSquareGame->GetUnitList( m_iNowFieldPage, MAGIC_MAX_USER_PER_PAGE );
+	const vector<CX2SquareUnit*> vecUnitList = g_pSquareGame->GetUnitList( m_iNowFieldPage, MAGIC_MAX_USER_PER_PAGE );
 
 	m_vecUserLv.clear();
 	m_vecUserUID.clear();
@@ -6289,8 +6305,6 @@ void CX2Community::UpdateDiscipleUserList()
 	m_vecUserUID.clear();
 
 	// page 번호
-	int iMaxUserListPage = 1;
-	int iNowUserListPage = 1;
 
 	const map< UidType, CX2TutorSystem::TutorUnit >& mapTutorUnit = g_pMain->GetTutorSystem()->GetMapTutorStudent();
 	map< UidType, CX2TutorSystem::TutorUnit >::const_iterator it_tutor = mapTutorUnit.begin();
@@ -6606,7 +6620,6 @@ void CX2Community::UpdateInfoTypeString()
 
 void CX2Community::UpdateGuildTabList()
 {
-	int i = 0;
 	const D3DXCOLOR colorForLogOff( 0.8f, 0.8f, 0.8f, 1.0f );
 
 	InitGuildTabListUI();
@@ -6629,6 +6642,8 @@ void CX2Community::UpdateGuildTabList()
 		{
 			UpdateGuildGradeInfo();
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -6869,7 +6884,7 @@ void CX2Community::UpdateNumOfGuildMembers()
 }
 
 // 2011.05.05 lygan_조성욱 // 중국용 커뮤니티탭 유저 정보 보기
-bool CX2Community::Handler_EGS_USER_WATCH_NEW_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_USER_WATCH_NEW_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USER_COMMUNITY_SURVEY_NEW_ACK kEvent;
@@ -6921,7 +6936,7 @@ bool CX2Community::Handler_EGS_USER_WATCH_NEW_ACK( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 #ifdef EXTEND_SERVER_GROUP_MASK
-D3DXCOLOR CX2Community::GetChannelColor( int iChannelID, int ServerID /*= SGI_SOLES*/ ) const
+D3DXCOLOR CX2Community::GetChannelColor( int iChannelID, int /*ServerID*/ /*= SGI_SOLES*/ ) const
 #else
 D3DXCOLOR CX2Community::GetChannelColor( int iChannelID, SERVER_GROUP_ID ServerID /*= SGI_SOLES*/ ) const
 #endif // EXTEND_SERVER_GROUP_MASK
@@ -7088,7 +7103,7 @@ void CX2Community::SetGuildMemberIcon( int i, bool bShow, int iUnitClass, int iU
 	if(m_pDlgGuild != NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgGuild->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgBack->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgBack->GetPos();
 		m_pFieldUserIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 }
@@ -7333,7 +7348,7 @@ void CX2Community::SetFieldUserIcon(int i, bool bShow)
 	if(m_pDlgField != NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgField->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgBack->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgBack->GetPos();
 		m_pFieldUserIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 }
@@ -7735,7 +7750,7 @@ bool CX2Community::GetNickNameByUID(wstring &wstrNickName, UidType iUid)
 	return false;
 }
 
-int CX2Community::FindChatHistory(wstring &wstrNickName, wstring &wstrOppositeNickName)
+int CX2Community::FindChatHistory(wstring &/*wstrNickName*/, wstring &wstrOppositeNickName)
 {
 	for(UINT i=0; i<m_vecChatHistory.size(); ++i)
 	{
@@ -7834,7 +7849,7 @@ bool CX2Community::Handler_EGS_GET_GUILD_USER_LIST_REQ()
 
 }
 
-bool CX2Community::Handler_EGS_GET_GUILD_USER_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_GET_GUILD_USER_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_GUILD_USER_LIST_ACK kEvent;
@@ -7934,7 +7949,7 @@ bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_REQ( UidType UnitUid )
 	return true;
 }
 
-bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INVITE_PVP_ROOM_ACK kEvent;
@@ -7958,7 +7973,7 @@ bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM
 
 }
 
-bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 해당 state가 아니면 무시
 	switch(g_pMain->GetNowStateID())
@@ -7986,7 +8001,7 @@ bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM
 	DeSerialize( pBuff, &kEvent );
 
 	/// 이미 초대받은 룸 아이디라면, 리턴
-	BOOST_FOREACH ( UidType uidRoomUID, m_vecInviteRoomUID )
+	for ( UidType uidRoomUID : m_vecInviteRoomUID )
 	{
 		if ( uidRoomUID == kEvent.m_kRoomInfo.m_RoomUID )
 			return true;
@@ -8037,7 +8052,7 @@ void CX2Community::Handler_EGS_ED_MONITORING_BLOCK_REQ(UidType unituid, unsigned
 		g_pMain->AddServerPacket( EGS_ED_MONITORING_BLOCK_ACK, 60.f );
 	}
 }
-bool CX2Community::Handler_EGS_ED_MONITORING_BLOCK_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_ED_MONITORING_BLOCK_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ED_MONITORING_BLOCK_ACK kEvent;
@@ -8077,7 +8092,6 @@ void CX2Community::SetFriendList( KMessengerInfo& refMessengerInfo )
 	// 유저 리스트를 만들자
 	for(std::map< UidType, KFriendInfo >::iterator itUser = refMessengerInfo.m_mapFriendInfo.begin(); itUser != refMessengerInfo.m_mapFriendInfo.end(); ++itUser)
 	{
-		UidType UnitUid = itUser->first;
 		KFriendInfo& friendInfo = itUser->second;
 
 		CX2Community::MessengerUser* pMessengerUser = new CX2Community::MessengerUser();
@@ -8124,7 +8138,7 @@ bool CX2Community::Handler_EGS_REQUEST_FRIEND_REQ( wstring wstrNickName, wstring
 	kPacket.m_wstrNickName = wstrNickName;
 	kPacket.m_wstrMessage = wstrMessage;
 
-	if ( kPacket.m_wstrNickName.find( L"__DELETED__") != -1 )
+	if ( kPacket.m_wstrNickName.find( L"__DELETED__") != std::wstring::npos )
 	{
 		g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_73 ), m_pStage );
 		return true;
@@ -8161,7 +8175,7 @@ bool CX2Community::Handler_EGS_REQUEST_FRIEND_REQ( wstring wstrNickName, wstring
 	return true;
 }
 
-bool CX2Community::Handler_EGS_REQUEST_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_REQUEST_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REQUEST_FRIEND_ACK kEvent;
@@ -8194,7 +8208,7 @@ bool CX2Community::Handler_EGS_REQUEST_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM 
 	return false;
 }
 
-bool CX2Community::Handler_EGS_REQUEST_FRIEND_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_REQUEST_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REQUEST_FRIEND_NOT kEvent;
@@ -8238,7 +8252,7 @@ bool CX2Community::Handler_EGS_ACCEPT_FRIEND_REQ( UidType AcceptID )
 	return true;
 }
 
-bool CX2Community::Handler_EGS_ACCEPT_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_ACCEPT_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ACCEPT_FRIEND_ACK kEvent;
@@ -8278,7 +8292,7 @@ bool CX2Community::Handler_EGS_ACCEPT_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-bool CX2Community::Handler_EGS_ACCEPT_FRIEND_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_ACCEPT_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ACCEPT_FRIEND_NOT kEvent;
@@ -8323,7 +8337,7 @@ bool CX2Community::Handler_EGS_DENY_FRIEND_REQ( UidType DenyID )
 	g_pMain->AddServerPacket( EGS_DENY_FRIEND_ACK );
 	return true;
 }
-bool CX2Community::Handler_EGS_DENY_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_DENY_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DENY_FRIEND_ACK kEvent;
@@ -8350,13 +8364,12 @@ bool CX2Community::Handler_EGS_DENY_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 	return false;
 }
 
-bool CX2Community::Handler_EGS_DENY_FRIEND_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_DENY_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DENY_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	//wstring wstrNickName = kEvent.m_wstrNickName;
 
 
@@ -8380,7 +8393,7 @@ bool CX2Community::Handler_EGS_BLOCK_FRIEND_REQ( UidType BlockID )
 	g_pMain->AddServerPacket( EGS_BLOCK_FRIEND_ACK );
 	return true;
 }
-bool CX2Community::Handler_EGS_BLOCK_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_BLOCK_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BLOCK_FRIEND_ACK kEvent;
@@ -8390,7 +8403,6 @@ bool CX2Community::Handler_EGS_BLOCK_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wP
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
-			UidType iUnitUid = kEvent.m_iUnitUID;
 			//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), GET_REPLACED_STRING( ( STR_ID_63, "L", pTutorUnit->m_wstrNickName ) ), g_pMain->GetNowState() );
 			MessengerUser* pMessengerUser = GetMessengerUser( kEvent.m_iUnitUID );
 			if(pMessengerUser != NULL)
@@ -8409,13 +8421,12 @@ bool CX2Community::Handler_EGS_BLOCK_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wP
 
 	return false;
 }
-bool CX2Community::Handler_EGS_BLOCK_FRIEND_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_BLOCK_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BLOCK_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), L"너 차단당함 ㅋ", g_pMain->GetNowState() );
 
 	return true;
@@ -8433,7 +8444,7 @@ bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_REQ( UidType UnblockID )
 	g_pMain->AddServerPacket( EGS_UNBLOCK_FRIEND_ACK );
 	return true;
 }
-bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UNBLOCK_FRIEND_ACK kEvent;
@@ -8443,7 +8454,6 @@ bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM 
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
-			UidType iUnitUid = kEvent.m_iUnitUID;
 
 			//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), L"차단 해제해뜸", g_pMain->GetNowState() );
 			MessengerUser* pMessengerUser = GetMessengerUser( kEvent.m_iUnitUID );
@@ -8463,13 +8473,12 @@ bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM 
 
 	return false;
 }
-bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UNBLOCK_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	//** TODO
 	//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), L"이번엔 봐준다", g_pMain->GetNowState() );
 
@@ -8487,7 +8496,7 @@ bool CX2Community::Handler_EGS_DELETE_FRIEND_REQ( UidType DeleteID )
 	g_pMain->AddServerPacket( EGS_DELETE_FRIEND_ACK );
 	return true;
 }
-bool CX2Community::Handler_EGS_DELETE_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_DELETE_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_FRIEND_ACK kEvent;
@@ -8506,13 +8515,12 @@ bool CX2Community::Handler_EGS_DELETE_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM w
 
 	return false;
 }
-bool CX2Community::Handler_EGS_DELETE_FRIEND_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_DELETE_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	// TODO : 해당 유저를 삭제한다
 	DeleteFriend( kEvent.m_iUnitUID );
 	ResetUserListUI();
@@ -8533,7 +8541,7 @@ bool CX2Community::Handler_EGS_MOVE_FRIEND_REQ( UidType UnitUid, int TargetGroup
 	g_pMain->AddServerPacket( EGS_MOVE_FRIEND_ACK );
 	return true;
 }
-bool CX2Community::Handler_EGS_MOVE_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_MOVE_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MOVE_FRIEND_ACK kEvent;
@@ -8575,8 +8583,6 @@ bool CX2Community::Handler_EGS_MOVE_FRIEND_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 			}
 
 			// 2. 해당 포인터를 목표 그룹으로 옮겨준다
-			UidType UnitUid = kEvent.m_iUnitUID;
-			int TargetGroupID = (int)kEvent.m_cTargetGroupID;
 			if(pTargetUser != NULL)
 			{
 				pTargetUser->m_uCategoryCode = (int)kEvent.m_cTargetGroupID;
@@ -8611,7 +8617,7 @@ bool CX2Community::Handler_EGS_MAKE_FRIEND_GROUP_REQ( wstring wstrGroupName )
 	g_pMain->AddServerPacket( EGS_MAKE_FRIEND_GROUP_ACK );
 	return true;
 }
-bool CX2Community::Handler_EGS_MAKE_FRIEND_GROUP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_MAKE_FRIEND_GROUP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MAKE_FRIEND_GROUP_ACK kEvent;
@@ -8655,7 +8661,7 @@ bool CX2Community::Handler_EGS_RENAME_FRIEND_GROUP_REQ( int GroupID, wstring wst
 	return true;
 
 }
-bool CX2Community::Handler_EGS_RENAME_FRIEND_GROUP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_RENAME_FRIEND_GROUP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RENAME_FRIEND_GROUP_ACK kEvent;
@@ -8705,7 +8711,7 @@ bool CX2Community::Handler_EGS_DELETE_FRIEND_GROUP_REQ( int GroupId )
 	g_pMain->AddServerPacket( EGS_DELETE_FRIEND_GROUP_ACK );
 	return true;
 }
-bool CX2Community::Handler_EGS_DELETE_FRIEND_GROUP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_DELETE_FRIEND_GROUP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_FRIEND_GROUP_ACK kEvent;
@@ -8758,7 +8764,7 @@ bool CX2Community::Handler_EGS_DELETE_FRIEND_GROUP_ACK( HWND hWnd, UINT uMsg, WP
 	return false;
 }
 
-bool CX2Community::Handler_EGS_FRIEND_POSITION_UPDATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_FRIEND_POSITION_UPDATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FRIEND_POSITION_UPDATE_NOT kEvent;
@@ -8860,6 +8866,8 @@ void CX2Community::SetRelationshipUI ( SEnum::RELATIONSHIP_TYPE eType_ )
 	case SEnum::RT_MARRIED :
 		pRadioButtonMarried->SetShowEnable( true, true );
 		break;
+	default:
+		break;
 	}
 
 
@@ -8924,7 +8932,7 @@ void CX2Community::UpdateCoupleNameAndChannel ()
 				vector<CX2RelationshipManager::RelationshipCommunityInfo> & vecInfoData = pRelationshipManager->GetRelationshipCommunityInfo();
 
 				int i = 0;
-				BOOST_FOREACH ( CX2RelationshipManager::RelationshipCommunityInfo RelationCommunityInfoData, vecInfoData )
+				for ( CX2RelationshipManager::RelationshipCommunityInfo RelationCommunityInfoData : vecInfoData )
 				{
 					if ( NULL != m_arrRelationUIControls[i].m_pStaticNickName &&
 						NULL != m_arrRelationUIControls[i].m_pStaticLocationOrGradeOrTimeSpan &&
@@ -9110,7 +9118,7 @@ void CX2Community::ResetRelationshipTabUI()
 				// Get Relation Dummy Unit
 				if ( NULL == m_pRelationUnit )
 				{
-					BOOST_FOREACH ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo, vecMyInfo )
+					for ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo : vecMyInfo )
 					{
 						wstring TargetNickname = g_pData->GetRelationshipManager()->GetMyRelationshipInfo()->m_wstrRelationTargetUserNickname;
 						if ( RelationMyInfo.m_wstrNickName == TargetNickname )
@@ -9124,7 +9132,7 @@ void CX2Community::ResetRelationshipTabUI()
 				if ( true == m_vecUnitViewerUI.empty () )
 				{
 					int iPhase = 0;
-					BOOST_FOREACH ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo, vecMyInfo )
+					for ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo : vecMyInfo )
 					{
 						CX2UnitViewerUI * pUnitViewer = CX2UnitViewerUI::CreateUnitViewerUI();
 						if ( iPhase == 0 )
@@ -9225,7 +9233,7 @@ bool CX2Community::IsRelatioshipSkillID ( int eSkillID )
 	return false;
 }
 
-bool CX2Community::Handler_EGS_RELATIONSHIP_INFO_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Community::Handler_EGS_RELATIONSHIP_INFO_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_RELATIONSHIP_INFO_ACK kEvent;
@@ -9288,7 +9296,7 @@ void CX2Community::ResetRelationDummyUnit ()
 {
 	SAFE_DELETE ( m_pRelationUnit );
 
-	BOOST_FOREACH (CX2UnitViewerUI * pUnitViewerUI, m_vecUnitViewerUI )
+	for ( CX2UnitViewerUI * pUnitViewerUI : m_vecUnitViewerUI )
 	{
 		SAFE_DELETE_KTDGOBJECT ( pUnitViewerUI );
 	}
@@ -9382,13 +9390,13 @@ void CX2Community::SetRelationshipMemberIcon( int i, bool bShow, int iUnitClass,
 	if(m_pDlgRelation != NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgRelation->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgBack->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgBack->GetPos();
 		m_pFieldUserIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 }
 void CX2Community::ClearUnitViewerUIInRelationshipTab ( void )
 {
-	BOOST_FOREACH ( CX2UnitViewerUI * pUnitViewerUI, m_vecUnitViewerUI )
+	for ( CX2UnitViewerUI * pUnitViewerUI : m_vecUnitViewerUI )
 	{
 		SAFE_DELETE_KTDGOBJECT ( pUnitViewerUI );
 	}

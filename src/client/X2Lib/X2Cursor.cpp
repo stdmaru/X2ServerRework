@@ -1,6 +1,9 @@
 #include "stdafx.h"
-#include "../X2/resource.h"
 #include "./X2Cursor.h"
+
+// DefaultCursor.cur, IDC_CURSOR1 of x2.exe's resources, compiled in by x2_embed_file (src/client/CMakeLists.txt).
+extern const unsigned char X2DefaultCursorFile[];
+extern const std::size_t X2DefaultCursorFile_size;
 
 
 //{{ robobeg : 2008-10-13
@@ -27,7 +30,7 @@ static const CKTDGStateManager::KState s_akStates[] =
 
 CX2Cursor::CX2Cursor(void)
 {
-	m_hCursor = LoadCursor( DXUTGetHINSTANCE(), MAKEINTRESOURCE(IDC_CURSOR1) );
+	m_hCursor = DXUTCreateCursorFromCur( X2DefaultCursorFile, X2DefaultCursorFile_size );
 
 	m_pCursorDraggingTex = NULL;
 	m_pCursorDraggingTex = g_pKTDXApp->GetDeviceManager()->OpenTexture( L"DLG_Drag_Cursor.tga" );
@@ -118,6 +121,7 @@ CX2Cursor::CX2Cursor(void)
 
 CX2Cursor::~CX2Cursor(void)
 {
+	DXUTDestroyCursor( m_hCursor );
 	SAFE_CLOSE( m_pCursorDraggingTex );
 	SAFE_CLOSE( m_pCursorSellTex );
 	SAFE_CLOSE( m_pCursorRepairTex );
@@ -147,7 +151,7 @@ CX2Cursor::~CX2Cursor(void)
 
 
 
-HRESULT CX2Cursor::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2Cursor::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	POINT point;
 	GetCursorPos( &point );
@@ -168,7 +172,7 @@ HRESULT CX2Cursor::OnFrameMove( double fTime, float fElapsedTime )
 	if ( m_fTimeForHide <= 0.0f )
 	{
 		SetShow( false );
-		SetCursor( NULL );
+		DXUTSetCursor( NULL );
 		m_fTimeForHide = 0.0f;
 	}
 	else
@@ -194,7 +198,7 @@ HRESULT CX2Cursor::OnFrameRender()
 		{
 			if( NULL != m_pCursorDraggingTex )
 			{
-				SetCursor( NULL );
+				DXUTSetCursor( NULL );
 				m_pCursorDraggingTex->SetDeviceTexture();
 				DrawFace(m_Pos.x, m_Pos.y, m_Size.x, m_Size.y);
 			}
@@ -206,9 +210,9 @@ HRESULT CX2Cursor::OnFrameRender()
 			{
 			case CX2Cursor::XCS_NORMAL:
 				{
-					if ( GetCursor() == NULL )
+					if ( DXUTGetCursor() == NULL )
 					{
-						SetCursor( m_hCursor );
+						DXUTSetCursor( m_hCursor );
 					}
 				} break;
 			case CX2Cursor::XCS_REPAIR:
@@ -394,11 +398,11 @@ void CX2Cursor::ChangeCursorState( X2_CURSOR_STATE cursorState )
 	//으흠..
 	if ( m_CursorState == CX2Cursor::XCS_NORMAL )
 	{
-		SetCursor( m_hCursor );
+		DXUTSetCursor( m_hCursor );
 	}
 	else
 	{
-		SetCursor( NULL );
+		DXUTSetCursor( NULL );
 	}
 }
 

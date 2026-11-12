@@ -9,7 +9,6 @@ namespace _CONST_ADD_
 	const float COMBO_XXZZ_MAX_COUNT						= 10.f;		/// �ִ� �ݺ���
 
 	/// ��� ���� �޺� XX ���� �ð�
-	const float DASH_JUMP_COMBO_X2_MAX_CHARGE_TIME			= 3.f;		/// �ִ� ���� �ð�
 	const float DASH_JUMP_COMBO_X2_MAX_REMAIN_TIME			= 3.f;		/// �ִ� ���� �ð�
 
 	/// ���׳�Ʈ��
@@ -50,7 +49,6 @@ namespace _CONST_ADD_
 	const int	CONQUEROR_MAX_USE_MUTATION_COUNT			= 3;		/// �ִ� ���� ������ �Ҹ��
 
 	/// ���̵� �극��Ŀ
-	const int	VOID_BREAKER_MAX_USE_MUTATION_COUNT			= 3;		/// �ִ� ���� ������ �Ҹ��
 
 	/// �����̽ý� �ʵ�
 	const float STASIS_FIELD_REMAIN_TIME					= 15.f;		/// ���� �ð�
@@ -106,8 +104,16 @@ static const CX2GUUser::SkillCutInSet s_SkillCutInSet[] =
 CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int frameBufferNum, CX2Unit* pUnit )
 : CX2GUUser( unitIndex, teamNum, pScriptLuaState, frameBufferNum, pUnit )
 , m_iPressedSkillSlotIndex( -1 )
+, m_fMPConsume( 0.f )
+, m_fDPConsume( 0.f )
+, m_iMutationCountConsume( 0 )
 , m_bEnableAirDash( true )
 , m_bEnableLevitationWait( true )
+, m_iComboLoopCount( 0 )
+, m_fRenderParamColorA( 1.f )
+, m_fChargeTime( 0.f )
+, m_iChargeCount( 0 )
+, m_fChangeFormationCoolTime( 0.f )
 , m_fDPRateBySpecialActive( 1.f )
 , m_fDPRateByActive( 1.f )
 , m_fDPRateByCommand( 1.f )
@@ -116,35 +122,25 @@ CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, in
 , m_fDPRateByFormationModeHit ( 0.f )
 , m_fDPRateByFormationModeUseMP ( 0.f )
 , m_fDPRateByNoFormationModeAttack ( 0.f )
+, m_fUseDPByNasodBarrier ( 0.f )
 , m_fUseDPByEnableFormationMode( 0.f )
 , m_fUseDPByFormationMode ( 0.f )
-, m_fUseDPByNasodBarrier ( 0.f )
+, m_bPossibleNasodArmorModeState( false )
+, m_bSetUpDPByAttackThisFrame( false )
+, m_bSetUpDPByDamageThisFrame( false )
+, m_hParticlePrsim( INVALID_EFFECTSET_HANDLE )
+, m_pLoopSound(NULL)
+, m_eCustomRenderState( CRS_NONE )
 , m_fGainDPValueChangeRate( 1.f )
+, m_fNotUsingDPSkillDamageRate( 1.f )
 , m_fUsingDPValueChangeRate( 1.f )
 , m_fUsingDPSkillDamageRate( 1.f )
-, m_fNotUsingDPSkillDamageRate( 1.f )
-, m_iComboLoopCount( 0 )
-, m_fChargeTime( 0.f )
-, m_iChargeCount( 0 )
-, m_fChangeFormationCoolTime( 0.f )
-, m_fRenderParamColorA( 1.f )
 , m_fNaCommandDamageRate( 1.f )
 , m_fDPValueRateByActiveFormationMode( 1.f )
 , m_iLibraryOfLimitlessLevel( 0 )
 , m_fDustStormRateByHit(1.f)
 , m_fDustStormRateByDamage(1.f)
 , m_fDustStormCoolTime(0.f)
-, m_bPossibleNasodArmorModeState( false )
-, m_hParticlePrsim( INVALID_EFFECTSET_HANDLE )
-, m_fMPConsume( 0.f )
-, m_fDPConsume( 0.f )
-, m_iMutationCountConsume( 0 )
-, m_pLoopSound(NULL)
-, m_bSetUpDPByAttackThisFrame( false )
-, m_bSetUpDPByDamageThisFrame( false )
-, m_fNonstopSummonPylonCoolTime( 0.f )
-, m_uiNonstopSummonPylonCount( 0 )
-, m_eCustomRenderState( CRS_NONE )
 , m_fBodyOfTranscendenceActiveRate( 0.f )
 , m_fBodyOfTranscendenceMoveSpeed( 1.f )
 , m_bEnablePowerExchanger( false )
@@ -153,6 +149,8 @@ CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, in
 , m_fFantasyTracerUpMPRateByFormationMode( 0.f )
 , m_eNasodArmorAttackActiveSkillID( CX2SkillTree::SI_NONE )
 , m_eNasodArmorLandingActiveSkillID( CX2SkillTree::SI_NONE )
+, m_fNonstopSummonPylonCoolTime( 0.f )
+, m_uiNonstopSummonPylonCount( 0 )
 , m_fQuicksilverFrenzyFlickerTime( 0.f )
 {
 	m_fThrowStartTime		= 0.66f;
@@ -178,11 +176,11 @@ CX2GUAdd::~CX2GUAdd(void)
 	StopLoopSound();
 }
 
-/*static*/ void CX2GUAdd::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAdd::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
-/*static*/ void CX2GUAdd::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAdd::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -530,6 +528,7 @@ CX2GUAdd::~CX2GUAdd(void)
 				}
 			}
 		}/// 1�� ���� �нú긦 �˻��ϱ� ����, break ���� ����
+		[[fallthrough]];
 
 
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:
@@ -591,7 +590,7 @@ CX2GUAdd::~CX2GUAdd(void)
 }
 /*virtual*/ void CX2GUAdd::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -645,6 +644,8 @@ CX2GUAdd::~CX2GUAdd(void)
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -1108,6 +1109,8 @@ CX2GUAdd::~CX2GUAdd(void)
 			hyperStateData.m_bHyperState		= true;
 			hyperStateData.OnEventProcess		= normalStateData.OnEventProcess;
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -1410,6 +1413,8 @@ CX2GUAdd::~CX2GUAdd(void)
 				if ( CX2SkillTree::SI_SA_ALP_QUICKSILVER_ACCEL == GetFutureStateSkillID())
 					fMpConsumption = 10.f;
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -2305,6 +2310,7 @@ void CX2GUAdd::InitStateByUnitClass()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUAdd, NasodArmorComboXDirectionXZEventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} /// 1�� ���� ������ Ÿ�� ����, Break ����
+		[[fallthrough]];
 
 
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:
@@ -2490,10 +2496,8 @@ bool CX2GUAdd::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAc
 
 		const float fCoolTimeMax = GetActualCoolTime( pSkillTemplet, iSkillTempletLevel );
 
-		float fCoolTimeLeft = min( fCoolTimeMax, pSkillSlotData->m_fCoolTimeLeft );
+		float fCoolTimeLeft = min( fCoolTimeMax, static_cast<float>( pSkillSlotData->m_fCoolTimeLeft ) );
 
-		bool bSlotB		= (m_iPressedSkillSlotIndex > 3) ? true : false;
-		int iSlotIndex	= (m_iPressedSkillSlotIndex > 3) ? m_iPressedSkillSlotIndex-4 : m_iPressedSkillSlotIndex;
 
 #if X2_DEV_TOOLS
 		if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
@@ -2543,8 +2547,9 @@ bool CX2GUAdd::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAc
 			}
 
 			/// ���̳ʸ� ���� - ���Ϸ� ��ȯ ���� ���� �˻�
+			D3DXVECTOR3 vSummonPylonPosUnused( 0.f, 0.f, 0.f );
 			if ( pSkillTemplet->m_eID == CX2SkillTree::SI_A_APT_PYLON_DYNAMO &&
-				false == GetSummonPylonPos( D3DXVECTOR3( 0.f, 0.f, 0.f ) ) )
+				false == GetSummonPylonPos( vSummonPylonPosUnused ) )
 			{
 				g_pX2Game->GetInfoTextManager().PushText( XUF_DODUM_20_BOLD, GET_STRING( STR_ID_29419 ), D3DXCOLOR(1,1,1,1),
 					D3DXCOLOR(0,0,0,1), DT_CENTER, 1.f, 1.f );
@@ -2867,7 +2872,7 @@ void CX2GUAdd::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
 	g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"DamageImpactCoreRed" );
 	g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"DamageImpactSlashRed" );
 }
-/*static*/ void CX2GUAdd::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAdd::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 
 }
@@ -3648,7 +3653,6 @@ void CX2GUAdd::DashEndFrameMove()
 void CX2GUAdd::DashEndEventProcess()
 {
 	// DashEnd���� ���� Ű�� ������ �� ��� ��������, �Ϲ� ���������� ���ϱ� ���� const ��.
-	const float TRIGGER_TIME_FACTOR_DASH_ATTACK = 0.3f;
 
 	if( false == IsOnSomethingFuture() )
 	{
@@ -5184,10 +5188,6 @@ void CX2GUAdd::DashJumpComboXXLoopFrameMove()
 {
 	m_fChargeTime += m_fElapsedTime;
 
-	/// ���� ���갪 ���� ( �ִ� ���� ���갪 ���� )
-	const float fChargeValue = ( _CONST_ADD_::DASH_JUMP_COMBO_X2_MAX_CHARGE_TIME > m_fChargeTime )
-							   ? _CONST_ADD_::DASH_JUMP_COMBO_X2_MAX_CHARGE_TIME : m_fChargeTime;
-
 	CommonFrameMove();
 }
 
@@ -5954,7 +5954,7 @@ void CX2GUAdd::ANSI_SA_AN_PARTICLE_ACCELERATOR_FrameMove()
 			D3DXVECTOR3 vPos = GetBonePos( L"Bip01_Spine1" );
 
 			/// ���� ������ ����Ʈ
-			CX2DamageEffect::CEffect* pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SA_AN_Particle_Accelerator_Attack", fPowerRate,
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SA_AN_Particle_Accelerator_Attack", fPowerRate,
 																					vPos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 			/// ȿ���� ����Ʈ ���
@@ -6967,7 +6967,6 @@ void CX2GUAdd::ANSI_SA_ALP_QUICKSILVER_ACCEL_BACK_FrameMove ()
 				( GetBonePos( L"Bip01" ) - ( GetDirVector() * 100.f ) );
 			vPos.y += 30.f;
 
-			CX2DamageEffect::CEffect* pEffect =
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, wstrImpactDamageEffectName.c_str(), GetPowerRate(),
 				vPos, GetRotateDegree(), GetRotateDegree() );
 		}
@@ -7241,7 +7240,6 @@ void CX2GUAdd::ANSI_SA_ALP_PSYCHIC_STORM_StateStart()
 	float& fLoopTime		= m_PsychicStormData.m_fLoopTime;					/// �ݺ� �ð�
 	fLoopTime				= _CONST_ADD_::PSYCHIC_STORM_DEFAULT_LOOP_TIME;
 
-	float& fIncreaseSize	= m_PsychicStormData.m_fIncreaseSize;				/// ����Ʈ ũ��
 
 	if ( true == GetIsFormationMode() )
 	{
@@ -7316,7 +7314,6 @@ void CX2GUAdd::ANSI_SA_ALP_PSYCHIC_STORM_LOOP_FrameMove()
 {
 	float& fFireGap = m_PsychicStormData.m_fFireGap;	/// ����Ʈ ���� ����
 
-	float dfhdjkfhjksdhkjf = m_pXSkinAnim->GetNowAnimationTime();
 
 	if( fFireGap <= m_pXSkinAnim->GetNowAnimationTime() )
 	{
@@ -8184,7 +8181,7 @@ void CX2GUAdd::CommonHyperModeFrameMove( float fTime1_, float fTime2_, bool bSou
 	@param		: �ȳ� �޽��� ǥ�� ����
 	@return		: ��� ���� ����
 */
-const bool CX2GUAdd::GetPossibleChangeFormationMode( IN const bool bOutputInformation /*= true*/ )
+bool CX2GUAdd::GetPossibleChangeFormationMode( IN const bool bOutputInformation /*= true*/ )
 {
 	if ( NULL == g_pX2Game  )
 		return false;
@@ -8221,7 +8218,7 @@ const bool CX2GUAdd::GetPossibleChangeFormationMode( IN const bool bOutputInform
 /** @function	: GetChangeFormationCoolTime
 	@brief		: ���� ��� ��ȯ ��Ÿ�� ��ȯ
 */
-const float CX2GUAdd::GetChangeFormationCoolTime()
+float CX2GUAdd::GetChangeFormationCoolTime()
 {
 	return ( NULL != GetAddGageData() ) ? GetAddGageData()->GetChangeFormationCoolTime() : 0.f;
 }
@@ -8252,7 +8249,7 @@ CX2AddGageData* CX2GUAdd::GetAddGageData() const
 	@param		: ��ų ���̵�
 	@return		: ���� ���� ����
 */
-const bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID eSkillID_ )
+bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID eSkillID_ )
 {
 	switch ( eSkillID_ )
 	{
@@ -8299,6 +8296,8 @@ const bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKIL
 				return true;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -8309,7 +8308,7 @@ const bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKIL
 	@param		: ���� ��Ÿ��, ��ų ���̵�
 	@return		: ���� ��ų ��Ÿ��
 */
-const float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2SkillTree::SKILL_ID eSkillID_ )
+float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2SkillTree::SKILL_ID eSkillID_ )
 {
 	float fCoolTime = fCoolTime_;
 
@@ -8356,6 +8355,8 @@ const float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN cons
 			if ( CX2SkillTree::SI_SA_ALP_QUICKSILVER_ACCEL == GetFutureStateSkillID() )
 				fCoolTime = -1.f;
 		} break;
+	default:
+		break;
 	}
 
 	return fCoolTime;
@@ -8386,7 +8387,7 @@ const float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN cons
 	}
 }
 
-const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ )
+CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ )
 {
 	CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition = pSkillTemplet_->m_eActiveSkillUseCondtion;
 
@@ -8404,6 +8405,8 @@ const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( I
 				CX2SkillTree::SI_SA_APT_STASIS_FIELD != m_FutureStateData.m_eSkillID )
 				eActiveSkillUseCondition = CX2SkillTree::ASUT_ANYTIME_EXCEPT_AIR;
 		} break;
+	default:
+		break;
 	}
 
 	return eActiveSkillUseCondition;
@@ -8414,7 +8417,7 @@ const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( I
 	@param		: MP �Һ�, DP �Һ�
 	@return		: ������ ���� ���� �Һ� �Ǿ����� ����
 */
-const bool CX2GUAdd::ConsumeMPorDP( IN const float fConsumeMP, IN const float fConsumeDP )
+bool CX2GUAdd::ConsumeMPorDP( IN const float fConsumeMP, IN const float fConsumeDP )
 {
 	if ( true == GetIsFormationMode() )
 	{
@@ -8436,7 +8439,7 @@ const bool CX2GUAdd::ConsumeMPorDP( IN const float fConsumeMP, IN const float fC
 	@param		: DP ���� Ÿ��
 	@return		: ���� ��
 */
-const float CX2GUAdd::GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICLE_RATE_TYPE eDPRateType )
+float CX2GUAdd::GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICLE_RATE_TYPE eDPRateType )
 {
 	switch ( eDPRateType )
 	{
@@ -8470,7 +8473,7 @@ const float CX2GUAdd::GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICL
 	@brief		: ���� ��ġ ��ȯ �Լ�
 	@return		: ���� ��ġ
 */
-const int CX2GUAdd::GetMutationCount()
+int CX2GUAdd::GetMutationCount()
 {
 	return ( NULL != GetAddGageData() ) ? GetAddGageData()->GetMutationCount() : 0;
 }
@@ -8524,7 +8527,7 @@ void CX2GUAdd::UpMutationCount( IN const int iMutationCount_  )
 	@brief		: �ִ� DP ��ġ ��ȯ �Լ�
 	@return		: �ִ� DP ��ġ
 */
-const float	CX2GUAdd::GetMaxDPValue()
+float	CX2GUAdd::GetMaxDPValue()
 {
 	return ( NULL != GetAddGageData() ? GetAddGageData()->GetMaxDPValue() : 0.f );
 }
@@ -8533,7 +8536,7 @@ const float	CX2GUAdd::GetMaxDPValue()
 	@brief		: DP ��ġ ��ȯ �Լ�
 	@return		: DP ��ġ
 */
-const float CX2GUAdd::GetDPValue()
+float CX2GUAdd::GetDPValue()
 {
 	return ( NULL != GetAddGageData() ? GetAddGageData()->GetDPValue() : 0.f );
 }
@@ -8672,6 +8675,8 @@ const float CX2GUAdd::GetDPValue()
 	case CX2DamageManager::DT_PHYSIC:	fDamageRate = DamageData_.damage.fPhysic; break;
 	case CX2DamageManager::DT_MAGIC:	fDamageRate = DamageData_.damage.fMagic; break;
 	case CX2DamageManager::DT_MIX:		fDamageRate = ( DamageData_.damage.fPhysic + DamageData_.damage.fPhysic ) / 2.f; break;
+	default:
+		break;
 	}
 
 	float fNowDPValue = 0.f;		/// �����ų DP ��ġ
@@ -8719,7 +8724,7 @@ void CX2GUAdd::UpNowDPValueByUseMP( IN const float fUseMP )
 	@param		: ��ų ����
 	@return		: DP �Ҹ�
 */
-const float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
+float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
 {
 	float fDPConsume = 0.f;		/// DP �Ҹ�
 
@@ -8780,7 +8785,7 @@ const float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotDa
 	@param		: ��ų ����
 	@return		: ���� ����Ʈ �Ҹ�
 */
-const int CX2GUAdd::GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
+int CX2GUAdd::GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
 {
 	int iMutationPointConsume = 0;		/// ���� ����Ʈ �Ҹ�
 
@@ -8795,7 +8800,7 @@ const int CX2GUAdd::GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlo
 	@brief		: ���� ��� ���� ���� ��ȯ �Լ�
 	@return		: ���� ��� ���� ����
 */
-/*virtual*/ const bool CX2GUAdd::GetIsFormationMode() const
+/*virtual*/ bool CX2GUAdd::GetIsFormationMode() const
 {
 	return ( NULL != GetAddGageData() ? GetAddGageData()->GetIsFormationMode() : false );
 }
@@ -8909,7 +8914,7 @@ bool CX2GUAdd::IsDPConsumptionSkill( IN const CX2SkillTree::SKILL_ID eSkillID_ )
 /** @function : GetUseDPByFormationMode
 	@brief : ���� ���� ��ȯ�� �Ҹ�Ǵ� DP ��ġ
 */
-const float CX2GUAdd::GetUseDPByFormationMode()
+float CX2GUAdd::GetUseDPByFormationMode()
 {
 	ASSERT( 0.f < m_fDPValueRateByActiveFormationMode );
 
@@ -8923,7 +8928,7 @@ const float CX2GUAdd::GetUseDPByFormationMode()
 	@brief		: DP ȹ�淮 ������ ��ȯ
 	@return		: DP ȹ�淮 ������
 */
-const float CX2GUAdd::GetEffectiveIncreaseDPValue()
+float CX2GUAdd::GetEffectiveIncreaseDPValue()
 {
 	// ���� ȿ��(���������ӵ�) ( ex 50%���� : 0.5f )		/// �ֵ�� ���ݸ� ���� �ȴ�.  ( ���� ����� ���� �����Ƿ�, ���⿡�� ���� ó�� ���� )
 	/// ���� ���� ������ ����
@@ -8941,7 +8946,7 @@ const float CX2GUAdd::GetEffectiveIncreaseDPValue()
 	@brief		: DP �Ҹ� ���Ұ� ��ȯ
 	@return		: DP �Ҹ� ���Ұ�
 */
-const float	CX2GUAdd::GetEffectiveDecreaseDPConsume()
+float	CX2GUAdd::GetEffectiveDecreaseDPConsume()
 {
 	// ���� ȿ��(�������ӽð�)  (ex 6%���� : 6 -> 0.06)		/// �ֵ�� ���ݸ� ���� �ȴ�. ( ���� ����� ���� �����Ƿ�, ���⿡�� ���� ó�� ���� )
 	const float fChangeRate_BySocket = GetSocketData().m_fHyperModeTime * 0.01f;
@@ -8997,7 +9002,7 @@ const float	CX2GUAdd::GetEffectiveDecreaseDPConsume()
 	@brief		: ����ȭ ��ų ������ ��ȯ �Լ�
 	@return		: ����ȭ ��ų ������ ( DP, ���� ��ġ )
 */
-const SHORT CX2GUAdd::GetAbilitySyncData()
+SHORT CX2GUAdd::GetAbilitySyncData()
 {
 	SHORT sAbilitySyncData = 0;
 
@@ -9261,7 +9266,7 @@ void CX2GUAdd::ProcessNonstopSummonPylon()
 /** @function	: GetPossibleNonstopSummonPylon
 	@brief		: ���Ϸ� ���� ��ȯ ���� ����
 */
-const bool CX2GUAdd::GetPossibleNonstopSummonPylon() const
+bool CX2GUAdd::GetPossibleNonstopSummonPylon() const
 {
 	/// ���� ��ȯ ���Ѽ��� ���� �ʰ�, ���� ��ȯ ��Ÿ���� �����ִٸ� ��ȯ ����
 	if ( 1 <= m_uiNonstopSummonPylonCount &&
@@ -9325,7 +9330,7 @@ void CX2GUAdd::SetNasodArmorAttackTarget( IN const CX2DamageManager::DamageData&
 					vector<FantasyTracerTargetInfo>::iterator vIt = m_vecFantasyTracerTargetInfo.begin();
 
 					/// ���� ���� ID�� Ÿ�� ������ ����ִٸ�, ����������
-					for ( vIt ; vIt != m_vecFantasyTracerTargetInfo.end(); ++vIt )
+					for ( ; vIt != m_vecFantasyTracerTargetInfo.end(); ++vIt )
 					{
 						if ( vIt->m_eSkillID == eSkillID )
 						{
@@ -9786,7 +9791,7 @@ void CX2GUAdd::DieDamageEffectProc( const CX2DamageManager::DamageData& pDamageD
 		break;
 	}
 }
-void CX2GUAdd::PlayLoopSound( const WCHAR* pSoundFileName_, bool bLoop_, bool b3D_ )
+void CX2GUAdd::PlayLoopSound( const WCHAR* pSoundFileName_, bool /*bLoop_*/, bool /*b3D_*/ )
 {
 	if( NULL != g_pKTDXApp &&
 		NULL != g_pKTDXApp->GetDeviceManager() )
@@ -9891,7 +9896,7 @@ void CX2GUAdd::RidingWaitEventProcess()
 		StateChange( USI_RIDING_WAIT_HABIT );
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -9938,7 +9943,7 @@ void CX2GUAdd::RidingWalkEventProcess()
 		m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -9983,7 +9988,7 @@ void CX2GUAdd::RidingJumpLandingEventProcess()
 		m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -10046,14 +10051,13 @@ void CX2GUAdd::RidingDashEventProcess()
 		StateChange( USI_RIDING_SPECIAL_MOVE );
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
 
 void CX2GUAdd::RidingDashEndEventProcess()
 {
-	const float TRIGGER_TIME_FACTOR_DASH_ATTACK = 0.3f;
 
 	if( false == IsOnSomethingFuture() )
 	{
@@ -10099,7 +10103,7 @@ void CX2GUAdd::RidingDashEndEventProcess()
 		StateChange( USI_RIDING_WAIT );
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -10221,7 +10225,7 @@ void CX2GUAdd::ProcessPowerExchanger()
 	@param		: ��ų ���̵�
 	@return		: Ÿ�� ���� ���� ����
 */
-const bool CX2GUAdd::GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKILL_ID eSkillID_ ) const
+bool CX2GUAdd::GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKILL_ID eSkillID_ ) const
 {
 	/// ȯ�� ������ ����ÿ��� �˻�
 	if ( true == GetIsFormationMode() && true == m_bEnableFantasyTracer )
@@ -10560,7 +10564,6 @@ void CX2GUAdd::AttackQuicksilverFrenzy( IN const CX2DamageManager::DamageData& p
 
 	if ( NULL != pTargetUnit )
 	{
-		D3DXVECTOR3 vRotateDegree = GetRotateDegree();
 
 		/// �߻�ü ����
 		CX2DamageEffect::CEffect* pEffect =
@@ -10629,7 +10632,7 @@ const D3DXCOLOR CX2GUAdd::SetQuicksilverFrenzyFlickerColor( IN const D3DXCOLOR& 
 	@param		: ��ų ���̵�
 	@return		: ��ų ��� ���� ����
 */
-const bool CX2GUAdd::CheckSkillSpecialUse( IN const CX2SkillTree::SKILL_ID eSkillID_  )
+bool CX2GUAdd::CheckSkillSpecialUse( IN const CX2SkillTree::SKILL_ID eSkillID_  )
 {
 	/// ���ǹ� �׼� ���� ���� ������ �ð��߿� �ٸ� ��ų�� ����Ϸ� �ϸ�, ������ ����.
 	if ( CX2SkillTree::SI_SA_ALP_QUICKSILVER_ACCEL == GetFutureStateSkillID() )

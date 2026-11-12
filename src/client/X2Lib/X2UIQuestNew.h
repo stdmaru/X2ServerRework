@@ -215,7 +215,6 @@ private:
 
 	vector<wstring>		m_vecQuestDesc;
 	int					m_iQuestDescIndex; // 필요X
-	int					m_iQuestDescLinePerPage; // 필요X
 	D3DXVECTOR2			m_vQuestDescSize; // 필요X
 
 	// 퀘스트 보상 관련..

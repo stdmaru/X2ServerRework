@@ -69,7 +69,6 @@ void CX2StateAutoChanger::StartStateChange( int iNowStateID, int iTargetStateID,
 
 void CX2StateAutoChanger::InCase_XS_CREATE_UNIT()
 {
-	CX2StateCreateUnit* pState = (CX2StateCreateUnit*) g_pMain->GetNowState();
 
 	switch( m_iTargetStateID )
 	{
@@ -88,7 +87,7 @@ void CX2StateAutoChanger::InCase_XS_CREATE_UNIT()
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua" );
 			}
 
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 
 		} break;
 	}
@@ -756,7 +755,6 @@ void CX2StateAutoChanger::InCase_XS_DUNGEON_ROOM()
 
 void CX2StateAutoChanger::InCase_XS_DUNGEON_GAME()
 {
-	CX2StateDungeonGame* pState = (CX2StateDungeonGame*) g_pMain->GetNowState();
 
 	switch( m_iTargetStateID )
 	{
@@ -790,7 +788,6 @@ void CX2StateAutoChanger::InCase_XS_DUNGEON_GAME()
 
 void CX2StateAutoChanger::InCase_XS_DUNGEON_RESULT()
 {
-	CX2StateDungeonResult* pState = (CX2StateDungeonResult*) g_pMain->GetNowState();
 
 	switch( m_iTargetStateID )
 	{
@@ -808,7 +805,7 @@ void CX2StateAutoChanger::InCase_XS_DUNGEON_RESULT()
 	case CX2Main::XS_DUNGEON_GAME:
 		{
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_553 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, 0, false );
 		} break;
 
 	case CX2Main::XS_DUNGEON_RESULT:
@@ -1251,7 +1248,7 @@ void CX2StateAutoChanger::TryEnterPVPRoom( bool bIsPublic /* = true */ )
 }
 
 
-void CX2StateAutoChanger::TryEnterArcadeRoom( bool bIsPublic /* = true */ )
+void CX2StateAutoChanger::TryEnterArcadeRoom( bool /*bIsPublic*/ /* = true */ )
 {
 	// fix!! 아케이드 코드 새로
 	//CX2StateArcadeLobby* pState = (CX2StateArcadeLobby*) g_pMain->GetNowState();

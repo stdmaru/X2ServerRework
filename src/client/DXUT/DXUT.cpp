@@ -31,6 +31,7 @@ struct DxutState {
     void* msgProcContext = nullptr;
 
     bool handleAltEnter = true;
+    std::vector<std::string> commandLine;
     bool showCursorWhenFullScreen = true;
     bool clipCursorWhenFullScreen = true;
     bool autoChangeAdapter = true;
@@ -60,6 +61,9 @@ struct DxutState {
     float fps = 0.0f;
     double lastStatsTime = 0.0;
     DWORD framesSinceStats = 0;
+
+    UINT presentInterval = D3DPRESENT_INTERVAL_DEFAULT;  // DXUTDeviceSettings::pp.PresentationInterval
+    UINT forcedVsync = D3DPRESENT_INTERVAL_DEFAULT;      // DXUTGetVerticalSync
 };
 
 DxutState& State()
@@ -196,6 +200,21 @@ void DXUTSetCallbackMsgProc(LPDXUTCALLBACKMSGPROC pCallbackMsgProc, void* pUserC
 {
     State().msgProc = pCallbackMsgProc;
     State().msgProcContext = pUserContext;
+}
+
+void DXUTSetCommandLine(int argc, char* argv[])
+{
+    State().commandLine.assign(argv, argv + argc);
+}
+
+const std::vector<std::string>& DXUTGetCommandLine()
+{
+    return State().commandLine;
+}
+
+void DXUTSetCloseOnAltF4(bool bClose)
+{
+    SDL_SetHint(SDL_HINT_WINDOWS_CLOSE_ON_ALT_F4, bClose ? "1" : "0");
 }
 
 HRESULT DXUTInit(bool /*bParseCommandLine*/, bool /*bHandleDefaultHotkeys*/, bool /*bShowMsgBoxOnError*/, bool bHandleAltEnter)
@@ -603,4 +622,98 @@ CDXUTTimer* DXUTGetGlobalTimer()
 {
     static CDXUTTimer timer;
     return &timer;
+}
+
+DXUTDeviceSettings DXUTGetDeviceSettings()
+{
+    DxutState& state = State();
+    DXUTDeviceSettings settings{};
+    settings.AdapterOrdinal = 0;
+    settings.DeviceType = D3DDEVTYPE_HAL;
+    settings.AdapterFormat = D3DFMT_X8R8G8B8;
+    if (const D3DSURFACE_DESC* desc = DXUTGetBackBufferSurfaceDesc()) {
+        settings.pp.BackBufferWidth = desc->Width;
+        settings.pp.BackBufferHeight = desc->Height;
+    }
+    settings.pp.BackBufferFormat = D3DFMT_A8R8G8B8;
+    settings.pp.BackBufferCount = 1;
+    settings.pp.MultiSampleType = D3DMULTISAMPLE_NONE;
+    settings.pp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    settings.pp.hDeviceWindow = state.hwnd;
+    settings.pp.Windowed = state.windowed ? TRUE : FALSE;
+    settings.pp.EnableAutoDepthStencil = TRUE;
+    settings.pp.AutoDepthStencilFormat = D3DFMT_D24S8;
+    settings.pp.PresentationInterval = state.presentInterval;
+    return settings;
+}
+
+HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, bool /*bPreserveInput*/,
+                                     bool /*bClipWindowToSingleAdapter*/)
+{
+    DxutState& state = State();
+    if (pNewDeviceSettings == nullptr || !state.window || !state.device) {
+        return E_FAIL;
+    }
+    SDL_Window* window = state.window->Handle();
+    const D3DPRESENT_PARAMETERS& pp = pNewDeviceSettings->pp;
+    if (state.windowed && pp.BackBufferWidth > 0 && pp.BackBufferHeight > 0 &&
+        !SDL_SetWindowSize(window, static_cast<int>(pp.BackBufferWidth), static_cast<int>(pp.BackBufferHeight))) {
+        return E_FAIL;
+    }
+    if (pp.PresentationInterval != state.presentInterval) {
+        const bool immediate = pp.PresentationInterval == static_cast<UINT>(D3DPRESENT_INTERVAL_IMMEDIATE);
+        x2::render::PresentMode mode = immediate ? x2::render::PresentMode::Immediate : x2::render::PresentMode::Vsync;
+        if (immediate && !state.device->WindowSupportsPresentMode(window, mode)) {
+            mode = x2::render::PresentMode::Mailbox;  // no tearing, but not held to the vertical blank either
+        }
+        if (!state.device->WindowSupportsPresentMode(window, mode) || !state.device->SetSwapchainParameters(window, mode)) {
+            return E_FAIL;
+        }
+        state.presentInterval = pp.PresentationInterval;
+    }
+    return S_OK;
+}
+
+void DXUTSetWindowClientRectAtModeChange(int /*width*/, int /*height*/) {}
+void DXUTSetFullscreenClientRectAtModeChange(int /*width*/, int /*height*/) {}
+
+UINT DXUTGetVerticalSync()
+{
+    return State().forcedVsync;
+}
+
+void DXUTSetVerticalSync(int iVal_)
+{
+    DXUTDeviceSettings settings = DXUTGetDeviceSettings();
+    const UINT interval = iVal_ == 1 ? static_cast<UINT>(D3DPRESENT_INTERVAL_IMMEDIATE) : D3DPRESENT_INTERVAL_DEFAULT;
+    settings.pp.PresentationInterval = interval;
+    State().forcedVsync = interval;
+    DXUTCreateDeviceFromSettings(&settings);
+}
+
+void DXUTResetStatsUpdateFrame()
+{
+    DxutState& state = State();
+    state.lastStatsTime = DXUTGetGlobalTimer()->GetAbsoluteTime();
+    state.framesSinceStats = 0;
+    state.fps = 0.0f;
+}
+
+std::vector<D3DDISPLAYMODE> DXUTGetDisplayModes()
+{
+    std::vector<D3DDISPLAYMODE> modes;
+    SDL_Window* window = DXUTGetSDLWindow();
+    const SDL_DisplayID display = window != nullptr ? SDL_GetDisplayForWindow(window) : SDL_GetPrimaryDisplay();
+    int count = 0;
+    SDL_DisplayMode** list = SDL_GetFullscreenDisplayModes(display, &count);
+    if (list == nullptr) {
+        return modes;
+    }
+    for (int i = 0; i < count; ++i) {
+        const SDL_DisplayMode& mode = *list[i];
+        modes.push_back({static_cast<UINT>(mode.w), static_cast<UINT>(mode.h), static_cast<UINT>(mode.refresh_rate + 0.5f),
+                         D3DFMT_X8R8G8B8});
+    }
+    SDL_free(list);
+    return modes;
 }

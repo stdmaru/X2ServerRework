@@ -5,7 +5,6 @@
 
 const int	MAGIC_SKILL_DESC_WIDTH					= 370;		/// ��ų ���� ��Ʈ�� ���ٴ� �ִ� ���� ����
 const int	MAX_ONE_CLASS_SKILL_ROW_NUM				= 5;		/// �ϳ��� ������ ��ų Ʈ�� �ִ� �� ����
-const int	SKILL_USE_IMAGE_WIDTH_SIZE				= 70;		/// ��ų ���� ���� �̹��� ���� ũ��
 const float SKILL_MAIN_DESC_OFFSET_Y				= 65.f;		/// ���� ������ ������ ���� ��ġ
 
 //////////////////////////////////////////////////////////////////////////
@@ -80,10 +79,10 @@ CX2SkillTreeSlotData::CX2SkillTreeSlotData()
 	/// ���� ��ų ����Ʈ ��ȯ ---------------------------------------------------------------------------------------------------------------------------------------
 		/// ���� ��ų ����Ʈ ( ��ų ���� �� ��ȭ �����̸� ��ų ����Ʈ ��뷮�� �������� ������ ��ȯ )
 	const int iNoUseSP		= true == bLearnMode ? g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint - pSkillTree->GetUsedSPoint()
-												 : g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint;
+												 : static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint );
 		/// ���� ĳ�� ��ų ����Ʈ ( ��ų ���� �� ��ȭ �����̸� ĳ�� ��ų ����Ʈ ��뷮�� �������� ������ ��ȯ )
 	const int iNoUseCP		= true == bLearnMode ? g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint - pSkillTree->GetUsedCSPoint()
-												 : g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint;
+												 : static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint );
 
 
 	/// ���� ���� ���� ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -146,6 +145,8 @@ CX2SkillTreeSlotData::CX2SkillTreeSlotData()
 
 			case SEnum::RT_MARRIED :
 				iRelationshipLevel = 2;
+				break;
+			default:
 				break;
 			}
 
@@ -355,8 +356,8 @@ CX2SkillTreeSlotData::CX2SkillTreeSlotData()
 
 					/// ���� ��ų�� �ƴϰų�, ������ ���ν�ų�̸�, ���� ������ �ݴ��� ��ų�� ����
 					if ( NULL != pSkillTemplet &&
-							false == pSkillTemplet->m_bBornSealed ||
-							( true == pSkillTemplet->m_bBornSealed && true == refUserSkillTree.IsSkillUnsealed( eAnotherSkillID ) ) )
+							( false == pSkillTemplet->m_bBornSealed ||
+							( true == pSkillTemplet->m_bBornSealed && true == refUserSkillTree.IsSkillUnsealed( eAnotherSkillID ) ) ) )
 					{
 						bIsSelectAnotherSkill = true;
 					}
@@ -979,7 +980,7 @@ void CX2UISkillTreeNew::SetPosition( D3DXVECTOR2 vec )
 
 }
 
-HRESULT CX2UISkillTreeNew::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2UISkillTreeNew::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	return S_OK;
 }
@@ -1056,7 +1057,7 @@ bool CX2UISkillTreeNew::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return bFlag;
 }
 
-bool CX2UISkillTreeNew::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2UISkillTreeNew::OnMouseWheel(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	CKTDGUIContolList* pControlList = (CKTDGUIContolList*) m_pDLGUISkillTree->GetControl( L"SkillTreeControlList" );
 	if( pControlList == NULL )
@@ -1087,7 +1088,7 @@ bool CX2UISkillTreeNew::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	return true;
 }
 
-bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -1095,7 +1096,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 		{
 			if( m_pDLGSkillUnsealInform != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, 0, false );
 				m_pDLGSkillUnsealInform = NULL;
 			}
 		} break;
@@ -1170,7 +1171,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 		{
 			if(m_pDLGFirstGuide != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFirstGuide, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFirstGuide, 0, false );
 			}
 			m_pDLGFirstGuide = NULL;
 			return true;
@@ -1365,7 +1366,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			 SetShow(false);
 
@@ -1440,7 +1441,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 			if ( NULL != pControl && NULL != pControl->GetDialog() )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				if ( false == m_bNowLearnSkill )
 				{
@@ -1513,7 +1514,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if ( NULL != g_pData && NULL != g_pData->GetSkillTree() )
 			{
@@ -1627,10 +1628,6 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 				if ( NULL != pSkillTreeTemplet && NULL != pSkillTemplet )
 				{
-					const int				iSkillLevel				= refUserSkillTree.GetSkillLevel( eSkillID );						/// ��ų ����
-					const int				iUnitLevel				= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_Level;	/// ���� ����
-					CX2SkillTree::SKILL_ID	eAnotherSkillID			= GetAnotherSelectSkillID( eSkillID );	/// �ݴ��� ��ų ���̵�
-					bool					bEnoughLevel			= false;								/// �䱸 ���� ���� ���� ����
 
 					/// ���� ��ų�� ���� ��ų�� �� ��ų�� ���� �ִ��� �˻�
 					const bool bHaveFollowingSkill = 0 < refUserSkillTree.GetSkillLevel( static_cast<CX2SkillTree::SKILL_ID>( pSkillTreeTemplet->m_iFollowingSkill ) ) ? true : false ;
@@ -1668,7 +1665,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			{
 				CX2SkillTree::SKILL_ID eCheckSkillID = static_cast<CX2SkillTree::SKILL_ID>( pControl->GetDialog()->GetDummyInt( 0 ) );
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				if ( NULL != g_pData && NULL != g_pData->GetSkillTree() && CX2SkillTree::SI_NONE != eCheckSkillID  )
 				{
@@ -1688,7 +1685,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			{
 				CX2SkillTree::SKILL_ID eCheckSkillID = static_cast<CX2SkillTree::SKILL_ID>( pControl->GetDialog()->GetDummyInt( 0 ) );
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				if ( NULL != g_pData && NULL != g_pData->GetSkillTree() && CX2SkillTree::SI_NONE != eCheckSkillID  )
 				{
@@ -1829,7 +1826,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	case STUCM_BUY_CONFIRM:
 		{
 			if ( m_pDLGBuyConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, 0, false );
 
 			m_pDLGBuyConfirm = NULL;
 
@@ -1842,7 +1839,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	case STUCM_BUY_CANCEL:
 		{
 			if ( m_pDLGBuyConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, 0, false );
 
 			m_pDLGBuyConfirm = NULL;
 
@@ -1854,7 +1851,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if ( NULL != g_pData && NULL != g_pData->GetSkillTree() )
 			{
@@ -1875,7 +1872,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if ( NULL != g_pData && NULL != g_pData->GetSkillTree() )
 			{
@@ -2052,18 +2049,12 @@ void CX2UISkillTreeNew::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 		/// ���� ���� SP ��ȯ
 		const CX2Unit::UnitData* pUnitData = &g_pData->GetMyUser()->GetSelectUnit()->GetUnitData();
 
-		int iNoUseSP = 0;
-		int iNoUseCP = 0;
 
 		if ( NULL != pUnitData )
 		{
-			iNoUseSP = pUnitData->m_iSPoint;		/// ���� ��ų ����Ʈ
-			iNoUseCP = pUnitData->m_iCSPoint;	/// ���� ĳ�� ��ų ����Ʈ ( �׳�ý��� �ູ )
 		}
 
 		/// ���� ��ų ������ ���� ��ȯ
-		const CX2UserSkillTree&	refUserSkillTree	= pUnitData->m_UserSkillTree;
-		const int			iSkillLevel			= refUserSkillTree.GetSkillLevel( eSkillID );
 
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 		if(pSkillTemplet == NULL)
@@ -2552,9 +2543,6 @@ void CX2UISkillTreeNew::UpdateBlind()
 #endif // _SERVICE_
 		int							iTopTier				= pControlList->GetIndexY();											/// ���� ��ųâ�� ��ũ�� �� ��ġ �ε���
 		int							iUnitLevel				= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_Level;	/// ���� ����
-		CX2Unit::UNIT_CLASS_TYPE	eUnitClassType			= static_cast<CX2Unit::UNIT_CLASS_TYPE>( g_pData->GetMyUser()->GetSelectUnit()->GetClassLevel() );	/// ���� Ŭ���� Ÿ��
-		const int					iNotLearnTierIndex		= GetNotLearnTierIndex();											/// ����� ���� �ֻ��� ��ų ���� ��ȯ
-		const int					iEnoughLevelTierIndex	= GetNotEnoughLevelTierIndex( iUnitLevel );							/// ��� �� ���� ������ �ֻ��� ��ų ���� ��ȯ
 
 
 		for( int i = 0; i < pControlList->GetViewSizeY(); ++i )
@@ -2578,7 +2566,6 @@ void CX2UISkillTreeNew::UpdateBlind()
 			bool		bButtonBlind		= false;			/// �ش� ��ų ������ ��ų ���� ��ư ���� ����
 
 			bool		bEnoughLevel		= false;			/// �䱸 ���� ���� ���� ����
-			bool		bLearnBeforeSkill	= false;			/// ���� ��ų ���� ����
 
 			/// ���� ��ų�� �⺻ ��ų�̰ų�, ���� ���� ������ �ش� ��ų ���� ���� �䱸 ������ ������ ��
 			if ( 0 == GetRequireSkillLineLevel( iNowSkillLineLevel ) ||
@@ -2727,7 +2714,6 @@ void CX2UISkillTreeNew::CreateSlotUIPreset(SkillSlotUI& UISet, int eSkillID, int
 
 	UISet.m_pSlot = static_cast<CKTDGUISlot*>( m_pDLGUISkillTree->GetControl( L"g_pSlot_SkillTree" ) );		/// ���� ����
 
-	SKILL_TREE_SLOT_TYPE eSkillTreeSlotType = static_cast<SKILL_TREE_SLOT_TYPE>( iCol );
 
 	WCHAR buf[255] = {0,};
 
@@ -3169,7 +3155,7 @@ void CX2UISkillTreeNew::CreateSlotUIPreset(SkillSlotUI& UISet, int eSkillID, int
 // ���� ��ų �������� ��ü�� �̱����̹Ƿ� ��ݸ� �۾� �д�.
 // ���̾�α� �ݴ� �������� ����� �׽��ϴ�. ���� ��ư�� ������ ���� �ƹ��͵� �� �ϰ� �Ǿ� ������ ���� �۾��� �в�����
 // UICustomMsgProc���� case STUCM_UNSEAL_SKILL_BUY �׸� �� �κ��� �۾��� �ּ���.
-void CX2UISkillTreeNew::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* pSkillTemplet, D3DXVECTOR2 SlotCenterPos )
+void CX2UISkillTreeNew::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* /*pSkillTemplet*/, D3DXVECTOR2 SlotCenterPos )
 {
 	SAFE_DELETE_DIALOG( m_pDLGSkillUnsealInform );
 
@@ -3181,8 +3167,6 @@ void CX2UISkillTreeNew::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTempl
 	D3DXVECTOR2 OffsetPos((float)m_pDLGSkillUnsealInform->GetDummyInt(0), (float)m_pDLGSkillUnsealInform->GetDummyInt(1));
 	m_pDLGSkillUnsealInform->SetPos( SlotCenterPos + OffsetPos );
 
-	CKTDGUIStatic* pStaticRequireItem = (CKTDGUIStatic*) m_pDLGSkillUnsealInform->GetControl( L"StaticRequireItemName" );
-	CKTDGUIStatic* pStaticRequireCash = (CKTDGUIStatic*) m_pDLGSkillUnsealInform->GetControl( L"StaticPrice" );
 
 
 //#if 0		//** ��ų �������� ����� �� �� ���⿡ �߰��۾� �� �ּ���.
@@ -3341,6 +3325,8 @@ void CX2UISkillTreeNew::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkill
 				iIncreasekillLevel = g_pData->GetMyUser()->GetSelectUnit()->GetIncreaseSkillLevelByBuff() +
 									 g_pData->GetMyUser()->GetSelectUnit()->GetIncreaseSkillLevelBySocket( eSkillID );
 			} break;
+		default:
+			break;
 		}
 
 		/// ����ġ���� ���ؼ� �Ѱ�ġ�� �Ѵ´ٸ�, �Ѱ�ġ�� �°� ����
@@ -3562,7 +3548,6 @@ void CX2UISkillTreeNew::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkill
 		pMainPictureData->SetSize( D3DXVECTOR2( static_cast<float>( itemDescWidth ), static_cast<float>( itemDescHeight ) ) );
 		pMainPictureData->pPoint->color = D3DXCOLOR( 1,1,1,0.7f );
 
-		bool bCheckEquipping = false;
 
 
 		/// ���� ���� ������ y��ǥ�� Ÿ��Ʋ ������ ��ġ�� ���� ����
@@ -4098,8 +4083,6 @@ void CX2UISkillTreeNew::DrawElswordWSSDesc( D3DXVECTOR2 vDrawPos_ )
 		pString->pos = D3DXVECTOR2( 20, 20 );
 	}
 
-	int itemDescWidth = 300;
-	int itemDescHeight = 200;
 
 	int itemDescPosX = (int)vDrawPos_.x;
 	int itemDescPosY = (int)vDrawPos_.y;
@@ -4144,9 +4127,7 @@ void CX2UISkillTreeNew::DrawElswordWSSDesc( D3DXVECTOR2 vDrawPos_ )
 				m_pDLGElswordWSSDesc->SetShow( false );
 		}
 		wstring wstrDesc = wstrm.str();
-		CKTDGUIStatic* pItemDesc = (CKTDGUIStatic*)m_pDLGElswordWSSDesc->GetControl(L"ItemDesc");
 
-		const CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pItemDesc->GetString(0)->fontIndex );
 
 		const int MAGIC_ELSWORD_DESC_WIDTH = 330;
 		wstrDesc = g_pMain->GetStrByLineBreakColor(wstrDesc.c_str(), (int)((float)MAGIC_ELSWORD_DESC_WIDTH*g_pKTDXApp->GetResolutionScaleX()), SLOT_MANAGER_FONT_INDEX);
@@ -4168,7 +4149,7 @@ void CX2UISkillTreeNew::DrawElswordWSSDesc( D3DXVECTOR2 vDrawPos_ )
 
 
 //x2game�� �����Ǿ� ���� ���� �� ����ϴ� ��Ÿ�Ӱ��� �Լ�.
-void CX2UISkillTreeNew::UpdateSkillCoolTime( float fElapsedTime )
+void CX2UISkillTreeNew::UpdateSkillCoolTime( float /*fElapsedTime*/ )
 {
 	if( g_pData != NULL &&
 		g_pData->GetMyUser() != NULL &&
@@ -4487,7 +4468,7 @@ void CX2UISkillTreeNew::SwapSkillSlotTypeB(bool bVal_, bool bForce_/* = false */
 		{
 			if( NULL != GetEquippedSlot(i) )
 				vOffsetPos.y = ( i >= 4 ) ? -150.f : 0.f;
-				GetEquippedSlot(i)->SetOffsetPos( vOffsetPos );
+			GetEquippedSlot(i)->SetOffsetPos( vOffsetPos );
 		}
 
 		vOffsetPos.y = -200.f;
@@ -4575,6 +4556,8 @@ void CX2UISkillTreeNew::CreateSkillTreePortrait( CKTDGUIContolList* pControlList
 				{
 					wstrTectureKey = L"Bg_Portrait_Add";
 				}
+				break;
+			default:
 				break;
 			}
 
@@ -4860,7 +4843,6 @@ void CX2UISkillTreeNew::SetDivisionLine( CKTDGUIContolList* pControlList )
 
 	if ( NULL != pUnit )
 	{
-		WCHAR buf[255] = {0,};
 
 		/// �ʻ�ȭ UI ���� ( �ϳ��� ������ 5��, ���� ���� ����Ͽ� ������ �ʻ�ȭ UI ǥ�� ���� ����  )
 		CX2Unit::UNIT_CLASS_TYPE eUnitClassLevel = static_cast<CX2Unit::UNIT_CLASS_TYPE>( pUnit->GetClassLevel() );
@@ -4987,6 +4969,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25012 );
 					eUnitClass = CX2Unit::UC_ELSWORD_LORD_KNIGHT;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELSWORD_MAGIC_KNIGHT:		/// 1�� ����
@@ -5009,6 +4993,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25014 );
 					eUnitClass = CX2Unit::UC_ELSWORD_RUNE_SLAYER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELSWORD_SHEATH_KNIGHT:		/// 1�� ����
@@ -5031,6 +5017,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25016 );
 					eUnitClass = CX2Unit::UC_ELSWORD_INFINITY_SWORD;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5063,6 +5051,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25019 );
 					eUnitClass = CX2Unit::UC_ARME_ELEMENTAL_MASTER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ARME_DARK_MAGICIAN:		/// 1�� ����
@@ -5085,6 +5075,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25021 );
 					eUnitClass = CX2Unit::UC_ARME_VOID_PRINCESS;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ARME_BATTLE_MAGICIAN:		/// 1�� ����
@@ -5107,6 +5099,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25023 );
 					eUnitClass = CX2Unit::UC_ARME_DIMENSION_WITCH;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5139,6 +5133,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25026 );
 					eUnitClass = CX2Unit::UC_LIRE_WIND_SNEAKER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_LIRE_SNIPING_RANGER:		/// 1�� ����
@@ -5161,6 +5157,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25028 );
 					eUnitClass = CX2Unit::UC_LIRE_GRAND_ARCHER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_LIRE_TRAPPING_RANGER:		/// 1�� ����
@@ -5183,6 +5181,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25030 );
 					eUnitClass = CX2Unit::UC_LIRE_NIGHT_WATCHER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5215,6 +5215,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25033 );
 					eUnitClass = CX2Unit::UC_RAVEN_BLADE_MASTER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_RAVEN_OVER_TAKER:			/// 1�� ����
@@ -5237,6 +5239,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25035 );
 					eUnitClass = CX2Unit::UC_RAVEN_RECKLESS_FIST;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_RAVEN_WEAPON_TAKER:		/// 1�� ����
@@ -5259,6 +5263,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25037 );
 					eUnitClass = CX2Unit::UC_RAVEN_VETERAN_COMMANDER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5291,6 +5297,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25040 );
 					eUnitClass = CX2Unit::UC_EVE_CODE_NEMESIS;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_EVE_ARCHITECTURE:			/// 1�� ����
@@ -5313,6 +5321,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25042 );
 					eUnitClass = CX2Unit::UC_EVE_CODE_EMPRESS;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_EVE_ELECTRA:				/// 1�� ����
@@ -5335,6 +5345,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25044 );
 					eUnitClass = CX2Unit::UC_EVE_BATTLE_SERAPH;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5367,6 +5379,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25047 );
 					eUnitClass = CX2Unit::UC_CHUNG_IRON_PALADIN;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_CHUNG_SHOOTING_GUARDIAN:	/// 1�� ����
@@ -5389,6 +5403,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25049 );
 					eUnitClass = CX2Unit::UC_CHUNG_DEADLY_CHASER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_CHUNG_SHELLING_GUARDIAN:	/// 1�� ����
@@ -5411,6 +5427,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25051 );
 					eUnitClass = CX2Unit::UC_CHUNG_TACTICAL_TROOPER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 		/// �ƶ�
@@ -5442,6 +5460,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25054 );
 					eUnitClass = CX2Unit::UC_ARA_SAKRA_DEVANAM;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELESIS_KNIGHT:
@@ -5474,6 +5494,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_28263 );
 					eUnitClass = CX2Unit::UC_ELESIS_GRAND_MASTER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELESIS_PYRO_KNIGHT:
@@ -5498,6 +5520,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					eUnitClass = CX2Unit::UC_ELESIS_BLAZING_HEART;
 				} break;
 
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ARA_LITTLE_DEVIL:			/// 1�� ����
@@ -5520,6 +5544,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_26772 );
 					eUnitClass = CX2Unit::UC_ARA_YAMA_RAJA;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5531,6 +5557,7 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 				eUnitClass = CX2Unit::UC_ADD_NASOD_RULER;
 			}
 		}
+		[[fallthrough]];
 
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:
@@ -5558,6 +5585,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 		/// 1�� Ȥ�� 2�� ���� ( ��Ʈ 1 )	- �⺻ ���� ~ 2�� �������� �߰� ( �ش� �������� ���� ������ ������ �޾ƿ� �� �ֵ��� )
 		/// 1�� Ȥ�� 2�� ���� ( ��Ʈ 2 )	- �⺻ ���� ~ 2�� �������� �߰�
 		/// 1�� Ȥ�� 2�� ���� ( ��Ʈ 3 )	- �⺻ ���� ~ 2�� �������� �߰�
+	default:
+		break;
 	}
 
 	/// �ʻ�ȭ �̹��� Ű �� ����
@@ -5854,7 +5883,7 @@ void CX2UISkillTreeNew::SetBlindSelectSkill()
 	#param		: �˻��� ��ų ���̵�
 	@return		: �ݴ����� �ִ� ��ų ���̵�
 */
-const CX2SkillTree::SKILL_ID CX2UISkillTreeNew::GetAnotherSelectSkillID( CX2SkillTree::SKILL_ID eCheckSkillID ) const
+CX2SkillTree::SKILL_ID CX2UISkillTreeNew::GetAnotherSelectSkillID( CX2SkillTree::SKILL_ID eCheckSkillID ) const
 {
 	if (	NULL == g_pData ||
 			NULL == g_pData->GetSkillTree() ||
@@ -5893,7 +5922,7 @@ const CX2SkillTree::SKILL_ID CX2UISkillTreeNew::GetAnotherSelectSkillID( CX2Skil
 	#param		: �˻��� ��ų ���̵�
 	@return		: ��ų ����
 */
-const int CX2UISkillTreeNew::GetSkillLevelInSkillWimdow( const CX2SkillTree::SKILL_ID eSkillID ) const
+int CX2UISkillTreeNew::GetSkillLevelInSkillWimdow( const CX2SkillTree::SKILL_ID eSkillID ) const
 {
 	if (	NULL == g_pData ||
 			NULL == g_pData->GetMyUser() ||
@@ -5997,7 +6026,6 @@ bool CX2UISkillTreeNew::IsLearnBeforeSelectSkill( const int iNowTierIndex )
 		 NULL == g_pData->GetMyUser()->GetSelectUnit() )
 		 return true;
 
-	const CX2Unit::UNIT_CLASS				eUnitClass			= g_pData->GetMyUser()->GetSelectUnit()->GetClass();
 
 	/// ���� ���� ù��° ��( �⺻ ������ �⺻ ��ų )�̰ų� �ι�° ��( �⺻ ��ų�� �������� �� ��ų ) �̶��, ������ ��ų ���� ó��
 	if ( 0 == iNowTierIndex || 1 == iNowTierIndex )
@@ -6039,7 +6067,7 @@ bool CX2UISkillTreeNew::IsLearnBeforeSelectSkill( const int iNowTierIndex )
 	@brief		: ����� ���� �ֻ��� ��ų ���� ��ȯ
 	@return		: ��ų ���� Tier �ε���
 */
-const int CX2UISkillTreeNew::GetNotLearnTierIndex()
+int CX2UISkillTreeNew::GetNotLearnTierIndex()
 {
 	std::map<SkillPositionKey, CX2SkillTree::SKILL_ID>::iterator mit = m_mapSkillPosition.find( SkillPositionKey( 0, 0 ) );
 	int iTierIndex = 0;
@@ -6069,7 +6097,7 @@ const int CX2UISkillTreeNew::GetNotLearnTierIndex()
 	@brief		: ��� �� ���� ������ �ֻ��� ��ų ���� ��ȯ
 	@return		: ��ų ���� Tier �ε���
 */
-const int CX2UISkillTreeNew::GetNotEnoughLevelTierIndex( const int iLevel )
+int CX2UISkillTreeNew::GetNotEnoughLevelTierIndex( const int iLevel )
 {
 	int iTierIndex = 0;
 
@@ -6115,7 +6143,7 @@ void CX2UISkillTreeNew::GetSkillUnSealedDesc( OUT wstring& wstrDesc, IN const CX
 	/// �ش� ��ų ���̵� ���� ���� ��ų �������� �˻�
 	std::map<int, CX2SkillTree::SealSkillItemInfo>::const_iterator mit = mapSealSkillItemTemplet.begin();
 
-	for ( mit; mit != mapSealSkillItemTemplet.end(); ++mit )
+	for ( ; mit != mapSealSkillItemTemplet.end(); ++mit )
 	{
 		std::vector<CX2SkillTree::SKILL_ID> vecValue = mit->second.m_vecSkillID;
 
@@ -6148,7 +6176,6 @@ void CX2UISkillTreeNew::UpdateSkillPageUI()
 {
 	CX2UserSkillTree& refUserSkillTree = g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData().m_UserSkillTree;
 
-	const USHORT usUsingPage = refUserSkillTree.GetUsingPage();
 	const USHORT usOpenedPage = refUserSkillTree.GetOpenedPage();
 	const USHORT usSelectPage = refUserSkillTree.GetSelectPage();
 	D3DXVECTOR2 vPos( 0.f, 0.f );

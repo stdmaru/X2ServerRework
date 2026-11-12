@@ -70,7 +70,7 @@ HRESULT CX2DamageEffect::OnFrameMove( double fTime, float fElapsedTime )
         {
             iterNext = iter; ++iterNext;
             CEffect* pCEffect = iter->m_pInstance;
-            if ( pCEffect != NULL && true == pCEffect->IsCreationDelayElapsed() == true )
+            if ( pCEffect != NULL && true == pCEffect->IsCreationDelayElapsed() )
             {
                 iter->m_eListType = LIST_LIVE;
                 m_coInstanceHandleList.splice( m_coInstanceHandleList.end( LIST_LIVE ), iter );
@@ -391,10 +391,10 @@ CX2DamageEffect::CEffect*  CX2DamageEffect::GetInstance( CEffectHandle handle, b
     if ( wIndex >= m_coInstanceHandleList.storage_size() )
         return NULL;
     KInstanceHandleInfo& info = m_coInstanceHandleList.data( wIndex );
-    if ( info.m_pInstance == NULL || info.m_wStamp != wStamp || bLiveOnly == true &&
+    if ( info.m_pInstance == NULL || info.m_wStamp != wStamp || (bLiveOnly == true &&
         ( info.m_eListType != LIST_LIVE
             || info.m_pInstance->GetLive() == false
-         )
+         ))
         )
         return NULL;
     return info.m_pInstance;
@@ -875,23 +875,23 @@ CX2DamageEffect::CEffect::CEffect( CX2DamageEffect* pManager, KLuaManager* pLuaM
                                   float fHitAddMp /*=-1.f*/
 								  , bool bPetSkillEffect /*= false*/
 								  )
-: m_vHitDamageScaleByUnit( 1, 1, 1 )
-, m_vDieDamageScaleByUnit( 1, 1, 1 )
-, m_hHandle( hHandle )
-
+: m_hHandle( hHandle )
+, m_bFollowLineRight( false )
 , m_bFollowLineNew( false )
 
+, m_vHitDamageScaleByUnit( 1, 1, 1 )
+
+, m_vDieDamageScaleByUnit( 1, 1, 1 )
+
 , m_iReflectCount( 2 )
-
 , m_pAfterImage( NULL )
-, m_fDurationTime( 0.f )
 
-, m_iIndex( -1 )					/// 해당 DamageEffect의 Index ( 지연 폭발용 DamageEffect 인식 )
-, m_iType( DET_NONE )			/// 해당 DamageEffect의 Type  ( 현재 화살의 DamageEffect가 어떤 것인지 인식 )
-, m_iOrderNum( -1 )				/// 폭발의 화살 발사 순서
-, m_fAddDieEffectDamage( 0.f )	/// 해당 데미지 이펙트의 fPhysic, fMagic에 추가되는 수치
+, m_fDurationTime( 0.f )					/// 해당 DamageEffect의 Index ( 지연 폭발용 DamageEffect 인식 )
+, m_iIndex( -1 )			/// 해당 DamageEffect의 Type  ( 현재 화살의 DamageEffect가 어떤 것인지 인식 )
+, m_iType( DET_NONE )				/// 폭발의 화살 발사 순서
+, m_iOrderNum( -1 )	/// 해당 데미지 이펙트의 fPhysic, fMagic에 추가되는 수치
+, m_fAddDieEffectDamage( 0.f )
 , m_bCheckSpectro( false )
-, m_bFollowLineRight( false )
 , m_bShouldNotifyToOwnerUnitWhenDie( false )
 {
 	KTDXPROFILE();
@@ -1480,6 +1480,8 @@ void CX2DamageEffect::CEffect::OnFrameMove( double fTime, float fElapsedTime )
 																						true ); // todo!!!! 스크립트에 입력할 수 있게 해야함
 						} break;
 
+					default:
+						break;
 					}
 					m_CameraDataList.erase( m_CameraDataList.begin() + i );
 					i--;
@@ -1878,8 +1880,8 @@ void CX2DamageEffect::CEffect::OnFrameMove( double fTime, float fElapsedTime )
 
 void CX2DamageEffect::CEffect::OnFrameMove_SoundData()
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	ASSERT( pMeshInst != NULL );
@@ -1917,7 +1919,7 @@ void CX2DamageEffect::CEffect::OnFrameMove_SoundData()
 				{
 
 
-#pragma DMLEE_NOTE( "loop sound 는 채널 문제 수정하고 나서 사용가능" )
+// Note: loop sounds can be used once the channel problem is fixed.
 
 
 					pSound->Set3DPosition( pMeshInst->GetPos() );
@@ -1950,8 +1952,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_SoundData()
 
 void CX2DamageEffect::CEffect::OnFrameMove_BlackHoleData( float fElapsedTime )
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	ASSERT( pMeshInst != NULL );
@@ -2036,6 +2038,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_BlackHoleData( float fElapsedTime )
 					case CX2UnitManager::NCT_THING_NOBUFF:		/// 버프/디버프에 영향을 받지 않음()
 						//}} JHKang / 강정훈 / 2010/12/07 / 버프 및 디버프 받지 않는 NPC TYPE
 						continue;
+					default:
+						break;
 					}
 				} break;
 			}
@@ -2092,8 +2096,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_BlackHoleData( float fElapsedTime )
 
 void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	ASSERT( pMeshInst != NULL );
@@ -2565,6 +2569,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 						}
 					}
 				} break;
+	default:
+		break;
 	}
 }
 
@@ -2575,8 +2581,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_SineMoveData( float fElapsedTime )
 {
 	//**
 
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	//ASSERT( pMeshInst != NULL );
@@ -2730,8 +2736,8 @@ void CX2DamageEffect::CEffect::AttackResult()
 
 	KTDXPROFILE();
 
-    if( m_DamageData.reActResult == CX2DamageManager::RT_NO_DAMAGE )
-        return;
+	if( m_DamageData.reActResult == CX2DamageManager::RT_NO_DAMAGE )
+		return;
 
 	CX2GameUnit* pOwnerGameUnit = ( null != m_optrOwnerUnit ? m_optrOwnerUnit.GetObservable() : NULL );
 	CX2GameUnit *pDefenderGameUnit = m_DamageData.optrDefenderGameUnit.GetObservable();
@@ -3089,6 +3095,8 @@ void CX2DamageEffect::CEffect::AttackResult()
 							pGUUser->UpNowMp( pGUUser->GetCashItemAbility().m_fUpMPAtAttackOrDamage );
 						}
 					} break;
+				default:
+					break;
 				}
 				//}} dmlee 2008.04.11 캐시 아이템 착용시
 
@@ -3331,8 +3339,8 @@ void CX2DamageEffect::CEffect::AttackResult()
 	{
 		CX2GUNPC* pGUNPC = (CX2GUNPC*) pDefenderGameUnit;
 		if( pGUNPC->GetAbsorbMagicState() == true &&
-			( m_DamageData.bCanReflexMagic == true || true == pGUNPC->GetAbsorbMagicSpecial() &&
-			CX2DamageManager::AT_EFFECT == m_DamageData.attackerType && CX2DamageManager::AT_NORMAL == m_DamageData.attackType ) )
+			( m_DamageData.bCanReflexMagic == true || (true == pGUNPC->GetAbsorbMagicSpecial() &&
+			CX2DamageManager::AT_EFFECT == m_DamageData.attackerType && CX2DamageManager::AT_NORMAL == m_DamageData.attackType) ) )
 		{
 			bCreateHitEffect = false;
 			bCreateAbsorbMagicEffect = true;
@@ -3403,7 +3411,7 @@ void CX2DamageEffect::CEffect::AttackResult()
 			if( pParticleData->bForceDieHit == true )
 			{
                 if ( g_pX2Game != NULL )
-				g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
+					g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
 				SAFE_DELETE( pParticleData );
 				m_StartParticleDataList.erase( m_StartParticleDataList.begin() + i );
 				i--;
@@ -3416,7 +3424,7 @@ void CX2DamageEffect::CEffect::AttackResult()
 			if( pParticleData->bForceDieHit == true )
 			{
                 if ( g_pX2Game != NULL )
-				g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
+					g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
 				SAFE_DELETE( pParticleData );
 				m_PassiveParticleDataList.erase( m_PassiveParticleDataList.begin() + i );
 				i--;
@@ -3428,7 +3436,7 @@ void CX2DamageEffect::CEffect::AttackResult()
 			if( pParticleData->bForceDieHit == true )
 			{
                 if ( g_pX2Game != NULL )
-				g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
+					g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
 				SAFE_DELETE( pParticleData );
 				m_TimeParticleDataList.erase( m_TimeParticleDataList.begin() + i );
 				i--;
@@ -3720,7 +3728,7 @@ void CX2DamageEffect::CEffect::SetTimeParticle()
 	//}} kimhc // 2009-10-20 // 기존의 Set함수를 Load와 Set 으로 분류(일명 독구름 작업)
 }
 
-void CX2DamageEffect::CEffect::SetSuckMagicParticle(WCHAR *particleName)
+void CX2DamageEffect::CEffect::SetSuckMagicParticle(const WCHAR* particleName)
 {
 	KTDXPROFILE();
 
@@ -3897,7 +3905,7 @@ void CX2DamageEffect::CEffect::SetDamageEffect()
 	//}} kimhc // 2009-10-20 // 기존의 Set함수를 Load와 Set 으로 분류(일명 독구름 작업)
 }
 
-CX2DamageEffect::ParticleData* CX2DamageEffect::CEffect::LoadParticleSuckMagic( WCHAR *particleName )
+CX2DamageEffect::ParticleData* CX2DamageEffect::CEffect::LoadParticleSuckMagic( const WCHAR* particleName )
 {
 	KTDXPROFILE();
 
@@ -4180,7 +4188,7 @@ void CX2DamageEffect::CEffect::CreateHitDamageEffect( vector<DamageEffectData*>&
 
 		if( m_pManager != NULL )
 		{
-			float fLandPos = min( m_fLandPos, vPosition.y );
+			[[maybe_unused]] float fLandPos = min( m_fLandPos, vPosition.y );
 
 			float fForceDownRate = 1.f;
 			if(true == m_bInheritForceDownRate)
@@ -4638,7 +4646,7 @@ void CX2DamageEffect::CEffect::SetParticleData( ParticleData* pData )
 				//}} kimhc // 2010.2.3 //	매 프레임 Rotate Angle이 바뀌도록
 
 				//if(pData->bTrace == true)
-					pSeq->SetPosition( m_optrOwnerUnit->GetBonePos( pData->boneName.c_str() ), pData->bTraceMore, pData->bTraceMore );
+				pSeq->SetPosition( m_optrOwnerUnit->GetBonePos( pData->boneName.c_str() ), pData->bTraceMore, pData->bTraceMore );
 			}
 		}
 		break;
@@ -4716,8 +4724,8 @@ void CX2DamageEffect::CEffect::FollowLine()
 	D3DXVECTOR3 outPos;
 	int			lineIndex = 0;
 
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	if( NULL == pMeshInst )
@@ -4801,7 +4809,6 @@ void CX2DamageEffect::CEffect::FollowLine()
 		{
 			if(m_bFollowOnLine)
 			{
-				D3DXVECTOR3 vPos = m_BeforePos;
 				m_BeforePos.y = pMeshInst->GetPos().y;
 				pMeshInst->SetPos( m_BeforePos );
 				if( bUpdateLandPos == true && pMeshInst->GetToggleRotae() == false )
@@ -4938,8 +4945,8 @@ void CX2DamageEffect::CEffect::LoadSinMoveData()
 //kimhc // 2010-12-17 // D3DXVECTOR3를 인자로 넘기는 것을 const D3DXVECTOR3&로 변경함
 void CX2DamageEffect::CEffect::VectorLockOn( const D3DXVECTOR3& targetPos )
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	if( NULL == pMeshInst )
@@ -4982,7 +4989,6 @@ void CX2DamageEffect::CEffect::VectorLockOn( const D3DXVECTOR3& targetPos )
 		}
 	}
 
-	D3DXVECTOR3 axis;	// 회전축
 	D3DXVECTOR3 relVec = targetPos - pMeshInst->GetPos();	// 목표와의 상대적 벡터
 	D3DXVec3Normalize( &relVec, &relVec );
 
@@ -5498,13 +5504,13 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 	return NULL;
 }
 
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CX2DamageEffect::ParticleData)> ParticleDataPool;
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CX2DamageEffect::DamageEffectData)> DamageEffectDataPool;
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CX2DamageEffect::CEffect)> CEffectPool;
+	typedef KSingletonPool<sizeof(CX2DamageEffect::ParticleData)> ParticleDataPool;
+	typedef KSingletonPool<sizeof(CX2DamageEffect::DamageEffectData)> DamageEffectDataPool;
+	typedef KSingletonPool<sizeof(CX2DamageEffect::CEffect)> CEffectPool;
 
 
 
-	void* CX2DamageEffect::ParticleData::operator new(size_t s)
+	void* CX2DamageEffect::ParticleData::operator new(size_t /*s*/)
 	{
 		return ParticleDataPool::malloc();
 	}
@@ -5514,7 +5520,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 		ParticleDataPool::free(p);
 	}
 
-	void* CX2DamageEffect::DamageEffectData::operator new(size_t s)
+	void* CX2DamageEffect::DamageEffectData::operator new(size_t /*s*/)
 	{
 		return DamageEffectDataPool::malloc();
 	}
@@ -5525,7 +5531,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 	}
 
 
-	void* CX2DamageEffect::CEffect::operator new(size_t s)
+	void* CX2DamageEffect::CEffect::operator new(size_t /*s*/)
 	{
 		return CEffectPool::malloc();
 	}
@@ -5540,7 +5546,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 
 void CX2DamageEffect::CEffect::SetLockOnNearstTarget( IN const D3DXVECTOR3& vMyPos_, int iTeam_ , int randomOffset/* = 0 */)
 {
-	bool bUserUnit;
+	bool bUserUnit = false;
 	UidType uid = ( g_pX2Game != NULL ) ? g_pX2Game->GetLockOnNearstTarget( static_cast<CX2Room::TEAM_NUM>(iTeam_), vMyPos_, bUserUnit ) : 0;
 
 	if( bUserUnit == true )
@@ -5557,7 +5563,7 @@ void CX2DamageEffect::CEffect::SetLockOnNearstTarget( IN const D3DXVECTOR3& vMyP
 				  ( 참고로, DamageEffect_APT_Pylon_Additional_Shock 의 길이 배율은 800.f 이다. )
 	@return		: 연결 성공 여부
 */
-const bool CX2DamageEffect::CEffect::SetLinkMainEffectByPos( IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR3& vTargetPos_,
+bool CX2DamageEffect::CEffect::SetLinkMainEffectByPos( IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR3& vTargetPos_,
 															 IN const float fDistance_ /*= 99999.f*/ )
 {
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = GetMainEffect();		/// 연결 데미지 이펙트의 Main Mesh

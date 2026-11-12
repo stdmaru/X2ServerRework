@@ -190,6 +190,8 @@ CX2SquareUnit::CX2SquareUnit( bool bMyUnit, CX2Unit* pUnit, const WCHAR* pScript
 			{
 				m_pMesh = g_pKTDXApp->GetDeviceManager()->OpenXSkinMesh( L"Mesh_Add_Base_SD.X" );
 			} break;
+	default:
+		break;
 	}
 
 	if( m_pMesh != NULL )
@@ -291,6 +293,8 @@ void    CX2SquareUnit::AppendToDeviceList( CKTDXDeviceDataList& listInOut_, CX2U
 		{
 			g_pKTDXApp->GetDeviceManager()->AppendXSkinMesh( listInOut_, L"Mesh_Eve_Base_SD.x" );
 		} break;
+	default:
+		break;
 	}
 
 	if ( NULL != g_pMain->GetPVPEmblem() )
@@ -875,6 +879,8 @@ void CX2SquareUnit::InitWaitMotion()
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 		m_wstrLobbyWaitMotionName = L"ALP_LobbyWait";
 		break;
+	default:
+		break;
 	}
 }
 
@@ -917,7 +923,6 @@ void    CX2SquareUnit::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
 
 HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 {
-	typedef std::map< float, bool > EventTimeStampMap;
 
 
 	if ( m_StateID.m_iRidingWait == m_SyncData.m_StateID )
@@ -957,8 +962,8 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 	if( m_bFirstGetPacket == false && m_bMyUnit == false )
 		return S_OK;
 
-    if ( !GetShowObject() )
-        return S_OK;
+	if ( !GetShowObject() )
+		return S_OK;
 
 //}} robobeg : 2008-10-18
 
@@ -1346,8 +1351,8 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 
 /*virtual*/ RENDER_HINT CX2SquareUnit::OnFrameRender_Prepare()
 {
-    if ( m_bInit == false || (m_bFirstGetPacket == false && m_bMyUnit == false) )
-        return RENDER_HINT_NORENDER;
+	if ( m_bInit == false || (m_bFirstGetPacket == false && m_bMyUnit == false) )
+		return RENDER_HINT_NORENDER;
 
 	if( GetPersonalShopState() == PSS_SHOP )
         return RENDER_HINT_NORENDER;
@@ -1508,16 +1513,6 @@ void CX2SquareUnit::RenderServer(int iFinalLeft, int iFinalTop)
 
 	const CKTDXDeviceTexture::TEXTURE_UV*	pTexUV = NULL;
 
-#ifdef EXTEND_SERVER_GROUP_MASK
-	int iServerGroupID = -1;
-
-	iServerGroupID = (int) g_pMain->ExtractServerGroupID(GetUID());
-#else
-	SERVER_GROUP_ID eServerGroupID	= SGI_INVALID;
-
-	eServerGroupID = (SERVER_GROUP_ID) g_pMain->ExtractServerGroupID(GetUID());
-#endif // EXTEND_SERVER_GROUP_MASK
-
 	{
 		pTexUV = NULL;
 	}
@@ -1569,7 +1564,7 @@ void CX2SquareUnit::RenderName()
 
 	wstring wstrNickName= m_pUnit->GetNickName();
 	WCHAR wcLv[10];
-	StringCchPrintf(wcLv, 10, L"Lv.%d ", m_pUnit->GetUnitData().m_Level);
+	StringCchPrintf(wcLv, 10, L"Lv.%d ", static_cast<int>( m_pUnit->GetUnitData().m_Level ));
 	//wsprintf(wcLv, L"Lv.%d ", m_pUnit->GetUnitData().m_Level);
 
 	wstring wstrName = L"";
@@ -1582,7 +1577,7 @@ void CX2SquareUnit::RenderName()
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV && g_pData->GetRenderEtc() == true)
 	{
 		WCHAR wszText[256] = L"";
-		swprintf( wszText, L"(%5.2f, %5.2f, %5.2f) Rating: %d", GetPos().x, GetPos().y, GetPos().z, GetUnit()->GetUnitData().m_iRating );
+		swprintf_s( wszText, L"(%5.2f, %5.2f, %5.2f) Rating: %d", GetPos().x, GetPos().y, GetPos().z, static_cast<int>( GetUnit()->GetUnitData().m_iRating ) );
 		wstrName += wszText;
 	}
 
@@ -1627,7 +1622,7 @@ void CX2SquareUnit::RenderName()
 	}
 
 	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos( m_SyncData.m_Pos );
-	int iFinalLeft, iFinalTop;
+	int iFinalLeft = 0, iFinalTop;
 
 	iFinalTop = (int)finalPos.y;;
 
@@ -3169,6 +3164,8 @@ bool CX2SquareUnit::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId)
 				case CX2Unit::ET_EMOTION_AVATAR6:
 					m_bMixedEmotion[5] = true;
 					break;
+				default:
+					break;
 				}
 				SAFE_CLOSE( pMixMotion );
 			}
@@ -3193,7 +3190,7 @@ bool CX2SquareUnit::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId)
 	if(m_pUnit != NULL)
 	{
 		const char* pszEmotionStateName = m_pUnit->GetEmotionName(eEmotionId);
-		if( pszEmotionStateName == NULL || pszEmotionStateName[0] == NULL )
+		if( pszEmotionStateName == NULL || pszEmotionStateName[0] == '\0' )
 			return false;
 
 		if(m_bMyUnit == false)
@@ -3310,7 +3307,7 @@ bool CX2SquareUnit::IsAnimationEnd_LUA()
 }
 
 
-/*static*/ const WCHAR* CX2SquareUnit::GetSquareUnitScriptFileName( CX2Unit::UNIT_CLASS eUnitClass )
+/*static*/ const WCHAR* CX2SquareUnit::GetSquareUnitScriptFileName( CX2Unit::UNIT_CLASS /*eUnitClass*/ )
 {
 	return L"SQUARE_Unit.lua";
 }

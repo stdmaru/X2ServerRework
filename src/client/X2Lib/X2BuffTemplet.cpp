@@ -1,7 +1,6 @@
 /** @file : X2BuffTemplet.cpp
     @breif : 버프의 행동과 종료등을 가지고 있는 클래스 정의 파일
 */
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffTemplet.h"
@@ -50,9 +49,7 @@ bool CX2BuffTemplet::ParsingScript( KLuaManager& luaManager_ )
 	/// 행동 요소 파싱
 	if ( luaManager_.BeginTable( "BEHAVIOR" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		if ( !CX2BuffBehaviorTemplet::ParsingCombinationBehavior( luaManager_, m_vecBehaviorPtr ) )
 			return false;
@@ -64,9 +61,7 @@ bool CX2BuffTemplet::ParsingScript( KLuaManager& luaManager_ )
 	/// 종료 요소 파싱
 	if ( luaManager_.BeginTable( "FINALIZER" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 			if ( !CX2BuffFinalizerTemplet::ParsingCombinationFinalizer( luaManager_, m_vecFinalizerPtr ) )
 				return false;
@@ -77,9 +72,7 @@ bool CX2BuffTemplet::ParsingScript( KLuaManager& luaManager_ )
 	/// 종료 요소 파싱
 	if ( luaManager_.BeginTable( "DISPLAYER" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 			if ( !CX2BuffDisplayerTemplet::ParsingCombinationDisplayer( luaManager_, m_vecDisplayerPtr ) )
 				return false;
@@ -802,7 +795,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
             g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hDamageEffectThirdBlade );
 	}
 
-	m_ThirdBladeMatrixQueue.swap( std::queue<ThirdBladeMatrixPtr>() );
+	m_ThirdBladeMatrixQueue = std::queue<ThirdBladeMatrixPtr>();
 	std::list<ThirdBladeDamageDataPtr>().swap( m_ThirdBladeDamageDataList );
 }
 
@@ -842,7 +835,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
 	@brief : CommonFrameMove 에서 수행될 함수
 	@param : 게임유닛(pGameUnit_), 루아매니저(luaManager_)
 */
-/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
     if ( CX2DamageEffect::CEffect* m_pDamageEffectThirdBlade = g_pX2Game->GetDamageEffect()->GetInstance( m_hDamageEffectThirdBlade ) )
 	{
@@ -906,7 +899,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
 	@brief : CommonStateEnd 에서 수행될 함수
 	@param : 게임유닛(pGameUnit_), 루아매니저(luaManager_)
 */
-/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonStateEnd( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonStateEnd( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
 	if ( pGameUnit_->GetSizeOfAttackTimeList() > 0 )
 	{
@@ -1158,12 +1151,12 @@ void CX2CustomFunctionByBuffPhantomSword::MoveDataDataToDamageEffect( CX2GameUni
 }
 
 
-/*virtual*/ void CX2CustomFunctionByBuffMarkOfCommand::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffMarkOfCommand::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
     m_checkElapsedTime.OnFrameMove( pGameUnit_->GetElapsedTime() );
 }
 
-/*virtual*/ void CX2CustomFunctionByBuffBigBangStream::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffBigBangStream::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
 	if ( !m_vecAnimationTime.empty() && pGameUnit_->GetSkinAnimPtr() )
 	{

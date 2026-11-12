@@ -297,12 +297,12 @@ void CX2StateTrainingSchool::SetShowStateDLG( bool bShow )
 }
 
 
-bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ( UINT nMapID )
+bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ( UINT /*nMapID*/ )
 {
 	return true;
 }
 
-bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
@@ -326,7 +326,7 @@ bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_REQ( int iTrainingID )
 
 
 
-bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_TC_ROOM_ACK kEvent;
@@ -394,7 +394,7 @@ bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_ACK( HWND hWnd, UINT uMs
 
 			// 게임 바로 시작
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_744 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, 0, false );
 
 
 			const int MAGIC_FREE_TRAINING_ID = 1;
@@ -626,7 +626,6 @@ void CX2StateTrainingSchool::UpdateTrainUI( bool bUpdateNavi )
 				{
 					// 표시되는 훈련
 					// 깬 훈련인가 보고
-					bool bClearedTraining = false;
 					std::map< int, KTCClearInfo >::iterator it;
 					it = g_pData->GetMyUser()->GetSelectUnit()->GetMapTCClear().find( trainingInfo.m_iID );
 					if( it != g_pData->GetMyUser()->GetSelectUnit()->GetMapTCClear().end() )
@@ -722,7 +721,7 @@ void CX2StateTrainingSchool::StateChangeToVillage()
 	Handler_EGS_STATE_CHANGE_FIELD_REQ();
 }
 
-bool CX2StateTrainingSchool::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingSchool::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	short zDelta = (short)HIWORD(wParam);
 	m_SumDelta += zDelta;

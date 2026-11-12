@@ -685,7 +685,7 @@ public:
 		GetChungGageData()->SetBerserkMode( bBerserkMode_ );
 	}
 
-	__forceinline int	GetCannonBallCount();
+	int	GetCannonBallCount();
 
 	virtual		HRESULT OnFrameMove( double fTime, float fElapsedTime );
 

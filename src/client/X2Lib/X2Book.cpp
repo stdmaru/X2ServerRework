@@ -11,9 +11,8 @@ m_iCurrentPage(0)
 
 }
 
-CX2Book::CX2Book( const char* bookTableName )
+CX2Book::CX2Book( const char* bookTableName ) : CX2Book()
 {
-	CX2Book::CX2Book();
 	SetBookTable( bookTableName );
 	m_bShow = false;
 }
@@ -25,7 +24,7 @@ CX2Book::~CX2Book(void)
 	m_mapPageData.clear();
 }
 
-bool CX2Book::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Book::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -58,7 +57,7 @@ bool CX2Book::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return false;
 }
 
-bool CX2Book::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Book::MsgProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_F12) == TRUE )
 	{
@@ -67,7 +66,7 @@ bool CX2Book::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return false;
 }
 
-bool CX2Book::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Book::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
@@ -231,7 +230,7 @@ void CX2Book::GotoPage(int iTargetPage)
 	// 이전에 있던 페이지를 삭제해주고
 	if(m_pDLGBook != NULL)
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBook, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBook, 0, false );
 	}
 
 	// 새로운 페이지를 열자

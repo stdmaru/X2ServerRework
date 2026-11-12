@@ -9,7 +9,7 @@ class CX2GUUser;
 
 struct  CX2DamageEffect_CEffect_TAG {};
 typedef KHandleType<int,CX2DamageEffect_CEffect_TAG>     CX2DamageEffect_CEffectHandle;
-#define INVALID_DAMAGE_EFFECT_HANDLE    (CX2DamageEffect_CEffectHandle::invalid_handle())
+#define INVALID_DAMAGE_EFFECT_HANDLE    (CX2DamageEffect_CEffectHandle::invalid_handle{})
 
 
 

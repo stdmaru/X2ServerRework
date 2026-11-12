@@ -2,7 +2,6 @@
     @breif : 버프 템플릿을 관리하는 매니저 클래스
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffTempletManager.h"

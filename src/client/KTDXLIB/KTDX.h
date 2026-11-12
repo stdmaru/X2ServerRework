@@ -399,6 +399,7 @@ using std::set;
 #include <memory>
 #include "x2/platform/noncopyable.h"
 #include "x2/platform/intrusive_ptr.h"
+#include "x2/platform/scope_exit.h"
 #include "KCircularBuffer.h"
 #include "KSingletonPool.h"
 
@@ -512,6 +513,7 @@ inline typename Container::iterator EraseUnorderlyUsingSwap( Container& containe
 	{
 		return	container.erase( iter );
 	}//if
+	using std::swap;
 	swap( *iter, *iterLast );
 	typename Container::size_type dist = iter - container.begin();
 	container.erase( iterLast );
@@ -742,6 +744,7 @@ struct TimeLimited
 {
 	float m_fTimeLeft;
 
+	virtual ~TimeLimited() = default;
 	virtual void OnTimeOutCallBack() {};
 
 	virtual void OnFrameMove( double /*fTime*/, float fElapsedTime )

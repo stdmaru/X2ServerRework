@@ -5,39 +5,39 @@
 
 // constructor.
 CX2TFieldNpc::CX2TFieldNpc( bool bBackgroundLoad ) :
-m_bBackgroundLoad( bBackgroundLoad ),
-m_bLoaded( false ),
-m_bReservedShowObject( false ),
-m_bReservedCanTalkNpc( false ),
-m_pDlgNpcMessage( NULL ), // kimhc // 2009-08-13 // NULL 초기화
-m_bRanking( false )
+m_pDlgNpcMessage( NULL ),
+m_fElapsedTimeAfterDisableNPCTalkBox ( 0.f ),
+m_bEnableNPCTalkBox( false ),
+m_sTalkNum( 0 ),
+m_bIsPlayNearSound ( false ), // kimhc // 2009-08-13 // NULL 초기화
+m_wstrNearSoundFileName (L"")
 //{{ kimhc // 2009-07-25 // 헤니르의 시공에 추가되는 ITEM_EXCHANGE_SHOP 작업
-, m_bExchange( false )
+, m_fPlayMaxNearSoundCoolTime ( 0.f )
 //}} kimhc // 2009-07-25 // 헤니르의 시공에 추가되는 ITEM_EXCHANGE_SHOP 작업
 
 //{{ kimhc // 2009-08-03 // 캐릭터별 은행
-, m_bPrivateBank( false )
+, m_fPlayNowNearSoundCoolTime ( 0.f )
 //}} kimhc // 2009-08-03 // 캐릭터별 은행
 
-, m_bGuild( false ) // oasis907 : 김상윤 [2009.11.24] // 길드 게시판
+, m_fPlayNearSoundDistance ( 0.f ) // oasis907 : 김상윤 [2009.11.24] // 길드 게시판
 
+, m_pNearPlaySound ( NULL )
+, m_bBackgroundLoad( bBackgroundLoad )
+, m_bLoaded( false )
+, m_bReservedShowObject( false )
+, m_bReservedCanTalkNpc( false )
+, m_bGuild( false )
+, m_bRanking( false )
+, m_bExchange( false )
+, m_bPrivateBank( false )
 , m_bPersonalShop( false )
 , m_bAgencyTraderRegister( false )
 , m_bAgencyTraderReceive( false )
-, m_fElapsedTimeAfterDisableNPCTalkBox ( 0.f )
-, m_bEnableNPCTalkBox( false )
-, m_sTalkNum( 0 )
 , m_bEvent1( false )
 , m_bEvent2( false )
 , m_bEvent3( false )
 , m_bEvent4( false )
 , m_bExchangeNewItem( false )
-, m_bIsPlayNearSound ( false )
-, m_wstrNearSoundFileName (L"")
-, m_fPlayMaxNearSoundCoolTime ( 0.f )
-, m_fPlayNowNearSoundCoolTime ( 0.f )
-, m_fPlayNearSoundDistance ( 0.f )
-, m_pNearPlaySound ( NULL )
 
 
 {
@@ -262,7 +262,7 @@ void CX2TFieldNpc::ResetNpc()
 		m_pDlgNpcMessage->SetShow(false);
 }
 
-void CX2TFieldNpc::SetShowField(bool val)
+void CX2TFieldNpc::SetShowField(bool /*val*/)
 {
 	SetShowObject(false);
 	CKTDGParticleSystem::CParticleEventSequence* pSeq	= GetUiParticle()->GetInstanceSequence( m_hNpcInArea );
@@ -386,15 +386,10 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 	// 이벤트 관리
 	if(m_pHouseTemplet != NULL && m_pHouseTemplet->m_bEventNpc == true)
 	{
-		__time64_t t0 = g_pData->GetServerCurrentTime();
-#ifdef	CONVERSION_VS
+		const time_t t0 = static_cast<time_t>( g_pData->GetServerCurrentTime() );
         struct tm   ktm;
         struct tm* ptm = &ktm;
-        bool bOK = _localtime64_s( ptm, &t0 ) == 0;
-#else
-		struct tm* ptm = _localtime64( &t0 );
-		bool bOK = ( ptm != NULL );
-#endif // CONVERSION_VS
+        bool bOK = localtime_s( ptm, &t0 ) == 0;
 		if ( bOK == true )
 		{
 			unsigned long fNowSecond = (unsigned long)((float)ptm->tm_hour * 3600.f + (float)ptm->tm_min * 60.f + (float)ptm->tm_sec);
@@ -945,6 +940,8 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 					static_cast<CX2BattleFieldGame*>(g_pX2Game)->GetNpcIndicator()->SetShow(false);
 				}
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -1151,6 +1148,8 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 					static_cast<CX2BattleFieldGame*>(g_pX2Game)->GetNpcIndicator()->SetShow(true);
 				}
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -1417,8 +1416,8 @@ void CX2TFieldNpc::OnFrameRender_Draw()
 	if( false == m_bEnable )
 		return;
 
-    if ( m_pWorld == NULL )
-        return;
+	if ( m_pWorld == NULL )
+		return;
 
 
 	if( m_pXSkinAnim != NULL && GetShowObject() == true )
@@ -1500,7 +1499,7 @@ void CX2TFieldNpc::OnFrameRender_Draw()
 //#endif NEW_VILLAGE_FIELD_NPC_BACKGROUND_LOADING_TEST
 }
 
-bool CX2TFieldNpc::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldNpc::MsgProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 
 
@@ -1604,6 +1603,8 @@ void CX2TFieldNpc::CreateFieldNpc(CX2World *pWorld, CX2LocationManager::HouseTem
 		{
 			m_bStaticMesh = true;
 		} break;
+	default:
+		break;
 	}
 
     m_bLoaded = false;
@@ -2047,12 +2048,12 @@ bool CX2TFieldNpc::Handler_EGS_TALK_WITH_NPC_REQ( CX2UnitManager::NPC_UNIT_ID qu
 
 
 
-bool CX2TFieldNpc::Handler_EGS_TALK_WITH_NPC_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldNpc::Handler_EGS_TALK_WITH_NPC_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
     ASSERT( pBuff != NULL );
-    if ( pBuff == NULL )
-        return false;
+	if ( pBuff == NULL )
+		return false;
 
 	KEGS_TALK_WITH_NPC_ACK kEvent;
 	DeSerialize( pBuff, &kEvent );
@@ -2135,8 +2136,8 @@ void CX2TFieldNpc::SetCanTalkNpc(bool val, bool bForce )
 
     if ( bForce == false )
         m_bReservedCanTalkNpc = true;
-    else
-        m_bReservedCanTalkNpc = false;
+	else
+		m_bReservedCanTalkNpc = false;
 
 	return;
 }

@@ -5,13 +5,13 @@
 
 
 CX2UIComboTree::CX2UIComboTree()
-: m_hDLGComboTree( NULL )
+: m_iNumMouseOverButton( 0 )
+, m_hDLGComboTree( NULL )
 , m_eUnitClass( CX2Unit::UC_NONE )
 , m_eComboCategory( CX2ComboTree::CC_NORMAL )
 , m_bShow( false )
 , m_DLGSize( 0, 0 )
 , m_iOpacity( 255 )
-, m_iNumMouseOverButton( 0 )
 {
 }
 
@@ -23,7 +23,7 @@ CX2UIComboTree::~CX2UIComboTree()
 }
 
 
-bool CX2UIComboTree::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIComboTree::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch( wParam )
 	{
@@ -487,6 +487,8 @@ void CX2UIComboTree::UpdateComboTree( CX2Unit::UNIT_CLASS eUnitClass, CX2ComboTr
 				pButton->SetShowEnable( true, true );
 			}
 		} break;
+	default:
+		break;
 	}
 
 }
@@ -1002,6 +1004,8 @@ void CX2UIComboTree::CreateMouseOverButton( const CX2ComboTree::ComboIcon& eIcon
 			fAddSizeX = 22.f;
 		}
 		break;
+	default:
+		break;
 	}
 
 	switch( eIcon_.m_eComboIcon )
@@ -1061,6 +1065,8 @@ void CX2UIComboTree::CreateMouseOverButton( const CX2ComboTree::ComboIcon& eIcon
 			fAddSizeX = 20.f;
 			fAddSizeY = 20.f;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1146,7 +1152,6 @@ void CX2UIComboTree::DrawComboTreeDesc( D3DXVECTOR2 vDrawPos_, wstring wstrDesc 
 	int itemDescPosY = (int)vDrawPos_.y;
 
 	m_pDLGComboTreeDesc->SetShow( true );
-	CKTDGUIStatic* pItemDesc = (CKTDGUIStatic*)m_pDLGComboTreeDesc->GetControl(L"ItemDesc");
 
 	//const CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pItemDesc->GetString(0)->fontIndex );
 

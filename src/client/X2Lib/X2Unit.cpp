@@ -488,6 +488,10 @@ bool CX2Unit::AddClearDungeon( int dungeonID )
 	if ( mit == m_mapDungeonClear.end() )
 	{
 		KDungeonClearInfo kDungeonClearInfo;
+		kDungeonClearInfo.m_iDungeonID = dungeonID;
+		kDungeonClearInfo.m_iMaxScore = 0;
+		kDungeonClearInfo.m_cMaxTotalRank = 0;
+		kDungeonClearInfo.m_bNew = true;
 
 		m_mapDungeonClear.insert( std::make_pair( (int)dungeonID, kDungeonClearInfo ) );
 
@@ -704,6 +708,8 @@ CX2Item* CX2Unit::CreateBasicEquip( CX2Unit::EQIP_POSITION equipPosition )
 		break;
 	case CX2Unit::EP_WEAPON_HAND:
 		kBasicEquipData.m_ItemID = GetUnitTemplet()->m_BasicWeaponItemID;
+		break;
+	default:
 		break;
 	}
 	if ( kBasicEquipData.m_ItemID == 0 )		// ���� ���ǿ� ���� �Ǽ��縮�� ���
@@ -1116,6 +1122,8 @@ const CX2Stat::EnchantStat& CX2Unit::GetEnchantStat( bool bUpdate /*= true*/, bo
 					m_EnchantStat.m_fDefNature += (int)CX2EnchantItem::EAR_VALUE;
 					m_EnchantStat.m_fDefDark += (int)CX2EnchantItem::EAR_VALUE;
 				} break;
+			default:
+				break;
 			}
 		}
 
@@ -1251,17 +1259,17 @@ const CX2Stat::EnchantStat& CX2Unit::GetEnchantStat( bool bUpdate /*= true*/, bo
 	AddEnchantStatFromDragonBreath( m_EnchantStat );
 	//}} kimhc // 2011.4.24 // ������� 2�ܰ�, �巡���� ����
 
-	if( m_EnchantStat.m_fDefBlaze > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefBlaze > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefBlaze = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefWater > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefWater > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefWater = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefNature > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefNature > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefNature = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefWind > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefWind > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefWind = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefLight > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefLight > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefLight = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefDark > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefDark > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefDark = CX2EnchantItem::EAR_MAX_VALUE;
 
 	return m_EnchantStat;
@@ -1455,6 +1463,8 @@ float CX2Unit::GetRepairDiscountRate()
 					{
 						fDiscountRate -= 1.5f;
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -1857,6 +1867,8 @@ int CX2Unit::GetClassLevel()
 		{
 			return 2;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3425,17 +3437,17 @@ UidType CX2Unit::UnitData::GetBlackListUnitUID( const WCHAR* wszNickName ) const
 	return unitUID;
 }
 
-void CX2Unit::UnitData::SetPremiumBuffInfo( const vector<KBuffInfo>& vecBuffInfo_ )
+void CX2Unit::UnitData::SetPremiumBuffInfo( const vector<KBuffInfo>& /*vecBuffInfo_*/ )
 {
-	/*BOOST_FOREACH( const KBuffInfo& kBuffInfo, vecBuffInfo_ )		/// �� ���� �ý���
+	/*for ( const KBuffInfo& kBuffInfo : vecBuffInfo_ )		/// �� ���� �ý���
 	{
 		m_vecPremiumBuffList.push_back( kBuffInfo.m_iBuffID );
 	}*/
 }
 
-void CX2Unit::UnitData::ErasePremiumBuffInfo( const vector<int>& vecBuffInfo_ )
+void CX2Unit::UnitData::ErasePremiumBuffInfo( const vector<int>& /*vecBuffInfo_*/ )
 {
-	/*BOOST_FOREACH( const int& iBuffID, vecBuffInfo_ )				/// �� ���� �ý���
+	/*for ( const int& iBuffID : vecBuffInfo_ )				/// �� ���� �ý���
 	{
 		std::vector< int >::iterator vit = m_vecPremiumBuffList.begin();
 
@@ -3595,7 +3607,7 @@ void CX2Unit::ResetIncreaseSkillLevelByBuff()
 	std::map<CX2SkillTree::SKILL_ID, CX2UserSkillTree::UserSkillData>::iterator mit = mapSkillAcquired.begin();
 
 	/// ������ ��ų���� ������ �ø��� ȿ���� ���� ������, �������� ��ų ��ο��� ����
-	for ( mit; mit != mapSkillAcquired.end(); ++mit )
+	for ( ; mit != mapSkillAcquired.end(); ++mit )
 	{
 		const int iIncreaseSkillLevelByBuff = GetIncreaseSkillLevelByBuff();	/// ��� ��ų�� ��ų ���� ������ ��ȯ
 
@@ -3692,7 +3704,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 	int iIncreaseSkillLevelBySocket = 0;
 	/// ���Ͽ� ���� ���� ���� ȿ���� �ִ��� �˻�
 
-	BOOST_TEST_FOREACH( const UidType&, eqipUID, m_UnitData.m_NowEqipItemUIDList )		/// ������� �������� ��� �˻�
+	for ( const UidType& eqipUID : m_UnitData.m_NowEqipItemUIDList )		/// ������� �������� ��� �˻�
 	{
 		CX2Item* pItem = m_UnitData.m_Inventory.GetItem( eqipUID );		/// ������ UID�� ���� ������ ��ü ��ȯ
 		if( NULL == pItem )
@@ -4054,12 +4066,14 @@ float CX2Unit::GetSkillCoolTimeDecreaseRate(CX2SkillTree::SKILL_ID eSkillID, CX2
 			return fDecreaseRate;
 		}
 		break;
+	default:
+		break;
 	}
 
 	return fDecreaseRate;
 }
 
-float CX2Unit::GetSkillMpDecreaseRate(CX2SkillTree::SKILL_ID eSkillID, CX2SkillTree::SKILL_TYPE eSkillType) const
+float CX2Unit::GetSkillMpDecreaseRate(CX2SkillTree::SKILL_ID /*eSkillID*/, CX2SkillTree::SKILL_TYPE eSkillType) const
 {
 	float fDecreaseRate = 1.0f;
 

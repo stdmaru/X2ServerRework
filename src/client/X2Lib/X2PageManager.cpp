@@ -179,7 +179,7 @@ CX2PageManager::CX2PageSlot::CX2PageSlot( int index, const WCHAR* pFileName )
 CX2PageManager::CX2PageSlot::~CX2PageSlot()
 {
 	if ( m_pDialog != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, 0, false );
 
 	m_pDialog = NULL;
 }

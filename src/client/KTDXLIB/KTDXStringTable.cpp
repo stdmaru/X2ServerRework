@@ -170,6 +170,17 @@ const std::wstring& CKTDXStringTable::GetGeneralString( int iID )
     return m_vecGeneralStringTable[iID];
 }
 
+const std::wstring& CKTDXStringTable::GetDisplayString( int iID )
+{
+    if( !m_bEnableDebugInfo )
+        return GetGeneralString( iID );
+
+    auto [it, inserted] = m_mapDebugInfoString.try_emplace( iID );
+    if( inserted )
+        it->second = L"[S" + std::to_wstring( iID ) + L"]" + GetGeneralString( iID );
+    return it->second;
+}
+
 
 const std::wstring& CKTDXStringTable::GetScriptString( int iID )
 {

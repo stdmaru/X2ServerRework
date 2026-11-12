@@ -544,7 +544,7 @@ bool CX2Item::GetEnchantStat( OUT CX2Stat::Stat& stat_ ) const
 
 				kCalculateStat.AssignToStat( stat_ );
 
-				if( abs(m_kItemData.m_EnchantLevel) >= sizeof(ENCHANT_STAT_SCALE) )
+				if( static_cast<size_t>( abs(m_kItemData.m_EnchantLevel) ) >= sizeof(ENCHANT_STAT_SCALE) )
 				{
 					ASSERT( !"invalid enchant level" );
 				}
@@ -653,7 +653,7 @@ bool CX2Item::GetEnchantStat( OUT CX2Stat::Stat& stat_, IN CX2Unit::UNIT_TYPE eU
 
 				kCalculateStat.AssignToStat( stat_ );
 
-				if( abs(m_kItemData.m_EnchantLevel) >= sizeof(ENCHANT_STAT_SCALE) )
+				if( static_cast<size_t>( abs(m_kItemData.m_EnchantLevel) ) >= sizeof(ENCHANT_STAT_SCALE) )
 				{
 					ASSERT( !"invalid enchant level" );
 				}

@@ -1075,7 +1075,7 @@ void CX2GUNPCFunc::BEE_BOMB_JUMP_DOWN_DIR_STATE_END( CX2GUNPC* pNPCUnit )
         pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "StepSmoke", pNPCUnit->GetLandPosition_LUA(), D3DXVECTOR2(100,100), D3DXVECTOR2(5,-1) );
 }
 
-void CX2GUNPCFunc::BEE_BOMB_BOMB_ATTACK_FRAME_MOVE( CX2GUNPC* pNPCUnit )
+void CX2GUNPCFunc::BEE_BOMB_BOMB_ATTACK_FRAME_MOVE( CX2GUNPC* /*pNPCUnit*/ )
 {
 }
 
@@ -1192,7 +1192,7 @@ void CX2GUNPCFunc::BEE_BOMB_NODROP_JUMP_DOWN_DIR_STATE_END( CX2GUNPC* pNPCUnit )
         pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "StepSmoke", pNPCUnit->GetLandPosition_LUA(), D3DXVECTOR2(100,100), D3DXVECTOR2(5,-1) );
 }
 
-void CX2GUNPCFunc::BEE_BOMB_NODROP_BOMB_ATTACK_FRAME_MOVE( CX2GUNPC* pNPCUnit )
+void CX2GUNPCFunc::BEE_BOMB_NODROP_BOMB_ATTACK_FRAME_MOVE( CX2GUNPC* /*pNPCUnit*/ )
 {
 }
 
@@ -1381,7 +1381,7 @@ void CX2GUNPCFunc::BEE_ASSAULT_JUMP_DOWN_DIR_STATE_END( CX2GUNPC* pNPCUnit )
         pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "StepSmoke", pNPCUnit->GetLandPosition_LUA(), D3DXVECTOR2(100,100), D3DXVECTOR2(5,-1) );
 }
 
-void CX2GUNPCFunc::BEE_ASSAULT_BOMB_ATTACK_FRAME_MOVE( CX2GUNPC* pNPCUnit )
+void CX2GUNPCFunc::BEE_ASSAULT_BOMB_ATTACK_FRAME_MOVE( CX2GUNPC* /*pNPCUnit*/ )
 {
 }
 
@@ -2349,15 +2349,15 @@ void CX2GUNPCFunc::MONKEY_APPLE_APPLE_ATTACK_FRAME_MOVE( CX2GUNPC* pNPCUnit )
     }
 }
 
-void CX2GUNPCFunc::MONKEY_APPLE_WAIT_FRAME_MOVE( CX2GUNPC* pNPCUnit )
+void CX2GUNPCFunc::MONKEY_APPLE_WAIT_FRAME_MOVE( CX2GUNPC* /*pNPCUnit*/ )
 {
 }
 
-void CX2GUNPCFunc::MONKEY_APPLE_WALK_FRAME_MOVE( CX2GUNPC* pNPCUnit )
+void CX2GUNPCFunc::MONKEY_APPLE_WALK_FRAME_MOVE( CX2GUNPC* /*pNPCUnit*/ )
 {
 }
 
-void CX2GUNPCFunc::MONKEY_APPLE_RIDE_HORSE_STATE_START( CX2GUNPC* pNPCUnit )
+void CX2GUNPCFunc::MONKEY_APPLE_RIDE_HORSE_STATE_START( CX2GUNPC* /*pNPCUnit*/ )
 {
 	/*
 	int npcUID = g_pX2Game->GetNearNPCUnitUID_LUA( pNPCUnit->GetPos(), CX2UnitManager::NUI_HORSE );
@@ -2800,16 +2800,16 @@ void CX2GUNPCFunc::SMALL_GATE_POST_BROKEN_START_STATE( CX2GUNPC* pNPCUnit )
 {
     CKTDGParticleSystem *pMinorParticle = g_pX2Game->GetMinorParticle();
     CKTDGParticleSystem::CParticleEventSequence *pParticle;
-    float degreeY;
-
     if(pMinorParticle == NULL)
         return;
+
+    // Both chain lights share the rotation (the second one used to read it uninitialized when the first was not created).
+    const float degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
 
     pParticle= pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "ChainGateLight1", pNPCUnit->GetBonePos_LUA( "COLLISION_SPHERE2" ), D3DXVECTOR2(1000,1000), D3DXVECTOR2(1,-1) );
     if(pParticle != NULL)
     {
         pNPCUnit->SetMinorParticle_LUA( 0, pParticle->GetHandle() );
-        degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
         pParticle->SetAddRotate( D3DXVECTOR3( 0.0f, degreeY, 0.0f ) );
     }
 
@@ -4884,16 +4884,16 @@ void CX2GUNPCFunc::CHAIN_GATE_POST_BROKEN_START_STATE( CX2GUNPC* pNPCUnit )
 {
     CKTDGParticleSystem *pMinorParticle = g_pX2Game->GetMinorParticle();
     CKTDGParticleSystem::CParticleEventSequence *pParticle;
-    float degreeY;
-
     if(pMinorParticle == NULL)
         return;
+
+    // Both chain lights share the rotation (the second one used to read it uninitialized when the first was not created).
+    const float degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
 
     pParticle= pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "ChainGateLight1", pNPCUnit->GetBonePos_LUA( "COLLISION_SPHERE2" ), D3DXVECTOR2(1000,1000), D3DXVECTOR2(1,-1) );
     if(pParticle != NULL)
     {
         pNPCUnit->SetMinorParticle_LUA( 0, pParticle->GetHandle() );
-        degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
         pParticle->SetAddRotate( D3DXVECTOR3( 0.0f, degreeY, 0.0f ) );
     }
 
@@ -4911,16 +4911,16 @@ void CX2GUNPCFunc::CHAIN_GATE_POST_EXTRA_BROKEN_START_STATE( CX2GUNPC* pNPCUnit 
 {
     CKTDGParticleSystem *pMinorParticle = g_pX2Game->GetMinorParticle();
     CKTDGParticleSystem::CParticleEventSequence *pParticle;
-    float degreeY;
-
     if(pMinorParticle == NULL)
         return;
+
+    // Both chain lights share the rotation (the second one used to read it uninitialized when the first was not created).
+    const float degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
 
     pParticle= pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "ChainGateLight1", pNPCUnit->GetBonePos_LUA( "COLLISION_SPHERE2" ), D3DXVECTOR2(1000,1000), D3DXVECTOR2(1,-1) );
     if(pParticle != NULL)
     {
         pNPCUnit->SetMinorParticle_LUA( 0, pParticle->GetHandle() );
-        degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
         pParticle->SetAddRotate( D3DXVECTOR3( 0.0f, degreeY, 0.0f ) );
     }
 
@@ -5816,8 +5816,8 @@ void CX2GUNPCFunc::GIANT_PPORU_RED_SPECIAL_ATTACK_A_FRAME_MOVE( CX2GUNPC* pNPCUn
 				{
 					pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "MagnumBladeFireWave", landPos, D3DXVECTOR2(10,10), D3DXVECTOR2(4, -1) );
 
-					D3DXVECTOR3 projPos = g_pKTDXApp->GetProj3DPos( pos );
-					projPos.z = 0;
+					const D3DXVECTOR2 projPos2 = g_pKTDXApp->GetProj3DPos( pos );
+					const D3DXVECTOR3 projPos( projPos2.x, projPos2.y, 0 );
 					pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "STR_KuAAang", projPos, D3DXVECTOR2(100,100), D3DXVECTOR2(1, -1) );
 				}
 
@@ -6099,7 +6099,6 @@ void CX2GUNPCFunc::MONSTER_FLY_FRAME_MOVE( CX2GUNPC* pNPCUnit )
 
 	D3DXMatrixIdentity( &matTrans );
 	D3DXMatrixRotationAxis( &matTrans, &tempDirVec, D3DXToRadian( pLeapData->m_DegreeToLeap ) );
-	D3DXVECTOR4 transPos;
 	D3DXVec3TransformCoord( &vecHeight, &vecHeight, &matTrans );
 
 	finalPos += vecHeight;

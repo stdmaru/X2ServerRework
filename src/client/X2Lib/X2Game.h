@@ -687,7 +687,7 @@ class CX2Game : public CKTDXStage
 		UidType						GetLockOnTarget( CX2Room::TEAM_NUM teamNum, int seedNum, bool& bUserUnit, int iModulusFactor = 30  );
 
 		//{{ JHKang / 강정훈 / 2011.7.103 / 지정된 범위(min - max) 추가 락온
-		UidType						GetLockOnNearstTargetInRange( CX2Room::TEAM_NUM eTeamNum_, IN const D3DXVECTOR3& vMyPos_, IN D3DXVECTOR2& vRange_, OUT bool& bUserUnit_
+		UidType						GetLockOnNearstTargetInRange( CX2Room::TEAM_NUM eTeamNum_, IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR2& vRange_, OUT bool& bUserUnit_
 																, bool bIsNotTargetPreLockOnTarget = false
 																);
 		//}}

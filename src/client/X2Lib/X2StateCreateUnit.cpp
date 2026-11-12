@@ -53,13 +53,13 @@ m_fRotSpeed( 0.f ),
 m_pDLGMSGOkBoxEnterTutorial( NULL )
 , m_SelectUnitType ( CX2Unit::UT_NONE )
 , m_pDLGCreateUnitChangeClassInfo ( NULL )
-, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_pDLGCreateUnitServerSelect ( NULL )
 , m_pDLGCreateUnitCheckInfo ( NULL )
+, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_eSelectServerGroupID ( SEnum::SGI_INVALID )
-, m_fFadeTitleControlValue ( 0.f )
 , m_iGaiaServerCreateAbleUnitMany ( 0 )
 , m_iSolesServerCreateAbleUnitMany ( 0 )
+, m_fFadeTitleControlValue ( 0.f )
 , m_sSumDelta( 0 )
 , m_sZoomState( 1 )
 , m_pCreateUnitSelectSound( NULL )
@@ -257,7 +257,6 @@ HRESULT CX2StateCreateUnit::OnFrameMove( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 			float fRotY = g_pData->RotateYSelectCharacterType( m_SelectUnitClass );
 			m_pUnitViewerUI->GetMatrix().Rotate( D3DXToRadian(0),D3DXToRadian(fRotY),D3DXToRadian(0) );
 			int addSpeed = 20;
@@ -359,7 +358,7 @@ HRESULT CX2StateCreateUnit::OnFrameMove( double fTime, float fElapsedTime )
 			}
 		}
 
-		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			//m_pUnitViewerUI->PlayAnim( L"LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
 			//m_SelectUnitClass
@@ -566,7 +565,7 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 						SAFE_CLOSE( m_pCreateUnitSelectSound );
 					}
 				}
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 			break;
 
@@ -586,12 +585,12 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 				g_pMain->SetIsPlayingTutorial( true );
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 			break;
 
@@ -600,7 +599,7 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 				g_pMain->SetIsPlayingTutorial( false );
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 
@@ -751,14 +750,12 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 					}
 					if ( NULL != m_pDLGCreateUnitServerSelect->GetControl( L"ButtonGaiaServer" ) && NULL != m_pDLGCreateUnitServerSelect->GetControl( L"ButtonSolesServer" )  )
 					{
-						bool bIsCreateAbleGaiaServer = true;
 						bool bIsCreateAbleSolesServer = true;
 
 						if ( g_pInstanceData->GetNowUserUnitManyInServer( SEnum::SGI_GAIA ) >= g_pInstanceData->GetMaxUserUnitManyInServer( SEnum::SGI_GAIA ) ||
 							 m_iGaiaServerCreateAbleUnitMany >= TODAY_CREATE_UNIT_MAX_NUMBER_SERVER )
 						{
 							static_cast <CKTDGUIRadioButton *> ( m_pDLGCreateUnitServerSelect->GetControl( L"ButtonGaiaServer" ) )->SetEnable( false );
-							bIsCreateAbleGaiaServer = false;
 						}
 
 						if ( g_pInstanceData->GetNowUserUnitManyInServer( SEnum::SGI_SOLES ) >= g_pInstanceData->GetMaxUserUnitManyInServer( SEnum::SGI_SOLES ) ||
@@ -810,27 +807,27 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 				g_pMain->SetIsPlayingTutorial( true );
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 				if ( m_pDLGCreateUnitCheckInfo != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, 0, false );
 					m_pDLGCreateUnitCheckInfo = NULL;
 				}
 
 				if ( m_pDLGCreateUnitServerSelect != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitServerSelect, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitServerSelect, 0, false );
 					m_pDLGCreateUnitServerSelect = NULL;
 				}
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 			break;
 
 		case SCUUCM_PASS_NICKNAME_CHECK_CANCEL :
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, 0, false );
 			break;
 
 		case SCUUCM_NICKNAME_CHECK :
@@ -984,6 +981,8 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 				m_pUnitViewerUI->AddEquipByTID( ADD_PROMOTION_ITEM_ID[i] );
 			}
 		} break;
+	default:
+		break;
 	}
 
 }
@@ -1485,7 +1484,6 @@ void CX2StateCreateUnit::SelectChung()
 
 	m_pUnitViewerUI->OnFrameMove( g_pKTDXApp->GetTime(),g_pKTDXApp->GetElapsedTime() );
 
-	const int STR_BUF_SIZE = 256;
 
 	CKTDGUIStatic * pMovieStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitFront->GetControl( L"IntroMovie" ) );
 	if ( NULL != pMovieStatic )
@@ -1580,7 +1578,6 @@ void CX2StateCreateUnit::SelectAra()
 
 	m_pUnitViewerUI->OnFrameMove( g_pKTDXApp->GetTime(),g_pKTDXApp->GetElapsedTime() );
 
-	const int STR_BUF_SIZE = 256;
 
 	CKTDGUIStatic * pMovieStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitFront->GetControl( L"IntroMovie" ) );
 	if ( NULL != pMovieStatic )
@@ -1667,7 +1664,6 @@ void CX2StateCreateUnit::SelectElesis()
 
 	m_pUnitViewerUI->OnFrameMove( g_pKTDXApp->GetTime(),g_pKTDXApp->GetElapsedTime() );
 
-	const int STR_BUF_SIZE = 256;
 
 	CKTDGUIStatic * pMovieStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitFront->GetControl( L"IntroMovie" ) );
 	if ( NULL != pMovieStatic )
@@ -1814,7 +1810,7 @@ bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_UNIT_ACK kEvent;
@@ -1903,12 +1899,12 @@ bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_ACK( HWND hWnd, UINT uMsg, WPAR
 
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 
 			}
 		}
@@ -2158,7 +2154,7 @@ void CX2StateCreateUnit::OpenNickNameBox()
 	m_pDLGCreateUnitFront->GetControl( L"IMEEditBoxUnitCreateNickName" )->RequestFocus();
 }
 
-void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* pContent )
+void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* /*pContent*/ )
 {
 }
 
@@ -2195,7 +2191,7 @@ void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* pContent )
 /*virtual*/ void CX2StateCreateUnit::LastMsgPopOk()
 {
 	if ( m_pDLGLastMsgPopUp != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, 0, false );
 	m_pDLGLastMsgPopUp = NULL;
 
 	//{{ kimhc // 2009-12-23 // ������ �߰��� ������ ���� ��� ä�� ����â���� �̵� �Ѵٴ� �˾�
@@ -2205,7 +2201,7 @@ void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* pContent )
 
 		g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 }
 
 
@@ -2572,14 +2568,14 @@ CX2Unit * CX2StateCreateUnit::GetViewerUnitByUnitType ( CX2Unit::UNIT_TYPE eUnit
 		break;
 
 	case CX2Unit::UT_ARA :
-		return m_pDummyEve;
+		return m_pDummyAra;
 		break;
 
 	case CX2Unit::UT_ELESIS :
 		return m_pDummyEL;
 		break;
 
-	case CX2Unit::UC_ADD_NASOD_RULER	:
+	case CX2Unit::UT_ADD :
 		return m_pDummyAdd;
 		break;
 
@@ -2637,6 +2633,8 @@ wstring CX2StateCreateUnit::GetUnitClassCreateInfoTextureNameByUnitType ( CX2Uni
 
 	case CX2Unit::UT_ADD :
 		return L"DLG_UI_Common_Texture_GUI_character_info_09.tga";
+	default:
+		break;
 	}
 
 	return L"";
@@ -2935,12 +2933,14 @@ CX2StateCreateUnit::UNIT_STAT_INFOMATION_CHART CX2StateCreateUnit::GetUnitStatIn
 		case CX2Unit::UC_ADD_LUNATIC_PSYKER :
 			return UNIT_STAT_INFOMATION_CHART ( USICL_MIDDLE, USICL_MIDDLE, USICL_MIDDLE );
 
+	default:
+		break;
 	}
 	return UNIT_STAT_INFOMATION_CHART ( USICL_NONE, USICL_NONE, USICL_NONE );
 }
 
 
-bool CX2StateCreateUnit::Handler_EGS_ENTRY_POINT_CHECK_NICK_NAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateCreateUnit::Handler_EGS_ENTRY_POINT_CHECK_NICK_NAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ENTRY_POINT_CHECK_NICK_NAME_ACK kEvent;
@@ -2983,7 +2983,7 @@ bool CX2StateCreateUnit::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_REQ ()
 	g_pMain->AddServerPacket( EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK );
 	return true;
 }
-bool CX2StateCreateUnit::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateCreateUnit::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_CREATE_UNIT_TODAY_COUNT_ACK kEvent;
