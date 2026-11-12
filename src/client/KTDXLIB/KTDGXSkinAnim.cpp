@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "./KTDGXSkinAnim.h"
+#include "./KTDXTickInterpolation.h"
 
 bool CKTDGXSkinAnim::m_sbTestUpdateAnimation = true;
 
@@ -184,6 +185,41 @@ void CKTDGXSkinAnim::BuildCloneFrameStructure( CKTDXDeviceXSkinMesh* pAnimXSkinM
 
 	m_FrameNum = 0;
 	BuildCloneFrameList( m_pCloneFrameRoot );
+	m_iPoseTick = -1;	// new frames: nothing to interpolate from
+	m_bPrevPoseValid = false;
+}
+
+void CKTDGXSkinAnim::BeginTickPose()
+{
+	// The first pose update of a tick: the frames still hold the pose of the tick before, which rendering
+	// interpolates from. An object not updated in that tick has nothing to interpolate from.
+	const int iTick = g_pKTDXApp->GetFrameMoveCount();
+	if( iTick == m_iPoseTick )
+		return;
+	m_bPrevPoseValid = m_iPoseTick >= 0 && m_iPoseTick == iTick - 1;
+	m_iPoseTick = iTick;
+	if( m_bPrevPoseValid )
+	{
+		m_PrevTickFrames.resize( m_FrameNum );
+		for( int j = 0; j < m_FrameNum; j++ )
+			m_PrevTickFrames[j] = *m_FrameMatrixList[j];
+		m_PrevTickWorld = m_TickWorld;
+	}
+}
+
+void CKTDGXSkinAnim::PrepareRenderPose()
+{
+	// Updated in the last tick (the tick count is past it while rendering), from a pose of the tick before, and
+	// without a jump or an instant turn: draw in between.
+	m_bRenderPoseInterpolated = false;
+	const float t = g_pKTDXApp->GetTickInterpolation();
+	if( !m_bPrevPoseValid || m_iPoseTick != g_pKTDXApp->GetFrameMoveCount() - 1 || t >= 1.f
+		|| (int)m_PrevTickFrames.size() != m_FrameNum || x2::ktdx::IsWorldJump( m_PrevTickWorld, m_TickWorld ) )
+		return;
+	m_RenderFrames.resize( m_FrameNum );
+	for( int j = 0; j < m_FrameNum; j++ )
+		x2::ktdx::LerpMatrix( m_PrevTickFrames[j], *m_FrameMatrixList[j], t, m_RenderFrames[j] );
+	m_bRenderPoseInterpolated = true;
 }
 
 void CKTDGXSkinAnim::BuildCloneFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame, CKTDXDeviceXSkinMesh::MultiAnimFrame* pSrcFrame )

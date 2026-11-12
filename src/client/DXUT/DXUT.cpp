@@ -74,6 +74,8 @@ struct DxutState {
 
     UINT presentInterval = D3DPRESENT_INTERVAL_DEFAULT;  // DXUTDeviceSettings::pp.PresentationInterval
     UINT forcedVsync = D3DPRESENT_INTERVAL_DEFAULT;      // DXUTGetVerticalSync
+    float frameLimit = 0.f;                              // DXUTSetFrameLimit: frames per second, 0 for none
+    std::uint64_t nextFrameNs = 0;                       // when the next frame is due under the limit
 };
 
 DxutState& State()
@@ -292,19 +294,40 @@ HRESULT DXUTInit(bool /*bParseCommandLine*/, bool /*bHandleDefaultHotkeys*/, boo
 
 namespace {
 
-// The engine steps its logic at a fixed 85 Hz and sleeps between frames (CKTDXApp::OnFrameMove). Held to the vertical
-// blank (FIFO), a frame of 11.8 ms waits for the next blank, so a 144 Hz display showed about 72 fps. With vsync on,
-// mailbox keeps the frames whole and in step with the blank without blocking; FIFO remains where it is missing.
-// Vsync off is immediate, or mailbox when tearing is not available.
+// Vsync on presents FIFO, one frame per vertical blank: the engine renders every loop between its fixed ticks (T41),
+// so this follows the display's rate. Vsync off is immediate, or mailbox when tearing is not available.
 x2::render::PresentMode PresentModeFor(x2::render::Device& device, SDL_Window* window, bool immediate)
 {
-    if (immediate && device.WindowSupportsPresentMode(window, x2::render::PresentMode::Immediate)) {
+    if (!immediate) {
+        return x2::render::PresentMode::Vsync;
+    }
+    if (device.WindowSupportsPresentMode(window, x2::render::PresentMode::Immediate)) {
         return x2::render::PresentMode::Immediate;
     }
     if (device.WindowSupportsPresentMode(window, x2::render::PresentMode::Mailbox)) {
         return x2::render::PresentMode::Mailbox;
     }
     return x2::render::PresentMode::Vsync;
+}
+
+// The frame limit (DXUTSetFrameLimit): waits until the next frame is due. A frame that is late by more than one
+// period starts the schedule again instead of hurrying to catch up.
+void WaitForFrameLimit(DxutState& state)
+{
+    if (state.frameLimit <= 0.f) {
+        state.nextFrameNs = 0;
+        return;
+    }
+    const auto period = static_cast<std::uint64_t>(1e9 / state.frameLimit);
+    const std::uint64_t now = SDL_GetTicksNS();
+    if (state.nextFrameNs == 0 || now > state.nextFrameNs + period) {
+        state.nextFrameNs = now + period;
+        return;
+    }
+    if (now < state.nextFrameNs) {
+        SDL_DelayPrecise(state.nextFrameNs - now);
+    }
+    state.nextFrameNs += period;
 }
 
 }  // namespace
@@ -519,6 +542,7 @@ HRESULT DXUTMainLoop()
             continue;
         }
         Render3DEnvironment(state);
+        WaitForFrameLimit(state);
     }
     ReleaseWindow(state);
     return S_OK;
@@ -774,14 +798,19 @@ HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, boo
     const D3DPRESENT_PARAMETERS& pp = pNewDeviceSettings->pp;
     if (state.windowed && pp.BackBufferWidth > 0 && pp.BackBufferHeight > 0 &&
         !SDL_SetWindowSize(window, static_cast<int>(pp.BackBufferWidth), static_cast<int>(pp.BackBufferHeight))) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "DXUT: SDL_SetWindowSize failed: %s", SDL_GetError());
         return E_FAIL;
     }
     if (pp.PresentationInterval != state.presentInterval) {
         const bool immediate = pp.PresentationInterval == static_cast<UINT>(D3DPRESENT_INTERVAL_IMMEDIATE);
         const x2::render::PresentMode mode = PresentModeFor(*state.device, window, immediate);
         if (!state.device->SetSwapchainParameters(window, mode)) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "DXUT: present mode %d: %s", static_cast<int>(mode),
+                        state.device->LastError().c_str());
             return E_FAIL;
         }
+        SDL_LogInfo(SDL_LOG_CATEGORY_RENDER, "DXUT: present mode %d (vsync %s)", static_cast<int>(mode),
+                    immediate ? "off" : "on");
         state.presentInterval = pp.PresentationInterval;
     }
     return S_OK;
@@ -789,6 +818,16 @@ HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, boo
 
 void DXUTSetWindowClientRectAtModeChange(int /*width*/, int /*height*/) {}
 void DXUTSetFullscreenClientRectAtModeChange(int /*width*/, int /*height*/) {}
+
+void DXUTSetFrameLimit(float fps)
+{
+    State().frameLimit = fps > 0.f ? fps : 0.f;
+}
+
+float DXUTGetFrameLimit()
+{
+    return State().frameLimit;
+}
 
 UINT DXUTGetVerticalSync()
 {

@@ -124,6 +124,15 @@ class CKTDXApp
 		double				GetTime(){ return m_dTime; }
 		float				GetFrameMoveFPS(){ return m_fFrameMoveFPS; }
 		int					GetFrameMoveCount(){ return m_FrameMoveCount; }
+		/// T41: how far rendering is from the last tick toward the next one, in [0, 1]; what is drawn is interpolated
+		/// from the tick before the last (0) to the last (1).
+		float				GetTickInterpolation() const
+		{
+			if( m_fConstElapsedTime <= 0.f )
+				return 1.f;
+			const float t = m_RemainTime / m_fConstElapsedTime;
+			return t < 0.f ? 0.f : t > 1.f ? 1.f : t;
+		}
 		int					GetRenderCount(){ return m_RenderCount; }
 
 		void				AddRenderCount() { m_RenderCount++; }
@@ -420,6 +429,9 @@ class CKTDXApp
 		D3DXMATRIX				m_ViewMatrix;
 		D3DXMATRIX				m_ProjectionMatrix;
 		D3DXMATRIX				m_ViewProjectionMatrix;
+		D3DXMATRIX				m_TickViewMatrix;		// T41: the view after the last tick
+		D3DXMATRIX				m_PrevTickViewMatrix;	// and after the one before
+		bool					m_bTickViewValid;
 		D3DVIEWPORT9			m_ViewPort;
 		int						m_ViewMatChangeCount;
 		D3DXVECTOR2				m_ResolutionScale;

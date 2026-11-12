@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "./KTDXApp.h"
+#include "./KTDXTickInterpolation.h"
 #include "../X2Lib/X2Define.h"
 //#include "KFileVerifier.h" // seojt // 2008-1-5, 14:44
 
@@ -121,6 +122,7 @@ CKTDXApp::CKTDXApp( HWND hWnd, HINSTANCE hInstance, IDirect3DDevice9* pd3dDevice
 
 	m_FrameMoveCount	= 0;
 	m_RenderCount		= 0;
+	m_bTickViewValid	= false;
 
 
 	m_fFrameMoveFPS		= 0.0f;
@@ -374,25 +376,24 @@ HRESULT CKTDXApp::OnFrameMove( double /*dTime*/, float fElapsedTime )
 		return S_OK;
 	}
 
-	if( fRealElapsedTime <= m_fConstElapsedTime )
+	// T41: the simulation still advances in whole steps of m_fConstElapsedTime, but the original slept to the next
+	// step and so rendered once per step (60 fps in the village on any display). Now the loop runs the steps that are
+	// due, none if less than one is, and returns: every loop renders, interpolated between the last two steps by the
+	// fraction left over (GetTickInterpolation).
+	m_BeforeFrameTime = m_NowFrameTime;
+	while( fRealElapsedTime >= m_fConstElapsedTime )
 	{
-		//???? ?��? ??? ??????.
-		float fWaitTime = m_fConstElapsedTime - fRealElapsedTime;
-		if( fWaitTime > 0.f )
+		if( m_bSkipFrame == true )
+			break;
+
+		// A hitch of over a second (loading): drop the backlog instead of catching up.
+		float fActualNowTime = (float)DXUTGetGlobalTimer()->GetTime();
+		if ( fActualNowTime - m_NowFrameTime > 1.f )
 		{
-// #ifdef BACKGROUND_LOADING_TEST // 2008-10-20
-// 			OnPrePresent();
-// 			Sleep( (DWORD)(fWaitTime*1000.0f) );
-// 			OnPostPresent();
-// #else // BACKGROUND_LOADING_TEST // 2008-10-20
-			Sleep( (DWORD)(fWaitTime*1000.0f) );
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-20
+			fRealElapsedTime = 0.f;
+			m_BeforeFrameTime = m_NowFrameTime = fActualNowTime;
+			break;
 		}
-
-		fWaitTime = 0.0f;
-
-		m_NowFrameTime = (float)DXUTGetGlobalTimer()->GetTime();
-		m_BeforeFrameTime = m_NowFrameTime;
 
 		if( m_StopFrameDelay > 0 )
 		{
@@ -405,56 +406,23 @@ HRESULT CKTDXApp::OnFrameMove( double /*dTime*/, float fElapsedTime )
 		}
 		else
 		{
-			m_bFinalFrame = true;
+			// the last step of this loop: the one whose state is shown
+			m_bFinalFrame = fRealElapsedTime - m_fConstElapsedTime < m_fConstElapsedTime;
 			FrameProcess();
 			m_bFirstFrame = false;
 		}
 
-		m_RemainTime = fWaitTime;
+		// the camera of the last two steps, for the interpolated view of OnFrameRender
+		m_PrevTickViewMatrix = m_bTickViewValid ? m_TickViewMatrix : m_ViewMatrix;
+		m_TickViewMatrix = m_ViewMatrix;
+		m_bTickViewValid = true;
 
 		m_FrameMoveCount++;
 		m_FrameMoveCountAdd++;
+
+		fRealElapsedTime -= m_fConstElapsedTime;
 	}
-	else
-	{
-		m_BeforeFrameTime = m_NowFrameTime;
-
-		while( fRealElapsedTime > m_fConstElapsedTime )
-		{
-			if( m_bSkipFrame == true )
-				break;
-
-			float fActualNowTime = (float)DXUTGetGlobalTimer()->GetTime();
-			if ( fActualNowTime - m_NowFrameTime > 1.f )
-			{
-				fRealElapsedTime = 0.f;
-				m_BeforeFrameTime = m_NowFrameTime = fActualNowTime;
-				break;
-			}
-
-			if( m_StopFrame > 0 )
-			{
-				m_StopFrame--;
-			}
-			else
-			{
-				//?????? ??????? ??????????...
-				if( fRealElapsedTime - m_fConstElapsedTime < m_fConstElapsedTime )
-					m_bFinalFrame = true;
-				else
-					m_bFinalFrame = false;
-				FrameProcess();
-				m_bFirstFrame = false;
-			}
-
-			m_FrameMoveCount++;
-			m_FrameMoveCountAdd++;
-
-			fRealElapsedTime -= m_fConstElapsedTime;
-
-		}
-		m_RemainTime = fRealElapsedTime;
-	}
+	m_RemainTime = fRealElapsedTime;
 
 	if( m_FrameMoveCountAdd >= 100 )
 	{
@@ -608,6 +576,16 @@ HRESULT CKTDXApp::OnFrameRender()
 	if( m_pDGManager->BeginRender() == false )
 		return S_OK;
 
+	// T41: draw with the camera between the last two ticks, then give the simulation back the last tick's view.
+	// Only when nothing changed the view since that tick (a state change, a loading screen).
+	const bool bInterpolateView = m_bTickViewValid && m_ViewMatrix == m_TickViewMatrix;
+	if( bInterpolateView )
+	{
+		D3DXMATRIX view;
+		x2::ktdx::InterpolateView( m_PrevTickViewMatrix, m_TickViewMatrix, GetTickInterpolation(), view );
+		SetViewTransform( &view );
+	}
+
 	for( UINT i = 0; i < m_vecStageChain.size(); i++ )
 	{
 		CKTDXStage* pCKTDXStage = m_vecStageChain[i];
@@ -616,6 +594,9 @@ HRESULT CKTDXApp::OnFrameRender()
 			pCKTDXStage->OnFrameRender();
 		}
 	}
+
+	if( bInterpolateView )
+		SetViewTransform( &m_TickViewMatrix );
 
 	m_pDGManager->EndRender();
 

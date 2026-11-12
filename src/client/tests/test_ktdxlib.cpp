@@ -5,6 +5,7 @@
 #include "KTDX.h"   // not stdafx.h: Windows would find X2ServerProtocol/StdAfx.h first
 
 #include "XFile.h"
+#include "KTDXTickInterpolation.h"
 
 #include "x2/kom/mount.h"
 #include "x2/render/null.h"
@@ -566,4 +567,36 @@ TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
     CHECK(notDrawn.empty());
     CHECK_MESSAGE(engine.device.LastError().empty(), engine.device.LastError());
     renderer.OnLostDevice();
+}
+
+TEST_CASE("ktdxlib: drawing between ticks interpolates views and matrices, and snaps on jumps")
+{
+    D3DXMATRIX a, b, out;
+    const D3DXVECTOR3 up(0, 1, 0), eyeA(0, 100, -500), eyeB(20, 100, -500);
+    const D3DXVECTOR3 atA = eyeA + D3DXVECTOR3(0, 0, 1), atB = eyeB + D3DXVECTOR3(0, 0, 1);
+    D3DXMatrixLookAtLH(&a, &eyeA, &atA, &up);
+    D3DXMatrixLookAtLH(&b, &eyeB, &atB, &up);
+    REQUIRE(x2::ktdx::InterpolateView(a, b, 0.25f, out));
+    D3DXMATRIX camera;
+    D3DXMatrixInverse(&camera, nullptr, &out);
+    CHECK(camera._41 == doctest::Approx(5.f));
+    CHECK(camera._33 == doctest::Approx(1.f));
+
+    // a cut: the camera jumps, so the last view is drawn as it is
+    const D3DXVECTOR3 far(5000, 100, -500), farAt = far + D3DXVECTOR3(0, 0, 1);
+    D3DXMatrixLookAtLH(&b, &far, &farAt, &up);
+    CHECK_FALSE(x2::ktdx::InterpolateView(a, b, 0.5f, out));
+    CHECK(out == b);
+
+    // world matrices: a small step is interpolated, a turn around or a teleport is not
+    D3DXMATRIX w0, w1, w2, w3;
+    D3DXMatrixTranslation(&w0, 0, 0, 0);
+    D3DXMatrixTranslation(&w1, 10, 0, 0);
+    CHECK_FALSE(x2::ktdx::IsWorldJump(w0, w1));
+    x2::ktdx::LerpMatrix(w0, w1, 0.5f, out);
+    CHECK(out._41 == doctest::Approx(5.f));
+    D3DXMatrixRotationY(&w2, D3DX_PI);
+    CHECK(x2::ktdx::IsWorldJump(w0, w2));
+    D3DXMatrixTranslation(&w3, 1000, 0, 0);
+    CHECK(x2::ktdx::IsWorldJump(w0, w3));
 }

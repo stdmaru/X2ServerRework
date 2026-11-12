@@ -122,6 +122,8 @@ void DXUTSetFullscreenClientRectAtModeChange(int width, int height);
 // KOG's DXUT additions: the forced interval (D3DPRESENT_INTERVAL_DEFAULT or _IMMEDIATE), and setting it (1: immediate,
 // anything else: the vertical blank).
 UINT DXUTGetVerticalSync();  // the present interval (D3DPRESENT_INTERVAL_*)
+void DXUTSetFrameLimit(float fps);  // T41: at most `fps` frames per second (0: no limit; vsync still applies)
+float DXUTGetFrameLimit();
 void DXUTSetVerticalSync(int iVal_);
 // The statistics lines of DXUT's HUD (X2.cpp's debug text): "<fps> fps (<width>x<height>), vsync on|off" and the
 // renderer ("<backend> (<driver>)"). Valid until the next call.
