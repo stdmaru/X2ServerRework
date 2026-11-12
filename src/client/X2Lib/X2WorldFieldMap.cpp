@@ -362,7 +362,6 @@ CX2WorldFieldMap::FieldData* CX2WorldFieldMap::GetFieldInfo( int iMapID )
 	std::map< int, FieldData >::iterator it = m_mapFieldData.find( iMapID );
 	//{{ 09.03.11 김태완 : 이러면 빠른 건 좋은데 퀘스트 정보 업데이트가 안 됨
 	// 그러니 퀘스트 정보만 업데이트해주자
-	bool bFieldDataExist = false;
 	if( it != m_mapFieldData.end() )
 	{
 		FieldData& refNewFieldData = it->second;

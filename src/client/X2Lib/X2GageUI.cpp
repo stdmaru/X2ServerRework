@@ -2850,7 +2850,6 @@ void CX2PartyMemberGageUI::UpdateBuffIcon()
 
 void CX2PartyMemberGageUI::SetShowRelationVoteButtons ( const bool bVote_, const bool bComplete_ )
 {
-	CX2GageManager * pGageManager = CX2GageManager::GetInstance();
 
 	if ( NULL != m_pButtonVotePlayer )
 	{

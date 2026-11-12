@@ -472,7 +472,6 @@ void CX2BattleFieldGame::CreateBattleFieldNpc( const KNPCUnitReq& kNpcUnitData_
 		// Ally Npc의 경우
 		if ( -1 < kNpcUnitData_.m_iAllyUID )
 		{
-			CX2GUUser* pOwnerUser = GetUserUnitByUID( kNpcUnitData_.m_iAllyUID );
 
 			CreateNPC( static_cast<CX2UnitManager::NPC_UNIT_ID>( kNpcUnitData_.m_NPCID ),
 				kNpcUnitData_.m_Level, kNpcUnitData_.m_bActive, kNpcUnitData_.m_UID,
@@ -500,7 +499,6 @@ void CX2BattleFieldGame::CreateBattleFieldNpc( const KNPCUnitReq& kNpcUnitData_
 				pBattleFieldNpc->Init( false, kNpcUnitData_.m_nStartPos );
 				// 위 소스는 CreateBattleFieldNpcByCreatedInfo 에서 직접 Camera 인자를 받으므로
 				// 필요 없어짐
-				int iLastTouchedIndex = pBattleFieldNpc->GetLastTouchLineIndex( false );
 				pBattleFieldNpc->SetHardLevel( kNpcUnitData_.m_Level, true );
 				pBattleFieldNpc->SetActiveMonster( kNpcUnitData_.m_bActive );
 

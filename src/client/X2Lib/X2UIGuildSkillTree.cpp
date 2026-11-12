@@ -31,7 +31,6 @@ CX2GuildSkillTreeSlotData::CX2GuildSkillTreeSlotData()
 
 	const CX2UserSkillTree& refUserSkillTree = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree; // 슬롯 B 관련
 
-	int iSkillLevel = refUserSkillTree.GetSkillLevel( m_eSkillID, true );
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( m_eSkillID );
 
@@ -519,9 +518,6 @@ bool CX2UIGuildSkillTree::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARA
 			if(g_pData->GetMyUser() != NULL &&
 				g_pData->GetMyUser()->GetSelectUnit() != NULL )
 			{
-				const CX2UserSkillTree& refUserSkillTree = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree;
-				int iSPoint = 0;
-				int iCSPoint = 0;
 
 				// oasis907 : 김상윤 [2009.12.3] // 길드 기간제 포인트 출력
 				int iMaxCSPoint = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iMaxGuildCSPoint;
@@ -2042,7 +2038,6 @@ void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSki
 
 
 		/// 스킬 트리 템플릿 반환 ------------------------------------------------------------------------------
-		int										iUnitClass			= static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetClass() );
 		const CX2SkillTree::SkillTreeTemplet*	pSkillTreeTemplet	= g_pData->GetSkillTree()->GetGuildSkillTreeTemplet( 0, pSkillTemplet->m_eID );
 
 
@@ -2241,7 +2236,6 @@ void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSki
 		pMainPictureData->SetSize( D3DXVECTOR2( static_cast<float>( itemDescWidth ), static_cast<float>( itemDescHeight ) ) );
 		pMainPictureData->pPoint->color = D3DXCOLOR( 1,1,1,0.7f );
 
-		bool bCheckEquipping = false;
 
 
 		/// 메인 설명 툴팁의 y좌표를 타이틀 툴팁의 위치에 맞춰 설정

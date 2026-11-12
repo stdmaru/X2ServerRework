@@ -1040,7 +1040,6 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 				{
 					if( NULL != m_pNormalXSkinAnim[i] )
 					{
-						CKTDGXRenderer::RenderParam* pEqipRenderParam = m_pNormalXSkinAnim[i]->GetRenderParam();
 						D3DXMATRIX localMove, matTrans, matRot, matScale;
 
 						CX2Unit::UNIT_TYPE unitType = m_pOwnerUnit->GetType();
@@ -1067,7 +1066,6 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 
 					if( NULL != m_pHyperXSkinAnim[i] && m_bHyperMode == true && m_bCanHyperMode == true )
 					{
-						CKTDGXRenderer::RenderParam* pEqipRenderParam = m_pHyperXSkinAnim[i]->GetRenderParam();
 						D3DXMATRIX localMove, matTrans, matRot, matScale;
 
 						CX2Unit::UNIT_TYPE unitType = m_pOwnerUnit->GetType();

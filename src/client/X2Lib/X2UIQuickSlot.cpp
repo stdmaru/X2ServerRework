@@ -789,7 +789,6 @@ void CX2UIQuickSlot::ResetQuickSlotUI()
 			}
 		}
 	}
-	bool bIsNew = false;
 
 
 	if( true == GetIsSummonCardSlot() )
@@ -1472,7 +1471,6 @@ void CX2UIQuickSlot::SetSlotItemIcon( vector< CX2Slot* >& m_SlotList, const CX2I
 		{
 			pStaticHotKey->SetName(L"StaticHotKey");
 			pItemSlot->GetDialog()->AddControl(pStaticHotKey);
-			WCHAR buff[32] = {0};
 			CKTDGUIControl::UIStringData* pString = new CKTDGUIControl::UIStringData();
 			pStaticHotKey->AddString( pString );
 
@@ -1491,7 +1489,6 @@ void CX2UIQuickSlot::SetSlotItemIcon( vector< CX2Slot* >& m_SlotList, const CX2I
 		{
 			pStaticCoolTime->SetName(L"CoolTime");
 			pItemSlot->GetDialog()->AddControl(pStaticCoolTime);
-			WCHAR buff[32] = {0};
 			CKTDGUIControl::UIStringData* pString = new CKTDGUIControl::UIStringData();
 			pStaticCoolTime->AddString( pString );
 
@@ -1562,7 +1559,6 @@ void CX2UIQuickSlot::SetSummonMonsterItemIcon( vector< CX2Slot* >& m_SlotList, c
 		{
 			pStaticHotKey->SetName(L"StaticHotKey");
 			pItemSlot->GetDialog()->AddControl(pStaticHotKey);
-			WCHAR buff[32] = {0};
 			CKTDGUIControl::UIStringData* pString = new CKTDGUIControl::UIStringData();
 			pStaticHotKey->AddString( pString );
 
@@ -1581,7 +1577,6 @@ void CX2UIQuickSlot::SetSummonMonsterItemIcon( vector< CX2Slot* >& m_SlotList, c
 		{
 			pStaticCoolTime->SetName(L"CoolTime");
 			pItemSlot->GetDialog()->AddControl(pStaticCoolTime);
-			WCHAR buff[32] = {0};
 			CKTDGUIControl::UIStringData* pString = new CKTDGUIControl::UIStringData();
 			pStaticCoolTime->AddString( pString );
 

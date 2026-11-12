@@ -46,7 +46,6 @@ CX2GuildSkillTreeInfoSlotData::CX2GuildSkillTreeInfoSlotData()
 	//const CX2UIGuildSkillTreeInfo::SkillSlotUI& refSkillSlotUI = it->second; // oasis
 	const CX2UIGuildSkillTreeInfo::SkillSlotUI& refSkillSlotUI = it->second;
 
-	bool bRemoveMode = g_pData->GetUIManager()->GetUIGuildBoard()->GetUIGuildSkillTreeInfo()->GetRemoveMode();
 
 
 	// 1. 슬롯 업데이트
@@ -427,8 +426,6 @@ bool CX2UIGuildSkillTreeInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, W
 			if(g_pData->GetMyUser() != NULL &&
 				g_pData->GetMyUser()->GetSelectUnit() != NULL )
 			{
-				int iSPoint = 0;
-				int iCSPoint = 0;
 
 				// oasis907 : 김상윤 [2009.12.3] // 길드 기간제 포인트 출력
 				int iMaxCSPoint = g_pData->GetUIManager()->GetUIGuildBoard()->m_iMaxGuildCSPoint;
@@ -1500,7 +1497,6 @@ void CX2UIGuildSkillTreeInfo::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID 
 		m_pDLGSkillToolTip->GetStatic_LUA( "SkillDesc" )->GetPicture(0)->SetSize( D3DXVECTOR2( (float)itemDescWidth, (float)itemDescHeight) );
 		m_pDLGSkillToolTip->GetStatic_LUA( "SkillDesc" )->GetPicture(0)->pPoint->color = D3DXCOLOR( 1,1,1,0.7f );
 
-		bool bCheckEquipping = false;
 
 
 		m_pDLGSkillToolTip->GetStatic_LUA( "SkillDesc" )->GetString(0)->msg = SkillDesc.c_str();

@@ -2577,7 +2577,6 @@ bool CX2UIInventory::Handler_EGS_CHANGE_INVENTORY_SLOT_ACK(  HWND /*hWnd*/, UINT
 					 NULL == pMyUser->GetUnit() )
 					 return false;
 
-				bool bWeaponChanged = false;
 				for ( KInventoryItemInfo& kInventoryItemInfo : kEvent.m_vecInventorySlotInfo )	// ����� ����
 				{
 					if ( kInventoryItemInfo.m_cSlotCategory == CX2Inventory::ST_E_EQUIP )
@@ -2599,7 +2598,6 @@ bool CX2UIInventory::Handler_EGS_CHANGE_INVENTORY_SLOT_ACK(  HWND /*hWnd*/, UINT
 						if ( kInventoryItemInfo.m_sSlotID == _CONST_UIINVENTORY_::g_iEquippedNormalWeaponSlotID ||
 							 kInventoryItemInfo.m_sSlotID == _CONST_UIINVENTORY_::g_iEquippedFashionWeaponslotID )
 						{
-							bWeaponChanged = true;
 						} // if
 
 						break;
@@ -3237,7 +3235,7 @@ bool CX2UIInventory::ChangeInventoryTabByUid( UidType iItemUID )
 		return true;
 	}
 
-	int invenPage = 1;
+	[[maybe_unused]] int invenPage = 1;
 
 	for ( int i = 0; i < kInventory.GetItemMaxNum( kInventory.GetSortTypeByItemTemplet( pItem->GetItemTemplet() ) ); i++ )
 	{
@@ -3839,7 +3837,6 @@ bool CX2UIInventory::MouseUp( D3DXVECTOR2 mousePos )
 
 	if ( *m_pSlotBeforeDragging != NULL )
 	{
-		CX2SlotItem* pSlotItem = (CX2SlotItem*) *m_pSlotBeforeDragging;
 		bool bCheck = false;
 
 		//{{ kimhc // �ǽð� ���ҵ� �� ���������� ������ �׾��ų�, wait, mpCharge ���°� �ƴҶ� ��� ��ü ����
@@ -3898,8 +3895,6 @@ bool CX2UIInventory::MouseUp( D3DXVECTOR2 mousePos )
 //{{ kimhc // �ǽð� ���ҵ� �� ������ ������ ������
 void CX2UIInventory::OpenDeleteItemConfirmDLG()
 {
-	int popUpSizeX = 425;		// ���� �ŷ��ÿ� �ߴ� �˾��� ��ġ�� ������ ��
-	int popUpSizeY = 147;
 
 	CX2Item* pItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItem( m_EnrollItemUid );
 	if ( pItem != NULL )
@@ -5609,13 +5604,11 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 				}
 			}
 
-			bool bMiniAttractionItemCheck = false;		/// �̴� ������ �������ΰ�?
 			for(int i=0; i<std::ssize(MINI_ATTRACTION_ITEM_ID); ++i)
 			{
 				if( kItemData.m_ItemID == MINI_ATTRACTION_ITEM_ID[i] )
 				{
 					bAttractionItemCheck = true;
-					bMiniAttractionItemCheck = true;
 
 					m_eRandomItemEventType = RIOET_MINI_ICE_HEATER;
 
@@ -6270,7 +6263,6 @@ bool CX2UIInventory::Handler_EGS_SEAL_ITEM_REQ( UidType itemUID )
 		return true;
 	}
 
-    const CX2Item::ItemData& kItemData = pItemToBeSealed->GetItemData();
 
 	//if ( pItemData	== NULL )
 	//{
@@ -8453,7 +8445,6 @@ void CX2UIInventory::UpdateOpenAttractionItemAck()
 		// �׳� ������ + ���ʽ� ������ �ΰ��� ���´ٰ� �����ϰ�..
 		std::map< int, int >::iterator i;
 
-		int nCount = 0;
 		wstring getExplanation = L"";
 		for ( i = m_TempOpenRandomItemAck.m_mapInsertedItem.begin(); i != m_TempOpenRandomItemAck.m_mapInsertedItem.end(); i++ )
 		{
@@ -8478,7 +8469,6 @@ void CX2UIInventory::UpdateOpenAttractionItemAck()
 			else
 			{
 				// �׳� ������
-				WCHAR buf[256] = {0};
 				wstring itemName = L"";
 				pStatic = (CKTDGUIStatic*) m_pDLGAttractionResult->GetControl( L"Static_Item" );
                 itemName = pItemTemplet->GetFullName_();
@@ -9196,7 +9186,6 @@ void CX2UIInventory::UpdateUIButton()
 
 
 	CKTDGUIButton* pCashShopButton = NULL;
-	CKTDGUIButton* pEDButton = NULL;
 
 	pCashShopButton = reinterpret_cast< CKTDGUIButton* >( m_pDLGUIInventory->GetControl( L"g_pButton_Upgrade_Inven" ) );
 

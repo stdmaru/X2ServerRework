@@ -727,7 +727,6 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 						bool bThereIsSelectionReward = false;
 
 						CX2Unit::UNIT_TYPE eUnitType = g_pData->GetMyUser()->GetSelectUnit()->GetType();
-						CX2Unit::UNIT_CLASS eUnitClass = g_pData->GetMyUser()->GetSelectUnit()->GetClass();
 						for( UINT i = 0; i < pQuestTemplet->m_SelectReward.m_vecSelectItem.size(); i++)
 						{
 							const CX2QuestManager::ITEM_DATA& itemData = pQuestTemplet->m_SelectReward.m_vecSelectItem[i];
@@ -1764,7 +1763,6 @@ wstring CX2UIQuestNew::GetSlotItemDesc()
 				itemDesc = GetSlotItemDescByUID( m_pNowOverItemSlot->GetItemUID() );
 			else
 			{
-				CX2Item* pItem = NULL;
 				map< int, int >::iterator mit;
 				mit = m_mapItemIDAndSocketID.find( m_pNowOverItemSlot->GetItemTID() );
 				if ( mit != m_mapItemIDAndSocketID.end() )
@@ -2105,13 +2103,10 @@ void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, i
 	if( NULL == pString_ItemDesc )
 		return;
 
-	bool bItemDescAdd = false;			// 선택된 아이템의 설명 나누기
 
 	const int iWidth = DXUTGetBackBufferSurfaceDesc()->Width;
 	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
-	const int SIZE_Y = 40;
 
-	CKTDGFontManager::CUKFont* pItemDescFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX );
 
 	int itemDescWidth = static_cast<int>( iWidth / 3 / g_pKTDXApp->GetResolutionScaleX() );
 	int itemDescHeight = 0;
@@ -2132,7 +2127,6 @@ void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, i
 		if( itemDescHeight > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 		{
 			pItemDesc->GetString(0)->fontIndex = SLOT_MANAGER_FONT_INDEX_SMALL;
-			pItemDescFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX_SMALL );
 			itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 13 : 14;	// XUF_DODUM_11_NORMAL의 크기
 			wstrItemDesc = CWordLineHandler::GetStrByLineBreakColorInX2Main(wstrItemDescTemp.c_str(), itemDescWidth - ITEM_DESC_ADD_SIZE_X, SLOT_MANAGER_FONT_INDEX_SMALL);
 			SplitDescHeight( &wstrItemDesc, &wstrItemDescTemp, itemDescHeight, itemDescFontHeight, SLOT_MANAGER_FONT_INDEX, false );
@@ -2156,7 +2150,6 @@ void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, i
 	itemDescHeight += lineNum;
 
 	//{{ 폰트를 작게 설정했는데도 화면 높이보다 클 경우는 분할
-	int itemDescAddHeight = 0;
 	if ( itemDescHeight > iHeight / g_pKTDXApp->GetResolutionScaleY() )
 	{
 		itemDescWidth = static_cast<int>( iWidth / 4 / g_pKTDXApp->GetResolutionScaleX() );
@@ -2165,9 +2158,7 @@ void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, i
 
 		SplitDescHeight( &wstrItemDesc, &wstrItemDescTemp, itemDescHeight, itemDescFontHeight, SLOT_MANAGER_FONT_INDEX, false );
 
-		itemDescAddHeight = static_cast<int>( itemDescHeight - iHeight / g_pKTDXApp->GetResolutionScaleY() + itemDescFontHeight * 2 );
 		itemDescHeight = static_cast<int>( iHeight / g_pKTDXApp->GetResolutionScaleY() );
-		bItemDescAdd = true;
 
 		SplitDescHeight( &wstrItemDesc, &wstrItemDescTemp, itemDescHeight, itemDescFontHeight, SLOT_MANAGER_FONT_INDEX, true );
 	}
@@ -2273,9 +2264,7 @@ void CX2UIQuestNew::UpdateNewQuestNotice()
 
 	// 준비작업
 	const map<int, int>& mapQuestClear = g_pData->GetQuestManager()->GetMapCompleteQuest(); // 이미 완료, 보상받은 퀘스트들
-	int iQuestNum = 0;
 	int TopQuestID = 0;
-	SEnum::VILLAGE_MAP_ID VID = SEnum::VMI_RUBEN;
 
 	// 자기가 만날 수 있는 NPC의 리스트를 만들어두자.
 	// 09.03.17 변경 : 특정 지역에 있을 때 해당하는 NPC로 기획변경.
@@ -2425,11 +2414,9 @@ void CX2UIQuestNew::UpdateNewQuestNotice()
 
 		// 7. 그 수와 최고레벨 퀘스트를 구한다.
 		const CX2QuestManager::QuestTemplet* pTopQuestTemplet = g_pData->GetQuestManager()->GetQuestTemplet( TopQuestID );
-		iQuestNum++;
 		if(pTopQuestTemplet == NULL || pQuestTemplet->m_iFairLevel >= pTopQuestTemplet->m_iFairLevel )
 		{
 			TopQuestID = QuestID;
-			VID = itNPCID->second;
 		}
 
 	}
@@ -2784,7 +2771,6 @@ bool CX2UIQuestNew::GetPartyUIQuestIcon( int iDungeonID, int iDungeonDifficulty,
 bool CX2UIQuestNew::GetPartyUIQuestIcon( std::vector<QuestInfo>& vecQuestInfo, int iDungeonID, int iDungeonDifficulty, int iDungeonMode)
 {
 	wstringstream wstrm;
-	bool bEmpty = true;
 
 	for(UINT i=0; i< vecQuestInfo.size(); i++)
 	{
@@ -3149,7 +3135,6 @@ wstring CX2UIQuestNew::CreateStringQuestClearCondition()
 	if( pQuestTemplet != NULL )
 	{
 		// 선택된 퀘가 있으면~
-		bool bThereWasNPCTalkSubQuest = false;
 
 		// sub-quest
 		std::map< int, std::vector<int>>::const_iterator mit = pQuestTemplet->m_mapSubQuestGroup.begin();
@@ -3162,10 +3147,8 @@ wstring CX2UIQuestNew::CreateStringQuestClearCondition()
 				if( NULL == pSubQuestTemplet )
 					continue;
 
-				const CX2QuestManager::ClearCondition& clearCond = pSubQuestTemplet->m_ClearCondition;
 				if( CX2QuestManager::SQT_NPC_TALK == pSubQuestTemplet->m_eClearType )
 				{
-					bThereWasNPCTalkSubQuest = true;
 				}
 
 				wstring wstrSubQuestDesc = L"";
@@ -5180,7 +5163,6 @@ bool CX2UIQuestNew::GetSubQuestDungeonIDList( IN int iSubQuestID, OUT vector<int
 				// DID는 normal-hard-expert가 붙어 있고, 30000부터 시작하고, 각 던전마다 10단위로 분류되어 있다.
 				// 따라서 그냥 10자리를 자른 값을 넣어 준다.
 				// 해당 던전이 존재하는 던전이면 던전 ID로 묶어주고
-				int iDungeonID = 0;
 				std::set<SEnum::DUNGEON_ID>::iterator sit = pSubQuestTemplet->m_ClearCondition.m_setDungeonID.begin();
 				for( ; sit != pSubQuestTemplet->m_ClearCondition.m_setDungeonID.end(); ++sit)
 				{
@@ -5356,7 +5338,6 @@ bool CX2UIQuestNew::SetUIQuickQuestSlotInfo(int iQuestSlotInfoIndex, QuestInfo& 
 			if( NULL == pSubQuestTemplet )
 				continue;
 
-			const CX2QuestManager::ClearCondition& clearCond = pSubQuestTemplet->m_ClearCondition;
 
 			//서브퀘스트 내용
 			wstring wstrSubQuestDesc = L"";
@@ -6043,7 +6024,6 @@ bool CX2UIQuestNew::GetThereIsSelectionReward() const
 			{
 				CX2Unit* pUnit = g_pData->GetMyUser()->GetSelectUnit();
 				CX2Unit::UNIT_TYPE eUnitType = pUnit->GetType();
-				CX2Unit::UNIT_CLASS eUnitClass = pUnit->GetClass();
 				for( UINT i = 0; i < pQuestTemplet->m_SelectReward.m_vecSelectItem.size(); ++i)
 				{
 					const CX2QuestManager::ITEM_DATA& itemData = pQuestTemplet->m_SelectReward.m_vecSelectItem[i];

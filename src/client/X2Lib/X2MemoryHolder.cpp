@@ -323,7 +323,6 @@ CKTDGUIDialogType CX2MemoryHolder::GetCommonDLG( CKTDXStage* pStage )
 		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pCommonDLG );
 
 
-		CKTDGUIStatic* pCommonCharBG = NULL;
 		int controlIndex = 0;
 		wstring texName = L"";
 

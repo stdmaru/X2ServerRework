@@ -791,7 +791,7 @@ wstring CX2EnchantItem::GetEnchantResistName( CX2DamageManager::EXTRA_DAMAGE_TYP
 		{
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT1 = CX2DamageManager::EDT_NONE;
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT2 = CX2DamageManager::EDT_NONE;
-			int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
+			[[maybe_unused]] int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
 
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT1 );
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT2 );
@@ -868,7 +868,7 @@ wstring CX2EnchantItem::GetEnchantResistToolTip( CX2DamageManager::EXTRA_DAMAGE_
 		{
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT1 = CX2DamageManager::EDT_NONE;
 			CX2DamageManager::EXTRA_DAMAGE_TYPE eDecomposedEDT2 = CX2DamageManager::EDT_NONE;
-			int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
+			[[maybe_unused]] int iCount = DecomposeEnchantExtraDamage( enchantedCombination, eDecomposedEDT1, eDecomposedEDT2 );
 
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT1 );
 			ASSERT( CX2DamageManager::EDT_NONE != eDecomposedEDT2 );

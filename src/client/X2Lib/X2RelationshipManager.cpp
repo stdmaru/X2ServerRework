@@ -99,7 +99,7 @@ HRESULT CX2RelationshipManager::OnFrameMove( double /*fTime*/, float fElapsedTim
 			}
 
 
-			vector<CX2RelationshipEffectManager::RelationEffectInfo>::iterator it = pRelationshipEffectManager->m_vecRelationEffectInfo.begin();
+			[[maybe_unused]] vector<CX2RelationshipEffectManager::RelationEffectInfo>::iterator it = pRelationshipEffectManager->m_vecRelationEffectInfo.begin();
 
 			for ( vector<CX2RelationshipEffectManager::RelationEffectInfo>::iterator it = pRelationshipEffectManager->m_vecRelationEffectInfo.begin();
 				it != pRelationshipEffectManager->m_vecRelationEffectInfo.end(); ++it )
@@ -968,7 +968,6 @@ bool CX2RelationshipManager::Handler_EGS_WEDDING_ITEM_INFO_ACK ( HWND /*hWnd*/, 
 
 	if ( NULL != g_pData->GetMyUser()->GetUID() )
 	{
-		UidType MyUid = g_pData->GetMyUser()->GetUID();
 		if(g_pMain->DeleteServerPacket( EGS_WEDDING_ITEM_INFO_ACK ) )
 		{
 			if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
@@ -1483,7 +1482,6 @@ void CX2RelationshipEffectManager::RelationEffectInfo::DrawRelationshipEffect ( 
 				else
 				{
 //					CX2SquareUnit * pSquareUnit = GetSquareUnitByUID ( Uid );
-					CX2SquareUnit * pSquareUnitPtr1 = g_pTFieldGame->GetSquareUnitByUID ( Uid );
 
 					const vector<CX2SquareUnitPtr> & UserUnitListSquareUnitPtr = g_pTFieldGame->GetUserUnitListBySquareUnitPtr();
 					for( int i = 0; i < (int)UserUnitListSquareUnitPtr.size(); i++ )
@@ -1753,7 +1751,6 @@ void CX2RelationshipEffectManager::RelationEffectInfo::PrepareDrawRelationshipEf
 	{
 	case CX2Main::XS_VILLAGE_MAP:
 		{
-			CX2StateField * pStateFieldGame = static_cast<CX2StateField*>( g_pMain->GetNowState() );
 
 			if ( NULL != g_pTFieldGame &&
 				NULL != g_pTFieldGame->GetMyUnit() )

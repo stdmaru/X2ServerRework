@@ -1203,7 +1203,6 @@ bool CX2DamageManager::EffectToUnit( DamageData* pDamageData )
 			}
 		}
 
-		CX2GameUnit* pAttackerGameUnit = pDamageData->optrAttackerGameUnit.GetObservable();
 
 		if ( NULL == pAttacker->GetOwnerUnit()  )
 			continue;

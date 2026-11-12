@@ -78,7 +78,6 @@ void CX2UIGlobalMission::UpdateNumOfNowClearCount( int iNumOfNowClearCount )
 	pPictureGage->SetSizeX(fPercent * vGagebarSize.x);
 
 	CKTDGUIStatic* pStaticPiratePercent = static_cast<CKTDGUIStatic*>(m_pDlgGlobalMissionDlg->GetControl(L"PiratePercent"));
-	int iPercent = static_cast<int>(fPercent * 100.0f);
 
 	if( pStaticPiratePercent != NULL )
 	{

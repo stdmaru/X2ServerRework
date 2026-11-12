@@ -1134,7 +1134,6 @@ void CX2PostBox::AttachItem()
 
 void CX2PostBox::CheckEdChange()
 {
-    bool bChange = false;
     CKTDGUIIMEEditBox *pDialogEd = (CKTDGUIIMEEditBox*)m_pDLGMailSend->GetControl(L"IME_Add_Ed");
 
     wstring						wstrMessage;
@@ -1143,18 +1142,15 @@ void CX2PostBox::CheckEdChange()
     if( m_nED < 0 )
     {
         m_nED = 0;
-        bChange = true;
     }
     else if( m_nED > MAX_ED_FOR_LETTER )
     {
         m_nED = MAX_ED_FOR_LETTER;
-        bChange = true;
     }
 
     if(m_nED >= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED)
     {
         m_nED = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED;
-        bChange = true;
     }
 
     //if(bChange) // 숫자 입력할 때마다 쉼표위치 변경을 위해서
@@ -1464,25 +1460,21 @@ void CX2PostBox::SetSlotItem(CX2Item *pkItem)
 {
     CKTDGUIIMEEditBox *pDialogEd = (CKTDGUIIMEEditBox*)m_pDLGMailSend->GetControl(L"IME_Add_Ed");
 
-    bool                        bChange = false;
     wstring						wstrMessage;
 
 	m_nED = g_pMain->GetEDFromString( pDialogEd->GetText() );
     if( m_nED < 0 )
     {
         m_nED = 0;
-        bChange = true;
     }
     else if( m_nED > MAX_ED_FOR_LETTER )
     {
         m_nED = MAX_ED_FOR_LETTER;
-        bChange = true;
     }
 
     if(m_nED >= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED)
     {
         m_nED = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_ED;
-        bChange = true;
     }
 
     if(m_nED > 0)
@@ -1754,7 +1746,6 @@ bool CX2PostBox::DrawSlotMouseOverImageInEquipRect()
         if ( itemType == CX2Item::IT_WEAPON || itemType == CX2Item::IT_DEFENCE || itemType == CX2Item::IT_ACCESSORY ||
             itemType == CX2Item::IT_SKILL )
         {
-            CX2Unit::EQIP_POSITION equipPosition = pkItemTemplet->GetEqipPosition();
             for ( int i = 0; i < (int)m_SlotList.size(); i++ )
             {
                 CX2SlotItem* pItemSlot = (CX2SlotItem*)GetSlot(i);
@@ -2528,7 +2519,6 @@ void CX2PostBox::OpenItemQuantityDLG( UidType sellItemUID )
     CX2Item* pItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItem( sellItemUID );
     if ( pItem != NULL )
     {
-        WCHAR buff[256] = {0};
         CKTDGUIStatic* pStaticItemName = (CKTDGUIStatic*)m_pDLGMyTradeWindow->GetControl( L"Item_Name" );
         if ( pStaticItemName != NULL && pStaticItemName->GetString(0) != NULL )
         {
@@ -2713,7 +2703,6 @@ void CX2PostBox::SetListSlot(int inx)
 	CKTDGUIStatic	*pStaticDlg3 = NULL;
     CKTDGUIButton	*pButtonDlg = NULL;
     CKTDGUICheckBox *pCheckDlg = NULL;
-    CKTDGUIStatic *pStaticDlg = m_pDLGMailSend->GetStatic_LUA("g_pStaticPost_SendWindow");
 
     CKTDGUIStatic *pStaticDlgRead = m_pDlgMailListSlot->GetStatic_LUA("Staticpost_ItemSlot_Read");
     CKTDGUIStatic *pStaticDlgNotRead = m_pDlgMailListSlot->GetStatic_LUA("Staticpost_ItemSlot_NotRead");
@@ -3771,7 +3760,6 @@ bool CX2PostBox::Handler_EGS_DELETE_LETTER_REQ()
 {
     KEGS_DELETE_LETTER_REQ kPacket;
 
-    UidType postID = 0;
     m_nUnReadDeleteMail = 0;
     for(int i=0; i<6; ++i)
     {
@@ -4081,7 +4069,6 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND /*hWnd*/, UINT /*uMs
 					else
 						bIsFirstCheck = false;		/// 처음 검사 여부 해제
 					int resultItem1 = iter->first;
-					int resultItem2 = iter->second;
 
                     wstring itemName = g_pData->GetItemManager()->GetItemTemplet(resultItem1)->GetFullName_();
 					strResultItem = strResultItem + itemName;
@@ -4104,7 +4091,6 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND /*hWnd*/, UINT /*uMs
                 wstring itemName = GET_STRING( STR_ID_401 );
                 pStaticDlg->GetString(0)->msg = itemName;     // 첨부물
 
-                int inx = -1;
                 for(int i=0; i<6; ++i)
                 {
                     if(m_listSlot[i].m_postID == kEvent.m_iPostNo)

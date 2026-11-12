@@ -11569,7 +11569,6 @@ void CX2GUAra::ASI_A_ALH_ROCK_CRASH_START_FrameMove()
 
     if ( true == m_pXSkinAnim->EventTimerOneshot( 0.275f ) )
 	{
-		D3DXVECTOR3 vPos = GetBonePos( L"Bip01" );
 
 
 		/// �޸� : ������ ���� ġ��(��ȣ 1�� : ��������) - ũ��Ƽ�� 40% ����

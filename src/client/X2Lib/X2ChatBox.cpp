@@ -1606,7 +1606,6 @@ bool CX2ChatBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam,
 			if( NULL != m_pDLGChatWindow )
 			{
 
-				CKTDGUIListBox* pListBox = GetCurrentChatbox();
 
 				CKTDGUIListBox* pListBox_All = (CKTDGUIListBox*) m_pDLGChatWindow->GetControl( L"ListBox_All" );
 				CKTDGUIListBox* pListBox_Party = (CKTDGUIListBox*) m_pDLGChatWindow->GetControl( L"ListBox_Party" );
@@ -3543,8 +3542,6 @@ void CX2ChatBox::AddChatLogObtain( const WCHAR* wszMsg, CHAT_OBTAIN_TYPE eObtain
 	const int CHAT_LINE_WIDTH = (int)vTemp.x;
 
 	// CKTDGUIListBox::HandleMouse에 있는 MAGIC_SHOW_TIME도 동일하게 수정해야
-	const float MAGIC_CHAT_SHOW_TIME = 50.0f;
-	const int MAX_LINE = 100;
 
 	int addRow = 0;
 	wstring chatContent = wszMsg;
@@ -3674,8 +3671,6 @@ void CX2ChatBox::AddChatLog( const WCHAR* wszMsg, KEGS_CHAT_REQ::CHAT_PACKET_TYP
 
 
 	// CKTDGUIListBox::HandleMouse에 있는 MAGIC_SHOW_TIME도 동일하게 수정해야
-	const float MAGIC_CHAT_SHOW_TIME = 50.0f;
-	const int MAX_LINE = 100;
 
 	switch( g_pMain->GetNowStateID() )
 	{
@@ -4104,7 +4099,6 @@ bool CX2ChatBox::MegaLineBreakAdd( wstring wstrText, int iTextWidth, CKTDGUIList
 
 	int iNowCharWidth = 0;
 	int iNowLineWidth = 0;
-	int iNowLineCount = 0;
 	int iNowCharIndex = 0;
 	wstring wstrColorCode = L"";
 	wstring wstrLineBuf = L"";
@@ -4153,7 +4147,6 @@ bool CX2ChatBox::MegaLineBreakAdd( wstring wstrText, int iTextWidth, CKTDGUIList
 					{
 						wstrLineBuf += wstrCharBuf;
 						wstrLineBuf += L"  ";
-						iNowLineCount++;
 						iNowLineWidth = 0;
 						bIsFirstCharOfLine = true;
 
@@ -4222,7 +4215,6 @@ bool CX2ChatBox::MegaLineBreakAdd( wstring wstrText, int iTextWidth, CKTDGUIList
 			pListBox->AddItem( wstrLineBuf.c_str(), NULL, m_iMegaID, m_wstrSenderName, bIsMyMessage );
 
 			wstrLineBuf = L"  #CFFAE00";
-			iNowLineCount++;
 			iNowLineWidth = 0;
 			bIsFirstCharOfLine = true;
 
@@ -6601,7 +6593,6 @@ void CX2ChatBox::ProcessInputMsgWithUpKey()
 
 		ChangeHistoryIndex( true );
 
-		CKTDGUIIMEEditBox* pIMEEditBox = static_cast< CKTDGUIIMEEditBox* >( m_pDLGChatWindowEditBox->GetControl( L"IMEEditBoxChatBox" ) );
 		wstring wstrMsg = GetHistory();
 
 		SetChatEditText( wstrMsg.c_str() );
@@ -6623,7 +6614,6 @@ void CX2ChatBox::ProcessInputMsgWithDownKey()
 
 		ChangeHistoryIndex( false );
 
-		CKTDGUIIMEEditBox* pIMEEditBox = static_cast< CKTDGUIIMEEditBox* >( m_pDLGChatWindowEditBox->GetControl( L"IMEEditBoxChatBox" ) );
 		wstring wstrMsg = GetHistory();
 
 		SetChatEditText( wstrMsg.c_str() );

@@ -367,7 +367,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 			wstrItemDesc = GetSlotItemDesc();
 		}
 
-		CKTDGFontManager::CUKFont* pItemDescFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX );
 
 		//{{ JHKang / 강정훈 / 2010.9.17 / 툴팁 생성 줄바꿈 관련 개선
 		// 툴팁 수정에 따른 가로 크기 변경 (현재 가로 해상도 크기 / 4), 가로 세로 크기 조절
@@ -396,7 +395,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 			if( itemDescHeight > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 			{
 				pItemDesc->GetString(0)->fontIndex = SLOT_MANAGER_FONT_INDEX_SMALL;
-				pItemDescFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX_SMALL );
 				itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 13 : 14;	// XUF_DODUM_11_NORMAL의 크기
 				itemDescFontHeight += m_iDescFontHeightOffset;
 
@@ -523,7 +521,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 				GetIsShowCompareItemDescBySlotType( m_pNowOverItemSlot->GetSlotType() ) == true )
 			{
 				wstring itemDescCompare = GetSlotItemDesc();
-				CKTDGFontManager::CUKFont* pItemDescFontCompare = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX );
 				int itemDescWidthCompare = 0;
 				int itemDescHeightCompare = 0;
 
@@ -548,7 +545,6 @@ void CX2ItemSlotManager::DrawSlotDesc()
 					if( itemDescHeightCompare > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 					{
 						pItemDescCompare->GetString(0)->fontIndex = SLOT_MANAGER_FONT_INDEX_SMALL;
-						pItemDescFontCompare = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( SLOT_MANAGER_FONT_INDEX_SMALL );
 						itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 13 : 14;	// XUF_DODUM_11_NORMAL의 크기
 						itemDescFontHeight += m_iDescFontHeightOffset;
 						itemDescCompare = CWordLineHandler::GetStrByLineBreakColorInX2Main(wstrItemDescCompTemp.c_str(), itemDescWidthCompare - ITEM_DESC_ADD_SIZE_X, SLOT_MANAGER_FONT_INDEX_SMALL);

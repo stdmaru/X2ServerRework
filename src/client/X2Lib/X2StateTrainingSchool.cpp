@@ -626,7 +626,6 @@ void CX2StateTrainingSchool::UpdateTrainUI( bool bUpdateNavi )
 				{
 					// 표시되는 훈련
 					// 깬 훈련인가 보고
-					bool bClearedTraining = false;
 					std::map< int, KTCClearInfo >::iterator it;
 					it = g_pData->GetMyUser()->GetSelectUnit()->GetMapTCClear().find( trainingInfo.m_iID );
 					if( it != g_pData->GetMyUser()->GetSelectUnit()->GetMapTCClear().end() )

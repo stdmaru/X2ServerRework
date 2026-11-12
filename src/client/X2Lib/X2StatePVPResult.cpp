@@ -275,9 +275,6 @@ HRESULT CX2StatePVPResult::OnFrameMove( double fTime, float fElapsedTime )
 	else
 	{
 		CX2PVPGame::PVPResultInfo* pPVPResultInfo = g_pData->GetPVPResultInfo();
-		int winTeam = pPVPResultInfo->m_WinTeam;
-		int winTeamNum = 0;
-		int loseTeamNum = 4;
 
 		for ( int i = 0; i < (int)pPVPResultInfo->m_PVPResultUnitInfoList.size(); i++ )
 		{
@@ -1670,10 +1667,7 @@ bool CX2StatePVPResult::InitUI()
 	else
 	{
 		CX2PVPGame::PVPResultInfo* pPVPResultInfo = g_pData->GetPVPResultInfo();
-		int winTeam = pPVPResultInfo->m_WinTeam;
-		int winTeamNum = 0;
-		int loseTeamNum = 4;
-		const int nNumPlayer = (int)pPVPResultInfo->m_PVPResultUnitInfoList.size();
+		[[maybe_unused]] const int nNumPlayer = (int)pPVPResultInfo->m_PVPResultUnitInfoList.size();
 
 		for ( int i = 0; i < (int)pPVPResultInfo->m_PVPResultUnitInfoList.size(); i++ )
 		{

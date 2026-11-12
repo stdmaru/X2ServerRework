@@ -91,7 +91,6 @@ void CX2StateCommonBG::BGEffectFrameMove( double /*fTime*/, float fElapsedTime )
 
 			CKTDGUIStatic* pStaticBGEffect = (CKTDGUIStatic*)m_pDLGCommonBG->GetControl( buff );
 
-			CX2Unit::UNIT_CLASS unitClass = g_pData->GetMyUser()->GetSelectUnit()->GetClass();
 
 			D3DXCOLOR bgEffectColor = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 0.5f );
 			/*

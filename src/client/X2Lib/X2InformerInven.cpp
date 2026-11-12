@@ -124,7 +124,6 @@ bool CX2InformerInven::CheckEnoughInven()
 			for ( int i = (int)(CX2Inventory::ST_EQUIP); i < (int)( CX2Inventory::ST_AVARTA ); i++ )
 			{
 				CX2Inventory::SORT_TYPE sortType = (CX2Inventory::SORT_TYPE)i;
-				int usedSlotNum = kInventory.GetUsedSlotNum( sortType );
 				m_mapNowInvenSizeForEnough.insert( std::make_pair( sortType, 0 ) );
 			}
 		}

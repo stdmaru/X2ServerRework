@@ -899,8 +899,6 @@ HRESULT	CX2PET::OnFrameMove( double fTime, float fElapsedTime )
 		}
 
 		// 피격 피드백
-		bool bEmotionUnKnown = false;
-		bool bEmotionHungry = false;
 		if( IsActionState( GetNowState() ) == false )
 		{
 			if( m_AttackComboNum > 0 && m_AttackComboNum % g_pData->GetPetManager()->GetDispositionVal( 4, iEmotion, iExtroversion ) == 0 )
@@ -3790,7 +3788,7 @@ float CX2PET::GetNowIntimacy()
 
 float CX2PET::GetNowSatiety()
 {
-	CX2PetManager::PetTemplet *petTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)m_petData.m_PetId );
+	[[maybe_unused]] CX2PetManager::PetTemplet *petTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)m_petData.m_PetId );
 	float fSatiety = m_petData.m_Satiety / 4800.f;
 	return fSatiety;
 }

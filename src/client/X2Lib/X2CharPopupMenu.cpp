@@ -427,7 +427,6 @@ void CX2CharPopupMenu::SetMode( USER_MENU eMode, bool bPartyMember/* = false*/ )
 
 		if( g_pData->GetGuildManager()->CanInviteMember() == true )	//	길드 초대 할 수 있는 등급인지 검사
 		{
-			int iMyGuild = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_byMemberShipGrade;
 			//	상대 유저의 길드와 내 길드가 다른지 여부 조건식 추가
 			if( g_pData->GetGuildManager()->IsMyGuildUser(m_iUid) == false )
 			{

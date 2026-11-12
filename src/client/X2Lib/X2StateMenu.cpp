@@ -2191,7 +2191,6 @@ void CX2StateMenu::UpdateUserInfoUI( KEGS_SEARCH_UNIT_ACK &kEvent )
 	}
 
 	// 같이하기 버튼
-	CKTDGUIButton* pButton_PlayTogether = (CKTDGUIButton*) m_pDLGUserInfo->GetControl( L"Button_Play_Together" );
 
 
 	// fix!!!!! 접속 상황
@@ -2365,7 +2364,6 @@ bool CX2StateMenu::InitUI()
 				if( CKTDGUIControl::UCT_BUTTON != pControl->GetType() )
 					continue;
 
-				CKTDGUIButton* pButton = (CKTDGUIButton*) pControl;
 
 
 					pControl->SetEnable(true);
@@ -2709,7 +2707,6 @@ void CX2StateMenu::RefreshMenuInfo()
 		UpdateExpGageBar();
 		CKTDGUIStatic* pStatic;
 		pStatic = (CKTDGUIStatic*)m_pDLGMenu->GetControl( L"StaticMenu_Button_Tired_Gage" );
-		float gauagePercentage = (g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSpirit / (float)g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSpiritMax );
 
 		if ( pStatic != NULL && pStatic->GetPicture(0) != NULL )
 		{
@@ -3314,8 +3311,6 @@ bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, 
 
 	default:
 		{
-			bool bTest = false;
-			bTest = true;
 		}
 		break;
 
@@ -3924,10 +3919,9 @@ void CX2StateMenu::UpdateGuideDescBuffTemplet( CX2PremiumBuffIconPtr pPremiumBuf
 
 		CX2PremiumBuffTempletPtr			ptrTemplet			= g_pData->GetPremiumBuffManager()->GetPremiumBuffTempletPtr( ePremiumBuffID );	//버프 템플릿
 		UINT								uiBuffName			= ptrTemplet->GetStringID();													//버프 이름 String ID
-		int									BuffPeriodSecond	= static_cast<int>( ptrTemplet->GetBuffPeriodSecond() / 60 );					//버프 유지 시간
 		int									iBuffTimeAllSec		= ConvertTimeForBuffTemplet( wstrEndTime );										//남은 버프 유지 시간 ( 실제 초 )
-		int									iBuffTimeMin		= ConvertTimeForBuffTemplet( wstrEndTime ) / 60;								//남은 버프 유지 시간 ( 분 )
-		int									iBuffTimeSec		= ConvertTimeForBuffTemplet( wstrEndTime ) % 60;								//남은 버프 유지 시간 ( 초 )
+		[[maybe_unused]] int									iBuffTimeMin		= ConvertTimeForBuffTemplet( wstrEndTime ) / 60;								//남은 버프 유지 시간 ( 분 )
+		[[maybe_unused]] int									iBuffTimeSec		= ConvertTimeForBuffTemplet( wstrEndTime ) % 60;								//남은 버프 유지 시간 ( 초 )
 		bool								bShowEndTime		= true;																			//남은 버프 시간 표시 여부
 
 		wstreamDesc << GET_STRING( uiBuffName ) << '\n';		/// 버프 이름

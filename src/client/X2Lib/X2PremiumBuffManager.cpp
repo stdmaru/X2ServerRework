@@ -489,7 +489,6 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_IN_ROOM_NOT( IN HWND /*
 				{
 
 
-					UINT			 iFactorID	   = kBuffInfo.m_kFactorInfo.m_iFactorID;	/// Factor ID
 					CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( kBuffInfo.m_kFactorInfo.m_iFactorID );
 
 					if ( NULL != ptrBuffFactor )
@@ -554,7 +553,6 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_NOT( IN HWND /*hWnd*/, 
 			for ( KBuffInfo& kBuffInfo : kEvent.m_vecActivateBuffList )				/// �������� �� ���� ������ ����
 			{
 
-				UINT			 iFactorID	   = kBuffInfo.m_kFactorInfo.m_iFactorID;		/// Factor ID
 				CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( kBuffInfo.m_kFactorInfo.m_iFactorID );
 
 				if ( NULL != ptrBuffFactor )

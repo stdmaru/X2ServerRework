@@ -509,7 +509,6 @@ bool CX2BattleFieldNpcAi::IsNearNewTargetGameUnit( IN const CX2GameUnit* /*pOldT
 {
 	// 새로운 타겟 대상과의 거리를 구한 후
 	const float fDistanceSqFromNewTargetGameUnit = GetDistance3Sq( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
-	const float fDistance = GetDistance( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
 
 	// 기존의 타겟이 없거나, 새로운 타겟 후보가 더 가까우면
 	if( fDistanceSqFromNewTargetGameUnit < fDistanceSqFromOldTargetUnit_ )
@@ -525,7 +524,6 @@ bool CX2BattleFieldNpcAi::IsFarNewTargetGameUnit( IN const CX2GameUnit* /*pOldTa
 {
 	// 새로운 타겟 대상과의 거리를 구한 후
 	const float fDistanceSqFromNewTargetGameUnit = GetDistance3Sq( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
-	const float fDistance = GetDistance( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
 
 	// 기존의 타겟이 없거나, 새로운 타겟 후보가 더 멀면
 	if( fDistanceSqFromNewTargetGameUnit > fDistanceSqFromOldTargetUnit_ )
@@ -747,7 +745,6 @@ void CX2BattleFieldNpcAi::GetAIMessageAndUnitDirection( float fElapsedTime, OUT 
 
 			// 현재위치와 목적한 위치 까지의 거리가 MOVE_SPLIT_RANGE 보다 작으면
 			const float fFinalDestDistance3Sq = GetDistance3Sq( GetNowPosition(), GetFinalDest() );
-			const float fDistance = GetDistance( GetNowPosition(), GetFinalDest() );
 
 			if( fFinalDestDistance3Sq < GetAIData()->chaseMoveData.moveSplitRange * GetAIData()->chaseMoveData.moveSplitRange )
 			{

@@ -57,10 +57,8 @@ void CX2GUNPCAI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 	if( false == m_bEnabled )
 		return;
 
-	CX2GUNPC::STATE_CHANGE_TYPE message = CX2GUNPC::SCT_NO_CHANGE; // FieldFix: 사용안함
 	SetMasterUnitData();
 
-	CKTDGLineMap* pLineMap = g_pX2Game->GetWorld()->GetLineMap();	//FieldFix: 이것도 가지고 있어도 될듯
 
 
 	// 루아 Function에 의해 타겟팅을 하는 것이면

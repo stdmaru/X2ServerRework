@@ -66,7 +66,6 @@ CX2TrainingGameUI::~CX2TrainingGameUI(void)
 
 void CX2TrainingGameUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
-	const float MAGIC_MISSION_TEXT_SPREAD_TIME = 0.04f;
 
 
 	if( true == m_bSceneStarted )

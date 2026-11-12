@@ -6958,7 +6958,6 @@ void CX2GULire_ElvenRanger::SiegeWaitFrameMove()
 //LESI_SIEGE_WAIT
 void CX2GULire_ElvenRanger::SiegeWaitEventProcess()
 {
-	const float MAGIC_LOOK_AT_IK_ANGLE_MAX = 35.f;
 
 
 	if( false == IsOnSomethingFuture() )
@@ -7143,7 +7142,7 @@ void CX2GULire_ElvenRanger::SiegeAttackXFrontFrameMove()
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 30.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 60.f / 180.f);
 		D3DXVECTOR3 vCoefficient = D3DXVECTOR3(fMaxCoefficient, fMinCoefficient, D3DX_PI * 45.f / 180.f);
-		float fDegree = ( DoAimingTarget( 1000.f, vCoefficient, bAimingTarget, vAimingTargetPos, vAimingTargetLandPos ) * 180.f ) / D3DX_PI;
+		[[maybe_unused]] float fDegree = ( DoAimingTarget( 1000.f, vCoefficient, bAimingTarget, vAimingTargetPos, vAimingTargetLandPos ) * 180.f ) / D3DX_PI;
 
 		if( FlushMp( 27.f * m_fMPConsumeRateSiegeArrow ) == true )
 		{
@@ -9933,7 +9932,6 @@ void CX2GULire_ElvenRanger::LESI_SI3_LE_PHOENIX_STRIKE_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
 	{
 		D3DXVECTOR3 pos = m_pXSkinAnim->GetCloneFramePosition( L"Dummy1_Rhand" );
-		D3DXVECTOR3 degree = GetRotateDegree();
 
 		CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->GetInstanceSequence( GetHandleRenaMajorParticleByEnum( RENA_MAJOR_PII_PHOENIX_START_WAVE ) );
 		if( NULL != pSeq )
@@ -10032,7 +10030,6 @@ void CX2GULire_ElvenRanger::LESI_SI3_LE_PHOENIX_STRIKE_HYPER_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
 	{
 		D3DXVECTOR3 pos = m_pXSkinAnim->GetCloneFramePosition( L"Dummy1_Rhand" );
-		D3DXVECTOR3 degree = GetRotateDegree();
 
 
 		CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->GetInstanceSequence( GetHandleRenaMajorParticleByEnum( RENA_MAJOR_PII_PHOENIX_START_WAVE ) );
@@ -15247,12 +15244,8 @@ void CX2GULire_ElvenRanger::LESI_SA_RNW_GLIDING_STRIKE_FrameMove()
 
 	g_pX2Game->GetWorld()->FadeWorldColor( g_pX2Game->GetWorld()->GetOriginColor(), 1.0f );
 
-	D3DXVECTOR3 posR = m_pXSkinAnim->GetCloneFramePosition( L"Dummy1_Rhand" );
-	D3DXVECTOR3 posL = m_pXSkinAnim->GetCloneFramePosition( L"Dummy2_Lhand" );
 	D3DXVECTOR3 degree = GetRotateDegree();
 
-	D3DXVECTOR3 posRorg = posR;
-	D3DXVECTOR3 posLorg = posL;
 
 	LUA_GET_VALUE( m_LuaManager, "ARROW_DEGREE_Z", degree.z, 0.0f );
 
@@ -15883,7 +15876,6 @@ void CX2GULire_ElvenRanger::DeletePriorPlannedBlowEffect()		/// ���� �
 void CX2GULire_ElvenRanger::UpdateStartOfDelayedFiring( bool bInsertUnit/*= true*/ )	/// �����ڰ� �߻��� ������ ��ȣź ���� ����
 {
 	vector<CX2DamageManager::StartOfDelayedFiringData*> vTempArrowList;
-	int													iArrowByUnitNum	= 0;
 	int													iArrowByGroundNum = 0;
 
 	/// �����ڰ� �����Ų ��� ȭ�� ��ȯ
@@ -15897,7 +15889,6 @@ void CX2GULire_ElvenRanger::UpdateStartOfDelayedFiring( bool bInsertUnit/*= true
 		{
 			vTempArrowList[i]->m_fCoolTime = _CONST_RENA_::START_OF_DELAYED_FIRING_DELAY_ACTIVE_TIME;
 
-			++iArrowByUnitNum;	/// ���ֿ� ����� ȭ��
 
 		}
 		else
@@ -15948,7 +15939,6 @@ void CX2GULire_ElvenRanger::DeleteStartOfDelayedFiring( vector<CX2DamageManager:
 		if( -1 == vTempArrowList[i]->m_iArrowIndex && true == bDeleteUnitArrow )
 		{
             unsigned uUnitNum = g_pX2Game->GetUnitNum();
-			const vector<CX2GameUnit*>& vecUnitList = g_pX2Game->GetUnitList();
 
 			for( UINT j = 0; j < uUnitNum; ++j )								/// ���ֿ��� ����� ȭ�� ���� �˻�
 			{
@@ -16299,8 +16289,6 @@ void CX2GULire_ElvenRanger::ClearStartOfDelayedFiringData()		/// ��� Ȥ�
 		if ( true == vecStart.empty() )
 			continue;
 
-		float fCoolTime	   = 0.01f;
-		bool  bIsExplosion = false;
 
 		for( UINT j = 0; j < vecStart.size(); ++j )		/// �����ڰ� ������ ȭ�� ���� �˻�
 		{

@@ -1233,7 +1233,6 @@ bool CX2QuestManager::HasCompletableQuest()
 	map<int,QuestInst*>::iterator mit;
 	for( mit = m_mapUnitQuest.begin(); mit != m_mapUnitQuest.end(); mit++ )
 	{
-		int QuestID = mit->first;
 		CX2QuestManager::QuestInst* pQuestInst = (CX2QuestManager::QuestInst*) mit->second;
 		if(pQuestInst == NULL)
 			continue;
@@ -1539,7 +1538,6 @@ bool CX2QuestManager::LoadClearCondition( KLuaManager& luaManager, SubQuestTempl
 {
 	if( luaManager.BeginTable( "m_ClearCondition" ) == true )
 	{
-		int iDifficulty = -1;
 
 		switch( pSubQuestTemplet->m_eClearType )
 		{

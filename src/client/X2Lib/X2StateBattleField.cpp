@@ -1179,7 +1179,6 @@ bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT( HWND /*hWnd
 			vTempUserList.push_back( make_pair( pPetManager->GetMyPet()->GetPetInfo().m_PetUid, true ) );
 
 		const UINT		uiUnitListSize = g_pX2Game->GetUserUnitListSize();
-		const UidType	uidMyGUUserUID = g_pX2Game->GetMyUnit()->GetUnitUID();
 
 		for( UINT i = 0; i < uiUnitListSize; ++i )
 		{
@@ -1345,8 +1344,6 @@ void CX2StateBattleField::DrawFace( const float fX_, const float fY_, const CKTD
 	float X2 = fX_ + fWidth_ * fWidthPercent_;
 	float Y2 = fY_ + fHeight_;
 
-	float UMax = 1.0f;
-	float VMax = 1.0f;
 
 	DRAWFACE_RHW_VERTEX vertex[4];
 	ZeroMemory( vertex, sizeof(DRAWFACE_RHW_VERTEX) * 4 );

@@ -794,7 +794,6 @@ void CX2DungeonGame::SubStageOpen( int subStageNum )
 
 	CX2DungeonSubStage* pCX2DungeonSubStage				= m_pDungeon->GetNowStage()->CreateSubStage( subStageNum );
 
-	CX2DungeonSubStage::SubStageData* pSubStageData		= pCX2DungeonSubStage->GetSubStageData();
 	CX2DungeonSubStage* pBeforeSubStage					= m_pDungeon->GetNowStage()->GetBeforeSubStage();
 
 	if( pBeforeSubStage != NULL )

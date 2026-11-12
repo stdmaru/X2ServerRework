@@ -60,8 +60,6 @@ CX2PetManager::~CX2PetManager(void)
 
 HRESULT	CX2PetManager::OnFrameMove( double fTime, float fElapsedTime )
 {
-	bool bEnableNextAi = false;
-	bool bEnabledAi = false;
 
 	map<UidType, CX2PETPtr>::iterator iter;
 	int iIndex = 0;
@@ -1229,7 +1227,6 @@ bool CX2PetManager::AddPetTemplet_LUA()
 		{
 			PetSkillInfo petSkillInfo;
 
-			int iSkillDesc = STR_ID_27;
 			LUA_GET_VALUE( luaManager, 1, petSkillInfo.m_wstrImageName,				L""	);
 			LUA_GET_VALUE( luaManager, 2, petSkillInfo.m_wstrKeyName,				L""	);
 			wstring wstrTemp = L"";
@@ -1257,7 +1254,6 @@ bool CX2PetManager::AddPetTemplet_LUA()
 		{
 			PetSkillInfo petSkillInfo;
 
-			int iSkillDesc = STR_ID_27;
 			LUA_GET_VALUE( luaManager, 1, petSkillInfo.m_wstrImageName,			L""	);
 			LUA_GET_VALUE( luaManager, 2, petSkillInfo.m_wstrKeyName,				L""	);
 			wstring wstrTemp = L"";
@@ -1284,7 +1280,6 @@ bool CX2PetManager::AddPetTemplet_LUA()
 		{
 			PetSkillInfo petSkillInfo;
 
-			int iSkillDesc = STR_ID_27;
 			LUA_GET_VALUE( luaManager, 1, petSkillInfo.m_wstrImageName,				L""	);
 			LUA_GET_VALUE( luaManager, 2, petSkillInfo.m_wstrKeyName,				L""	);
 			wstring wstrTemp = L"";

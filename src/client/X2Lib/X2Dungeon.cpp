@@ -262,7 +262,6 @@ void CX2Dungeon::SetStageStaticNPC( int stageNum, std::map<int, KNPCList>& mapNP
 
 	CX2DungeonStage::StageData* pStageData = m_StageDataList[stageNum];
 
-	int UIDIndex = 0;
 	for( int i = 0; i < (int)pStageData->m_SubStageDataList.size(); i++ )
 	{
 		CX2DungeonSubStage::SubStageData* pSubStageData = pStageData->m_SubStageDataList[i];

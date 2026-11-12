@@ -272,7 +272,6 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 				return false;
 			}
 
-			CKTDGUIDialogType	pDlg		= pControl->GetDialog();
 			int					iGuildUID	= 0;
 			std::map< CKTDGUIDialogType,int >::iterator mItr = m_mapGuildInvitationDlg.begin();
 

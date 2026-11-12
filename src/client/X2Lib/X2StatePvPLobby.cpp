@@ -329,7 +329,6 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	case UPLCM_JOIN_ROOM:
 		{
 			CKTDGUIButton* pJoinButton	= (CKTDGUIButton*)lParam;
-			CKTDGUIDialogType pDialog		= pJoinButton->GetDialog();
 
 			int simpleRoomIndex = -1;
 

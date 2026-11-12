@@ -1127,7 +1127,7 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 //
 // 	D3DXVec3TransformCoord( &vResult, &v3, &mt );
 //
- 	bool bIntersect;
+ 	[[maybe_unused]] bool bIntersect;
 
  	if ( g_pKTDXApp->GetDGManager()->GetFrustum().CheckSphere( v3, 0.0f ) == false )
  		bIntersect = false;
@@ -1211,14 +1211,13 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 
 		D3DXVECTOR3 landPos = GetWorld()->GetLineMap()->GetLandPosition_LUA( m_pMyUnit->GetPos() );
 		landPos.y += 0.5f;
-		bool bOnOtherLine = false;
+		[[maybe_unused]] bool bOnOtherLine = false;
 		if(pLineData->lineType == CKTDGLineMap::LT_OTHER_ROAD)
 			bOnOtherLine = true;
 
 		int iOtherLine;
 		bool bShowOtherLine = false;
 		bool bShowUp = false;
-		float fOtherLineDist = 0.f;
 		m_bFindOtherLine = GetWorld()->GetLineMap()->GetNearOtherLine(landPos, otherLinePos, m_pMyUnit->GetLastTouchLineIndex(), iOtherLine, 200.f);
 
 		const CKTDGLineMap::LineData* pOtherLineData = GetWorld()->GetLineMap()->GetLineData( iOtherLine );
@@ -1291,7 +1290,6 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 			}
 		}
 
-		fOtherLineDist = GetDistance(landPos, otherLinePos);
 		if( m_bFindOtherLine == true )
 		{
 			// 갈림길 존재
@@ -3708,7 +3706,6 @@ bool	CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_ACK( HWND /*hWnd*/, UI
 			if ( g_pData->GetUIManager()->GetShow( CX2UIManager::UI_MENU_INVEN ) == true )
 				g_pData->GetUIManager()->GetUIInventory()->UpdateInventorySlotList( kEvent.m_vecInventorySlotInfo );
 
-			const int finalEventADay = 5; // 하루에 다섯번 이벤트
 
 			if ( kEvent.m_iRewardCount != 5 ) // 다섯번 째 보상을 받을 경우 팝업을 다르게 출력
 			{
@@ -3901,8 +3898,6 @@ void CX2TFieldGame::LoadUI()
 void CX2TFieldGame::OpenFieldName()
 {
 	//int nFieldMax = 14;
-	bool bDungeonGate = false;
-	bool bLounge = false;
 	int iFieldName = 0;
 
 
@@ -4774,13 +4769,13 @@ bool CX2TFieldGame::GetIsRightNpc(int iHouseID)
 				return false;
 
 			D3DXVECTOR3 vFinalDestDir = pNpcNode->GetPos() - m_pMyUnit->GetPos();
-			float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
+			[[maybe_unused]] float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
 			D3DXVec3Normalize( &vFinalDestDir, &vFinalDestDir );
 			const D3DXVECTOR3 vUpVec(0,1,0);
 			D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 			D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-			float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+			[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 			float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 			if( fIsRight > 0.f )
 				bRight = true;
@@ -5180,8 +5175,7 @@ bool CX2TFieldGame::GetLinkVillageInfo(map<int, D3DXVECTOR3>& /*mapVillageInfo_*
 {
 	if( NULL != g_pData && NULL != g_pData->GetLocationManager() )
 	{
-		int iIndex = 0;
-		vector<int>::iterator it = m_vecLinkedPos.begin();
+		[[maybe_unused]] vector<int>::iterator it = m_vecLinkedPos.begin();
 // 		while(it != m_vecLinkedPos.end())
 // 		{
 // 			int iLinkPosID = g_pData->GetLocationManager()->GetStartPosLink(*it) ;

@@ -78,7 +78,6 @@ CX2RidingPetManager::~CX2RidingPetManager(void)
 //#pragma region OnFrameMove
 HRESULT CX2RidingPetManager::OnFrameMove( IN double fTime_, IN float fElapsedTime_ )
 {
-	int iIndex = 0;
 	RidingPetMap::iterator iter;
 
 	if ( m_pSkillSlot )

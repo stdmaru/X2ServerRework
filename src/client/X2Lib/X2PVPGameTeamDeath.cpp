@@ -83,7 +83,6 @@ HRESULT CX2PVPGameTeamDeath::OnFrameRender()
 		bool bHide = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog();
 		if( bHide == true )
 			return S_OK;
-		CX2GUUser* pCX2GUUser = GetMyUnit();
 		if( KPVPChannelInfo::PCC_PLAY != g_pMain->GetPVPChannelClass( g_pMain->GetConnectedChannelID() ) )
 		{
 			m_pFontForWinKill->OutTextXY( 516, 43, GET_REPLACED_STRING( ( STR_ID_444, "i", m_MaxKillNum ) ), D3DXCOLOR(1,1,0,1), CKTDGFontManager::FS_SHELL, D3DXCOLOR(0,0,0,1), NULL, DT_CENTER );

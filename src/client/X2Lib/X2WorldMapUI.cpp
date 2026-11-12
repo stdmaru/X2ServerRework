@@ -1374,7 +1374,6 @@ void CX2WorldMapUI::OpenPartyMemberToolTip( bool bOpen, int PartyMemberIndex /* 
 		int iLevel = 0;
 		wstring NickName = L"";
 		CX2Unit::UNIT_CLASS eUnitClass = CX2Unit::UC_ELSWORD_KNIGHT;
-		bool bPartyLeader = false;
 
 		if(PartyMemberIndex == -1)
 		{
@@ -1389,7 +1388,6 @@ void CX2WorldMapUI::OpenPartyMemberToolTip( bool bOpen, int PartyMemberIndex /* 
 				CX2PartyManager::PartyMemberData* pMemberData = g_pData->GetPartyManager()->GetMyPartyData()->GetPartyMemberData( g_pData->GetMyUser()->GetSelectUnit()->GetUID() );
 				if( NULL != pMemberData )
 				{
-					bPartyLeader = pMemberData->m_bPartyLeader;
 				}
 			}
 		}
@@ -1404,7 +1402,6 @@ void CX2WorldMapUI::OpenPartyMemberToolTip( bool bOpen, int PartyMemberIndex /* 
 					iLevel = pMemberData->m_iUnitLevel;
 					NickName = pMemberData->m_wstrNickName;
 					eUnitClass = pMemberData->m_eUnitClass;
-					bPartyLeader = pMemberData->m_bPartyLeader;
 				}
 				else
 				{

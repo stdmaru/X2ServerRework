@@ -1101,7 +1101,6 @@ namespace KBenchMark_LINPACK
 	  int m2 = 322;
 	  int m3 = 2508;
 	  int m4 = 2549;
-	  float one = 1.0;
 	  float r = 1.0 / 4096.0;
 	  float value;
 	//
@@ -1207,13 +1206,12 @@ namespace KBenchMark_LINPACK
 
 	  static char time_buffer[TIME_SIZE];
 	  struct tm t;
-	  size_t len;
 	  time_t now;
 
 	  now = time ( NULL );
 	  localtime_s ( &t, &now );
 
-	  len = strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", &t );
+	  strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", &t );
 
 	  cout << time_buffer << "\n";
 

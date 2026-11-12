@@ -147,7 +147,6 @@ void CX2UICharInfo::UnitHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 
 
 
@@ -1972,7 +1971,6 @@ void CX2UICharInfo::ResetNowEquipUI()
 
 void CX2UICharInfo::ResetEDnCashnVP()
 {
-	WCHAR buff[256] = {0};
 	CKTDGUIStatic* pStaticUnitStat;
 
 	pStaticUnitStat = (CKTDGUIStatic*)m_pDLGCharInfo->GetControl( L"g_pStaticInfo_cash" );
@@ -2256,7 +2254,6 @@ bool CX2UICharInfo::Handler_EGS_CHANGE_INVENTORY_SLOT_REQ( CX2SlotItem* pFromCX2
 		ASSERT( !"UIInventory NULL" );			// 최초 생성 후 항상 살아있어야 함
 		g_pData->GetUIManager()->CreateUIInventory();
 	}
-	int NowInvenSortTypePageNum = g_pData->GetUIManager()->GetUIInventory()->GetNowInvenSortTypePageNum();
 
 	KEGS_CHANGE_INVENTORY_SLOT_ITEM_REQ kEGS_CHANGE_INVENTORY_SLOT_ITEM_REQ;
 

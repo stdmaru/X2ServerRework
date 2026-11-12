@@ -69,7 +69,6 @@ void CX2StateAutoChanger::StartStateChange( int iNowStateID, int iTargetStateID,
 
 void CX2StateAutoChanger::InCase_XS_CREATE_UNIT()
 {
-	CX2StateCreateUnit* pState = (CX2StateCreateUnit*) g_pMain->GetNowState();
 
 	switch( m_iTargetStateID )
 	{
@@ -756,7 +755,6 @@ void CX2StateAutoChanger::InCase_XS_DUNGEON_ROOM()
 
 void CX2StateAutoChanger::InCase_XS_DUNGEON_GAME()
 {
-	CX2StateDungeonGame* pState = (CX2StateDungeonGame*) g_pMain->GetNowState();
 
 	switch( m_iTargetStateID )
 	{
@@ -790,7 +788,6 @@ void CX2StateAutoChanger::InCase_XS_DUNGEON_GAME()
 
 void CX2StateAutoChanger::InCase_XS_DUNGEON_RESULT()
 {
-	CX2StateDungeonResult* pState = (CX2StateDungeonResult*) g_pMain->GetNowState();
 
 	switch( m_iTargetStateID )
 	{

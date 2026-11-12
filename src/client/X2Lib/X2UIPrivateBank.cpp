@@ -944,7 +944,6 @@ bool	CX2UIPrivateBank::MouseUp( D3DXVECTOR2 mousePos )
 
 	if ( *m_pSlotBeforeDragging	!= NULL )	// �巡�� �� ��� �϶�
 	{
-		CX2SlotItem*	pSlotItem	= static_cast< CX2SlotItem* >( *m_pSlotBeforeDragging );
 		bool			bCheck		= false;
 
 		bCheck			=	OnDropAnyItem( mousePos );	// ������ �ؾ���

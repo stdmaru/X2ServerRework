@@ -2688,7 +2688,6 @@ bool CX2State::Handler_EGS_CHECK_INVALID_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/,
 
 	DialogLog( "\nINVALID_ROOM_NOT\n" );
 
-	bool bCheck = false;
 
 
 	switch(g_pMain->GetNowStateID())
@@ -3208,8 +3207,6 @@ bool CX2State::Handler_EGS_UPDATE_QUEST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARA
 	//CX2PacketLog::PrintLog( &kEvent );
 
 	//{{테스트코드
-	int i = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_nMapID;
-	CX2LocationManager::LOCAL_MAP_ID eMapID =  static_cast<CX2LocationManager::LOCAL_MAP_ID>(i);
 	//테스트코드}}
 
 	for( UINT i=0; i<kEvent.m_vecQuestInst.size(); i++ )
@@ -4098,7 +4095,6 @@ bool CX2State::Handler_EGS_ADMIN_GET_TITLE_CHEAT_ACK( HWND /*hWnd*/, UINT /*uMsg
 
 bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
-	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	//KEGS_REWARD_MARKETING_EVENT_NOT kEvent;
 	//DeSerialize( pBuff, &kEvent );
 
@@ -7388,7 +7384,6 @@ void CX2State::OpenResultMission( bool bIsClear )
 	SAFE_DELETE_DIALOG( m_pDLGWorldMissionBuffName );
 	m_pDLGWorldMissionBuffName = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_World_Mission_Buff_Title.lua" );
 	g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGWorldMissionBuffName );
-	CKTDGUIStatic *pStatic = m_pDLGWorldMissionBuffName->GetStatic_LUA("World_Mission_Buff_Title");
 
 	if( bIsClear == true )
 	{
@@ -8392,8 +8387,6 @@ std::map<int,int> CX2State::GetSelectRewardItemIDList(const CX2QuestManager::Que
 		ASSERT( stSelectReward.m_vecSelectItem.size() >= uiSelectionCount );
 		if ( stSelectReward.m_vecSelectItem.size() >= uiSelectionCount )
 		{
-			const CX2Unit::UNIT_TYPE eUnitType = g_pData->GetMyUser()->GetSelectUnit()->GetType();
-			const CX2Unit::UNIT_CLASS eUnitClass = g_pData->GetMyUser()->GetSelectUnit()->GetClass();
 
 			UINT uiIndex = 0;
 

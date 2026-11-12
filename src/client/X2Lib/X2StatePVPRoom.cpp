@@ -2969,7 +2969,6 @@ void CX2StatePVPRoom::UIFrameMove()
 	CKTDGUIButton* pButtonLock = (CKTDGUIButton*)m_pDLGPVPRoomFront->GetControl( L"g_pButtonLock" );
 	CKTDGUIButton* pButtonUnlock = (CKTDGUIButton*)m_pDLGPVPRoomFront->GetControl( L"g_pButtonUnLock" );
 	CKTDGUIIMEEditBox* pIMEEditRoomName = (CKTDGUIIMEEditBox*)m_pDLGPVPRoomBack->GetControl( L"IMEPVP_Room_Name" );
-	CX2Room::SlotData* pMySlot = m_pCX2PVPRoom->GetMySlot();
 
 	if( pButtonLock != NULL )
 	{
@@ -4301,7 +4300,6 @@ int CX2StatePVPRoom::CX2MapSelectWindow::GetAllRandomMap()
 	if ( m_vecpMapInfo.empty() == true )
 		return 0;
 
-	int mapID = 0;
 
 	int index = RandomNumber( 0, m_vecpMapInfo.size() - 1 );
 

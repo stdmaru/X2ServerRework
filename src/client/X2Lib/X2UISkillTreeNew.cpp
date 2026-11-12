@@ -1629,10 +1629,6 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 
 				if ( NULL != pSkillTreeTemplet && NULL != pSkillTemplet )
 				{
-					const int				iSkillLevel				= refUserSkillTree.GetSkillLevel( eSkillID );						/// ��ų ����
-					const int				iUnitLevel				= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_Level;	/// ���� ����
-					CX2SkillTree::SKILL_ID	eAnotherSkillID			= GetAnotherSelectSkillID( eSkillID );	/// �ݴ��� ��ų ���̵�
-					bool					bEnoughLevel			= false;								/// �䱸 ���� ���� ���� ����
 
 					/// ���� ��ų�� ���� ��ų�� �� ��ų�� ���� �ִ��� �˻�
 					const bool bHaveFollowingSkill = 0 < refUserSkillTree.GetSkillLevel( static_cast<CX2SkillTree::SKILL_ID>( pSkillTreeTemplet->m_iFollowingSkill ) ) ? true : false ;
@@ -2054,18 +2050,12 @@ void CX2UISkillTreeNew::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 		/// ���� ���� SP ��ȯ
 		const CX2Unit::UnitData* pUnitData = &g_pData->GetMyUser()->GetSelectUnit()->GetUnitData();
 
-		int iNoUseSP = 0;
-		int iNoUseCP = 0;
 
 		if ( NULL != pUnitData )
 		{
-			iNoUseSP = pUnitData->m_iSPoint;		/// ���� ��ų ����Ʈ
-			iNoUseCP = pUnitData->m_iCSPoint;	/// ���� ĳ�� ��ų ����Ʈ ( �׳�ý��� �ູ )
 		}
 
 		/// ���� ��ų ������ ���� ��ȯ
-		const CX2UserSkillTree&	refUserSkillTree	= pUnitData->m_UserSkillTree;
-		const int			iSkillLevel			= refUserSkillTree.GetSkillLevel( eSkillID );
 
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 		if(pSkillTemplet == NULL)
@@ -2554,9 +2544,6 @@ void CX2UISkillTreeNew::UpdateBlind()
 #endif // _SERVICE_
 		int							iTopTier				= pControlList->GetIndexY();											/// ���� ��ųâ�� ��ũ�� �� ��ġ �ε���
 		int							iUnitLevel				= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_Level;	/// ���� ����
-		CX2Unit::UNIT_CLASS_TYPE	eUnitClassType			= static_cast<CX2Unit::UNIT_CLASS_TYPE>( g_pData->GetMyUser()->GetSelectUnit()->GetClassLevel() );	/// ���� Ŭ���� Ÿ��
-		const int					iNotLearnTierIndex		= GetNotLearnTierIndex();											/// ����� ���� �ֻ��� ��ų ���� ��ȯ
-		const int					iEnoughLevelTierIndex	= GetNotEnoughLevelTierIndex( iUnitLevel );							/// ��� �� ���� ������ �ֻ��� ��ų ���� ��ȯ
 
 
 		for( int i = 0; i < pControlList->GetViewSizeY(); ++i )
@@ -2580,7 +2567,6 @@ void CX2UISkillTreeNew::UpdateBlind()
 			bool		bButtonBlind		= false;			/// �ش� ��ų ������ ��ų ���� ��ư ���� ����
 
 			bool		bEnoughLevel		= false;			/// �䱸 ���� ���� ���� ����
-			bool		bLearnBeforeSkill	= false;			/// ���� ��ų ���� ����
 
 			/// ���� ��ų�� �⺻ ��ų�̰ų�, ���� ���� ������ �ش� ��ų ���� ���� �䱸 ������ ������ ��
 			if ( 0 == GetRequireSkillLineLevel( iNowSkillLineLevel ) ||
@@ -2729,7 +2715,6 @@ void CX2UISkillTreeNew::CreateSlotUIPreset(SkillSlotUI& UISet, int eSkillID, int
 
 	UISet.m_pSlot = static_cast<CKTDGUISlot*>( m_pDLGUISkillTree->GetControl( L"g_pSlot_SkillTree" ) );		/// ���� ����
 
-	SKILL_TREE_SLOT_TYPE eSkillTreeSlotType = static_cast<SKILL_TREE_SLOT_TYPE>( iCol );
 
 	WCHAR buf[255] = {0,};
 
@@ -3183,8 +3168,6 @@ void CX2UISkillTreeNew::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTempl
 	D3DXVECTOR2 OffsetPos((float)m_pDLGSkillUnsealInform->GetDummyInt(0), (float)m_pDLGSkillUnsealInform->GetDummyInt(1));
 	m_pDLGSkillUnsealInform->SetPos( SlotCenterPos + OffsetPos );
 
-	CKTDGUIStatic* pStaticRequireItem = (CKTDGUIStatic*) m_pDLGSkillUnsealInform->GetControl( L"StaticRequireItemName" );
-	CKTDGUIStatic* pStaticRequireCash = (CKTDGUIStatic*) m_pDLGSkillUnsealInform->GetControl( L"StaticPrice" );
 
 
 //#if 0		//** ��ų �������� ����� �� �� ���⿡ �߰��۾� �� �ּ���.
@@ -3566,7 +3549,6 @@ void CX2UISkillTreeNew::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkill
 		pMainPictureData->SetSize( D3DXVECTOR2( static_cast<float>( itemDescWidth ), static_cast<float>( itemDescHeight ) ) );
 		pMainPictureData->pPoint->color = D3DXCOLOR( 1,1,1,0.7f );
 
-		bool bCheckEquipping = false;
 
 
 		/// ���� ���� ������ y��ǥ�� Ÿ��Ʋ ������ ��ġ�� ���� ����
@@ -4102,8 +4084,6 @@ void CX2UISkillTreeNew::DrawElswordWSSDesc( D3DXVECTOR2 vDrawPos_ )
 		pString->pos = D3DXVECTOR2( 20, 20 );
 	}
 
-	int itemDescWidth = 300;
-	int itemDescHeight = 200;
 
 	int itemDescPosX = (int)vDrawPos_.x;
 	int itemDescPosY = (int)vDrawPos_.y;
@@ -4148,9 +4128,7 @@ void CX2UISkillTreeNew::DrawElswordWSSDesc( D3DXVECTOR2 vDrawPos_ )
 				m_pDLGElswordWSSDesc->SetShow( false );
 		}
 		wstring wstrDesc = wstrm.str();
-		CKTDGUIStatic* pItemDesc = (CKTDGUIStatic*)m_pDLGElswordWSSDesc->GetControl(L"ItemDesc");
 
-		const CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pItemDesc->GetString(0)->fontIndex );
 
 		const int MAGIC_ELSWORD_DESC_WIDTH = 330;
 		wstrDesc = g_pMain->GetStrByLineBreakColor(wstrDesc.c_str(), (int)((float)MAGIC_ELSWORD_DESC_WIDTH*g_pKTDXApp->GetResolutionScaleX()), SLOT_MANAGER_FONT_INDEX);
@@ -4866,7 +4844,6 @@ void CX2UISkillTreeNew::SetDivisionLine( CKTDGUIContolList* pControlList )
 
 	if ( NULL != pUnit )
 	{
-		WCHAR buf[255] = {0,};
 
 		/// �ʻ�ȭ UI ���� ( �ϳ��� ������ 5��, ���� ���� ����Ͽ� ������ �ʻ�ȭ UI ǥ�� ���� ����  )
 		CX2Unit::UNIT_CLASS_TYPE eUnitClassLevel = static_cast<CX2Unit::UNIT_CLASS_TYPE>( pUnit->GetClassLevel() );
@@ -6049,7 +6026,6 @@ bool CX2UISkillTreeNew::IsLearnBeforeSelectSkill( const int iNowTierIndex )
 		 NULL == g_pData->GetMyUser()->GetSelectUnit() )
 		 return true;
 
-	const CX2Unit::UNIT_CLASS				eUnitClass			= g_pData->GetMyUser()->GetSelectUnit()->GetClass();
 
 	/// ���� ���� ù��° ��( �⺻ ������ �⺻ ��ų )�̰ų� �ι�° ��( �⺻ ��ų�� �������� �� ��ų ) �̶��, ������ ��ų ���� ó��
 	if ( 0 == iNowTierIndex || 1 == iNowTierIndex )
@@ -6200,7 +6176,6 @@ void CX2UISkillTreeNew::UpdateSkillPageUI()
 {
 	CX2UserSkillTree& refUserSkillTree = g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData().m_UserSkillTree;
 
-	const USHORT usUsingPage = refUserSkillTree.GetUsingPage();
 	const USHORT usOpenedPage = refUserSkillTree.GetOpenedPage();
 	const USHORT usSelectPage = refUserSkillTree.GetSelectPage();
 	D3DXVECTOR2 vPos( 0.f, 0.f );

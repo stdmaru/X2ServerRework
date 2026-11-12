@@ -1067,7 +1067,7 @@ wstring CWordLineHandler::BasicLineBreak( const WCHAR* pOrgStr, int width, int f
 		{
 			WCHAR tmpWChar = tempText[i];
 
-			WCHAR tmpNextWChar = L'\0';
+			[[maybe_unused]] WCHAR tmpNextWChar = L'\0';
 			if( (i+1) < (int)tempText.length() )
 				tmpNextWChar = tempText[i+1];
 
@@ -2319,7 +2319,6 @@ bool CWordLineHandler::MegaLineBreakAdd( wstring wstrText, CKTDGFontManager::CUK
 
 	int iNowCharWidth = 0;
 	int iNowLineWidth = 0;
-	int iNowLineCount = 0;
 	int iNowCharIndex = 0;
 	wstring wstrColorCode = L"";
 	wstring wstrLineBuf = L"";
@@ -2390,7 +2389,6 @@ bool CWordLineHandler::MegaLineBreakAdd( wstring wstrText, CKTDGFontManager::CUK
 					{
 						wstrLineBuf += wstrCharBuf;
 						wstrLineBuf += L"  ";
-						iNowLineCount++;
 						iNowLineWidth = 0;
 						bIsFirstCharOfLine = true;
 
@@ -2583,7 +2581,6 @@ bool CWordLineHandler::MegaLineBreakAdd( wstring wstrText, CKTDGFontManager::CUK
 				iNowLineWidth = iNowLineWidthFromLastCurPoint;
 			}
 
-			iNowLineCount++;
 
 			// 두 경우다 첫번째 글자가 있는 상황이다.
 			bIsFirstCharOfLine = false;

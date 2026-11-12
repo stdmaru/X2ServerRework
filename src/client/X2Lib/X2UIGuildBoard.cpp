@@ -504,7 +504,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND /*hWnd*/, UINT /*
 		m_uiNowPage				= kEvent.m_uiViewPage;
 
 		//////////////////////////////////////////////////////////////////////////
-		u_int iSize = kEvent.m_vecGuildAdList.size();
+		[[maybe_unused]] u_int iSize = kEvent.m_vecGuildAdList.size();
 		//////////////////////////////////////////////////////////////////////////
 
 		UpdatePageUI();
@@ -1952,7 +1952,6 @@ bool CX2UIGuildBoard::CanILearnThisSkill( CX2SkillTree::SKILL_ID eSkillID, bool 
 	if( true == IsMaxGuildSkillLevel( eSkillID ) )
 		return false;
 
-	int iSkillLevelToLearn = GetGuildSkillLevel( eSkillID ) + 1;
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 	if( NULL == pSkillTemplet )
 		return false;

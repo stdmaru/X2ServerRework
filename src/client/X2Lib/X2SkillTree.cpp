@@ -176,7 +176,6 @@ bool CX2SkillTree::AddSkillTreeTemplet_LUA()
 	LUA_GET_VALUE( luaManager,		"m_iRowIndex",				skillTreeTemplet.m_iTier,			0				);
 	LUA_GET_VALUE( luaManager,		"m_iColumnIndex",			skillTreeTemplet.m_iIndexInTier,	0				);
 
-	int iPrecedingSkillID = 0;
 	LUA_GET_VALUE( luaManager,		"m_iPrecedingSkill",		skillTreeTemplet.m_iPrecedingSkill,	0				);
 
 
@@ -277,7 +276,6 @@ bool CX2SkillTree::AddSkillTemplet_LUA()
 		return true;
 	}
 
-	float fValue = 0.f;
 
 	if( true == luaManager.BeginTable( "SA_EFFECTIVE_TIME" ) )					SetSkillAbilityMap( &luaManager, SA_EFFECTIVE_TIME, pSkillTemplet );
 	if( true == luaManager.BeginTable( "SA_EFFECTIVE_COUNT" ) )          		SetSkillAbilityMap( &luaManager, SA_EFFECTIVE_COUNT, pSkillTemplet );
@@ -663,7 +661,6 @@ bool CX2SkillTree::AddGuildSkillTreeTemplet_LUA()
 	LUA_GET_VALUE( luaManager,		"m_iRowIndex",				skillTreeTemplet.m_iTier,				0			);
 	LUA_GET_VALUE( luaManager,		"m_iColumnIndex",			skillTreeTemplet.m_iIndexInTier,		0			);
 
-	int iPrecedingSkillID = 0;
 	LUA_GET_VALUE( luaManager,		"m_iPrecedingSkill",		skillTreeTemplet.m_iPrecedingSkill,		0			);
 
 	SkillTreeTempletMap& mapSkillTreeTemplet = m_mapGuildSkillTreeTemplet[ 0 ];
@@ -1000,7 +997,6 @@ bool CX2SkillTree::Handler_EGS_CHANGE_SKILL_SLOT_NOT( HWND /*hWnd*/, UINT /*uMsg
 	CX2Unit::UnitData* pUnitData = NULL;
 	if ( g_pMain->GetNowStateID() == CX2Main::XS_PVP_ROOM )
 	{
-		CX2StatePVPRoom* pkStatePVPRoom = (CX2StatePVPRoom*) g_pMain->GetNowState();
 		CX2Room::SlotData* pkSlotData = g_pX2Room->GetSlotDataByUnitUID( kEvent.m_iUnitUID );
 		if ( pkSlotData != NULL )
 		{
@@ -1102,7 +1098,6 @@ bool CX2SkillTree::Handler_EGS_GET_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPAR
 																getSkillInfo.m_iSkillLevel, getSkillInfo.m_iSpendSkillCSPoint,
 																pUnitData->m_UserSkillTree.GetUsingPage() );
 
-				bool bEnableSkillEquipped = true;
 				const CX2SkillTree::SKILL_ID eSkillId = static_cast<CX2SkillTree::SKILL_ID>( getSkillInfo.m_iSkillID );
 
 				const CX2SkillTree::SkillTemplet* pSkillTemplet = GetSkillTemplet( eSkillId );
@@ -2299,7 +2294,6 @@ bool CX2SkillTree::Handler_EGS_EXPIRE_GUILD_CASH_SKILL_POINT_NOT( HWND /*hWnd*/,
 	DeSerialize( pBuff, &kEvent );
 
 
-	CX2Unit* pMyUnit = g_pData->GetMyUser()->GetSelectUnit();
 
 	// oasis907 : ����� [2009.12.4] // ��� ���Խ�
 	CX2Unit* pUnit = g_pData->GetMyUser()->GetSelectUnit();
@@ -2605,7 +2599,6 @@ bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK( HWND /*hWnd*/,
 				pUnitData->m_UserSkillTree.SetSkillLevelAndCSP( static_cast<CX2SkillTree::SKILL_ID>( userSkillData.m_iSkillID ),
 					userSkillData.m_cSkillLevel, userSkillData.m_cSkillCSPoint, pUnitData->m_UserSkillTree.GetUsingPage() );
 
-				bool bEnableSkillEquipped = true;
 				const CX2SkillTree::SKILL_ID eSkillId = static_cast<CX2SkillTree::SKILL_ID>( userSkillData.m_iSkillID );
 
 				if ( eSkillId == CX2SkillTree::SI_NONE )
@@ -2885,7 +2878,6 @@ void CX2SkillTree::FixOrInsertMapSkillInfoValue( CX2SkillTree::SKILL_ID eSkillID
 		return;
 	}
 
-	const CX2UserSkillTree&	refUserSkillTree	= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree;				/// ������ ��ų ���
 	const int				iSkillLevel			= g_pData->GetUIManager()->GetUISkillTree()->GetSkillLevelInSkillWimdow( eSkillID );	/// ���� ��ų�� ����
 
 	int						iUnitClass			= static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetClass() );				/// ���� Ŭ����
@@ -2905,7 +2897,6 @@ void CX2SkillTree::FixOrInsertMapSkillInfoValue( CX2SkillTree::SKILL_ID eSkillID
 		if ( pSkillTemplet->GetSkillRequireLevelValue( iSkillLevel + 1 ) > iUnitLevel )
 			return;
 
-		const int iHaveSPoint	= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint - m_iUsedSPoint;		/// ���� ��ų ����Ʈ
 		const int iHaveCSPoint	= g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint - m_iUsedCSPoint;	/// ���� ĳ�� ��ų ����Ʈ
 
 		/// �Һ� ��ų ����Ʈ ���� ( �������� ��ȭ���� )
@@ -2938,7 +2929,6 @@ void CX2SkillTree::FixOrInsertMapSkillInfoValue( CX2SkillTree::SKILL_ID eSkillID
 		{
 			KGetSkillInfo&						getSkillInfo	= it->second;
 
-			const CX2SkillTree::SkillTemplet*	pSkillTemplet	= g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 
 			getSkillInfo.m_iSkillLevel			+= 1;
 			getSkillInfo.m_iSpendSkillCSPoint	+= iSpendSkillCSPoint;

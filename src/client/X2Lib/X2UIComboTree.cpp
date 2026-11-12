@@ -1152,7 +1152,6 @@ void CX2UIComboTree::DrawComboTreeDesc( D3DXVECTOR2 vDrawPos_, wstring wstrDesc 
 	int itemDescPosY = (int)vDrawPos_.y;
 
 	m_pDLGComboTreeDesc->SetShow( true );
-	CKTDGUIStatic* pItemDesc = (CKTDGUIStatic*)m_pDLGComboTreeDesc->GetControl(L"ItemDesc");
 
 	//const CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pItemDesc->GetString(0)->fontIndex );
 

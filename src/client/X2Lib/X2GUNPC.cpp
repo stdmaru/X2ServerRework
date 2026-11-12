@@ -1210,7 +1210,6 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
         int  iUserUnitSize = g_pX2Game->GetUserUnitListSize();
         ResetRelativePosAndTimers();
         ResetLocalRelativePosAndTimers();
-        D3DXVECTOR3 vPosFuture;
         D3DXVECTOR3 vDirVectorFromMeToOther;
         bool bCanPass = m_NPCFrameData.stateParam.bCanPassUnit;
         for( int i = 0; i < __min( iUserUnitSize, MAX_GAME_USER_UNIT_NUM ); i++ )
@@ -1261,7 +1260,6 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
     {
         D3DXVECTOR2 vMyUnitMinMaxY( m_NPCFrameData.syncData.position.y, m_NPCFrameData.syncData.position.y + fUnitHeight );
         int  iUserUnitSize = __min( g_pX2Game->GetUserUnitListSize(), MAX_GAME_USER_UNIT_NUM );
-        D3DXVECTOR3 vPosFuture;
         D3DXVECTOR3 vDirVectorFromMeToOther;
         for( int i = 0; i < iUserUnitSize; i++ )
         {
@@ -1294,7 +1292,6 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
                     vDirVectorFromMeToOther = vPosFuture - m_NPCFrameData.syncData.position;
                     vDirVectorFromMeToOther.y = 0.f;
                     int iHostDirection = GetRelativePos( i );
-                    int iDirection = 0;
                     float   fDotProduct = D3DXVec3Dot( &m_NPCFrameData.unitCondition.dirVector, &vDirVectorFromMeToOther );
                     if ( fDotProduct >= 0 )
                         iNewLocalDirection = 2;
@@ -4249,7 +4246,6 @@ void    CX2GUNPC::LoadStateData( StateData& nowStateData, InitData& OutInit_, KL
     nowStateData.m_vecTalkBox.resize( 0 );
 	if( luaManager_.BeginTable( "TALK_BOX" ) == true )
 	{
-		int iRate = 0;
 
 		index = 1;
         nowStateData.m_vecTalkBox.reserve( luaManager_.GetNumIndexedValues() );
@@ -6023,7 +6019,6 @@ HRESULT CX2GUNPC::OnFrameMove( double fTime, float fElapsedTime )
 
 	CX2GameUnit::OnFrameMove( fTime, fElapsedTime );
 
-	bool bTableOpen = false;
 
 	//m_pComboManager->OnFrameMove(fTime, fElapsedTime);
 
@@ -10383,7 +10378,6 @@ void CX2GUNPC::CommonStateStart()
 	KTDXPROFILE();
 
     const StateData& nowStateData = GetNowStateData();
-    int index = 0;
 
 	if ( NULL == m_pXSkinAnim )
 		return;
@@ -10759,7 +10753,6 @@ void CX2GUNPC::CommonStateStart()
         if ( nowStateData.m_bitsetFlags.test( iFlagIndex ) == true )
 	    {
             m_eSoundSetType = eSoundSetType;
-            int iFlagMode = 0;
 		    if ( 0.f < GetRemainHyperModeTime() && true == nowStateData.m_bitsetFlags.test( iFlagIndex + 1 ) )
             {
                 m_eSoundSetType = ESoundSetType( eSoundSetType + 1 );
@@ -11165,7 +11158,6 @@ void CX2GUNPC::CommonFrameMoveHost()
 		{
 			m_TimerRandomSeedSync.restart();
 
-			const int MAGIC_NUMBER = 17;
 			m_NPCFrameData.syncData.m_usRandomTableIndex	= ( m_NPCFrameData.syncData.m_usRandomTableIndex + 1000 ) % CKTDXRandomNumbers::RANDOM_NUMBER_COUNT; // fix!! random number를 변경시키는 방식을 바꿔야??
 		}
 	}
@@ -14265,16 +14257,13 @@ void CX2GUNPC::CommonFrameMove_Invincible()
 		SetAlphaObject( true );
 		m_RenderParam.bAlphaBlend = true;
 
-		bool bEnemyUnit = false;
 		float fAlphaLowerBound = 0.f;
 		if( g_pX2Room->GetMySlot()->GetTeamNum() == GetTeam() )
 		{
-			bEnemyUnit = false;
 			fAlphaLowerBound = m_Invisible.m_fAlphaLowerBound;
 		}
 		else
 		{
-			bEnemyUnit = true;
 			fAlphaLowerBound = m_Invisible.m_fMinAlpha;
 		}
 
@@ -15749,7 +15738,6 @@ void CX2GUNPC::CommonEventProcess()
 					continue;
 
                 bool bReactState = false;
-                bool bDamageReactState = false;
 
                 if( NULL == pEventProcessData->m_pConditionTableData )
                     break;
@@ -17345,17 +17333,13 @@ void CX2GUNPC::PhysicProcess()
 	//X이동
 	m_NPCFrameData.unitCondition.dirVector = pLineData->dirVector;
 
-	float fSlowFactor = 1.0f;
 	if( m_ExtraDamagePack.m_Slow.m_fTime > 0.0f )
 	{
-		fSlowFactor = 0.5f;
 	}
 
-	fSlowFactor *= m_PhysicParam.GetMoveSpeedPower();
 
 	if( pLineData != NULL && pLineData->m_bUnderWater == true && GetPos().y <= pLineData->m_fWaterHeight )
 	{
-		fSlowFactor *= pLineData->m_fResistance;
 	}
 
 	if( m_ExtraDamagePack.m_EnchantShock.m_fTime <= 0.f )
@@ -20059,7 +20043,6 @@ void CX2GUNPC::ActiveSkillShow_LUA( char* pBackFaceTexName, float fSizeX, float 
 
 void CX2GUNPC::ActiveSkillShow( const WCHAR* pBackFaceTexName, D3DXVECTOR2 size, D3DXVECTOR3 pos )
 {
-	CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 	if( GetIsRight() == true )
 	{
@@ -20349,13 +20332,13 @@ bool CX2GUNPC::IsRightTarget_LUA(CX2GUNPC *pStartNpc, D3DXVECTOR3 pos)
 		return false;
 
 	D3DXVECTOR3 vFinalDestDir = pos - pStartNpc->GetPos();
-	float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
+	[[maybe_unused]] float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
 	D3DXVec3Normalize( &vFinalDestDir, &vFinalDestDir );
 	const D3DXVECTOR3 vUpVec(0,1,0);
 	D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 	D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-	float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+	[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 	float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 	if( fIsRight > 0.f )
 		bRight = true;
@@ -21295,7 +21278,7 @@ void CX2GUNPC::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
 
 				if( pOwnerUnit->GetEqippedSkillMemo( CX2SkillTree::SMI_CHUNG_MEMO17 ) == true && GetRandomFloat(i + 3) <= 0.2f )
 				{
-					CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHUNG_MARK_OF_COMMANDER_SHELL_MEMO", fShellPowerRate, vShellStartPos, vRotateDegree, vRotateDegree,  GetLandPos().y, true, fRandReservTime );
+					[[maybe_unused]] CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHUNG_MARK_OF_COMMANDER_SHELL_MEMO", fShellPowerRate, vShellStartPos, vRotateDegree, vRotateDegree,  GetLandPos().y, true, fRandReservTime );
 				}
 				else
 				{
@@ -21910,7 +21893,6 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
 		    }
             else
             {
-                D3DXVECTOR3 vMoveDir;
                 D3DXVECTOR3 vDirVectorFromMeToOther;
                 D3DXVECTOR3 vDirVectorFromAltToOther;
                 vDirVectorFromMeToOther = vPosFutureOtherGameUnit - vMyPos_;
@@ -21920,7 +21902,6 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
                 {
                     if ( D3DXVec3Dot( &m_NPCFrameData.unitCondition.dirVector, &vDirVectorFromMeToOther ) >= 0 )
                         return 1;
-                    float   fUnitHeight = GetUnitHeight( true );
                     float   fProjObjDistanceSq = D3DXVec3LengthSq( &vDirVectorFromMeToOther );
                     if ( vMyPos_ != m_NPCFrameData.syncData.position )
                     {
@@ -22007,7 +21988,6 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
                 {
                     if ( D3DXVec3Dot( &m_NPCFrameData.unitCondition.dirVector, &vDirVectorFromMeToOther ) <= 0 )
                         return 1;
-                    float   fUnitHeight = GetUnitHeight( true );
                     float   fProjObjDistanceSq = D3DXVec3LengthSq( &vDirVectorFromMeToOther );
                     if ( vMyPos_ != m_NPCFrameData.syncData.position )
                     {
@@ -22905,7 +22885,6 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
 
     const InitStateData& initStateData = GetInitStateData();
     const StateData& nowStateData = GetNowStateData();
-    const StateRuntime& nowStateRuntime = GetNowStateRuntime();
 
     if ( NOWSTATE_FLAG( HINT_NO_PERFRAME_EVENT ) == false )
     {

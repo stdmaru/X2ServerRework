@@ -68,7 +68,6 @@ void CX2PETAI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 		return;
 	}
 
-	CX2PET::STATE_CHANGE_TYPE message = CX2PET::SCT_NO_CHANGE;
 	SetMasterUnitData();
 
 

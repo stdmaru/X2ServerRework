@@ -2233,7 +2233,7 @@ void CX2GUArme_VioletMage::InitEquippedActiveSkillState(bool bOnlySkillLevel /* 
 
 		const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
 
-		const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( CX2SkillTree::SI_SA_AHM_BLAZE_STEP ) );	/// ��ų ����
+		[[maybe_unused]] const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( CX2SkillTree::SI_SA_AHM_BLAZE_STEP ) );	/// ��ų ����
 	}
 }
 
@@ -10477,7 +10477,6 @@ void CX2GUArme_VioletMage::AVSI_SI2_AV_GUIDE_FIRE_BALL_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.55f ) )
 	{
 		D3DXVECTOR3 posR = GetWeaponBonePos( 0, L"TRACE_START0", 0 );
-		D3DXVECTOR3 degree = GetRotateDegree();
 
 		if( GetEqippedSkillMemo( CX2SkillTree::SMI_AISHA_MEMO3 ) == true )
 			SetLockOn( g_pX2Game->GetDamageEffect()->CreateInstance( this, L"GUIDE_FIRE_BALL_MEMO", GetPowerRate(), posR, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y ), 0, CX2DamageEffect::LOT_NEARST_UID_VECTOR );
@@ -10522,7 +10521,6 @@ void CX2GUArme_VioletMage::AVSI_SI2_AV_GUIDE_FIRE_BALL_HYPER_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.55f ) )
 	{
 		D3DXVECTOR3 posR = GetWeaponBonePos( 0, L"TRACE_START0", 0 );
-		D3DXVECTOR3 degree = GetRotateDegree();
 
 		if( GetEqippedSkillMemo( CX2SkillTree::SMI_AISHA_MEMO3 ) == true )
 			SetLockOn( g_pX2Game->GetDamageEffect()->CreateInstance( this, L"GUIDE_FIRE_BALL_MEMO_HYPER", GetPowerRate(), posR, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y ), 0, CX2DamageEffect::LOT_NEARST_UID_VECTOR );
@@ -10697,7 +10695,6 @@ void CX2GUArme_VioletMage::AVSI_SI3_AV_GUST_STORM_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.666f ) )
 	{
-		D3DXVECTOR3 pos = GetPos();
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"GUST_STORM_LOW", GetPowerRate(), GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"GUST_STORM_TOWER", GetPowerRate(), GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 	}
@@ -10746,23 +10743,20 @@ void CX2GUArme_VioletMage::AVSI_SI3_AV_GUST_STORM_HYPER_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
 	{
 		D3DXVECTOR3 pos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm03", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm03", pos, GetRotateDegree(), GetRotateDegree() );
 		pos.y += 2;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm02", pos, GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm04", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm02", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm04", pos, GetRotateDegree(), GetRotateDegree() );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.666f ) )
 	{
-		D3DXVECTOR3 pos = GetPos();
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"GUST_STORM_LOW", GetPowerRate(), GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"GUST_STORM_TOWER_HYPER", GetPowerRate(), GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.733f ) )
 	{
 		D3DXVECTOR3 pos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm01", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"GustStorm01", pos, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	CommonFrameMove();
@@ -11939,7 +11933,6 @@ void CX2GUArme_VioletMage::AVSI_SI_A_AV_CIRCLE_FLAME_EndFuture()
 
 					D3DXVECTOR3 vEffectEndPosition = GetPos() + vDirVector * fRadius;
 					D3DXVECTOR3 vEffectStartPosition = vEffectEndPosition + D3DXVECTOR3( 0, 850, 0 );
-					const float MAGIC_TIME_RANGE = 1.f;
 
 
 					D3DXVECTOR3 vRotation = GetRotateDegree();
@@ -12038,7 +12031,6 @@ void CX2GUArme_VioletMage::AVSI_SI_A_AV_CIRCLE_FLAME_EndFuture()
 
 					D3DXVECTOR3 vEffectEndPosition = GetPos() + vDirVector * fRadius;
 					D3DXVECTOR3 vEffectStartPosition = vEffectEndPosition + D3DXVECTOR3( 0, 850, 0 );
-					const float MAGIC_TIME_RANGE = 1.f;
 
 
 					D3DXVECTOR3 vRotation = GetRotateDegree();
@@ -12430,7 +12422,7 @@ void CX2GUArme_VioletMage::AVSI_SI_A_AV_CIRCLE_FLAME_EndFuture()
 			if ( NULL != GetUnit() )
 			{
 				const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
-				const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
+				[[maybe_unused]] const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
 			}
 		}
 
@@ -13418,7 +13410,6 @@ void CX2GUArme_VioletMage::AVSI_SI_A_AV_CIRCLE_FLAME_EndFuture()
 			if( FlushMp( 3.f ) == true )	/// ���� �Һ� ����
 			{
 				/// ������ ������ ����Ʈ�� �߻��ؼ�, ������ ������ ���� �����Ǵ� ������ ���� ( ���� ������ Die Damage Effect�� �߻� )
-				D3DXVECTOR3 posR = m_pXSkinAnim->GetCloneFramePosition( L"Bip01_L_Hand" );
 
 				/// ������ EffectSet���� �����Ǿ� �ִ����� Damage Effect�� ���� ( Die Damage Effect�� ����ϱ� ���ؼ� )
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_ELEMENTAL_MASTER_XXZ_INVISIBLE_ATTACKBOX", GetPowerRate(), GetPos(), GetRotateDegree(), GetRotateDegree(),  GetLandPos().y );
@@ -13688,7 +13679,6 @@ void CX2GUArme_VioletMage::AVSI_SI_A_AV_CIRCLE_FLAME_EndFuture()
 
 			D3DXVECTOR3 vEffectEndPosition = GetPos() + vDirVector * fRadius;
 			D3DXVECTOR3 vEffectStartPosition = vEffectEndPosition + D3DXVECTOR3( 0.f , 850.f, 0.f );
-			const float MAGIC_TIME_RANGE = 1.f;
 
 			D3DXVECTOR3 vRotation = GetRotateDegree();
 
@@ -13797,7 +13787,6 @@ void CX2GUArme_VioletMage::AVSI_SI_A_AV_CIRCLE_FLAME_EndFuture()
 
 			D3DXVECTOR3 vEffectEndPosition = GetPos() + vDirVector * fRadius;
 			D3DXVECTOR3 vEffectStartPosition = vEffectEndPosition + D3DXVECTOR3( 0.f , 850.f, 0.f );
-			const float MAGIC_TIME_RANGE = 1.f;
 
 
 			D3DXVECTOR3 vRotation = GetRotateDegree();
@@ -14602,7 +14591,6 @@ void CX2GUArme_VioletMage::AVSI_SI_A_AV_CIRCLE_FLAME_EndFuture()
 
 				fDistance = fDistanceTemp;
 
-				CX2GameUnit *pFrontNearestUnit = NULL;
 				for( int i = 0; i < g_pX2Game->GetUnitNum(); ++i )
 				{
 					CX2GameUnit *pUnit = g_pX2Game->GetUnit( i );
@@ -15187,7 +15175,7 @@ void CX2GUArme_VioletMage::ShowActiveSkillCutInAndLight( const WCHAR* szBoneName
 							D3DXVECTOR3 vPos
 								= pMeshInstance->GetBonePos( L"effect_Dummy03" );
 
-							CX2EffectSet::Handle hMorningStarHit = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_ADW_MORNING_STAR_HIT", this, NULL, false, -1.f, -1.f, D3DXVECTOR3(1.f, 1.f, 1.f), true, vPos );
+							[[maybe_unused]] CX2EffectSet::Handle hMorningStarHit = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_ADW_MORNING_STAR_HIT", this, NULL, false, -1.f, -1.f, D3DXVECTOR3(1.f, 1.f, 1.f), true, vPos );
 
 							CX2DamageEffect::CEffect *pDmageHitEffect
 								= g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_ADW_MORNING_STAR_HIT", GetPowerRate(), vPos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
@@ -15679,7 +15667,6 @@ void CX2GUArme_VioletMage::AVSI_SA_AV_Ice_Storm_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
 	{
-		D3DXVECTOR3 pos = GetPos();
 		bool bHyper = false;
 		if ( GetRemainHyperModeTime() > 0.f )
 			bHyper = true;
@@ -15827,7 +15814,6 @@ void CX2GUArme_VioletMage::AVSI_SA_AHM_Lightning_Shower_FrameMove()
 
 		D3DXVECTOR3 vEffectEndPosition = GetPos() + vDirVector * fRadius;
 		D3DXVECTOR3 vEffectStartPosition = vEffectEndPosition + D3DXVECTOR3( 0.f , 850.f, 0.f );
-		const float MAGIC_TIME_RANGE = 1.f;
 
 		D3DXVECTOR3 vRotation = GetRotateDegree();
 
@@ -15939,7 +15925,6 @@ void CX2GUArme_VioletMage::AVSI_SA_AHM_Lightning_Shower_Loop_FrameMove()
 
 		D3DXVECTOR3 vEffectEndPosition = GetPos() + vDirVector * fRadius;
 		D3DXVECTOR3 vEffectStartPosition = vEffectEndPosition + D3DXVECTOR3( 0.f , 850.f, 0.f );
-		const float MAGIC_TIME_RANGE = 1.f;
 
 		D3DXVECTOR3 vRotation = GetRotateDegree();
 
@@ -16054,7 +16039,7 @@ void CX2GUArme_VioletMage::AVSI_SA_AEM_Chain_Lightning_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.55f ) )
 	{
 		D3DXVECTOR3 vPos = GetWeaponBonePos( 0, L"TRACE_START0", 0 );
-		bool bHyper = false;
+		[[maybe_unused]] bool bHyper = false;
 		D3DXVECTOR3 vScale( GetScale(), GetScale(), GetScale() );
 
 		if ( GetRemainHyperModeTime() > 0.f )
@@ -16207,7 +16192,7 @@ void CX2GUArme_VioletMage::AVSI_SA_AVP_Phantom_Breathing_Dark_Hole_FrameMove()
 			pos -= Dirvec*310.0f;
 		}
 
-		bool bHyper = false;
+		[[maybe_unused]] bool bHyper = false;
 		if ( GetRemainHyperModeTime() > 0.f )
 			bHyper = true;
 		D3DXVECTOR3 vScale( GetScale(), GetScale(), GetScale() );
@@ -16298,7 +16283,6 @@ void CX2GUArme_VioletMage::AVSI_A_ABM_Vital_Drain_Ready_FrameMove()
 			if( GetEqippedSkillMemo( CX2SkillTree::SMI_AISHA_MEMO26 ) == true )
 				fDistance *= 1.5f;
 
-			CX2GameUnit *pFrontNearestUnit = NULL;
 			for( int i = 0; i < g_pX2Game->GetUnitNum(); ++i )
 			{
 				CX2GameUnit *pUnit = g_pX2Game->GetUnit( i );

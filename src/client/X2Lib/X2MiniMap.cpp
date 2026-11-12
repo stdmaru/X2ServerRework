@@ -371,9 +371,6 @@ void CX2MiniMap::RenderMiniMapTextureSquare()
 
 	const float MAGIC_MY_UNIT_SIZE		= 22.f 		/ g_pKTDXApp->GetResolutionScaleX() 	* 1500.f / m_fEyeDistance * m_fRenderTargetTextureScale;
 	const float MAGIC_ALLY_UNIT_SIZE	= 12.f		/ g_pKTDXApp->GetResolutionScaleX() 	* 1500.f / m_fEyeDistance * m_fRenderTargetTextureScale;
-	const float MAGIC_ENEMY_UNIT_SIZE	= 12.f		/ g_pKTDXApp->GetResolutionScaleX() 	* 1500.f / m_fEyeDistance * m_fRenderTargetTextureScale;
-	const float MAGIC_GATE_WIDTH		= 9.f		/ g_pKTDXApp->GetResolutionScaleX() 	* 1500.f / m_fEyeDistance * m_fRenderTargetTextureScale;
-	const float MAGIC_GATE_HEIGHT		= 18.f		/ g_pKTDXApp->GetResolutionScaleY() 	* 1500.f / m_fEyeDistance * m_fRenderTargetTextureScale;
 
 
 	KTDXPROFILE_BEGIN( "DRAW_USER_UNIT" );
@@ -446,7 +443,6 @@ HRESULT CX2MiniMap::RenderSquare()
 	if( NULL == m_pTextureMiniMap )
 		return E_FAIL;
 
-	const int MAGIC_MINIMIZED_BAR_HEIGHT = 20;
 
 
 	RenderMiniMapTextureSquare();
@@ -817,7 +813,6 @@ HRESULT CX2MiniMap::RenderVillage()
 	if( NULL == m_pTextureMiniMap )
 		return E_FAIL;
 
-	const int MAGIC_MINIMIZED_BAR_HEIGHT = 20;
 
 
 	RenderMiniMapTextureVillage();

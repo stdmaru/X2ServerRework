@@ -550,7 +550,6 @@ const CX2SkillTree::SkillTemplet* CX2UserSkillTree::GetUserSkillTemplet( CX2Skil
 		return NULL;
 	}
 
-	const UserSkillData& userSkillData = mit->second;
 	/////////////////////////////////////////////
 	return g_pData->GetSkillTree()->GetSkillTemplet(eSkillID);
 }
@@ -605,7 +604,6 @@ const CX2SkillTree::SkillTemplet* CX2UserSkillTree::GetUserSkillTemplet( CX2Skil
 		return NULL;
 	}
 
-	const UserSkillData& userSkillData = mit->second;
 	/////////////////////////////////////////////
 
 	return g_pData->GetSkillTree()->GetSkillTemplet(eSkillID );
@@ -1637,7 +1635,6 @@ bool CX2UserSkillTree::CanILearnThisSkill( CX2SkillTree::SKILL_ID eSkillID, bool
 		if( true == IsMaxSkillLevel( eSkillID ) )
 			return false;
 
-		int iSkillLevelToLearn = GetSkillLevel( eSkillID ) + 1;
 
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 
@@ -1699,7 +1696,6 @@ bool CX2UserSkillTree::CanILearnThisSkill( CX2SkillTree::SKILL_ID eSkillID, bool
 	if( true == IsMaxSkillLevel( eSkillID ) )
 		return false;
 
-	int iSkillLevelToLearn = GetSkillLevel( eSkillID ) + 1;
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 
@@ -1750,7 +1746,6 @@ bool CX2UserSkillTree::CanIInitSkillTree() const
 	for( SkillDataMap::const_iterator mit = m_vecSkillDataMap[m_usUsingPage].begin(); mit != m_vecSkillDataMap[m_usUsingPage].end(); ++mit )
 	{
 		CX2SkillTree::SKILL_ID eSkillID = mit->first;
-		const UserSkillData& userSkillData = mit->second;
 		if( false == g_pData->GetSkillTree()->IsUnitTypeDefaultSkill( eSkillID ) )
 		{
 			return true;
@@ -1770,7 +1765,6 @@ bool CX2UserSkillTree::CanIInitGuildSkillTree() const
 	for(SkillDataMap::const_iterator mit = m_mapGuildSkillAcquired.begin(); mit != m_mapGuildSkillAcquired.end(); ++mit)
 	{
 		CX2SkillTree::SKILL_ID eSkillID = mit->first;
-		const UserSkillData& userSkillData = mit->second;
 		if( false == g_pData->GetSkillTree()->IsUnitTypeDefaultSkill( eSkillID ) )
 		{
 			return true;

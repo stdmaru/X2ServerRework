@@ -942,7 +942,6 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 	{
 		case SUSUCM_UNIT_BUTTON_OVER:
 			{
-				CKTDGUIButton* pButton = (CKTDGUIButton*)lParam;
 				return false;
 				//return AnimateCharacterName( pButton );
 			}
@@ -1264,7 +1263,6 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 				m_bJustChangedNickName = true;
 
-				const int MAGIC_UNIT_LEVEL = -1;
 
 				Handler_EGS_CHARACTER_LIST_REQ ();
 				return true;
@@ -1886,7 +1884,6 @@ bool CX2StateServerSelect::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 void CX2StateServerSelect::CreateChannelButton( bool bSelectTopChannelButton /* = false */ )
 {
 	CKTDGUIDialogType pChannelSlot = NULL;
-	CKTDGUIButton* pButton = NULL;
 
 	D3DXVECTOR3 dummyPos;
 
@@ -3982,7 +3979,6 @@ void CX2StateServerSelect::UpdateChannelListUI()
 
 	SAFE_DELETE_DIALOG( m_pDLGChannelSelectBack );
 
-	int ServerGroupNum = g_pInstanceData->GetServerGroupID();
 	m_pDLGChannelSelectBack = new CKTDGUIDialog( this, L"DLG_UI_Channel_Selection_New.lua" );
 
 
@@ -4328,7 +4324,6 @@ void CX2StateServerSelect::UnitHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 			if ( g_pData != NULL && m_pUnitViewerUI->GetUnit() != NULL && NULL != m_pUnitViewerUI->GetUnit()->GetUnitTemplet()  )
 			{
 				float fRotY = g_pData->RotateYSelectCharacterType( m_pUnitViewerUI->GetUnit()->GetClass() );
@@ -6976,7 +6971,6 @@ void CX2StateServerSelect::ChangeSelectUnitStandMeshInstance ( CX2Unit::UNIT_TYP
 
 			if( NULL != pMeshStandInst )
 			{
-				D3DXVECTOR3 vRot = pMeshStandInst->GetRotateLocalDegree();
 				//vRot.y -= 7.45f;
 				//vRot.z -= 2.75f;
 				//pMeshStandInst->SetRotateLocalDegree( vRot );
@@ -7274,7 +7268,6 @@ void CX2StateServerSelect::CreateUnitButtonNew ()
 {
 
 	CKTDGUIDialogType pUnitSlot = NULL;
-	CKTDGUIButton* pButton = NULL;
 
 	for(UINT i=0; i<m_vecUnitSlot.size(); ++i)
 	{
@@ -7975,7 +7968,6 @@ void CX2StateServerSelect::FindAndConnectLowerUserCountGameServer ( const vector
 {
 	int iLowerUserChannelCount = INT_MIN;
 	int iLowerUserChannelIndex = -1;
-	int iLowerUserChannelID = -1;
 	if ( false == vecChannelInfo.empty () )
 	{
 		int iIndex = 0;

@@ -1920,7 +1920,6 @@ void CX2GURaven::InitStateWeaponTaker()
 		if ( NULL == GetUnit()  )
 			return;
 
-		const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
 
 		if( NULL != pSkillTemplet )
 		{
@@ -1965,7 +1964,6 @@ void CX2GURaven::InitStateWeaponTaker()
 			if ( NULL == GetUnit()  )
 				return;
 
-			const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
 
 			m_bEnableShadowStepThrustEnhance = true;
 			m_fAttackPowerRateShadowStepThrustEnhance *= pSkillTempletEnhanceThrust->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_REL, iShadowThrustSkillLevel );
@@ -2003,7 +2001,6 @@ void CX2GURaven::InitStateWeaponTaker()
 			if ( NULL == GetUnit()  )
 				return;
 
-			const CX2UserSkillTree& userSkillTree = GetUnit()->GetUnitData().m_UserSkillTree;
 
 			m_bEnableShadowStepPunisher = true;
 			m_fAttackPowerRateShadowStepPunisher *= pSkillTempletShadowPunisher->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_REL, iShadowPunisherSkillLevel );
@@ -7650,7 +7647,6 @@ void CX2GURaven::RSI_SI1_MAXIMUM_CANNON_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.55f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 		D3DXVECTOR3 vBonePos = GetBonePos( L"Dummy2_Lhand" );
 		D3DXVECTOR3 vDirVec = GetDirVector();
 		bool bIsRight = GetIsRight();
@@ -7779,7 +7775,6 @@ void CX2GURaven::RSI_SI1_MAXIMUM_CANNON_HYPER_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.55f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 		D3DXVECTOR3 vBonePos = GetBonePos( L"Dummy2_Lhand" );
 		D3DXVECTOR3 vDirVec = GetDirVector();
 		bool bIsRight = GetIsRight();
@@ -8523,8 +8518,7 @@ void CX2GURaven::RSI_SI1_EARTH_BREAKER_FrameMove()
 		else
 			vEffPos = GetPos() + vDirVec * -40.f;
 		vEffPos += vZVec * -45.f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
 
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.433f ) )
@@ -8665,8 +8659,7 @@ void CX2GURaven::RSI_SI1_EARTH_BREAKER_HYPER_FrameMove()
 		else
 			vEffPos = GetPos() + vDirVec * -40.f;
 		vEffPos += vZVec * -45.f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_EarthBreaker01_Mesh", vEffPos, GetRotateDegree(), GetRotateDegree() );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.433f ) )
 	{
@@ -10686,25 +10679,25 @@ void CX2GURaven::RSI_SI2_OVER_TAKER_ARC_ENEMY_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.6666f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_01",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.8f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_02",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_03",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.1333f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_04",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
@@ -10831,25 +10824,25 @@ void CX2GURaven::RSI_SI2_OVER_TAKER_ARC_ENEMY_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.6666f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_01",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.8f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_02",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_03",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.1333f ) )
 	{
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Raven_Overtaker_Sp2a_FlyingImpact_Start_04",
 			GetPos(), GetRotateDegree(), GetRotateDegree(), XL_EFFECT_0 );
 	}
@@ -11421,7 +11414,6 @@ void CX2GURaven::CreateNasodBall()
     if ( m_pNasodBall == NULL )
         return;
 
-	bool bNewNasodBall = false;
 
 	if(
         ( m_pNasodBall->m_hEffect == INVALID_DAMAGE_EFFECT_HANDLE
@@ -11448,7 +11440,6 @@ void CX2GURaven::CreateNasodBall()
 			return;
 		}
 
-		bNewNasodBall = true;
         m_pNasodBall->m_hEffect = pNasodBall->GetHandle();
 
         CKTDGXMeshPlayer::CXMeshInstance* pNasodBallMeshInstance = pNasodBall->GetMainEffect();
@@ -13389,7 +13380,7 @@ void CX2GURaven::SI_A_RRF_GROUND_IMPACT_FrameMove()
 			fScale = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_PROJECTILE_SIZE, iSkillTempletLevel );
 		}
 
-		CX2EffectSet::Handle hGroundImpact = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_RAVEN_GROUND_IMPACT", this, NULL, false, -1.f, 01.f, D3DXVECTOR3(fScale, fScale, fScale) );
+		[[maybe_unused]] CX2EffectSet::Handle hGroundImpact = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_RAVEN_GROUND_IMPACT", this, NULL, false, -1.f, 01.f, D3DXVECTOR3(fScale, fScale, fScale) );
 // 			if( hGroundImpact != INVALID_EFFECTSET_HANDLE )
 // 			{
 // 				CX2EffectSet::EffectSetInstance *pInst = g_pX2Game->GetEffectSet()->GetEffectSetInstance(hGroundImpact);
@@ -14535,7 +14526,6 @@ void CX2GURaven::RSI_WEAPON_TAKER_COMBO_XXX_FINISH_FrameMove()
 void CX2GURaven::RSI_WEAPON_TAKER_COMBO_XXX_FINISH_EventProcess()
 {
 	// �� �ð� ���ĺ��� ĵ�� �Է� ����
-	const float LOWER_BOUND_INPUT_TIME_CANCEL = 0.440f;
 
 	// �߹ؿ� ���θ��� ������
 	if( false == IsOnSomethingFuture() )
@@ -15332,7 +15322,6 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_LOOP_StateStart()
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_LOOP_FrameMove()
 {
 	// �̺�Ʈ �÷��װ� ������ ��Ÿ������ �˱� ���� �ϵ���
-	bool &bOverheat = m_FrameDataFuture.stateParam.bEventFlagList[0];
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
 	{
@@ -19126,7 +19115,6 @@ void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_LOOP_StateStart()
 void CX2GURaven::RSI_SA_RWT_REVOLVER_CANNON_HE_LOOP_FrameMove()
 {
 	// �̺�Ʈ �÷��װ� ������ ��Ÿ������ �˱� ���� �ϵ���
-	bool &bOverheat = m_FrameDataFuture.stateParam.bEventFlagList[0];
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
 	{

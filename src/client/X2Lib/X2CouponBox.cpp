@@ -149,7 +149,6 @@ bool CX2CouponBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 			{
 				wstring wstrCouponNumber = L"";
 				WCHAR wszControlName[64] = L"";
-				bool bOK = false;
 
 				int iMaxCouponSize = 4;
 

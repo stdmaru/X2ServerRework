@@ -10429,7 +10429,6 @@ void CX2GUChung::CSGComboDashJumpXEventProcess()
 	{
 		bool &bCanChangeStateCSGComboDashJumpX = m_FrameDataFuture.stateParam.bEventFlagList[0];
 
-		const float LOWER_BOUND_INPUT_TIME_COMBO = 0.5f;	// CSI_CSG_COMBO_DASH_JUMP_XX �� �б���
 
 		if ( true == m_InputData.oneX )
 			bCanChangeStateCSGComboDashJumpX = true;
@@ -13364,8 +13363,7 @@ void CX2GUChung::CDCComboXFrameMove()
 	{
 		D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01_L_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	// �� �߻� 1��
@@ -13484,7 +13482,6 @@ void CX2GUChung::CDCComboXXFrameMove()
 			m_LuaManager.EndTable();
 		}
 	}
-	int iExtraChargeCannonBall = 0;
 	UpCannonBallCountAtThisAnimationTime( 1.232f, 1 );
 
 	CommonFrameMove();
@@ -14262,8 +14259,7 @@ void CX2GUChung::CSI_SI_A_CDC_LEG_SHOT_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosR = GetBonePos( L"Bip01_R_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# ���� �� �߻� ����Ʈ
@@ -15068,8 +15064,7 @@ void CX2GUChung::CSI_SI_SA_CDC_BULLET_BLITZ_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosL = GetBonePos( L"Bip01_L_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# �߻�
@@ -15190,8 +15185,7 @@ void CX2GUChung::CSI_SI_SA_CDC_BULLET_BLITZ_HYPER_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosL = GetBonePos( L"Bip01_L_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", GetPowerRate(), vBonePosL, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# �߻�
@@ -15712,7 +15706,7 @@ else if( m_pXSkinAnim->EventTimerOneshot( 1.1f ) &&
 		else
 			vTargetPos = GetPos() + GetDirVector() * -400.f;
 
-		CX2DamageEffect::CEffect* pPEffectInDamage = NULL;
+		[[maybe_unused]] CX2DamageEffect::CEffect* pPEffectInDamage = NULL;
 
 		pPEffectInDamage = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CIP_BURST_WOLF", GetPowerRate(), vTargetPos,
 			GetRotateDegree(), GetRotateDegree(), vTargetPos.y, true);
@@ -16507,7 +16501,7 @@ void CX2GUChung::CHG_ComboXXFrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 
 		m_bRotateBone = false;
@@ -16623,7 +16617,7 @@ void CX2GUChung::CHG_ComboDashZZXFrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CHG_COMO_XX_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 	}
 
@@ -16981,7 +16975,7 @@ void CX2GUChung::CSI_SI_A_SIEGE_SHELLING_X_Finish_FrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CSI_SI_A_SIEGE_SHELLING_FINISH_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"CSI_SI_A_SIEGE_SHELLING_FINISH_EXPLOSION", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 	}
 
@@ -18356,14 +18350,14 @@ void CX2GUChung::CTT_DashComboXXFrameMove()
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 10.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 30.f / 180.f);
 		D3DXVECTOR3 vCoefficient = D3DXVECTOR3(fMaxCoefficient, fMinCoefficient, D3DX_PI * 45.f / 180.f);
-		float fDegree = ( DoAimingTarget( 800.f, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
+		[[maybe_unused]] float fDegree = ( DoAimingTarget( 800.f, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
 	}
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.8333f ) )
 	{
 		if( m_bAimingTarget == true && ( GetCannonBallCount() >= 1 || IsFullHyperMode() ) )
 		{
-			CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_CTT_ATTACK_DASH_XX", this );
+			[[maybe_unused]] CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_CTT_ATTACK_DASH_XX", this );
 		}
 		else
 		{
@@ -18381,7 +18375,7 @@ void CX2GUChung::CTT_DashComboXXFrameMove()
 	{
 		if( m_bAimingTarget == true )
 		{
-			CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CTT_ATTACK_DASH_XX", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
+			[[maybe_unused]] CX2DamageEffect::CEffect* pDamageEffectAimmingShot = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CTT_ATTACK_DASH_XX", GetPowerRate() * m_fSiegeShellingDamageRel, m_vAimingTargetPos, GetRotateDegree(), GetRotateDegree(),  m_vAimingTargetLandPos.y );
 		}
 	}
 
@@ -18865,7 +18859,7 @@ void CX2GUChung::CTT_MobileArmoredModeXFrameMove()
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 15.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 15.f / 180.f);
 		D3DXVECTOR3 vCoefficient = D3DXVECTOR3(fMaxCoefficient, fMinCoefficient, D3DX_PI * 25.f / 180.f);
-		float fDegree = ( DoAimingTarget( _CONST_CHUNG_::MAGIC_MOBILE_MODE_X_MAX_RANGE * m_fMobileArmoredModeDistance, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
+		[[maybe_unused]] float fDegree = ( DoAimingTarget( _CONST_CHUNG_::MAGIC_MOBILE_MODE_X_MAX_RANGE * m_fMobileArmoredModeDistance, vCoefficient, m_bAimingTarget, m_vAimingTargetPos, m_vAimingTargetLandPos, false ) * 180.f ) / D3DX_PI;
 		if( GetExtraCannonBallCount() >= 1 )
 		{
 			CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_CTT_MOBILE_MODE_X", this );
@@ -19462,7 +19456,6 @@ void CX2GUChung::CSI_A_CIP_ARTILLERY_NOVA_FIRE_FrameMove()
 
 void CX2GUChung::CSI_A_CIP_ARTILLERY_NOVA_FIRE_EventProcess()
 {
-	const float LOWER_BOUND_INPUT_TIME_TO_CANCEL = 2.133f;
 	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 		if( false == IsOnSomethingFuture() )
@@ -19663,8 +19656,7 @@ void CX2GUChung::CSI_A_CSG_DOUBLE_FIRE_FrameMove()
 	{
 		D3DXVECTOR3 vBonePosR = GetBonePos( L"Bip01_R_Hand" );
 
-		CX2DamageEffect::CEffect* pDamageEffect = NULL;
-		pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_CSI_CDC_COMBO_X_Mini_Gun_Hit", 1.f, vBonePosR, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	//# �� 1�� �߻�
@@ -19683,7 +19675,6 @@ void CX2GUChung::CSI_A_CSG_DOUBLE_FIRE_FrameMove()
 			{
 				vBonePos_MiniGun = pMeshInst_MiniGun->GetXSkinAnim()->GetCloneFramePosition(L"Gun_R_Dummy03");
 			}
-			CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame = m_pXSkinAnim->GetCloneFrame( L"Bip01_R_Hand" );
 		}
 
 		CX2DamageEffect::CEffect* pEffect =
@@ -20243,7 +20234,6 @@ void CX2GUChung::CSI_A_CTT_BOMBARD_SERVICE_FrameMove()
 			m_hBombardServiceEffect = INVALID_EFFECTSET_HANDLE;
 		}
 		m_iBombardServiceTarget = -1;
-		CX2GameUnit *pFrontNearestUnit = NULL;
 
 		for( int i = 0; i < g_pX2Game->GetUnitNum(); ++i )
 		{

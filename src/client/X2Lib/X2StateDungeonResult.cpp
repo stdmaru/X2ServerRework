@@ -1303,13 +1303,11 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 					{
 						//////////////////////////////////////////////////////////////////////////
 						// At Next EXP Page
-						int playerNum = 0;
 						for ( int i = 0; i < g_pX2Room->GetSlotNum(); i++ )
 						{
 							CX2Room::SlotData* pSlotData = g_pX2Room->GetSlotData(i);
 							if ( pSlotData != NULL && pSlotData->m_pUnit != NULL )
 							{
-								playerNum++;
 							}
 						}
 
@@ -1581,7 +1579,6 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 											// 해당 Player 의 사진이 없으면 뿌리지 않는다.
 											if ( pStaticPartyRank != NULL && pStaticPartyRank->GetPicture( static_cast <int> ( iOtherUserNum ) ) != NULL )
 											{
-												D3DXVECTOR2 PicturePos = pStaticPartyRank->GetPicture( static_cast <int> ( iOtherUserNum ) )->GetPos();
 												D3DXVECTOR2 vecCenterPos = pStaticPartyRank->GetPicture( iOtherUserNum )->GetPos();
 												D3DXVECTOR2 vecPictureSize = pStaticPartyRank->GetPicture( iOtherUserNum )->GetSize();
 												D3DXVECTOR2 vecLeftTopPos = vecCenterPos;
@@ -2226,7 +2223,7 @@ bool CX2StateDungeonResult::InitUI()
 			pStaticDungeonPictrue->GetString(0)->color	= diffColor;
 			pStaticDungeonPictrue->GetString(0)->msg	= wstrBuff;
 
-			int requireLevel = 0;
+			[[maybe_unused]] int requireLevel = 0;
 			const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
 			if ( pDungeonData != NULL )
 				requireLevel = pDungeonData->m_MinLevel;

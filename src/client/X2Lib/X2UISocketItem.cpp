@@ -670,31 +670,25 @@ void CX2UISocketItem::ShowSocketDescExpected(int iSlotIndex)
 		{
 			if ( g_pData->GetMyUser()->GetSelectUnit()->GetType() == CX2Unit::UT_ADD )
 			{
-				UINT uStrID = _CONST_UISOCKETITEM_INFO_::g_iArrayMagicStoneStringID[iIndex];
 
 				switch( iIndex )
 				{
 				case 4:		// STR_5076
-					uStrID = STR_ID_29867;
 					break;
 
 				case 6:		// STR_5078
-					uStrID = STR_ID_29868;
 					break;
 
 				case 20:	// STR_5089
 				case 34:	// STR_5089
-					uStrID = STR_ID_29869;
 					break;
 
 				case 19:	// STR_5091
 				case 36:	// STR_5091
-					uStrID = STR_ID_29870;
 					break;
 
 				case 12:	// STR_13904
 				case 29:	// STR_13904
-					uStrID = STR_ID_29873;
 					break;
 
 				default:
@@ -1680,7 +1674,6 @@ void CX2UISocketItem::SocketEquipReadyEffectStart()
 	}
 
 
-	float ftime_latency = 0.f;
 
 	for ( int i = 0; i < _CONST_UISOCKETITEM_INFO_::g_iMaxNumSocketInItem; i++ )
 	{
@@ -1724,7 +1717,6 @@ void CX2UISocketItem::SocketEquipReadyEffectEnd()
 	}
 
 
-	float ftime_latency = 0.f;
 
 	for ( int i = 0; i < _CONST_UISOCKETITEM_INFO_::g_iMaxNumSocketInItem; i++ )
 	{

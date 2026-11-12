@@ -267,7 +267,6 @@ bool CX2ItemManager::AddShopItemList_LUA()
 			iter = m_ShopItemGroup.find(buf);
 			if( iter != m_ShopItemGroup.end() )
 			{
-				ItemIDList* pGroupItemIDList = iter->second;
 				for( int i = 0; i < (int)pItemIDList->m_ItemIDList.size(); i++ )
 				{
 					int itemID = pItemIDList->m_ItemIDList[i];

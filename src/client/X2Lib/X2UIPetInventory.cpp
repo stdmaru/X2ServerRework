@@ -529,7 +529,6 @@ bool	CX2UIPetInventory::MouseUp( D3DXVECTOR2 mousePos )
 
 	if ( *m_pSlotBeforeDragging	!= NULL )	// 드래그 앤 드랍 일때
 	{
-		CX2SlotItem*	pSlotItem	= static_cast< CX2SlotItem* >( *m_pSlotBeforeDragging );
 		bool			bCheck		= false;
 		//{{ kimhc // 실시간 엘소드 중 던전내에서 유저가 죽었거나, wait, mpCharge 상태가 아닐때 장비 교체 막기
 		if ( g_pMain->GetNowStateID() == CX2Main::XS_DUNGEON_GAME )

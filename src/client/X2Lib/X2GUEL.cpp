@@ -2939,8 +2939,6 @@ bool CX2GUEL::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAct
 
 		float fCoolTimeLeft = pSkillSlotData->m_fCoolTimeLeft;
 
-		bool bSlotB = (m_iPressedSkillSlotIndex > 3) ? true : false;
-		int iSlotIndex = (m_iPressedSkillSlotIndex > 3) ? m_iPressedSkillSlotIndex-4 : m_iPressedSkillSlotIndex;
 
 
 #if X2_DEV_TOOLS

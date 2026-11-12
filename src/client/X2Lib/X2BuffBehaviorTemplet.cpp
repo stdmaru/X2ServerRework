@@ -1573,7 +1573,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 /*virtual*/ void CX2BuffResetSkillCoolTimeBehaviorTemplet::GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const
 {
 	vecFactors_.push_back( KBuffBehaviorFactor( GetType() ) );
-	KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
+	[[maybe_unused]] KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
 }
 
 /** @function : ParsingBehavior
@@ -1638,7 +1638,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 /*virtual*/ void CX2BuffChangeUnitScaleBehaviorTemplet::GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const
 {
 	vecFactors_.push_back( KBuffBehaviorFactor( GetType() ) );
-	KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
+	[[maybe_unused]] KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
 }
 
 /** @function : SetFactorFromPacket
@@ -1720,7 +1720,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 /*virtual*/ void CX2BuffCustomFunctionBehaviorTemplet::GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const
 {
 	vecFactors_.push_back( m_kBuffBehaviorFactor );
-	KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
+	[[maybe_unused]] KBuffBehaviorFactor& BehaviorFactor = vecFactors_.back();
 }
 
 /** @function : SetFactorFromPacket
@@ -2905,7 +2905,6 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	/// 버프가 가지고 있는 여러 요소 중 현재 클래스에 해당 하는 정보를 얻어옴
 	if ( BuffFactor_.GetBehaviorFactor( GetType(), &pBehaviorFactor ) )
 	{
-		float fMPConsume = 0.f;
 		m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
 
 		if ( 0 > m_uiSkillId )

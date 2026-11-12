@@ -1069,7 +1069,7 @@ void CX2Camera::FixedCamera( CX2GameUnit* pFocusUnit, D3DXVECTOR3 vLookAt, D3DXV
 			lookAt = m_vArcadeCameraLookAt;
 			float fTrackingTime = 2.f;
 			float fDistX = fabs(m_vArcadeCameraLookAt.x - vUnitPos.x );
-			float fDistY = fabs(m_vArcadeCameraLookAt.y - vUnitPos.y );
+			[[maybe_unused]] float fDistY = fabs(m_vArcadeCameraLookAt.y - vUnitPos.y );
 
 			// horizontal scroll
 			if( fDistX > MAGIC_HORIZONTAL_THRESHOLD1 )
@@ -1122,7 +1122,7 @@ void CX2Camera::FixedCamera( CX2GameUnit* pFocusUnit, D3DXVECTOR3 vLookAt, D3DXV
 		{
 			lookAt = m_vArcadeCameraLookAt;
 			float fTrackingTime = 2.f;
-			float fDistX = fabs(m_vArcadeCameraLookAt.x - vUnitPos.x );
+			[[maybe_unused]] float fDistX = fabs(m_vArcadeCameraLookAt.x - vUnitPos.x );
 			float fDistY = fabs(m_vArcadeCameraLookAt.y - vUnitPos.y );
 
 			// vertical scroll
@@ -1251,7 +1251,6 @@ const D3DXVECTOR3 CX2Camera::CalcNormalCameraPosition( CX2GameUnit* pFocusUnit, 
 	if( pFocusUnit == NULL )
 		return D3DXVECTOR3( 0, 0, 0 );
 
-	float fCameraHeightCompensation = 400.f;
 
 	if( g_pX2Game != NULL
 #ifdef PVP_ZOOM_CAMERA_1
@@ -1262,15 +1261,12 @@ const D3DXVECTOR3 CX2Camera::CalcNormalCameraPosition( CX2GameUnit* pFocusUnit, 
 	{
 		if( distance <= 800.f )
 		{
-			fCameraHeightCompensation = 100.f;
 		}
 		if( distance <= 900.f )
 		{
-			fCameraHeightCompensation = 200.f;
 		}
 		else if( distance <= 1200.f )
 		{
-			fCameraHeightCompensation = 300.f;
 		}
 	}
 
@@ -1532,7 +1528,6 @@ void CX2Camera::AddKeyFrame()
 	m_iEditKeyFrameIndex++;
 
 	int iNowKeyFrame = m_iEditKeyFrameIndex;
-	int iPrevKeyFrame = m_iEditKeyFrameIndex - 1;
 
 	// 키 프레임 구간의 길이 근사
 	// 복사하였기 때문에 같은 Position이므로 0
@@ -1952,7 +1947,6 @@ void CX2Camera::WorldCameraKeyProcess()
 				fwprintf(fp, L"},\n");
 
 
-				float a = m_vecWorldCameraData[0].m_vecKeyFrameCameraData[i].m_fCurveLength;
 			}
 			fwprintf(fp, L"}\n");
 			fclose(fp);

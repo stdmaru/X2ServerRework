@@ -3159,7 +3159,6 @@ bool CX2Main::DeleteFile( const WCHAR* pFileName )
 
 	const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pStatic->GetString(0)->fontIndex );
 	if( pFont == NULL )
@@ -3303,7 +3302,6 @@ CKTDGUIDialogType CX2Main::KTDGUIOKMsgBoxPlus( D3DXVECTOR2 pos, const WCHAR* pTe
 
 	const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pStatic->GetString(0)->fontIndex );
 	if( pFont == NULL )
@@ -3406,7 +3404,6 @@ CKTDGUIDialogType CX2Main::KTDGUIMsgBox( D3DXVECTOR2 pos, const WCHAR* pText, CK
 
 
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 //	CKTDGFontManager::CKTDGFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetFont( pStatic->GetString(0)->fontIndex );
 	//CKTDGUIUniBuffer uniBuffer;
@@ -3510,7 +3507,6 @@ CKTDGUIDialogType CX2Main::KTDGUIOkAndCancelMsgBox( D3DXVECTOR2 pos, const WCHAR
 
 	const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	//CKTDGFontManager::CKTDGFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetFont( pStatic->GetString(0)->fontIndex );
 	//CKTDGUIUniBuffer uniBuffer;
@@ -3988,7 +3984,6 @@ bool CX2Main::GetNativeAndEnglisKeyState() //???? ??? ??? ??????	// TRUE ?? ???
 
 bool CX2Main::SendQuitMsgToServer()
 {
-	char szErrorLogFileName[256] = "ErrorLog.txt";
 	KEGS_CLIENT_QUIT_REQ kPacket;
 
 
@@ -7577,7 +7572,6 @@ CKTDGUIDialogType CX2Main::KTDGUIInfoBox( D3DXVECTOR2 vPos, const WCHAR* pText, 
 
 
 	//bool checkEnterChar = false;
-	int nowTextLen = 0;
 
 	//	CKTDGFontManager::CKTDGFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetFont( pStatic->GetString(0)->fontIndex );
 	//CKTDGUIUniBuffer uniBuffer;
@@ -7970,13 +7964,11 @@ void CX2Main::TimedMessagePopUp::OnFrameMove( double /*fTime*/, float fElapsedTi
 
 					const int constTextMaxLen = (int)(g_pKTDXApp->GetResolutionScaleX() * 366);
 					//bool checkEnterChar = false;
-					int nowTextLen = 0;
-					int lineNum = 1;
 
 					CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( pStatic->GetString(0)->fontIndex );
 					if( NULL != pFont )
 					{
-						lineNum = CWordLineHandler::LineBreakInX2MainMsgBox( tempText, pFont, constTextMaxLen );
+						CWordLineHandler::LineBreakInX2MainMsgBox( tempText, pFont, constTextMaxLen );
 					}
 					pStatic->GetString(0)->msg = tempText;
 				}

@@ -853,7 +853,6 @@ bool CX2UIPersonalTrade::OnDropAnyItem( D3DXVECTOR2 mousePos )
 
 	const CX2Inventory& kInventory = g_pData->GetMyUser()->GetSelectUnit()->GetInventory();
 	CX2Item* pDragItem = kInventory.GetItem( *m_DraggingItemUID );
-	CX2SlotItem* pDragSlot = (CX2SlotItem*) *m_pSlotBeforeDragging;
 
 	CX2SlotItem* m_pTargetDragItemSlot = (CX2SlotItem*) GetSlotInMousePos( mousePos );
 	// 슬롯이 없거나 내 슬롯이 아니면

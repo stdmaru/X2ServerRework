@@ -2498,8 +2498,6 @@ bool CX2GUAdd::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAc
 
 		float fCoolTimeLeft = min( fCoolTimeMax, static_cast<float>( pSkillSlotData->m_fCoolTimeLeft ) );
 
-		bool bSlotB		= (m_iPressedSkillSlotIndex > 3) ? true : false;
-		int iSlotIndex	= (m_iPressedSkillSlotIndex > 3) ? m_iPressedSkillSlotIndex-4 : m_iPressedSkillSlotIndex;
 
 #if X2_DEV_TOOLS
 		if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
@@ -3655,7 +3653,6 @@ void CX2GUAdd::DashEndFrameMove()
 void CX2GUAdd::DashEndEventProcess()
 {
 	// DashEnd���� ���� Ű�� ������ �� ��� ��������, �Ϲ� ���������� ���ϱ� ���� const ��.
-	const float TRIGGER_TIME_FACTOR_DASH_ATTACK = 0.3f;
 
 	if( false == IsOnSomethingFuture() )
 	{
@@ -7248,7 +7245,6 @@ void CX2GUAdd::ANSI_SA_ALP_PSYCHIC_STORM_StateStart()
 	float& fLoopTime		= m_PsychicStormData.m_fLoopTime;					/// �ݺ� �ð�
 	fLoopTime				= _CONST_ADD_::PSYCHIC_STORM_DEFAULT_LOOP_TIME;
 
-	float& fIncreaseSize	= m_PsychicStormData.m_fIncreaseSize;				/// ����Ʈ ũ��
 
 	if ( true == GetIsFormationMode() )
 	{
@@ -7323,7 +7319,6 @@ void CX2GUAdd::ANSI_SA_ALP_PSYCHIC_STORM_LOOP_FrameMove()
 {
 	float& fFireGap = m_PsychicStormData.m_fFireGap;	/// ����Ʈ ���� ����
 
-	float dfhdjkfhjksdhkjf = m_pXSkinAnim->GetNowAnimationTime();
 
 	if( fFireGap <= m_pXSkinAnim->GetNowAnimationTime() )
 	{
@@ -10068,7 +10063,6 @@ void CX2GUAdd::RidingDashEventProcess()
 
 void CX2GUAdd::RidingDashEndEventProcess()
 {
-	const float TRIGGER_TIME_FACTOR_DASH_ATTACK = 0.3f;
 
 	if( false == IsOnSomethingFuture() )
 	{
@@ -10575,7 +10569,6 @@ void CX2GUAdd::AttackQuicksilverFrenzy( IN const CX2DamageManager::DamageData& p
 
 	if ( NULL != pTargetUnit )
 	{
-		D3DXVECTOR3 vRotateDegree = GetRotateDegree();
 
 		/// �߻�ü ����
 		CX2DamageEffect::CEffect* pEffect =

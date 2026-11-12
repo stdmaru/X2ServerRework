@@ -257,7 +257,6 @@ HRESULT CX2StateCreateUnit::OnFrameMove( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 			float fRotY = g_pData->RotateYSelectCharacterType( m_SelectUnitClass );
 			m_pUnitViewerUI->GetMatrix().Rotate( D3DXToRadian(0),D3DXToRadian(fRotY),D3DXToRadian(0) );
 			int addSpeed = 20;
@@ -751,14 +750,12 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 					}
 					if ( NULL != m_pDLGCreateUnitServerSelect->GetControl( L"ButtonGaiaServer" ) && NULL != m_pDLGCreateUnitServerSelect->GetControl( L"ButtonSolesServer" )  )
 					{
-						bool bIsCreateAbleGaiaServer = true;
 						bool bIsCreateAbleSolesServer = true;
 
 						if ( g_pInstanceData->GetNowUserUnitManyInServer( SEnum::SGI_GAIA ) >= g_pInstanceData->GetMaxUserUnitManyInServer( SEnum::SGI_GAIA ) ||
 							 m_iGaiaServerCreateAbleUnitMany >= TODAY_CREATE_UNIT_MAX_NUMBER_SERVER )
 						{
 							static_cast <CKTDGUIRadioButton *> ( m_pDLGCreateUnitServerSelect->GetControl( L"ButtonGaiaServer" ) )->SetEnable( false );
-							bIsCreateAbleGaiaServer = false;
 						}
 
 						if ( g_pInstanceData->GetNowUserUnitManyInServer( SEnum::SGI_SOLES ) >= g_pInstanceData->GetMaxUserUnitManyInServer( SEnum::SGI_SOLES ) ||
@@ -1487,7 +1484,6 @@ void CX2StateCreateUnit::SelectChung()
 
 	m_pUnitViewerUI->OnFrameMove( g_pKTDXApp->GetTime(),g_pKTDXApp->GetElapsedTime() );
 
-	const int STR_BUF_SIZE = 256;
 
 	CKTDGUIStatic * pMovieStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitFront->GetControl( L"IntroMovie" ) );
 	if ( NULL != pMovieStatic )
@@ -1582,7 +1578,6 @@ void CX2StateCreateUnit::SelectAra()
 
 	m_pUnitViewerUI->OnFrameMove( g_pKTDXApp->GetTime(),g_pKTDXApp->GetElapsedTime() );
 
-	const int STR_BUF_SIZE = 256;
 
 	CKTDGUIStatic * pMovieStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitFront->GetControl( L"IntroMovie" ) );
 	if ( NULL != pMovieStatic )
@@ -1669,7 +1664,6 @@ void CX2StateCreateUnit::SelectElesis()
 
 	m_pUnitViewerUI->OnFrameMove( g_pKTDXApp->GetTime(),g_pKTDXApp->GetElapsedTime() );
 
-	const int STR_BUF_SIZE = 256;
 
 	CKTDGUIStatic * pMovieStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitFront->GetControl( L"IntroMovie" ) );
 	if ( NULL != pMovieStatic )

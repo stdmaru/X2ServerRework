@@ -36,8 +36,6 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 		KTDXPROFILE();
 
 		//float boxWidth = 186;
-		float boxBottomHeight = 39;
-		float boxUpperHeight = 13;
 		//float boxCenterHeight = 53;
 
 		KD3DBEGIN()
@@ -57,7 +55,6 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 		CKTDGStateManager::PushSamplerState( 1, D3DSAMP_ADDRESSV,  D3DTADDRESS_MIRROR );
 
 
-		int incSize = m_FontHeight;
 
 		CKTDGStateManager::SetTexture( 0, NULL );
 

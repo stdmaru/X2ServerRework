@@ -627,7 +627,6 @@ void CX2UIWatch::UnitHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 
 
 
@@ -1077,7 +1076,6 @@ std::wstring CX2UIWatch::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool
 			CX2Item::KItemFormatStatData kCalculateStat;
 			g_pData->GetItemStatCalculator().CalculateItemStat(kCalculateStat, pkItemTemplet, eUnitType, eUnitClass );
 
-			const CX2Item::KItemFormatStatData& kTempletStat = kCalculateStat;
 
 
 			// 물리 공격력

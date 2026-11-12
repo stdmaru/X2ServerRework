@@ -439,7 +439,6 @@ CX2Game::~CX2Game()
 
 	//m_UserUnitList.clear();
 
-	CX2GageManager* pGageManager = CX2GageManager::GetInstance();
 	// 	if( NULL != pGageManager )
 	// 	{
 	// 		pGageManager->ClearBuffList();
@@ -577,8 +576,6 @@ CX2Game::~CX2Game()
 	}
 	m_vecRemoveDamageEffect.clear();
 
-	bool bLoop      = true;
-	DWORD ret       = NULL;
 
 
 	//g_pMain->SendHackMail();
@@ -4302,7 +4299,6 @@ void CX2Game::KeyProcess()
 		}
 	}
 
-	bool bEnableKeyProcessMisc = true;
 
 //#ifdef PVP_BOSS_COMBAT_TEST
 //	if( GetMyUnit()->GetNowStateID() == GetMyUnit()->GetFrozenState() ||
@@ -4319,12 +4315,10 @@ void CX2Game::KeyProcess()
 			const UINT MAGIC_FRAME_COUNT_WITHOUT_P2P_PACKET_RECEIVE = 1000;
 			if( g_pData->GetGameUDP()->GetElapsedFrameAfterPacketReceive() > MAGIC_FRAME_COUNT_WITHOUT_P2P_PACKET_RECEIVE )
 			{
-				bEnableKeyProcessMisc = false;
 			}
 		}
 		else
 		{
-			bEnableKeyProcessMisc = false;
 		}
 	}
 	if ( GetEnableAllKeyProcess() && m_AllowFrameCount > 0 /*&& true == bEnableKeyProcessMisc*/ )
@@ -4768,7 +4762,6 @@ int CX2Game::GetEliteNPCUnitNum()
 	{
 		if( m_NPCUnitList[i] != NULL )
 		{
-			CX2GUNPC* pNPC = (CX2GUNPC*)m_NPCUnitList[i];
 			if(true == m_NPCUnitList[i]->GetIsEliteMonster())
 				iCount++;
 		}
@@ -6330,7 +6323,6 @@ bool CX2Game::Handler_EGS_PLAY_START_NOT( KEGS_PLAY_START_NOT& kEGS_PLAY_START_N
 
 			D3DXVECTOR3	startPos	= pLineMap->GetBlueTeamStartPosition( index );
 			bool bRight				= pLineMap->GetBlueTeamStartRight( index );
-			int lineIndex			= pLineMap->GetBlueTeamStartLineIndex( index );
 
 			PushCreateNPCReq( (CX2UnitManager::NPC_UNIT_ID)npcSlot.m_iNpcId, npcSlot.m_iLevel, true,
 				startPos, bRight, 0.f, true, PVP_NPC_KEY_CODE, (CX2Room::TEAM_NUM)CX2Room::TN_BLUE, CX2NPCAI::NAT_NORMAL, -1 );
@@ -8357,7 +8349,6 @@ void CX2Game::UpdateElswordSkillSlotEffect()
 }
 void CX2Game::UpdateEveElectraSkillSlotIcon()
 {
-	const CX2Unit::UNIT_CLASS eUnitClass = g_pData->GetMyUser()->GetSelectUnit()->GetClass();
 
 	if (
 		GetMyUnit() != NULL &&
@@ -8766,7 +8757,6 @@ void CX2Game::UpdateSkillCoolTime( float /*fElapsedTime*/ )
 
 							continue;
 						}
-						CX2GageData* pMyGageData = GetMyUnit()->GetGageData();
 
 						// 위상변화 MP변수 값이 설정되었다면
 						// 현재 슬롯은 위상변화 슬롯이며,  위상변화 위치 이동이 가능한 상태
@@ -9228,7 +9218,6 @@ void CX2Game::ResurrectionFrameMove( double /*fTime*/, float fElapsedTime )
 
 	if ( m_fResurrectionRemainTime > 0.0f && GetMyUnit() != NULL )
 	{
-		WCHAR timeBuf[200] = {0,};
 		int coundDown = static_cast<int>( m_fResurrectionRemainTime ) - 1;
 		if ( coundDown < 0 )
 			coundDown = 0;
@@ -11531,7 +11520,6 @@ void CX2Game::SetUserSummonedNPCInfo( CX2NPCAI::NPC_AI_TYPE eAIType, UidType iAl
 			case CX2UnitManager::NUI_PARTICLE_PRISM_START: // 파티클 프리즘
 			case CX2UnitManager::NUI_PARTICLE_PRISM_END:
 				{
-					float fHPScale = 1.f;
 					const CX2SkillTree::SkillTemplet* pSkillTemplet =
 						pUser->GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_AN_PARTICLE_PRISM );
 					if( NULL != pSkillTemplet )
@@ -12168,7 +12156,6 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 
 	bool bNostrum = false;
 	bool bSpirit = false;
-	bool bCrest = false;
 
 	// 몬스터 소환
 	for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST4); ++i)
@@ -12209,7 +12196,6 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 		{
 			if( dwItemID == DUNGEON_ITEM_LIST3[i] )
 			{
-				bCrest = true;
 				return CX2Item::SIT_CREST;
 			}
 		}
@@ -12393,7 +12379,6 @@ void CX2Game::SpecialItemEffect(int iEffectIndex)
 
 	if( m_optrItemDamageEffectGameUnit->GetNowHp() > 0.f )
 	{
-		D3DXVECTOR3 vPosEffectUser = m_optrItemDamageEffectGameUnit->GetPos();
 
 		for( UINT i=0; i<m_UserUnitList.size(); i++ )
 		{

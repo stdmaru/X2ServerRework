@@ -298,7 +298,6 @@ void CX2LocationManager::LocalParsing( KLuaManager& kLuamanager, const vector< L
 
 
 
-			int requireUnitLevel = 1;
 			LUA_GET_VALUE( kLuamanager, "RequireUnitLevel", pLocalMapTemplet->m_RequireUnitLevel, 1 );
 
 			kLuamanager.EndTable(); // EnterCondition

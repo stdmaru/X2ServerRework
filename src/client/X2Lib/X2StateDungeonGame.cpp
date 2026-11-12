@@ -2741,7 +2741,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_SECRET_STAGE_ENTER_RESULT_NOT( HWN
 		NULL != m_pDungeonGame->GetDungeon()->GetNowStage() &&
 		NULL != m_pDungeonGame->GetDungeon()->GetNowStage()->GetNowSubStage() )
 	{
-		CX2StateDungeonGame* pCX2StateDungeonGame = (CX2StateDungeonGame*)g_pMain->GetNowState();
 
 		if( g_pX2Game->IsHost() == true )
 		{
@@ -2813,7 +2812,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND /*hWnd*
 #endif
 
 	bool bResult = false;
-	CX2DungeonSubStage *pSubStage = NULL;
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_KILLALLNPC_CHECK_ACK kEvent;
@@ -2823,7 +2821,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND /*hWnd*
 		m_pDungeonGame->GetDungeon() != NULL &&
 		m_pDungeonGame->GetDungeon()->GetNowStage() != NULL )
 	{
-		pSubStage = m_pDungeonGame->GetDungeon()->GetNowStage()->GetNowSubStage();
 	}
 
 	if( g_pMain->DeleteServerPacket( EGS_DUNGEON_KILLALLNPC_CHECK_ACK ) == true )
@@ -2964,8 +2961,6 @@ HRESULT CX2StateDungeonGame::TutorialFrameMove( double /*fTime*/, float fElapsed
 		m_pDLGTutorialInputControl->SetShow(true);
 	}
 
-	CKTDGUIStatic* pStatic_SkillList_Fold	= (CKTDGUIStatic*) m_pDLGTutorialInputControl->GetControl( L"Static_Skill_List_Fold" );
-	CKTDGUIStatic* pStatic_SkillList_Unfold	= (CKTDGUIStatic*) m_pDLGTutorialInputControl->GetControl( L"Static_Skill_List_Unfold" );
 
 
 	if( NULL != g_pData->GetSlideShot() &&
@@ -3298,8 +3293,6 @@ void CX2StateDungeonGame::TextOutSkillList( const char unitStateID )
 	if( NULL == pCX2GUUser )
 		return;
 
-	CX2Unit::UNIT_CLASS unitClass = pCX2GUUser->GetUnit()->GetClass();
-	char nowUserStateID = (char)pCX2GUUser->GetNowStateID();
 
 
 	const D3DXCOLOR coOutline		= D3DXCOLOR(  0.f, 0.f,  0.f,  1.f );
@@ -5094,7 +5087,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		break;
 	case CX2Unit::UC_CHUNG_TACTICAL_TROOPER:
 		{
-			CX2GUChung* pChungUser = static_cast<CX2GUChung*>( pMyUser );
 
 			// 광폭화 모드이면
 			if ( pMyUser->IsFullHyperMode() )
@@ -5106,7 +5098,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 
 	case CX2Unit::UC_ARA_MARTIAL_ARTIST:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Martial_Artist_Rage.tga";
@@ -5115,7 +5106,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_LITTLE_HSIEN:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_LITTLE_HSIEN_Rage.tga";
@@ -5124,7 +5114,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_SAKRA_DEVANAM:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Sakra_Devanam_Rage.tga";
@@ -5133,7 +5122,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_LITTLE_DEVIL:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Little_Devil_Rage.tga";
@@ -5142,7 +5130,6 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 		} break;
 	case CX2Unit::UC_ARA_YAMA_RAJA:
 		{
-			CX2GUAra* pAraUser = static_cast<CX2GUAra*>( pMyUser );
 
 			if ( pMyUser->IsFullHyperMode() )
 				fileName = L"HQ_Dungeon_Clear_Ara_Yama_Raja_Rage.tga";
@@ -5430,8 +5417,6 @@ void CX2StateDungeonGame::DrawFace( const float fX_, const float fY_, const CKTD
 	float X2 = fX_ + fWidth_ * fWidthPercent_;
 	float Y2 = fY_ + fHeight_;
 
-	float UMax = 1.0f;
-	float VMax = 1.0f;
 
 	DRAWFACE_RHW_VERTEX vertex[4];
 	ZeroMemory( vertex, sizeof(DRAWFACE_RHW_VERTEX) * 4 );

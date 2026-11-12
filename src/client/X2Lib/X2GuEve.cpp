@@ -3374,7 +3374,6 @@ void CX2GUEve::DeleteEveMinorParticle()
 {
 	CX2GUUser::DeleteGUUserMinorParticle();
 
-	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMinorParticle();
 
 	for ( int index = 0; index < EVE_MINOR_PII_END; index++ )
 	{
@@ -4591,7 +4590,7 @@ void CX2GUEve::CommonFrameMove()
 		bool bSlotB = false;
 		CX2UserSkillTree::GetSlotIndexAndSlotB( m_sTaserPilumData.GetSkillSlotID(), OUT iSlotIndex, OUT bSlotB );
 
-		int iNowState = -1;
+		[[maybe_unused]] int iNowState = -1;
 
 		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > iSlotIndex && 0 < iSlotIndex )
 		{
@@ -4644,7 +4643,7 @@ void CX2GUEve::CommonFrameMove()
 		bool bSlotB = false;
 		CX2UserSkillTree::GetSlotIndexAndSlotB( m_sKugelBlitz_Data.GetSkillSlotID(), OUT iSlotIndex, OUT bSlotB );
 
-		int iNowState = -1;
+		[[maybe_unused]] int iNowState = -1;
 
 		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > iSlotIndex && 0 < iSlotIndex )
 		{
@@ -8555,8 +8554,7 @@ void CX2GUEve::ENSI_COMBO_XXZ4_FrameMove()
 			vDamagePos -= (GetDirVector() * 60.f);
 		}
 
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_ComboX5a_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_ComboX5a_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
 		//g_pX2Game->CreateNPCReq( CX2UnitManager::NUI_GUARDIAN_EVE, 0, true, vBonePos,
 		//	GetIsRight(), 0.f, true, -1, (CX2Room::TEAM_NUM) GetTeam(), CX2NPCAI::NAT_ALLY, GetUnitUID() );
 
@@ -10589,11 +10587,10 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_XZ_FrameMove()
 		case CX2Unit::UC_EVE_ARCHITECTURE:
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			{
-				CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 				D3DXVECTOR3 vBonePos = GetPos();
 				vBonePos.y += 290.f;
 
-				pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
+				g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_Guardian", GetPos(), GetRotateDegree(), GetRotateDegree() );
 
 				CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Particle_Eve_AT_Combo01", vBonePos );
 				if( NULL != pSeq )
@@ -10621,9 +10618,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_XZ_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.15f ) )
 	{
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 
-		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_BladeWave01", m_vSummonedUnitBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_AT_DashJumpComboXa_BladeWave01", m_vSummonedUnitBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
 
 	CommonFrameMove();
@@ -11714,7 +11710,6 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.1f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 
 		// ����� ���θʿ��� ����Ʈ ��ġ�� ���ε��� �ö� �������� ���� ������
@@ -11737,7 +11732,7 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_FrameMove()
 		vPos.y += 120.f;
 
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
 		//if( NULL != pSeq ) // ������ ��ƼŬ�� ��� �Ʒ� �ڵ� �����ϸ� �ȵ�
 		//{
 		//	pSeq->SetAddRotate( GetRotateDegree() );
@@ -11987,7 +11982,6 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_HYPER_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.1f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 
 		D3DXVECTOR3 vDirVector = GetDirVector();
@@ -12009,7 +12003,7 @@ void CX2GUEve::ENSI_SI3_GENERATE_BLACKHOLE_HYPER_FrameMove()
 		vPos.y += 120.f;
 
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Black_Circle_Eve_Sp3a_GBH03", vPos );
 		//if( NULL != pSeq ) // ������ ��ƼŬ�� ��� �Ʒ� �ڵ� �����ϸ� �ȵ�
 		//{
 		//	pSeq->SetAddRotate( GetRotateDegree() );
@@ -13591,7 +13585,6 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 		if( true == GetIsRight() )
@@ -13603,7 +13596,7 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_FrameMove()
 			vPos -= GetDirVector() * 170.f;
 		}
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )
 	{
@@ -13678,7 +13671,6 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 		if( true == GetIsRight() )
@@ -13690,7 +13682,7 @@ void CX2GUEve::ENSI_SI2_AT_SONIC_WAVE_HYPER_FrameMove()
 			vPos -= GetDirVector() * 220.f;
 		}
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_Sp3a_Magicsquare01", vPos );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )
 	{
@@ -13996,8 +13988,7 @@ void CX2GUEve::ENSI_SI1_EG_HORNET_STING_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.06f ) )
 	{
 		D3DXVECTOR3 vBonePos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.47f ) )
 	{
@@ -14038,8 +14029,7 @@ void CX2GUEve::ENSI_SI1_EG_HORNET_STING_HYPER_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.06f ) )
 	{
 		D3DXVECTOR3 vBonePos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos, GetRotateDegree(), GetRotateDegree() );
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.47f ) )
 	{
@@ -14635,13 +14625,12 @@ void CX2GUEve::ENSI_SI3_EG_QUEENS_THRONE_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.5f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 
 		vPos.y += 80.f;
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
 
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.3f ) )
@@ -14842,13 +14831,12 @@ void CX2GUEve::ENSI_SI3_EG_QUEENS_THRONE_HYPER_FrameMove()
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 0.5f ) )
 	{
-		CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 		D3DXVECTOR3 vPos = GetPos();
 
 		vPos.y += 80.f;
 
-		pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
+		g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"Eve_EG_Sp3a_QT_Text01", vPos );
 
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.3f ) )
@@ -19035,7 +19023,6 @@ void CX2GUEve::EveElectraEffectData::OnFrameMove( float fElapsedTime )
 		else if( m_bPlaneFront == true )
 		{
 
-			D3DXVECTOR3 vPlaneIntersectPoint;
 			D3DXVECTOR3 vEffectEndPos;
 			D3DXPlaneIntersectLine( &vEffectEndPos, &m_pEveElectraSystem->m_PrimaryPlane, &vEffectNowPos, &m_vPlaneIntersectPoint );
 
@@ -19592,7 +19579,6 @@ void CX2GUEve::EveElectraLockonData::OnFrameMove( float fElapsedTime )
 		else if( m_bPlaneFront == true )
 		{
 
-			D3DXVECTOR3 vPlaneIntersectPoint;
 			D3DXVECTOR3 vEffectEndPos;
 			D3DXPlaneIntersectLine( &vEffectEndPos, &m_pEveElectraSystem->m_PrimaryPlane, &vEffectNowPos, &m_vPlaneIntersectPoint );
 
@@ -19846,15 +19832,12 @@ void CX2GUEve::EveElectraSystem::ProcessPlane( float _fElapsedTime )
 
 		CKTDGXMeshPlayer* pMajorMeshPlayer = g_pX2Game->GetMajorXMeshPlayer();
 		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstCrystal1 = pMajorMeshPlayer->GetMeshInstance( m_hEffectCrystal1 );
-		CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame1 = pMeshInstPlane->GetCloneFrame( L"Dummy02" );
 		pMeshInstCrystal1->SetPos( pMeshInstPlane->GetBonePos( L"Dummy02" ));
 
 		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstCrystal2 = pMajorMeshPlayer->GetMeshInstance( m_hEffectCrystal2 );
-		CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame2 = pMeshInstPlane->GetCloneFrame( L"Dummy03" );
 		pMeshInstCrystal2->SetPos( pMeshInstPlane->GetBonePos( L"Dummy03" ));
 
 		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstCrystal3 = pMajorMeshPlayer->GetMeshInstance( m_hEffectCrystal3 );
-		CKTDXDeviceXSkinMesh::MultiAnimFrame* pMultiAnimFrame3 = pMeshInstPlane->GetCloneFrame( L"Dummy04" );
 		pMeshInstCrystal3->SetPos( pMeshInstPlane->GetBonePos( L"Dummy04" ));
 
 
@@ -20901,8 +20884,7 @@ void CX2GUEve::ClearThousandStar()
 	{
         if ( CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = pTSEffect->GetMainEffect() )
         {
-            CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
-		    pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"EveThousandStarDie", pMeshInstance->GetPos(), GetRotateDegree(), GetRotateDegree() );
+		    g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"EveThousandStarDie", pMeshInstance->GetPos(), GetRotateDegree(), GetRotateDegree() );
         }
 	}
 
@@ -22131,7 +22113,7 @@ void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZZ_FrameMove()
 	{
 		D3DXVECTOR3 vDamageEffectPos = GetBonePos( L"Dummy2_Lhand" );
 		vDamageEffectPos.y += 10.f;
-		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_PR_DASH_COMBO_ZZZ_EXPLOSION", GetPowerRate(), vDamageEffectPos, GetRotateDegree(), GetRotateDegree() );
+		[[maybe_unused]] CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_PR_DASH_COMBO_ZZZ_EXPLOSION", GetPowerRate(), vDamageEffectPos, GetRotateDegree(), GetRotateDegree() );
 
 	}
 
@@ -24893,7 +24875,7 @@ void CX2GUEve::ENSI_EBS_DASH_JUMP_COMBO_ZFrontX_Start()
 	m_bNotEnoughMPDashZX = false;
 	++m_iBoostAttackCount;
 
-    CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+    [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 	pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ),
 		GetRotateDegree(), GetRotateDegree() );
 
@@ -24971,7 +24953,7 @@ void CX2GUEve::ENSI_EBS_DASH_JUMP_COMBO_ZUpX_Start()
 	D3DXVECTOR3 vRot = GetRotateDegree();
 	vRot.z += 45.f;
 
-    CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+    [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 	pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ),
 		vRot, vRot );
 
@@ -25056,7 +25038,7 @@ void CX2GUEve::ENSI_EBS_DASH_JUMP_COMBO_ZDownX_Start()
 	D3DXVECTOR3 vRot = GetRotateDegree();
 	vRot.z -= 45.f;
 
-    CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+    [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 	pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ),
 		vRot, vRot );
 	CX2EffectSet::Handle hEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_Seraph_Boost_Dash_Attack", this );
@@ -25631,7 +25613,7 @@ void CX2GUEve::ENSI_SA_EEG_Hornet_Sting_Shaped_Charge_FrameMove()
     if( m_pXSkinAnim->EventTimerOneshot( 0.06f ) )
 	{
 		D3DXVECTOR3 vBonePos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
+        [[maybe_unused]] CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = NULL;
 		pMeshInst  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this, L"Mesh_Eve_EG_SP1a_HornetSting_Cannon", vBonePos,
 			GetRotateDegree(), GetRotateDegree() );
 	}
@@ -25696,7 +25678,6 @@ void CX2GUEve::ENSI_SA_ENS_Atomic_Blaster_SonicGun_FrameMove()
 
 	ShowActiveSkillCutInAndLight( L"Dummy2_Lhand", 0.01f, 0 );
 
-	D3DXVECTOR3 vUnitPos	= GetPos();
 	D3DXVECTOR3 vBonePos	= GetBonePos( L"Bip01_Pelvis" );
 
 	if ( m_fEffectStartTime <= 1.357f
@@ -25938,7 +25919,6 @@ void CX2GUEve::ENSI_SA_EAT_Heavens_Fist_Sweeper_FrameMove()
 			if ( GetIsRight() )
 			{
 				vPos += GetDirVector() * 300.f;
-				D3DXVECTOR3 vScale = GetVec3ScaleByUnit();
 				//#ifdef ADD_MEMO_1ST_CLASS //��â��   - Effectset_SA_EAT_HEAVENS_FIST_SWEEPER_Nodamage ����Ʈ���� �������� ����. ??? �ϴ� �ּ� ó��
 				/*hFistEffect = g_pX2Game->GetEffectSet()->PlayEffectSet( L"Effectset_SA_EAT_HEAVENS_FIST_SWEEPER_Nodamage",
 					(CX2GameUnit*)this, NULL, false, GetPowerRate() * fStatAtkRateOfSummoned, -1.f, GetVec3ScaleByUnit(), true,

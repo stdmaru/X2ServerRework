@@ -70,9 +70,6 @@ HRESULT CX2StateTrainingResult::OnFrameMove( double fTime, float fElapsedTime )
 		}
 
 		const int X2_MAGIC_MULTY_NUM = 3500;
-		const int X2_MAGIC_MULTY_NUM2 = 35;
-		const int X2_MAGIC_MULTY_NUM3 = 70000;
-		const int X2_MAGIC_MULTY_NUM4 = 350;
 
 
 		//{{ 2009.01.19 김태완 : 코드정리 elseif -> switch

@@ -132,7 +132,6 @@ bool CX2UIManufacture::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPA
 			D3DXVECTOR2 mousePos = D3DXVECTOR2( (float)mousePoint.x, (float)mousePoint.y );
 			m_NowMousePos = mousePos;
 
-			CX2SlotItem* pSlotItem = (CX2SlotItem*)GetSlotInMousePos( mousePos );
 
 // 			if ( pSlotItem != NULL && pSlotItem->GetSlotType() == CX2Slot::ST_CASH_SHOP_MAIN_NEW )
 // 			{
@@ -1647,7 +1646,6 @@ void CX2UIManufacture::OpenRegisterQuantityDLG()
 	m_pDLGItemEnroll->SetPos( g_pMain->GetWindowPos( D3DXVECTOR2(1024-865, 768-633), D3DXVECTOR2(53,62)) );
 
 	CKTDGUIStatic* pStaticPrice			= static_cast < CKTDGUIStatic* >( m_pDLGItemEnroll->GetControl( L"Static_Price" ) );
-	CKTDGUIStatic* pStaticEDMark		= static_cast < CKTDGUIStatic* >( m_pDLGItemEnroll->GetControl( L"Static_EDMark" ) );
 
 	// 제조 가격
 	CX2ItemManager::ManufactureData* pManufactureData = g_pData->GetItemManager()->GetManufactureData( m_SelectedRecipeID );

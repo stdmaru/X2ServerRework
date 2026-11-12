@@ -1515,9 +1515,8 @@ void CX2SquareUnit::RenderServer(int iFinalLeft, int iFinalTop)
 	const CKTDXDeviceTexture::TEXTURE_UV*	pTexUV = NULL;
 
 #ifdef EXTEND_SERVER_GROUP_MASK
-	int iServerGroupID = -1;
 
-	iServerGroupID = (int) g_pMain->ExtractServerGroupID(GetUID());
+	(int) g_pMain->ExtractServerGroupID(GetUID());
 #else
 	SERVER_GROUP_ID eServerGroupID	= SGI_INVALID;
 

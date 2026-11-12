@@ -2326,8 +2326,6 @@ void CX2PartyManager::RememberComeBackInfoBeforeInstanceGameStart()
 				if(g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetSelectUnit() != NULL)
 					iMapId = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_nMapID;
 
-				int startPos = 0;
-				startPos = g_pData->GetLocationManager()->GetLoginPos( iMapId );
 
 				D3DXVECTOR3 vStartPos(0, 0, 0);
 

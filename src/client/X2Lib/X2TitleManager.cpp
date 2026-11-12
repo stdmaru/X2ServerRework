@@ -1251,13 +1251,11 @@ void CX2TitleManager::TakeTitle(std::vector<KTitleInfo> vecTitleInfo)
 
     if(m_pDlgTitle != NULL)
     {
-        int iTitleId;
         KTitleInfo nodeTitle;
 
         for(int i=0; i<(int)vecTitleInfo.size(); ++i)
         {
             nodeTitle = vecTitleInfo[i];
-            iTitleId = nodeTitle.m_iTitleID;
 
             UpdateTitle(nodeTitle, 0);
             //UpdateTitle(iTitleId, 0, nodeTitle.m_bInfinity);

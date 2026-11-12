@@ -91,11 +91,9 @@ bool CX2StateJoin::ServerConnectReq( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wPar
 	CKTDGUIEditBox*		pPasswordBox	= NULL;
 	CKTDGUIIMEEditBox*	pNameBox		= NULL;
 
-	CKTDGUIIMEEditBox*	pNickNameBox	= NULL;
 	pIDBox			= (CKTDGUIIMEEditBox*)m_pDLGJoinBack->GetControl( L"IMEEditBoxJoinID" );
 	pPasswordBox	= (CKTDGUIEditBox*)m_pDLGJoinBack->GetControl( L"EditBoxJoinPassword" );
 	pNameBox		= (CKTDGUIIMEEditBox*)m_pDLGJoinBack->GetControl( L"IMEEditBoxJoinName" );
-	pNickNameBox	= (CKTDGUIIMEEditBox*)m_pDLGJoinBack->GetControl( L"IMEEditBoxJoinNickName" );
 
 	m_UserID			= pIDBox->GetText();
 	m_UserPassword		= pPasswordBox->GetText();

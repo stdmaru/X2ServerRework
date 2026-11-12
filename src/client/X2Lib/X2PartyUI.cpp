@@ -966,7 +966,6 @@ m_pDLGPartyPVP(NULL)
 			CKTDGUIControl* pControl = reinterpret_cast <CKTDGUIButton*> (lParam);
 			CKTDGUIDialogType pDialog =static_cast <CKTDGUIDialogType> (pControl->GetDialog() );
 
-			int ItemID = pControl->GetDummyInt(0);
 
 			CKTDGUIButton* pButton = reinterpret_cast <CKTDGUIButton*> (lParam);
 			D3DXVECTOR2 vPos = pDialog->GetPos() + pButton->GetPos();
@@ -3562,7 +3561,6 @@ void CX2PartyUI::OpenRewardItemInfoPopup ( bool bOpen, D3DXVECTOR2 vPos, int iIt
 
 	const int iWidth = DXUTGetBackBufferSurfaceDesc()->Width;
 	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
-	const int SIZE_Y = 40;
 
 	int itemDescWidth = static_cast<int>( iWidth / 3 / g_pKTDXApp->GetResolutionScaleX() );
 	int itemDescHeight = 0;

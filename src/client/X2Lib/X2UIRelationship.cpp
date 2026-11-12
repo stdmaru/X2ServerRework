@@ -452,7 +452,6 @@ bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 									if ( NULL != g_pData->GetRelationshipManager() &&
 										NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 									{
-										CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 										wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() ) << L" / " << GetMaxWeddingInviteNumber();
 									}
 
@@ -800,7 +799,6 @@ void CX2UIRelationship::UnCheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBo
 	if ( NULL != g_pData->GetRelationshipManager() &&
 		NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 	{
-		CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 		int iPossibleInviteMany = GetMaxWeddingInviteNumber();
 
 		if ( m_eRelationInviteUserListType == RIT_ADDED )
@@ -844,7 +842,6 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 		if ( NULL != g_pData->GetRelationshipManager() &&
 			NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 		{
-			CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 			int iPossibleInviteMany = GetMaxWeddingInviteNumber();
 
 			switch ( m_eRelationInviteUserListType  )
@@ -937,7 +934,6 @@ bool CX2UIRelationship::ShowInvitedWeddingUserListControlListDlg ( bool bEnable 
 		if ( NULL != g_pData->GetRelationshipManager() &&
 			NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 		{
-			CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 			pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
 
 		}
@@ -949,7 +945,6 @@ bool CX2UIRelationship::ShowInvitedWeddingUserListControlListDlg ( bool bEnable 
 				if ( NULL != g_pData->GetRelationshipManager() &&
 					 NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 				{
-					CKTDGUIComboBox * pComboBox = static_cast<CKTDGUIComboBox*> ( m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" ) );
 
 					m_pDLGInviteWeddingUserList->OpenScriptFile(L"DLG_UI_Invite_Wedding_ControlList.lua");
 					for(int i=0; i<(int) _CONST_UI_RELATIONSHIP_::g_iMaxInviteUserViewCount; ++i)
@@ -973,7 +968,6 @@ bool CX2UIRelationship::ShowInvitedWeddingUserListControlListDlg ( bool bEnable 
 						pCheckBox->SetChecked( false );
 
 						int iPossibleInviteMany = GetMaxWeddingInviteNumber();
-						CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 						wstringstream wstrUserMany;
 						wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() )  << L" / " << iPossibleInviteMany;
 						pStatic_Many->SetString( 0, wstrUserMany.str().c_str() );
@@ -1157,8 +1151,6 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 					{
 						m_vecInvitedWeddingUserList.clear();
 
-						CKTDGUIStatic * pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
-						CKTDGUIComboBox * pComboBox = (CKTDGUIComboBox*)m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" );
 
 						int iFixedValue = 0;
 						m_pDLGInviteWeddingUserList->OpenScriptFile(L"DLG_UI_Invite_Wedding_ControlList.lua");
@@ -1175,11 +1167,9 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 
 							StringCchPrintf(wFriendID, 256, L"Map_Static_%d", i);
 
-							CKTDGUIStatic *pStatic = (CKTDGUIStatic*)m_pDLGInviteWeddingUserList->GetControl( wFriendID );
 
 							StringCchPrintf(wFriendID, 256, L"Map_Button_%d", i);
 
-							CKTDGUIButton *pButton = (CKTDGUIButton*)m_pDLGInviteWeddingUserList->GetControl( wFriendID );
 
 							StringCchPrintf(wFriendID, 256, L"Map_CheckBox_%d", i);
 							CKTDGUICheckBox *pCheckBox = (CKTDGUICheckBox *)m_pDLGInviteWeddingUserList->GetControl( wFriendID );
@@ -1208,7 +1198,6 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 				if ( NULL != g_pData->GetRelationshipManager() &&
 					NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 				{
-					CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 					CKTDGUIStatic * pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
 					CKTDGUIStatic * pStatic_ManyUserList = (CKTDGUIStatic*)m_pDLGInviteWeddingUserList->GetControl( L"InvitingNumber" );
 
@@ -1409,7 +1398,6 @@ bool CX2UIRelationship::ShowInviteWeddingDlg ( bool bEnable )
 		if ( NULL != g_pData->GetRelationshipManager() &&
 			 NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 		{
-			CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 			wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() ) << L" / " << GetMaxWeddingInviteNumber();
 		}
 
@@ -1509,7 +1497,6 @@ void CX2UIRelationship::AddInvitingUserInfo ( InviteWeddingUserInfo UserInfo_, R
 		if ( it == m_vecInvitedWeddingUserList.end()  )
 		{
 			m_vecInvitedWeddingUserList.push_back( UserInfo_ );
-			CKTDGUIComboBox * pComboBox = (CKTDGUIComboBox*)m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" );
 
 			if ( eType_ == RIT_NICKNAME )
 			{
@@ -1517,7 +1504,6 @@ void CX2UIRelationship::AddInvitingUserInfo ( InviteWeddingUserInfo UserInfo_, R
 					NULL != g_pData->GetRelationshipManager()->GetMyRelationshipInfo() )
 				{
 					CKTDGUIStatic * pStatic_Many = (CKTDGUIStatic*)m_pDLGInviteWedding->GetControl( L"g_pStatic_RemainingMany" );
-					CX2RelationshipManager::RelationshipInfo * pRelationshipInfo = g_pData->GetRelationshipManager()->GetMyRelationshipInfo();
 					int iPossibleInviteMany = GetMaxWeddingInviteNumber();
 					wstringstream wstrUserMany;
 					wstrUserMany << static_cast<int> ( m_vecInvitedWeddingUserList.size() )  << L" / " << iPossibleInviteMany;

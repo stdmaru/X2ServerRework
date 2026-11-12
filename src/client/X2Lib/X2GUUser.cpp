@@ -4459,7 +4459,7 @@ void CX2GUUser::SetEquippedSkillLevelCommon( const CX2Unit::UnitData& kUnitData_
 
 
 
-		const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
+		[[maybe_unused]] const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
 
 		UserUnitStateData& normalStateData = m_StateList[ normalStateID ];
 		normalStateData.m_SPLevel = pSkillSlotData->m_iSkillLevel + pSkillSlotData->m_iSkillLevelPlus;
@@ -5772,7 +5772,6 @@ bool CX2GUUser::StateChange( int state, int subState, bool bDirectChange /* = fa
 	if( bDirectChange == true )
 	{
 		m_LuaManager.EndTable();
-		bool bTableOpen = false;
 
 		//m_FrameDataFuture.syncData		= m_FrameDataNow.syncData;
 		//m_FrameDataFuture.unitCondition = m_FrameDataNow.unitCondition;
@@ -6595,7 +6594,6 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 
 
 
-		float fPercentMPUp = 0.0f;
 		float fMPUp = 0.0f;
 		//��Ʈ�����ۿ����� ��ų �ö󰡴� �༮�� �ִ��� �˻��غ���.
 		if( false == pDamageData->m_bNoDamage )
@@ -7155,7 +7153,6 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 
 			}
 
-			float fOldHP = GetNowHp();
 
 //#ifdef PVP_BOSS_COMBAT_TEST
 //
@@ -7431,7 +7428,6 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				const CX2Unit::UnitData* pUnitData = &GetUnit()->GetUnitData();
 
-				int iSkillLevel = pUnitData->m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SGM_ADVANCED_KNIGHT_MASTERY, true );
 				const CX2SkillTree::SkillTemplet* pSkillTempletAdvancedKnightMastery = pUnitData->m_UserSkillTree.GetUserSkillTemplet( CX2SkillTree::SI_P_SGM_ADVANCED_KNIGHT_MASTERY );
 
 				if ( NULL != pSkillTempletAdvancedKnightMastery )
@@ -10630,7 +10626,6 @@ void CX2GUUser::CommonStateStartFuture()
 			m_LuaManager.EndTable();
 			break;
 		}
-		float fDummy = 0.f;
 		LUA_GET_VALUE( m_LuaManager, 1, m_fEventTime[index].keyInputStart, 0.f );
 		LUA_GET_VALUE( m_LuaManager, 2, m_fEventTime[index].keyInputEnd, 9999.f );
 		LUA_GET_VALUE( m_LuaManager, 3, m_fEventTime[index].stateChange, 9999.f );
@@ -11975,7 +11970,6 @@ void CX2GUUser::CommonFrameMove()
 
 	EmotionFrameMove();
 
-	bool bSuperArmor = m_bSocketSuperArmor || m_bSuperArmorByItem;
 	if( m_fSocketSuperArmor <= 0.f )
 		m_bSocketSuperArmor = false;
 	if( m_fSuperArmorByItem <= 0.f )
@@ -12160,7 +12154,6 @@ void CX2GUUser::CommonFrameMove()
                     pCX2Eqip->GetItem()->GetItemTemplet() != NULL
                     )
 				{
-					CX2Unit::EQIP_POSITION Epos = pCX2Eqip->GetItem()->GetItemTemplet()->GetEqipPosition();
 					bool bFashion = pCX2Eqip->GetItem()->GetItemTemplet()->GetFashion();
 					if( bFashion == true )
 					{
@@ -12548,7 +12541,6 @@ void CX2GUUser::CommonFrameMove()
 
 	if( m_ExtraDamagePack.m_EnchantPoison.m_fTime > 0.0f && GetNowHp() > 0.0f )
 	{
-		float fBeforeHP = GetNowHp();
 
 		if ( m_ExtraDamagePack.m_EnchantPoison.m_fElapsedTimeToEffectDamage >= 1.0f )
 		{
@@ -12823,7 +12815,6 @@ void CX2GUUser::CommonFrameMove()
 	/// �� ��� �������� ------------------------------------------------------------------------------------------------------
 	if( m_ExtraDamagePack.m_EnchantBlaze.m_fTime > 0.0f && GetNowHp() > 0.0f )
 	{
-		float fBeforeHP = GetNowHp();
 		//m_GageManager.GetHPGage()->fNow -= m_ExtraDamagePack.m_Fire.m_DamagePerSec * m_fElapsedTime;
 		if ( m_ExtraDamagePack.m_EnchantBlaze.m_fElapsedTimeToEffectDamage >= 1.0f )
 		{
@@ -17181,14 +17172,12 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 
 
 	int iWidthUnitName = 0;
-	int iFinalLeft = 0;
 	int iFinalTop = 0;
 
 	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos(GetPos());
 
 	iWidthUnitName = g_pX2Game->GetFontForUnitName()->GetWidth(GetUnit()->GetNickName());
 
-	iFinalLeft = (int) finalPos.x + (iWidthUnitName / 2);
 	iFinalTop = (int) finalPos.y;
 
 
@@ -17957,14 +17946,13 @@ void CX2GUUser::ActiveSkillShow( D3DXVECTOR3 /*bonePos*/, const WCHAR* pBackFace
 	if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
 		return;
 
-	CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
 	if( bOnlyLight == false )
 	{
-		pSeq = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"FocusLine", D3DXVECTOR3(0,0,0) );
+		g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"FocusLine", D3DXVECTOR3(0,0,0) );
 		if( GetIsRight() == true )
 		{
-			pSeq = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine", D3DXVECTOR3(0,0,0) );
+			g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine", D3DXVECTOR3(0,0,0) );
 			CKTDGParticleSystem::CParticleEventSequence* pPart = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"CutIn_Right", 0,0,0 );
 			if( pPart != NULL )
 			{
@@ -18004,7 +17992,7 @@ out:
 		}
 		else
 		{
-			pSeq = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine_Left", D3DXVECTOR3(0,0,0) );
+			g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"OutLine_Left", D3DXVECTOR3(0,0,0) );
 			CKTDGParticleSystem::CParticleEventSequence* pPart = g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"CutIn_Left", 0,0,0 );
 			if( pPart != NULL )
 			{
@@ -18283,7 +18271,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 	// 2010.01.13, dmlee - �ɼ��� ���� return �ϴ� �Ϳ���, �ɼ��߿��� �ְ����� return �ϴ� ������ ���� - ������
 	float fMaxDamageUp = 0.f;
 
-	float fDamageUp = 0.f;
 
 
 	// fix!! ������ ���� �����̳� ������ ���� ���Ͽ� ���� �κ��� �ϴ� ��������. ���߿� �ʿ��ϸ� �߰��ؾ� ��
@@ -18302,7 +18289,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && ( g_pX2Game->GetGameType() == CX2Game::GT_DUNGEON || g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD ) )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 					{
@@ -18315,7 +18301,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && g_pX2Game->GetGameType() == CX2Game::GT_PVP )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 					{
@@ -18326,7 +18311,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			}
 			else
 			{
-				fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 				if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 				{
@@ -18345,7 +18329,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && ( g_pX2Game->GetGameType() == CX2Game::GT_DUNGEON || g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD ) )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 					{
@@ -18358,7 +18341,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			{
 				if ( g_pX2Game != NULL && g_pX2Game->GetGameType() == CX2Game::GT_PVP )
 				{
-					fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 
 					if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
@@ -18370,7 +18352,6 @@ float CX2GUUser::GetReducedDamagePercentByMonsterAttack( int monsterID )
 			}
 			else
 			{
-				fDamageUp += pSocketData->m_fDamageUpByAMADS;
 
 				if( pSocketData->m_fDamageUpByAMADS > fMaxDamageUp )
 				{
@@ -26763,7 +26744,6 @@ void CX2GUUser::RidingDashEndStart()
 
 void CX2GUUser::RidingDashEndEventProcess()
 {
-	const float TRIGGER_TIME_FACTOR_DASH_ATTACK = 0.3f;
 
 	if( false == IsOnSomethingFuture() )
 	{
@@ -28253,12 +28233,10 @@ void CX2GUUser::ForceDownAndDetonationProcess()
 			CX2SkillTree::SKILL_ID eSkillID = CX2SkillTree::SI_NONE;
 			LUA_GET_VALUE_ENUM( luaManager_, "BUFF_FACTOR_RELATIVE_SKILL_ID", eSkillID,	CX2SkillTree::SKILL_ID,	CX2SkillTree::SI_INVALID );
 
-			bool bIsNowStateSkill = false;
 			// ������Ʈ���� ������ ��ų�� ���ٸ� ���� ������Ʈ ��ų ���
 			if( CX2SkillTree::SI_INVALID == eSkillID )
 			{
 				eSkillID = GetNowStateSkillID();
-				bIsNowStateSkill = true;
 			}
 
 			// ���� ������Ʈ or ������Ʈ���� ������ ��ų�� �ִٸ�

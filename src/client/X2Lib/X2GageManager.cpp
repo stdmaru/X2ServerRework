@@ -1747,19 +1747,14 @@ void CX2OldGageManager::OnFrameRender()
 		{
 			//-- MP
 			ASSERT( GetMPGage()->fMax > 0.f );
-			float fNow = 0.f;
 			if( 0.f != GetMPGage()->fMax )
 			{
-				fNow = (400.0f * GetMPGage()->fNow) / GetMPGage()->fMax;
 			}
 
-			float	fChargeNum = 0.0f;
-			float	fGap = 0.0f;
 
 			if( GetMPChargeGage()->fMax == 0.0f )
 				GetMPChargeGage()->fMax = GetMPGage()->fNow;
 
-			float fCharge = ( (fNow - fGap) * GetMPChargeGage()->fNow ) / GetMPChargeGage()->fMax;
 
 			//-- Charge
 		}
@@ -2185,7 +2180,6 @@ void CX2OldGageManager::UIFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 
 					D3DXVECTOR2 dialogPos;
 
-					const int widthForArcadeMode = 63;
 
 					if ( bObserver == true )
 					{
@@ -2499,7 +2493,6 @@ void CX2OldGageManager::UIFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 	}
 	else if( m_pGameUnit->GetGameUnitType() == CX2GameUnit::GUT_NPC )
  	{
-		CX2GUNPC* pNPC = (CX2GUNPC*) m_pGameUnit;
 
 
 

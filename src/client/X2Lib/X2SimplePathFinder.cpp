@@ -60,7 +60,6 @@ void CX2SimplePathFinder::FollowTargetPath( /*float fElapsedTime,*/ const D3DXVE
     if ( pFinalDestLineData != NULL )
         pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
-	D3DXVECTOR3 vFinalDestDir = vFinalDestPos - vCurrPos;
 
 	if( pFinalDestLineData != NULL )
 	{
@@ -530,7 +529,7 @@ void CX2SimplePathFinder::EscapeTargetPath( /*float fElapsedTime,*/ const D3DXVE
         pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
 	D3DXVECTOR3 vFinalDestDir	= vFinalDestPos - vCurrPos;
-	float fFinalDestDist		= D3DXVec3Length( &vFinalDestDir );
+	[[maybe_unused]] float fFinalDestDist		= D3DXVec3Length( &vFinalDestDir );
 
 	switch( m_MoveState )
 	{
@@ -564,7 +563,7 @@ void CX2SimplePathFinder::EscapeTargetPath( /*float fElapsedTime,*/ const D3DXVE
 			D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 			D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-			float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+			[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 			float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 			if( fIsRight > 0.f )
 				bTargetOnRight = true;
@@ -696,7 +695,6 @@ void CX2SimplePathFinder::FollowTargetPathFly( /*float fElapsedTime,*/ const D3D
 	KTDXPROFILE();
 
 	//const float MAGIC_COLLISION_BOUND = LINE_RADIUS * 1.5f;	// 라인 끝에 도착했는지 체크할 때 사용되는 범위
-	const float MAGIC_COLLISION_BOUND = fLineEndDetectRange;	// 라인 끝에 도착했는지 체크할 때 사용되는 범위
 
 	const CKTDGLineMap::LineData* pFinalDestLineData = pLineMap->GetLineData(iFinalDestLineDataIndex);
     CKTDGLineMap::LineGroupID   pFinalDestLineGroup;
@@ -720,7 +718,7 @@ void CX2SimplePathFinder::FollowTargetPathFly( /*float fElapsedTime,*/ const D3D
 	}
 
 	D3DXVECTOR3 vFinalDestDir = vFinalDestPos - vCurrPos;
-	float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
+	[[maybe_unused]] float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
 
 	D3DXVECTOR3 vFinalDestLandDir = vFinalDestDir;
 	vFinalDestLandDir.y = 0.f;
@@ -756,17 +754,15 @@ void CX2SimplePathFinder::FollowTargetPathFly( /*float fElapsedTime,*/ const D3D
 
             m_pCurrLineGroup = pCurrLineData->m_lineGroupID;
 
-			int iLandLineIndex = -1;
-			D3DXVECTOR3 vLandPos = pLineMap->GetLandPosition(vCurrPos, 2000.f, &iLandLineIndex);
 
 			D3DXVECTOR3 vFinalDestDir = vFinalDestPos - vCurrPos;
-			float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
+			[[maybe_unused]] float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
 			D3DXVec3Normalize( &vFinalDestDir, &vFinalDestDir );
 			const D3DXVECTOR3 vUpVec(0,1,0);
 			D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 			D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-			float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+			[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 			float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 			if( fIsRight > 0.f )
 				bTargetOnRight = true;
@@ -1124,7 +1120,7 @@ void CX2SimplePathFinder::SimpleFollowTargetPath( float /*fElapsedTime*/, D3DXVE
         pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
 	D3DXVECTOR3 vFinalDestDir = vFinalDestPos - vCurrPos;
-	float fFinalDestDist = D3DXVec3LengthSq( &vFinalDestDir );
+	[[maybe_unused]] float fFinalDestDist = D3DXVec3LengthSq( &vFinalDestDir );
 
 
 	switch( m_MoveState )
@@ -1552,7 +1548,6 @@ void CX2SimplePathFinder::SimpleFollowTargetPathFly( float /*fElapsedTime*/, D3D
 	KTDXPROFILE();
 
 	//const float MAGIC_COLLISION_BOUND = LINE_RADIUS * 1.5f;	// 라인 끝에 도착했는지 체크할 때 사용되는 범위
-	const float MAGIC_COLLISION_BOUND = fLineEndDetectRange;	// 라인 끝에 도착했는지 체크할 때 사용되는 범위
 
 	const CKTDGLineMap::LineData* pFinalDestLineData = pLineMap->GetLineData(iFinalDestLineDataIndex);
     CKTDGLineMap::LineGroupID   pFinalDestLineGroup;
@@ -1595,8 +1590,6 @@ void CX2SimplePathFinder::SimpleFollowTargetPathFly( float /*fElapsedTime*/, D3D
 
             m_pCurrLineGroup = pCurrLineData->m_lineGroupID;
 
-			int iLandLineIndex = -1;
-			D3DXVECTOR3 vLandPos = pLineMap->GetLandPosition(vCurrPos, 2000.f, &iLandLineIndex);
 
 			D3DXVECTOR3 vFinalDestDir = vFinalDestPos - vCurrPos;
 			D3DXVec3Normalize( &vFinalDestDir, &vFinalDestDir );
@@ -1604,7 +1597,7 @@ void CX2SimplePathFinder::SimpleFollowTargetPathFly( float /*fElapsedTime*/, D3D
 			D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 			D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-			float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+			[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 			float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 			if( fIsRight > 0.f )
 				bTargetOnRight = true;

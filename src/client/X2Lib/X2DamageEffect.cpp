@@ -4188,7 +4188,7 @@ void CX2DamageEffect::CEffect::CreateHitDamageEffect( vector<DamageEffectData*>&
 
 		if( m_pManager != NULL )
 		{
-			float fLandPos = min( m_fLandPos, vPosition.y );
+			[[maybe_unused]] float fLandPos = min( m_fLandPos, vPosition.y );
 
 			float fForceDownRate = 1.f;
 			if(true == m_bInheritForceDownRate)
@@ -4809,7 +4809,6 @@ void CX2DamageEffect::CEffect::FollowLine()
 		{
 			if(m_bFollowOnLine)
 			{
-				D3DXVECTOR3 vPos = m_BeforePos;
 				m_BeforePos.y = pMeshInst->GetPos().y;
 				pMeshInst->SetPos( m_BeforePos );
 				if( bUpdateLandPos == true && pMeshInst->GetToggleRotae() == false )
@@ -4990,7 +4989,6 @@ void CX2DamageEffect::CEffect::VectorLockOn( const D3DXVECTOR3& targetPos )
 		}
 	}
 
-	D3DXVECTOR3 axis;	// 회전축
 	D3DXVECTOR3 relVec = targetPos - pMeshInst->GetPos();	// 목표와의 상대적 벡터
 	D3DXVec3Normalize( &relVec, &relVec );
 

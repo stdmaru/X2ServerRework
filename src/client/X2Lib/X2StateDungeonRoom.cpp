@@ -660,7 +660,7 @@ bool CX2StateDungeonRoom::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 		return true;
 
 
-	bool bRetVal = false;
+	[[maybe_unused]] bool bRetVal = false;
 	switch( wParam )
 	{
 	case EGS_JOIN_ROOM_NOT:
@@ -1965,11 +1965,9 @@ void CX2StateDungeonRoom::UISetting()
 //         ( int )m_pCX2DungeonRoom->GetRecommendLevel( ( int )difficulty ).y ) );
 	pStaticRecommendLevel->GetString( 0 )->color = diffColor;
 
-	int requireLevel = 0;
 	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
 	if ( pDungeonData != NULL )
 	{
-		requireLevel = pDungeonData->m_MinLevel;
 	}
 
 	//wsprintf( buff, L"제한레벨 : %d", requireLevel );
@@ -2183,8 +2181,7 @@ void CX2StateDungeonRoom::UISetting()
 
 
 
-	CKTDGUIStatic* pStaticDungeon_Room_Map = (CKTDGUIStatic*)m_pDLGDungeonRoomBack->GetControl( L"StaticDungeon_Room_Map" );
-	CKTDGUIControl::UITextureData* pTexture = new CKTDGUIControl::UITextureData();
+	[[maybe_unused]] CKTDGUIControl::UITextureData* pTexture = new CKTDGUIControl::UITextureData();
 
 // 	pTexture->pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( m_pCX2DungeonRoom->GetMapTextureName() );
 // 	if( pTexture->pTexture == NULL )
@@ -2375,7 +2372,6 @@ void CX2StateDungeonRoom::SetUIOXButton()
 
 void CX2StateDungeonRoom::UIFrameMove()
 {
-	SEnum::DUNGEON_ID dungeonID = g_pData->GetDungeonRoom()->GetDungeonID();
 
 	////방 번호, 이름 찍기
 	//CKTDGUIControl::UIStringData* pStringData = NULL;
@@ -2746,7 +2742,7 @@ void CX2StateDungeonRoom::UIFrameMove()
 //         ( int )m_pCX2DungeonRoom->GetRecommendLevel( ( int )difficulty ).y ) );
 	pStaticRecommendLevel->GetString( 0 )->color = diffColor;
 
-	int requireLevel = 0;
+	[[maybe_unused]] int requireLevel = 0;
 	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
 	if ( pDungeonData != NULL )
 		requireLevel = pDungeonData->m_MinLevel;

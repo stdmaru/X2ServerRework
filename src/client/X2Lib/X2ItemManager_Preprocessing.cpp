@@ -42,7 +42,6 @@ bool    CX2ItemManager::KProxy::AddItemTemplet_LUA()
 bool    CX2ItemManager::KProxy::AddSetItemData_LUA()
 {
     DWORD dwSetID = 0;
-	bool bCheckNew = false;
 
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
 
@@ -83,7 +82,6 @@ CX2ItemManager::KProxy2::KProxy2( const std::set<DWORD>& setItemIDs, const std::
     }
     {
         CX2Item::KItemFormatTemplet kDummy;
-        DWORD dwDummy = 0;
         for( DWORD dwItem = 0; dwItem != dwNumItem; ++dwItem )
         {
             m_kFileSerializer.AppendData( sizeof(CX2Item::KItemFormatTemplet), &kDummy );
@@ -95,7 +93,6 @@ CX2ItemManager::KProxy2::KProxy2( const std::set<DWORD>& setItemIDs, const std::
     }
     {
         CX2Item::KItemFormatSetItemData kDummy2;
-        DWORD dwDummy2 = 0;
         for( DWORD dwSetID = 0; dwSetID != dwNumSetIDs; ++dwSetID )
         {
             m_kFileSerializer.AppendData( sizeof(CX2Item::KItemFormatSetItemData), &kDummy2 );
@@ -193,7 +190,6 @@ bool    CX2ItemManager::KProxy2::AddSetItemData_LUA()
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
 
     char aszError[MAX_PATH];
-    bool    bCheckNew = false;
     DWORD   dwSetID = 0;
 	LUA_GET_VALUE(	luaManager, "m_SetID",						dwSetID,					0	);
 	if ( dwSetID == 0 )
@@ -249,7 +245,6 @@ bool    CX2ItemManager::KProxy2::AddSetItemData_LUA()
         }
         else
         {
-            bCheckNew = true;
         }
     }
     KSetItemDataMap::iterator iter = m_mapSetItemDataMap.find( dwSetID );

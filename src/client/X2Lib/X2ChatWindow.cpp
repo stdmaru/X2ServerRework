@@ -72,7 +72,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 
 		D3DXCOLOR fontColor						= D3DXCOLOR(1,1,1,1);
 		D3DXCOLOR fontOutLintColor				= D3DXCOLOR(1,1,1,1);
-		CKTDGFontManager::FONT_STYLE fontStyle	= CKTDGFontManager::FS_NONE;
 
 		//wstring ChatDataMessage;
 
@@ -83,7 +82,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 				fontColor			= D3DXCOLOR(1,1,1,1);
 				fontOutLintColor	= D3DXCOLOR(0,0,0,1);
 
-				fontStyle			= CKTDGFontManager::FS_SHELL;
 			}
 			break;
 		case CT_KILL:
@@ -91,7 +89,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 				fontColor			= D3DXCOLOR(0.8f,0,0,1);
 				fontOutLintColor	= D3DXCOLOR(0,0,0,1);
 
-				fontStyle			= CKTDGFontManager::FS_SHELL;
 			}
 			break;
 
@@ -100,7 +97,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 				fontColor			= D3DXCOLOR(0,1,0,1);
 				fontOutLintColor	= D3DXCOLOR(0,0,0,1);
 
-				fontStyle			= CKTDGFontManager::FS_SHELL;
 			}
 			break;
 
@@ -109,7 +105,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 				fontColor			= D3DXCOLOR(0.9f,0.9f,0.5f,1);
 				fontOutLintColor	= D3DXCOLOR(0,0,0,1);
 
-				fontStyle			= CKTDGFontManager::FS_SHELL;
 			}
 			break;
 
@@ -118,7 +113,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 				fontColor			= D3DXCOLOR(0.3f,0.7f,0.8f,1);
 				fontOutLintColor	= D3DXCOLOR(0,0,0,1);
 
-				fontStyle			= CKTDGFontManager::FS_SHELL;
 			}
 			break;
 
@@ -127,7 +121,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 				fontColor			= D3DXCOLOR(1,1,0,1);
 				fontOutLintColor	= D3DXCOLOR(0,0,0,1);
 
-				fontStyle			= CKTDGFontManager::FS_SHELL;
 			}
 			break;
 
@@ -136,7 +129,6 @@ HRESULT CX2ChatWindow::OnFrameRender()
 				fontColor			= pChatData->textColor;
 				fontOutLintColor	= D3DXCOLOR(0,0,0,1);
 
-				fontStyle			= CKTDGFontManager::FS_SHELL;
 			} break;
 		default:
 			break;

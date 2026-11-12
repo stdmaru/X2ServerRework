@@ -1482,9 +1482,7 @@ void CX2StatePVPGame::RankBoxFrameMove( double /*fTime*/, float /*fElapsedTime*/
 
 
 		// 화면에 출력, // team match, team death match이면 team으로 먼저 sorting하고, 그 다음 kill 수로 sorting
-		int iPrevOneKillCount = -1;
-		int iRank = 0, iCount = 0;
-		WCHAR szTemp[32] = L"";
+		[[maybe_unused]] int iRank = 0, iCount = 0;
 		for( UINT i=0; i<vecSlotSorted.size(); i++ )
 		{
 			KillData& killData = vecSlotSorted[i];

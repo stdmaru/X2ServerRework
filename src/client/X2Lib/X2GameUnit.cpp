@@ -571,7 +571,6 @@ void CX2GameUnit::ReInit( bool /*bUseTeamPos*/, int /*startPosIndex*/ )
 
 	if( m_LuaManager.BeginTable( "INIT_COMPONENT" ) == true )
 	{
-		int iBuffer = 0;
 		float fBuffer = 0.0f;
 		//LUA_GET_VALUE( m_LuaManager, L"HYPER_MODE_COUNT",		iBuffer,		1		);
 		//m_FrameDataFuture.syncData.m_HyperModeCount = iBuffer;
@@ -1762,7 +1761,6 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 			if ( CX2GameUnit::GUT_USER == pAttacker->GetGameUnitType() )
 			{
 				CX2GUUser* pUser = (CX2GUUser*) pAttacker;
-				CX2Unit* pUnit = pUser->GetUnit();
 				if( 0.f != pUser->GetSocketData().m_Stat.m_ExtraStat.m_fIncreaseAtkPhysicRate )
 					fPhysicAttack += fPhysicAttack * pUser->GetSocketData().m_Stat.m_ExtraStat.m_fIncreaseAtkPhysicRate;
 
@@ -1772,8 +1770,6 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 
 			if ( CX2GameUnit::GUT_USER == GetGameUnitType() )
 			{
-				CX2GUUser* pUser = (CX2GUUser*) this;
-				CX2Unit* pUnit = pUser->GetUnit();
 
 				if( 0.f != m_SocketData.m_Stat.m_ExtraStat.m_fIncreaseDefPhysicRate )
 					fPhysicDefence += fPhysicDefence * m_SocketData.m_Stat.m_ExtraStat.m_fIncreaseDefPhysicRate;
@@ -2726,7 +2722,6 @@ void CX2GameUnit::InitComponent()
             SetShadow( m_ShadowFileName.c_str(), m_fShadowSize );
 
 
-		int iBuffer = 0;
 		float fBuffer = 0.0f;
 		//LUA_GET_VALUE( m_LuaManager, L"HYPER_MODE_COUNT", iBuffer, 1 );
 		//m_FrameDataFuture.syncData.m_HyperModeCount = iBuffer;
@@ -7535,7 +7530,6 @@ void CX2GameUnit::Weapon::CommonFrameMoveForUser( double fTime, float fElapsedTi
 	// 무기 after image 처리
 	for( int i=0; i<CX2Item::MAX_MODEL_COUNT_A_ITEM; ++i )
 	{
-		const CX2GUUser::FrameData& kFrameDataNow = pUser->GetNowFrameData();
 
 		if( NULL != m_pAfterImage[i] )
 		{
@@ -7676,7 +7670,6 @@ void CX2GameUnit::Weapon::CommonFrameMoveForNPC( double fTime, float fElapsedTim
 
 
 	// fix!! npc무기 하나당 메시 하나로만 처리되도록 하드코딩
-	const CX2GUNPC::NPCFrameData& frameData = pNPC->GetNPCFrameData();
 	if( NULL != m_pAfterImage[0] )
 	{
         const D3DXVECTOR2&  v2AfterImage = pNPC->GetAfterImageTime();
@@ -12165,13 +12158,13 @@ bool CX2GameUnit::IsRightTarget(D3DXVECTOR3 vPos)
 		return false;
 
 	D3DXVECTOR3 vFinalDestDir = vPos - GetPos();
-	float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
+	[[maybe_unused]] float fFinalDestDist = D3DXVec3Length( &vFinalDestDir );
 	D3DXVec3Normalize( &vFinalDestDir, &vFinalDestDir );
 	const D3DXVECTOR3 vUpVec(0,1,0);
 	D3DXVECTOR3 vRightVec = pCurrLineData->dirVector;
 	D3DXVec3Normalize( &vRightVec, &vRightVec );
 
-	float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
+	[[maybe_unused]] float fIsUp    = D3DXVec3Dot( &vUpVec,    &vFinalDestDir );
 	float fIsRight = D3DXVec3Dot( &vRightVec, &vFinalDestDir );
 	if( fIsRight > 0.f )
 		bRight = true;

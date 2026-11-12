@@ -1221,7 +1221,6 @@ void CX2UIShop::ResetBuySlotList( int nPage )
 					UINT uMaxStringLength = wstrItemName.length();
 					int iStringSize = 0;
 
-					bool bFindPos = false;
 					for( UINT i=uSlideStartPos; i<uMaxStringLength; ++i )
 					{
 						WCHAR wChar = wstrItemName[i];
@@ -1261,7 +1260,6 @@ void CX2UIShop::ResetBuySlotList( int nPage )
 					UINT uMaxStringLength = wstrItemName.length();
 					int iStringSize = 0;
 
-					bool bFindPos = false;
 					for( UINT i=uSlideStartPos; i<uMaxStringLength; ++i )
 					{
 						WCHAR wChar = wstrItemName[i];
@@ -1359,8 +1357,6 @@ void CX2UIShop::SellItem( UidType sellItemUID, D3DXVECTOR2 pos )
 
 void CX2UIShop::OpenSellItemConfirmDLG()
 {
-	int popUpSizeX = 425;
-	int popUpSizeY = 147;
 
 	CX2Item* pItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItem( m_SellItemUID );
 	if ( pItem != NULL )
@@ -1398,7 +1394,6 @@ void CX2UIShop::OpenItemSellNumDLG( D3DXVECTOR2 /*pos*/ )
 // 	m_pDLGSellItemNum->SetPos( pos );
 	m_pDLGSellItemNum->SetPos( g_pMain->GetWindowPos( D3DXVECTOR2(1024-865, 768-633), D3DXVECTOR2(75,20)) );
 
-	CKTDGUIStatic* pStaticPrice = (CKTDGUIStatic*) m_pDLGSellItemNum->GetControl( L"Static_Price" );
 
 	CKTDGUIButton* pButtonOK = (CKTDGUIButton*) m_pDLGSellItemNum->GetControl( L"Button_OK" );
 	CKTDGUIButton* pButtonCancle = (CKTDGUIButton*) m_pDLGSellItemNum->GetControl( L"Button_Cancle" );
@@ -2037,7 +2032,6 @@ void CX2UIShop::OpenItemBuyNumDLG( D3DXVECTOR2 /*pos*/ )
 // 	m_pDLGBuyItemNum->SetPos( pos );
 	m_pDLGBuyItemNum->SetPos( g_pMain->GetWindowPos( D3DXVECTOR2(1024-865, 768-633), D3DXVECTOR2(75,20)) );
 
-	CKTDGUIStatic* pStaticPrice = (CKTDGUIStatic*) m_pDLGBuyItemNum->GetControl( L"Static_Price" );
 
 	CKTDGUIButton* pButtonOK = (CKTDGUIButton*) m_pDLGBuyItemNum->GetControl( L"Button_OK" );
 	CKTDGUIButton* pButtonCancle = (CKTDGUIButton*) m_pDLGBuyItemNum->GetControl( L"Button_Cancle" );
@@ -2189,14 +2183,11 @@ void CX2UIShop::OpenBuyItemConfirmDLG()
         m_pDLGBuyItemConfirm.Invalidate();
     }
 
-	int popUpSizeX = 425;
-	int popUpSizeY = 147;
 
 	if ( m_BuyItemSlotNum == -1 )
 		return;
 
 	BuySlot* pSlotInfo = m_vecBuySlot[m_BuyItemSlotNum];
-	int price = pSlotInfo->m_pItemTemplet->GetPrice();
 
 	if ( pSlotInfo != NULL )
 	{
@@ -2411,7 +2402,6 @@ void CX2UIShop::EnchantItem( UidType EnchantItemUID, D3DXVECTOR2 pos )
 
 	//wstring normalButtonDesc	= L"";
 	//wstring newButtonDesc		= L"";
-	WCHAR wszEnchantED[256]		= L"";
 
 	int normalStoneCount	= 0;
 	int newStoneCount		= 0;

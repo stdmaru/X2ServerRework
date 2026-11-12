@@ -221,7 +221,6 @@ void CX2UIPetInfo::UnitHandling( CX2NPCUnitViewerUI* pViewerUI, CKTDGUIDialogTyp
 			}
 			else
 			{
-				D3DXVECTOR3 rot = pViewerUI->GetMatrix().GetRotate();
 
 
 
@@ -1344,7 +1343,7 @@ void CX2UIPetInfo::UpdatePetList()
 	for(UINT i=0; i<m_vecPetList.size(); ++i)
 	{
 		KPetInfo kPetInfo = m_vecPetList[i];
-		CX2PetManager::PetTemplet *pTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)kPetInfo.m_iPetID );
+		[[maybe_unused]] CX2PetManager::PetTemplet *pTemplet = g_pData->GetPetManager()->GetPetTemplet( (CX2PetManager::PET_UNIT_ID)kPetInfo.m_iPetID );
 
 		char petLv = kPetInfo.m_cEvolutionStep;
 		wstring petName = kPetInfo.m_wstrPetName;

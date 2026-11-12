@@ -10376,11 +10376,9 @@ void CX2GUElsword_SwordMan::ESSI_SI1_ES_WIND_BLADE_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.08f ) )
 	{
-		D3DXVECTOR3 pos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
@@ -10434,11 +10432,9 @@ void CX2GUElsword_SwordMan::ESSI_SI1_ES_WIND_BLADE_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.08f ) )
 	{
-		D3DXVECTOR3 pos = GetPos();
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade01_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade02_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_WindBlade03_Mesh", GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
@@ -10538,8 +10534,7 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_FrameMove()
 	{
 		D3DXVECTOR3 pos = GetPos();
 		pos.y += 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
 		CX2DamageEffect::CEffect *pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		if( pEffect != NULL && GetEqippedSkillMemo( CX2SkillTree::SMI_ELSWORD_MEMO4 ) == true )
 		{
@@ -10556,13 +10551,12 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_FrameMove()
 
 		pos = GetPos() + vec * fScalePos;
 		pos.y = oy + 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 		pos = GetPos() - vec * fScalePos;
 		pos.y = oy + 2.0f;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 	}
 
@@ -10623,8 +10617,7 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_HYPER_FrameMove()
 	{
 		D3DXVECTOR3 pos = GetPos();
 		pos.y += 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh", pos, GetRotateDegree(), GetRotateDegree() );
 		CX2DamageEffect::CEffect *pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_HYPER", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 		if( pEffect != NULL && GetEqippedSkillMemo( CX2SkillTree::SMI_ELSWORD_MEMO4 ) == true )
@@ -10641,14 +10634,13 @@ void CX2GUElsword_SwordMan::ESSI_SI2_ES_RISING_SLASH_HYPER_FrameMove()
 
 		pos = GetPos() + vec * 670.0f;
 		pos.y = oy + 2.0f;
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO_HYPER", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 		pos = GetPos() - vec * 670.0f;
 		pos.y = oy + 2.0f;
-		pMeshInstance  = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"Elsword_MagicKnight_RisingSlash01_Mesh_Memo", pos, GetRotateDegree(), GetRotateDegree() );
 
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RISING_BLADE_MEMO_HYPER", GetPowerRate(), pos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 	}
@@ -10783,7 +10775,6 @@ void CX2GUElsword_SwordMan::ESSI_LEAP_StartFuture()
 
 	m_StartPosToLeap = GetPos();
 
-	D3DXVECTOR3 objectPos = pGUNPC->GetPos();
 
 	D3DXVECTOR3 tempPos = pGUNPC->GetPos() - GetPos();
 	//ĳ���� ��ġ�� ������ġ��� ���� ���Ǿ��� �ٶ󺼱�?
@@ -10887,7 +10878,6 @@ void CX2GUElsword_SwordMan::ESSI_LEAP_FrameMoveFuture()
 
 	D3DXMatrixIdentity( &matTrans );
 	D3DXMatrixRotationAxis( &matTrans, &tempDirVec, D3DXToRadian( m_DegreeToLeap ) );
-	D3DXVECTOR4 transPos;
 	D3DXVec3TransformCoord( &vecHeight, &vecHeight, &matTrans );
 
 	m_FrameDataFuture.syncData.position += vecHeight;
@@ -13859,7 +13849,6 @@ void CX2GUElsword_SwordMan::ESSI_SI_SA_ETK_MAELSTORM_RAGE_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.1333f ) )
 	{
-		float fEffectiveTime = 0.f;
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_EIS_MAELSTORM_RAGE );
 		if( NULL != pSkillTemplet )
 		{
@@ -14037,8 +14026,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_SA_ETK_SWORD_FALL_FrameMove()
 		else
 			vEffectPos -= (0.f * GetDirVector() );
 
-        CKTDGXMeshPlayer::CXMeshInstance* pMeshInstance = NULL;
-		pMeshInstance = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"elsword_A_swordFall_M01", vEffectPos, GetRotateDegree(), GetRotateDegree() );
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance( (CKTDGObject*) this,  L"elsword_A_swordFall_M01", vEffectPos, GetRotateDegree(), GetRotateDegree() );
 		m_vSwordFallSheathPos = vEffectPos;
 	}
 
@@ -14694,7 +14682,6 @@ void CX2GUElsword_SwordMan::ESSI_SI_SA_EIS_SWORD_BLASTING_FrameMove()
 	{
 		D3DXVECTOR3 vRotDegree = GetRotateDegree();
 		D3DXVECTOR3 vDirVec = GetDirVector();
-		D3DXVECTOR3 vZVec = GetZVector();
 		vDirVec.y = 0.f;
 
 		D3DXVECTOR3 vPos = GetPos();

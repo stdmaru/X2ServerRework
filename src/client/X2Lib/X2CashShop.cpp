@@ -3710,7 +3710,6 @@ void CX2CashShop::ChangeSubCategory( CKTDGUIRadioButton* pRadioButton )
 vector<int> CX2CashShop::GetHotItemList( vector<int>& vecItemID, int maxItemNum )
 {
 	vector< int > vecHotItemID;
-	int iHotItemCheck = 0;
 	vector< int > vecTempHotCashItem =  g_pData->GetItemManager()->GetHotCashItemList();
 
 	for ( int i = 0; i < (int)vecTempHotCashItem.size(); i++ )
@@ -3948,7 +3947,6 @@ void CX2CashShop::ResetSellCashItemByPreEquip()
 {
 	for ( int iS = 0; iS < (int)m_vecPreEquipItemID.size(); ++iS )
 	{
-		int itemTID = m_vecPreEquipItemID[iS];
 		//CX2Item::ItemTemplet* pItemTemplet = g_pData->GetItemManager()->GetItemTemplet( itemTID );
 
 		for ( int j = 0; j < (int)m_SlotList.size(); j++ )
@@ -6151,7 +6149,7 @@ bool CX2CashShop::BuyItemPopup:: RestCashCheck()
 				}
 			}
 
-			int restCash = 0;
+			[[maybe_unused]] int restCash = 0;
 			switch(GetUseCashType())
 			{
 			case KGlobalCashInfo::GCT_PUBLISHER_ELSWORD_CASH:
@@ -6447,7 +6445,6 @@ void CX2CashShop::CashItemToInvenPopup::GetCheckedPackageInfo( vector< KBillPack
  				//kKBillPackageInfo.m_ulProductNo == kKBillOrderInfo.m_kBillProductInfo.m_iProductNo
 				)
  			{
- 				KBillProductInfo* pKBillProductInfo = g_pData->GetItemManager()->GetCashItemProduct( kKBillPackageInfo.m_ulProductNo );
 
 
  				if ( std::find( m_vecCheckedItem.begin(), m_vecCheckedItem.end(), kKBillPackageInfo.m_iProductID ) != m_vecCheckedItem.end() )
@@ -6587,7 +6584,6 @@ void CX2CashShop::CashItemToInvenPopup::ResetNowPage()
 				//CX2ItemManager::CashItem* pCashItem = g_pData->GetItemManager()->GetCashItem( kKBillOrderInfo.m_kBillProductInfo.m_iProductID );
 				KBillProductInfo* pKBillProductInfo = &kKBillOrderInfo.m_kBillProductInfo;
 
-				int test = m_vecItemID[packageIndex];
 
  				if ( NULL != pKBillProductInfo &&
  					//**OrderNo kKBillPackageInfo.m_ulOrderNo == kKBillOrderInfo.m_ulOrderNo &&
@@ -6698,7 +6694,6 @@ void CX2CashShop::PresentItemPopup::UpdateCash()
 			unsigned long productNo = GetSelectedProductNo();
 			if ( productNo == 0 )
 			{
-				int restCash = 0;
 				switch(GetUseCashType())
 				{
 				case KGlobalCashInfo::GCT_PUBLISHER_ELSWORD_CASH:
@@ -7002,7 +6997,6 @@ void CX2CashShop::MyUniyHandling( double fTime, float fElapsedTime )
 		}
 		else
 		{
-			D3DXVECTOR3 rot = m_pUnitViewerUI->GetMatrix().GetRotate();
 			m_pUnitViewerUI->GetXSkinAnim()->SetApplyMotionOffset( false );
 
 

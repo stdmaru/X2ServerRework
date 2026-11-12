@@ -1361,7 +1361,6 @@ void CX2DungeonSubStage::SubStageData::LoadNPCData( KLuaManager& luaManager )
 				{
 					if( i != iSelectedSubNPCIndex )
 					{
-						NPCData* pNPCData = m_NPCDataList[i];
 						//pNPCData->m_Rate = 0;
 					}
 				}

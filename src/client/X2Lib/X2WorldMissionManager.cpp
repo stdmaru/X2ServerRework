@@ -72,16 +72,8 @@ void CX2WorldMissionManager::RenderMiniMapTexture( CKTDXDeviceRenderTargetTextur
 
 	KTDXPROFILE_BEGIN( "MAP_DRAW" );
 
-	const int MAGIC_X_LEFT = -5869;
-	const int MAGIC_X_RIGHT = 5869;
-	const int MAGIC_Z_UP = 1669;
-	const int MAGIC_Z_DOWN = -5187;
 
-	const int MAGIC_POS_X = 785;
-	const int MAGIC_POS_Y = 1;
 
-	const int MAGIC_WIDTH = 180;
-	const int MAGIC_HEIGHT = 65;
 
 	//지형 변경으로 인한 미니맵 아이콘 이동 경로 수정
 	const float	fIncreaseDegree			   = 1.34f;		//시작 위치 각도 연동
@@ -130,7 +122,6 @@ void CX2WorldMissionManager::RenderMiniMapTexture( CKTDXDeviceRenderTargetTextur
 	CKTDXDeviceTexture* pTextureMyUnit  = g_pKTDXApp->GetDeviceManager()->OpenTexture( L"MiniMap_Char_My.dds" );
 	CKTDXDeviceTexture* pTexturePartyUnit  = g_pKTDXApp->GetDeviceManager()->OpenTexture( L"MiniMap_Char_Party.dds" );
 
-	int MAGIC_PLAYER_WIDTH = 350;
 
 	// 유닛 위치 그리기
 	CX2GUUser* pMyUnit = g_pX2Game->GetMyUnit();

@@ -119,7 +119,6 @@ bool CX2UIDragable::MouseUp( D3DXVECTOR2 mousePos )
 	// 해당 다이얼로그에 슬롯이 있는 경우
 	if ( *m_pSlotBeforeDragging != NULL )
 	{
-		CX2SlotItem* pSlotItem = (CX2SlotItem*) *m_pSlotBeforeDragging;
 
 		// 해당 다이얼로그에 뭔가 드래그 되었다는 신호를 보낸다
 		OnDropAnyItem( mousePos );

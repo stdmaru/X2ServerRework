@@ -1132,7 +1132,6 @@ void CX2MiniMapUI::SetChannelComboBox()
 	// 테스트 용
 	for( const CHANNEL_INFO_IN_MINIMAP& channelInfo : m_vecChannelInfoInMinimap )
 	{
-		int i = channelInfo.m_iChannelID;
 		wstring wstr( channelInfo.m_wstrChannelName );
 	}
 

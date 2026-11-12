@@ -5,7 +5,6 @@
 
 CX2StateStartUp::CX2StateStartUp(void)
 {
-	HRESULT hr = S_OK;
 	g_pKTDXApp->SkipFrame();
 
 

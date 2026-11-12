@@ -435,7 +435,6 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 
 		CKTDGUISlot* pSlot = NULL;
 
-		int slotIndex = -1;
 
 		// �׼� Ű ����
 		for( int i = GAMEACTION_ATTACK_FAST; i < GAMEACTION_END; ++i )

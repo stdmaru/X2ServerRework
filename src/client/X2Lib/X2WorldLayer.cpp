@@ -189,7 +189,6 @@ void    CX2WorldLayer::OnFrameRender_Draw()
 	if( GetShowObject() == false )
 		return;
 
-    float time = m_fElapsedTime;
 
 	if( NULL != m_pLayerTex1 )
 	{

@@ -154,14 +154,11 @@ HRESULT CX2Room::OnFrameMove( double /*fTime*/, float fElapsedTime )
 	{
 		CX2Room::ROOM_TYPE roomType = GetRoomType();
 
-		int otherUserNum = 0;
-		bool bCheckAllReadyExceptMe = true;
-		bool bCheckAllReadyExceptMeAndOpponentToTrade = true;
+		[[maybe_unused]] bool bCheckAllReadyExceptMe = true;
 
 		int bRedTeamNum = 0;
 		int bBlueTeamNum = 0;
 
-		bool bCheckPlayWarning = false;
 
 		for( int i = 0; i < (int)m_SlotDataList.size(); i++ )
 		{
@@ -182,7 +179,6 @@ HRESULT CX2Room::OnFrameMove( double /*fTime*/, float fElapsedTime )
 					if ( pSlotData->m_pUnit != NULL &&
 						pSlotData->m_pUnit->GetUID() != g_pData->GetMyUser()->GetSelectUnit()->GetUID() )
 					{
-						otherUserNum++;
 
 						if ( pSlotData->GetIsHost() == false && pSlotData->GetIsReady() == false )
 						{
@@ -194,7 +190,6 @@ HRESULT CX2Room::OnFrameMove( double /*fTime*/, float fElapsedTime )
 
 						if ( pSlotData->GetIsReady() == false && pSlotData->m_bTrade == false )
 						{
-							bCheckAllReadyExceptMeAndOpponentToTrade = false;
 						}
 					}
 
@@ -213,7 +208,6 @@ HRESULT CX2Room::OnFrameMove( double /*fTime*/, float fElapsedTime )
 			}
 		}
 
-		bool bCheckBalance = true;
 
 		if ( roomType == CX2Room::RT_PVP )
 		{
@@ -223,7 +217,6 @@ HRESULT CX2Room::OnFrameMove( double /*fTime*/, float fElapsedTime )
 			{
 				if ( bRedTeamNum != bBlueTeamNum )
 				{
-					bCheckBalance = false;
 				}
 			}
 		}

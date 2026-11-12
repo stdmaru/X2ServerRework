@@ -291,8 +291,6 @@ HRESULT CX2TalkBoxManagerImp::OnFrameRender()
 	KTDXPROFILE();
 
 	//float boxWidth = 186;
-	float boxBottomHeight = 39;
-	float boxUpperHeight = 13;
 	//float boxCenterHeight = 53;
 
 	KD3DBEGIN()
@@ -312,7 +310,6 @@ HRESULT CX2TalkBoxManagerImp::OnFrameRender()
 	CKTDGStateManager::PushSamplerState( 1, D3DSAMP_ADDRESSV,  D3DTADDRESS_MIRROR );
 
 
-	int incSize = m_FontHeight;
 
 	//{{ robobeg : 2008-10-24
 	//g_pKTDXApp->SetNULLTexture( 0 );
@@ -882,8 +879,6 @@ void CX2TalkBoxManagerImp::SetBalloonTip( DRAWFACE_RHW_VERTEX aFaces[4], int iTy
 	KTDXPROFILE();
 
 
-	const float MAGIC_TEX_BLOCK_WIDTH  = 85.f / 512.f;
-	const float MAGIC_TEX_BLOCK_HEIGHT = 85.f / 512.f;
 
 	const float fCornerWidthScaled  = m_fTalkBoxCornerWidth  * fWidthScale;
 	const float fCornerHeightScaled = m_fTalkBoxCornerHeight * fHeightScale;
@@ -1499,9 +1494,7 @@ void CX2TalkBoxManagerImp::InitTalkBox( TalkBox& talkBox )
 	{
 		const float fCenterWidth  = talkBox.m_vTalkBoxSize.x - m_fMarginLeft - m_fMarginLeft;
 		const float fCenterHeight = talkBox.m_vTalkBoxSize.y - m_fMarginTop - m_fMarginTop;
-		const float fCornerWidth  = m_fMarginLeft;
 		const float fCornerHeight = m_fMarginTop;
-		const float fCornerWidthScaled  = fCornerWidth * talkBox.m_vTalkBoxSizeScale.x;
 		const float fCornerHeightScaled = fCornerHeight * talkBox.m_vTalkBoxSizeScale.y;
 		const float fCenterWidthScaled  = fCenterWidth * talkBox.m_vTalkBoxSizeScale.x;
 		const float fCenterHeightScaled = fCenterHeight * talkBox.m_vTalkBoxSizeScale.y;
@@ -1529,7 +1522,6 @@ void CX2TalkBoxManagerImp::InitTalkBox( TalkBox& talkBox )
 
 void CX2TalkBoxManagerImp::ResetTalkBox( TalkBox& talkBox )
 {
-	int index = -1;
 
 	switch( talkBox.m_TalkBoxType )
 	{
@@ -1570,9 +1562,7 @@ void CX2TalkBoxManagerImp::ResetTalkBox( TalkBox& talkBox )
 	{
 		const float fCenterWidth  = talkBox.m_vTalkBoxSize.x - m_fMarginLeft - m_fMarginLeft;
 		const float fCenterHeight = talkBox.m_vTalkBoxSize.y - m_fMarginTop - m_fMarginTop;
-		const float fCornerWidth  = m_fMarginLeft;
 		const float fCornerHeight = m_fMarginTop;
-		const float fCornerWidthScaled  = fCornerWidth * talkBox.m_vTalkBoxSizeScale.x;
 		const float fCornerHeightScaled = fCornerHeight * talkBox.m_vTalkBoxSizeScale.y;
 		const float fCenterWidthScaled  = fCenterWidth * talkBox.m_vTalkBoxSizeScale.x;
 		const float fCenterHeightScaled = fCenterHeight * talkBox.m_vTalkBoxSizeScale.y;
@@ -1765,9 +1755,7 @@ void CX2TalkBoxManagerImp::TalkBox::ResetFontPos( CKTDGFontManager::CUKFont* pKT
 	// 이부분 전체 fix!!
 	const float fCenterWidth  = m_vTalkBoxSize.x - fMarginLeft - fMarginLeft;
 	const float fCenterHeight = m_vTalkBoxSize.y - fMarginTop - fMarginTop;
-	const float fCornerWidth  = fMarginLeft;
 	const float fCornerHeight = fMarginTop;
-	const float fCornerWidthScaled  = fCornerWidth * m_vTalkBoxSizeScale.x;
 	const float fCornerHeightScaled = fCornerHeight * m_vTalkBoxSizeScale.y;
 	const float fCenterWidthScaled  = fCenterWidth * m_vTalkBoxSizeScale.x;
 	const float fCenterHeightScaled = fCenterHeight * m_vTalkBoxSizeScale.y;

@@ -2580,7 +2580,6 @@ bool CX2Community::OpenSearchFriendResultWindow( KEGS_SEARCH_UNIT_ACK kEvent )
 		CKTDGUIStatic* pStatic_Channel = (CKTDGUIStatic*) m_pDLGSearchFriendResult->GetControl( L"Static_channel_name" );
 		CKTDGUIStatic* pStatic_State = (CKTDGUIStatic*) m_pDLGSearchFriendResult->GetControl( L"Static_State" );
 
-		CKTDGUIButton* pButton_AddFriend = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Friend_add" );
 		CKTDGUIButton* pButton_MoveChannel = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Channel_Move" );
 		CKTDGUIButton* pButton_PartyInvite = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Party_Invnte" );
 		CKTDGUIButton* pButton_PartyRequest = (CKTDGUIButton*) m_pDLGSearchFriendResult->GetControl( L"Button_Party_Request" );
@@ -6305,8 +6304,6 @@ void CX2Community::UpdateDiscipleUserList()
 	m_vecUserUID.clear();
 
 	// page 번호
-	int iMaxUserListPage = 1;
-	int iNowUserListPage = 1;
 
 	const map< UidType, CX2TutorSystem::TutorUnit >& mapTutorUnit = g_pMain->GetTutorSystem()->GetMapTutorStudent();
 	map< UidType, CX2TutorSystem::TutorUnit >::const_iterator it_tutor = mapTutorUnit.begin();
@@ -6622,7 +6619,6 @@ void CX2Community::UpdateInfoTypeString()
 
 void CX2Community::UpdateGuildTabList()
 {
-	int i = 0;
 	const D3DXCOLOR colorForLogOff( 0.8f, 0.8f, 0.8f, 1.0f );
 
 	InitGuildTabListUI();
@@ -8095,7 +8091,6 @@ void CX2Community::SetFriendList( KMessengerInfo& refMessengerInfo )
 	// 유저 리스트를 만들자
 	for(std::map< UidType, KFriendInfo >::iterator itUser = refMessengerInfo.m_mapFriendInfo.begin(); itUser != refMessengerInfo.m_mapFriendInfo.end(); ++itUser)
 	{
-		UidType UnitUid = itUser->first;
 		KFriendInfo& friendInfo = itUser->second;
 
 		CX2Community::MessengerUser* pMessengerUser = new CX2Community::MessengerUser();
@@ -8374,7 +8369,6 @@ bool CX2Community::Handler_EGS_DENY_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WP
 	KEGS_DENY_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	//wstring wstrNickName = kEvent.m_wstrNickName;
 
 
@@ -8408,7 +8402,6 @@ bool CX2Community::Handler_EGS_BLOCK_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, W
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
-			UidType iUnitUid = kEvent.m_iUnitUID;
 			//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), GET_REPLACED_STRING( ( STR_ID_63, "L", pTutorUnit->m_wstrNickName ) ), g_pMain->GetNowState() );
 			MessengerUser* pMessengerUser = GetMessengerUser( kEvent.m_iUnitUID );
 			if(pMessengerUser != NULL)
@@ -8433,7 +8426,6 @@ bool CX2Community::Handler_EGS_BLOCK_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, W
 	KEGS_BLOCK_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), L"너 차단당함 ㅋ", g_pMain->GetNowState() );
 
 	return true;
@@ -8461,7 +8453,6 @@ bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/,
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
-			UidType iUnitUid = kEvent.m_iUnitUID;
 
 			//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), L"차단 해제해뜸", g_pMain->GetNowState() );
 			MessengerUser* pMessengerUser = GetMessengerUser( kEvent.m_iUnitUID );
@@ -8487,7 +8478,6 @@ bool CX2Community::Handler_EGS_UNBLOCK_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/,
 	KEGS_UNBLOCK_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	//** TODO
 	//** g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250, 300), L"이번엔 봐준다", g_pMain->GetNowState() );
 
@@ -8530,7 +8520,6 @@ bool CX2Community::Handler_EGS_DELETE_FRIEND_NOT( HWND /*hWnd*/, UINT /*uMsg*/, 
 	KEGS_DELETE_FRIEND_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	UidType UnitUid = kEvent.m_iUnitUID;
 	// TODO : 해당 유저를 삭제한다
 	DeleteFriend( kEvent.m_iUnitUID );
 	ResetUserListUI();
@@ -8593,8 +8582,6 @@ bool CX2Community::Handler_EGS_MOVE_FRIEND_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WP
 			}
 
 			// 2. 해당 포인터를 목표 그룹으로 옮겨준다
-			UidType UnitUid = kEvent.m_iUnitUID;
-			int TargetGroupID = (int)kEvent.m_cTargetGroupID;
 			if(pTargetUser != NULL)
 			{
 				pTargetUser->m_uCategoryCode = (int)kEvent.m_cTargetGroupID;

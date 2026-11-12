@@ -83,7 +83,7 @@ bool CX2BuffFactor::ParsingCombinationBehavior( KLuaManager& luaManager_, bool b
 {
 	vector<UINT> vecBehaviorType;
 
-	bool bExceptionCase = true;
+	[[maybe_unused]] bool bExceptionCase = true;
 
 	/// Behavior가 어떤 행동요소들의 조함으로 이루어 졌는지 얻어옴
 	if ( CX2BuffTempletManager::GetCombination( luaManager_, vecBehaviorType ) )

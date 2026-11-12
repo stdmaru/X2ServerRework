@@ -183,7 +183,7 @@ CX2UIPersonalShopBoard::~CX2UIPersonalShopBoard()
 
 void CX2UIPersonalShopBoard::SetIMMEditMinLevel(int iMinLevel)
 {
-	int iMaxEXP = g_pData->GetEXPTable()->GetEXPData( _CONST_X2GAME_::g_iMaxLevel ).m_nTotalExp;
+	[[maybe_unused]] int iMaxEXP = g_pData->GetEXPTable()->GetEXPData( _CONST_X2GAME_::g_iMaxLevel ).m_nTotalExp;
 	if( g_pInstanceData != NULL )
 		iMaxEXP = g_pData->GetEXPTable()->GetEXPData( g_pInstanceData->GetMaxLevel() ).m_nTotalExp;
 
@@ -508,8 +508,6 @@ bool CX2UIPersonalShopBoard::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, L
 
 bool CX2UIPersonalShopBoard::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
-	int tmp_min = 0;
-	int tmp_max = 0;
 
 	switch ( wParam )
 	{
@@ -2026,7 +2024,6 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 
 			wstring wstrSellerNickName = kTradeBoardItemInfo.m_wstrSellerNickName;
 
-			CX2Item::ITEM_GRADE iGrade = g_pData->GetItemManager()->GetItemTemplet( iItemID )->GetItemGrade();
 			m_iSelectedPersonalShopUid = kTradeBoardItemInfo.m_iPersonalShopUID;
 
 			m_iPersonalShopUidList[i] = kTradeBoardItemInfo.m_iPersonalShopUID;
@@ -2064,7 +2061,6 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 
 			if ( wstrItemName != wstrLineBreakItemName )
 			{
-				const D3DXVECTOR2 vecItemNameOffSet = pStaticItemName->GetOffsetPos();
 				pStaticItemName->SetOffsetPos( D3DXVECTOR2( 0.f, -8.f ) );
 				pStaticItemName->GetString(0)->msg = wstrLineBreakItemName;
 			}

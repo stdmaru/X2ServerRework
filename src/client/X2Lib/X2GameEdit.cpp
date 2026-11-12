@@ -230,7 +230,6 @@ bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 		{
 			prevStringIndex = nowStringIndex + 1;
 
-			bool bFirstCheck = false;
 
 			while(1)
 			{
@@ -278,7 +277,6 @@ bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 
 					prevStringIndex = nowStringIndex + 1;
 				}
-				bFirstCheck = true;
 			}
 		}
 
@@ -1113,7 +1111,6 @@ void CX2GameEdit::ToggleClassChangeCheat()
 
 		if ( NULL != m_pDLGClassChangeCheat )
 		{
-			CX2Unit::UNIT_CLASS eUnitClass = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UnitClass;
 			CKTDGUIListBox* pListBox = (CKTDGUIListBox*) m_pDLGClassChangeCheat->GetControl( L"Class_List" );
 
 			if ( NULL != pListBox )

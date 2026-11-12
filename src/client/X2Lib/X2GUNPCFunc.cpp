@@ -6099,7 +6099,6 @@ void CX2GUNPCFunc::MONSTER_FLY_FRAME_MOVE( CX2GUNPC* pNPCUnit )
 
 	D3DXMatrixIdentity( &matTrans );
 	D3DXMatrixRotationAxis( &matTrans, &tempDirVec, D3DXToRadian( pLeapData->m_DegreeToLeap ) );
-	D3DXVECTOR4 transPos;
 	D3DXVec3TransformCoord( &vecHeight, &vecHeight, &matTrans );
 
 	finalPos += vecHeight;

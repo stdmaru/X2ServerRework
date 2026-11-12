@@ -156,7 +156,6 @@ void CX2Inventory::Reset( std::map< int, int >& mapInventorySlotSize,
 	std::map< UidType, KInventoryItemInfo >::iterator iT;
 	for ( iT = mapItem.begin(); iT != mapItem.end(); ++iT )
 	{
-		UidType iItemUID = (*iT).first;
 		KInventoryItemInfo& kInfo = (*iT).second;
 
 		RemoveItem( (CX2Inventory::SORT_TYPE) kInfo.m_cSlotCategory, kInfo.m_sSlotID );
@@ -794,7 +793,6 @@ CX2Item* CX2Inventory::GetEquippingItemByEquipPos( CX2Unit::EQIP_POSITION equipP
 }
 void CX2Inventory::GetItemIDAndNum( OUT set<int>& setItemPackage ) const
 {
-	int nCount = 0;
 	map<UidType,InvenSlotData*>::const_iterator iter;
 	for ( iter = m_ItemMapTotal.begin(); iter != m_ItemMapTotal.end(); ++iter )
 	{
