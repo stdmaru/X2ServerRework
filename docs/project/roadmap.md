@@ -249,7 +249,9 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [x] `client/x2lib-build`: all 265 `.cpp` files compile warning-free in `x2::client_x2lib` (Clang, GCC; clang-cl in
         CI); Boost, Win32 window/string calls and x86 hooks gone, the anti-cheat scan on `x2::platform`, about 40 original
         bugs fixed (2026-11-11). See [Client: X2Lib](../porting/client-x2lib.md#cpp-files-2026-11-11-clientx2lib-build).
-  - [ ] `client/x2-link`: `X2.cpp` replaces `X2Skeleton.cpp`; the client links.
+  - [x] `client/x2-link`: `X2.cpp` replaces `X2Skeleton.cpp`; the client links on Clang and GCC. DXUT gains the device
+        callbacks; the `ElswordX2` mutex is `x2::platform::SingleInstance` (2026-11-12). See
+        [Client: X2](../porting/client-x2.md#x2cpp-2026-11-12-clientx2-link).
   - [ ] `client/x2-run`: headless start-up test, mass script tests, then login → channel → world on the Linux servers.
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`

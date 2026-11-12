@@ -13,6 +13,7 @@
 
 #include <chrono>
 #include <cstdarg>
+#include <cstdio>
 #include <cwchar>
 #include <memory>
 #include <string>
@@ -29,6 +30,15 @@ struct DxutState {
     void* keyboardContext = nullptr;
     LPDXUTCALLBACKMSGPROC msgProc = nullptr;
     void* msgProcContext = nullptr;
+    LPDXUTCALLBACKDEVICECREATED deviceCreated = nullptr;
+    void* deviceCreatedContext = nullptr;
+    LPDXUTCALLBACKDEVICERESET deviceReset = nullptr;
+    void* deviceResetContext = nullptr;
+    LPDXUTCALLBACKDEVICELOST deviceLost = nullptr;
+    void* deviceLostContext = nullptr;
+    LPDXUTCALLBACKDEVICEDESTROYED deviceDestroyed = nullptr;
+    void* deviceDestroyedContext = nullptr;
+    bool deviceHandedOut = false;  // DXUTCreateDevice called the Created callback: Destroyed is owed
 
     bool handleAltEnter = true;
     std::vector<std::string> commandLine;
@@ -156,8 +166,24 @@ x2::render::Backend RenderBackend()
     return backend;
 }
 
+// DXUT's DXUTCleanup3DEnvironment: the application lets go of the device before it is destroyed.
+void ReleaseDeviceObjects(DxutState& state)
+{
+    if (!state.deviceHandedOut) {
+        return;
+    }
+    state.deviceHandedOut = false;
+    if (state.deviceLost) {
+        state.deviceLost(state.deviceLostContext);
+    }
+    if (state.deviceDestroyed) {
+        state.deviceDestroyed(state.deviceDestroyedContext);
+    }
+}
+
 void ReleaseWindow(DxutState& state)
 {
+    ReleaseDeviceObjects(state);
     if (state.window) {
         if (state.windowClaimed) {
             state.d3dDevice.reset();
@@ -200,6 +226,30 @@ void DXUTSetCallbackMsgProc(LPDXUTCALLBACKMSGPROC pCallbackMsgProc, void* pUserC
 {
     State().msgProc = pCallbackMsgProc;
     State().msgProcContext = pUserContext;
+}
+
+void DXUTSetCallbackDeviceCreated(LPDXUTCALLBACKDEVICECREATED pCallbackDeviceCreated, void* pUserContext)
+{
+    State().deviceCreated = pCallbackDeviceCreated;
+    State().deviceCreatedContext = pUserContext;
+}
+
+void DXUTSetCallbackDeviceReset(LPDXUTCALLBACKDEVICERESET pCallbackDeviceReset, void* pUserContext)
+{
+    State().deviceReset = pCallbackDeviceReset;
+    State().deviceResetContext = pUserContext;
+}
+
+void DXUTSetCallbackDeviceLost(LPDXUTCALLBACKDEVICELOST pCallbackDeviceLost, void* pUserContext)
+{
+    State().deviceLost = pCallbackDeviceLost;
+    State().deviceLostContext = pUserContext;
+}
+
+void DXUTSetCallbackDeviceDestroyed(LPDXUTCALLBACKDEVICEDESTROYED pCallbackDeviceDestroyed, void* pUserContext)
+{
+    State().deviceDestroyed = pCallbackDeviceDestroyed;
+    State().deviceDestroyedContext = pUserContext;
 }
 
 void DXUTSetCommandLine(int argc, char* argv[])
@@ -317,6 +367,35 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
     state.active = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
     state.input.SetFocused(state.active);
     state.quit = false;
+    return S_OK;
+}
+
+HRESULT DXUTCreateDevice(UINT /*AdapterOrdinal*/, bool bWindowed, int nSuggestedWidth, int nSuggestedHeight)
+{
+    DxutState& state = State();
+    if (!state.window || !state.d3dDevice) {
+        return E_FAIL;
+    }
+    if (state.deviceHandedOut) {
+        return S_OK;
+    }
+    SDL_Window* window = state.window->Handle();
+    if (bWindowed && nSuggestedWidth > 0 && nSuggestedHeight > 0) {
+        SDL_SetWindowSize(window, nSuggestedWidth, nSuggestedHeight);
+        SDL_SyncWindow(window);
+    }
+    if (!bWindowed && state.windowed) {
+        DXUTToggleFullScreen();
+    }
+    state.deviceHandedOut = true;
+    const D3DSURFACE_DESC* desc = DXUTGetBackBufferSurfaceDesc();
+    if ((state.deviceCreated && FAILED(state.deviceCreated(state.d3dDevice.get(), desc, state.deviceCreatedContext))) ||
+        (state.deviceReset && FAILED(state.deviceReset(state.d3dDevice.get(), desc, state.deviceResetContext)))) {
+        SDL_Log("DXUT: the application could not set up the device");
+        ReleaseWindow(state);
+        state.exitCode = 1;
+        return E_FAIL;
+    }
     return S_OK;
 }
 
@@ -689,6 +768,37 @@ void DXUTSetVerticalSync(int iVal_)
     settings.pp.PresentationInterval = interval;
     State().forcedVsync = interval;
     DXUTCreateDeviceFromSettings(&settings);
+}
+
+const WCHAR* DXUTGetFrameStats()
+{
+    static std::wstring text;
+    const DxutState& state = State();
+    const D3DSURFACE_DESC* desc = DXUTGetBackBufferSurfaceDesc();
+    const bool vsync = state.presentInterval != static_cast<UINT>(D3DPRESENT_INTERVAL_IMMEDIATE);
+    char line[128];
+    std::snprintf(line, sizeof(line), "%0.2f fps (%ux%u), vsync %s", state.fps, desc ? desc->Width : 0u,
+                  desc ? desc->Height : 0u, vsync ? "on" : "off");
+    text = x2::platform::Utf8ToWide(line);
+    return text.c_str();
+}
+
+const WCHAR* DXUTGetDeviceStats()
+{
+    static std::wstring text;
+    const DxutState& state = State();
+    if (!state.device) {
+        text.clear();
+        return text.c_str();
+    }
+    std::string line(x2::render::BackendName(state.device->GetBackend()));
+    if (const std::string_view driver = state.device->DriverName(); !driver.empty()) {
+        line += " (";
+        line += driver;
+        line += ")";
+    }
+    text = x2::platform::Utf8ToWide(line);
+    return text.c_str();
 }
 
 void DXUTResetStatsUpdateFrame()

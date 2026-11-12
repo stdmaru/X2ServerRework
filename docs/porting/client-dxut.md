@@ -14,7 +14,7 @@ Added on 2026-11-05 (`client/skeleton`).
 
 | File | Contents |
 |---|---|
-| `DXUT.h` / `DXUT.cpp` | The DXUT API the client uses: callback typedefs and setters (`FrameMove`, `FrameRender`, `Keyboard`, `MsgProc`), `DXUTInit`, `DXUTCreateWindow`, `DXUTMainLoop`, `DXUTStaticWndProc`, `DXUTShutdown`, `DXUTToggleFullScreen`, `DXUTSetCursorSettings`, `DXUTSetMultimonSettings`, getters (`DXUTGetHWND`, `DXUTGetHINSTANCE`, `DXUTGetTime`, `DXUTGetElapsedTime`, `DXUTGetFPS`, `DXUTIsWindowed`, `DXUTIsActive`, `DXUTGetExitCode`, `DXUTIsKeyDown`, `DXUTIsMouseButtonDown`), `CDXUTTimer` + `DXUTGetGlobalTimer`, `DXUTTRACE`/`DXUTOutputDebugString`, no-op `DXUT_BeginPerfEvent`/`EndPerfEvent`. Port additions: `DXUTGetSDLWindow`, `DXUTGetRenderDevice` (2026-11-06), `DXUTGetInputState`; `DXUTInit` also starts SDL's gamepad subsystem (best effort) |
+| `DXUT.h` / `DXUT.cpp` | The DXUT API the client uses: callback typedefs and setters (`FrameMove`, `FrameRender`, `Keyboard`, `MsgProc`; `DeviceCreated`, `DeviceReset`, `DeviceLost`, `DeviceDestroyed` since 2026-11-12), `DXUTInit`, `DXUTCreateWindow`, `DXUTCreateDevice`, `DXUTMainLoop`, `DXUTStaticWndProc`, `DXUTShutdown`, `DXUTToggleFullScreen`, `DXUTSetCursorSettings`, `DXUTSetMultimonSettings`, getters (`DXUTGetHWND`, `DXUTGetHINSTANCE`, `DXUTGetTime`, `DXUTGetElapsedTime`, `DXUTGetFPS`, `DXUTGetFrameStats`, `DXUTGetDeviceStats`, `DXUTIsWindowed`, `DXUTIsActive`, `DXUTGetExitCode`, `DXUTIsKeyDown`, `DXUTIsMouseButtonDown`), `CDXUTTimer` + `DXUTGetGlobalTimer`, `DXUTTRACE`/`DXUTOutputDebugString`, no-op `DXUT_BeginPerfEvent`/`EndPerfEvent`. Port additions: `DXUTGetSDLWindow`, `DXUTGetRenderDevice` (2026-11-06), `DXUTGetInputState`; `DXUTInit` also starts SDL's gamepad subsystem (best effort) |
 | `SdlMessages.h` / `SdlMessages.cpp` | `x2::dxut::SdlMessageTranslator`: SDL3 events → Win32 messages (`WM_*` with Windows `wParam`/`lParam`), and `ToVirtualKey` (SDL scancode/keycode → `VK_*`) |
 | `Ime.h` / `Ime.cpp` | `x2::dxut::ImeContext` (the IME state the translator fills) and `x2::dxut::imm`, IMM32 for the IME edit box on it (2026-11-05, [Client: IME](client-ime.md)) |
 | `WindowFunctions.h` / `WindowFunctions.cpp` | The Win32 window and keyboard functions the engine's UI calls, on SDL outside Windows (the real ones on Windows): `SetCapture`/`ReleaseCapture`/`GetCapture` (`SDL_CaptureMouse`), `GetKeyState`/`GetAsyncKeyState`, `GetFocus`, `GetClientRect`, `GetCaretBlinkTime` (530 ms), `SystemParametersInfoW(SPI_GETWHEELSCROLLLINES)` (3); the keyboard layout fixed to en-US (`GetKeyboardLayout`, `GetKeyboardLayoutList`, `GetLocaleInfoW` for 0x0409). On every platform, `DXUTGetClipboardText`/`DXUTSetClipboardText` on SDL's clipboard, used by the edit boxes (2026-11-06) |
@@ -72,7 +72,12 @@ state on `WM_ACTIVATEAPP`.
   buttons, double clicks, wheel, coordinates with pixel density, focus, size and close.
 - `test_dxut.cpp`: callback order (keyboard, then `MsgProc`), key and mouse state, `WM_ACTIVATEAPP` with and without
   `pbNoFurtherProcessing`, the timer, window creation failing cleanly with `sdlgpu` and no GPU, and the main loop on the `null`
-  renderer (two frames, each cleared to black and submitted, nothing leaked).
+  renderer (two frames, each cleared to black and submitted, nothing leaked); the device callbacks (Created, Reset, then
+  Lost and Destroyed while the device still exists, once each; `DXUTCreateDevice` fails without a window).
 - `test_luacommon.cpp`: [LuaCommon](client-luacommon.md) loads a UTF-8 script and reads its values.
 
-To see real events, run the skeleton with `--trace-messages` ([Client: X2](client-x2.md)).
+Device callbacks (2026-11-12): `DXUTCreateDevice` calls `DeviceCreated` then `DeviceReset` with the window's device.
+If the window is windowed and a size is given, it first sets the client area to that size. When the window closes,
+`DeviceLost` then `DeviceDestroyed` run before the device is destroyed (DXUT's `DXUTCleanup3DEnvironment`). The device is
+never lost or reset in between (T38), so each one runs once. A failing `DeviceCreated`/`DeviceReset` closes the window
+and `DXUTCreateDevice` fails.

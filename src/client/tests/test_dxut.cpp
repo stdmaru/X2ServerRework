@@ -196,3 +196,58 @@ TEST_CASE("the null renderer clears every frame to black")
     CHECK(g_gotDevice);
     CHECK(g_liveResources == g_liveAfterFirstFrame);  // nothing created per frame
 }
+
+namespace {
+
+std::vector<std::string> g_deviceEvents;
+bool g_deviceHadBackBuffer = false;
+
+HRESULT CALLBACK TestDeviceCreated(IDirect3DDevice9* device, const D3DSURFACE_DESC* desc, void*)
+{
+    g_deviceEvents.push_back("created");
+    g_deviceHadBackBuffer = device == DXUTGetD3DDevice() && desc != nullptr && desc->Width > 0 && desc->Height > 0;
+    return S_OK;
+}
+
+HRESULT CALLBACK TestDeviceReset(IDirect3DDevice9* device, const D3DSURFACE_DESC* desc, void*)
+{
+    g_deviceEvents.push_back(device != nullptr && desc != nullptr ? "reset" : "reset without device");
+    return S_OK;
+}
+
+void CALLBACK TestDeviceLost(void*)
+{
+    g_deviceEvents.push_back(DXUTGetD3DDevice() != nullptr ? "lost" : "lost after the device");
+}
+
+void CALLBACK TestDeviceDestroyed(void*)
+{
+    g_deviceEvents.push_back(DXUTGetD3DDevice() != nullptr ? "destroyed" : "destroyed after the device");
+}
+
+}  // namespace
+
+TEST_CASE("the device callbacks run once each, around the device's life")
+{
+    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
+    SDL_SetEnvironmentVariable(SDL_GetEnvironment(), "X2_RENDER_BACKEND", "null", true);
+    REQUIRE(DXUTInit(false, false, true) == S_OK);
+    CHECK(FAILED(DXUTCreateDevice(D3DADAPTER_DEFAULT, true, 1024, 768)));  // no window yet
+    REQUIRE(SUCCEEDED(DXUTCreateWindow(L"X2")));
+
+    g_deviceEvents.clear();
+    DXUTSetCallbackDeviceCreated(TestDeviceCreated);
+    DXUTSetCallbackDeviceReset(TestDeviceReset);
+    DXUTSetCallbackDeviceLost(TestDeviceLost);
+    DXUTSetCallbackDeviceDestroyed(TestDeviceDestroyed);
+    CHECK(SUCCEEDED(DXUTCreateDevice(D3DADAPTER_DEFAULT, true, 1024, 768)));
+    CHECK(SUCCEEDED(DXUTCreateDevice(D3DADAPTER_DEFAULT, true, 1024, 768)));  // already handed out: nothing again
+    CHECK(g_deviceHadBackBuffer);
+    DXUTShutdown(0);
+    DXUTSetCallbackDeviceCreated(nullptr);
+    DXUTSetCallbackDeviceReset(nullptr);
+    DXUTSetCallbackDeviceLost(nullptr);
+    DXUTSetCallbackDeviceDestroyed(nullptr);
+    CHECK(DXUTGetRenderDevice() == nullptr);
+    CHECK(g_deviceEvents == std::vector<std::string>{"created", "reset", "lost", "destroyed"});
+}

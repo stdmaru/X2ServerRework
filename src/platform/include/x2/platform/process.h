@@ -89,6 +89,27 @@ std::string QuoteCmdArgument(std::string_view arg);
 // Quoting for a POSIX shell (single quotes): the remote command of `ssh host <command>` is run by the remote shell.
 std::string QuoteShellArgument(std::string_view arg);
 
+// A lock held by one process of the user at a time, by name (the client's "ElswordX2" mutex): a named mutex on
+// Windows, an exclusive flock on <runtime dir>/<name>.lock elsewhere ($XDG_RUNTIME_DIR, else the temp directory).
+// Released when destroyed or when the process ends.
+class SingleInstance
+{
+public:
+    // nullptr when another process holds it (or it could not be created).
+    static std::unique_ptr<SingleInstance> Acquire(const std::string& name);
+    ~SingleInstance();
+    SingleInstance(const SingleInstance&) = delete;
+    SingleInstance& operator=(const SingleInstance&) = delete;
+
+private:
+    SingleInstance() = default;
+#if defined(_WIN32)
+    void* m_mutex = nullptr;
+#else
+    int m_fd = -1;
+#endif
+};
+
 // Opens a URL in the user's browser without waiting for it (ShellExecute "open" on Windows, xdg-open elsewhere).
 // False when it could not be started.
 bool OpenUrl(const std::wstring& url);
