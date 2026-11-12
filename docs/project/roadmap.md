@@ -255,9 +255,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [x] `client/x2-run`: headless start-up reaches `XS_LOGIN` in the [client folder](../tools/client-folder.md); with a
         window on Hyprland it shows the textured login screen, logs in to the Linux servers, draws the character select
         and the character creation screen with its movies (2026-11-12). See [Client: X2](../porting/client-x2.md#status).
-  - [ ] `client/frame-pacing`: fixed simulation ticks as in the original, rendering at any rate with the camera and units
-        interpolated between ticks; vsync at the monitor's rate (FIFO) or a frame limit ([T41](decisions.md)).
-        Later, if needed: mesh players, particles.
+  - [x] `client/frame-pacing`: fixed simulation ticks as in the original, rendering at any rate with the camera and
+        skinned meshes interpolated between ticks; vsync at the monitor's rate (FIFO) or a frame limit ([T41](decisions.md));
+        D3D9 fixes (loader thread, destination alpha, untextured stages) and GPU validation opt-in. Village ~600 fps,
+        field ~350 (2026-11-12, PR #59).
   - [ ] `client/x2-world`: mass script tests, then character select → channel → town/world on the Linux servers.
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`
@@ -283,6 +284,15 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       `CKTDXDeviceManager::OpenSound` keep their interface and play nothing, so the 149 files that use sound compile
       unchanged. The audio APIs (FMOD, DirectSound, MP3) are confined to 9 `KTDXLIB` files (`KTDXDeviceSound.*`,
       `KTDSManager.*`, `KTDSMP3Play.*`, `Always.h`, `KTDXErrorDefine.h`) and 3 in `X2Lib` (2026-11-05).
+- [ ] Graphics improvements before audio (user, 2026-11-12; content may change, [T42](decisions.md)), in this order:
+  - [ ] `client/resolution`: choosing another resolution or fullscreen resizes the window and the swapchain.
+  - [ ] `client/msaa`: MSAA 2x/4x/8x on the back buffer and its resolve.
+  - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
+        rebinding per draw.
+  - [ ] `client/interpolation-2`: what still moves at tick rate (T41 later phases): mesh players, particles, UI and
+        billboards (quest balloons).
+  - [ ] `client/graphics-options`: a larger options dialog with the new settings (vsync, frame limit, MSAA, resolution).
+  - [ ] `client/widescreen`, after audio: native widescreen, UI anchored instead of stretched.
 - [ ] **Audio, last** (user, 2026-11-05): replace the silent backend with a real one, FMOD Ex / DirectSound →
       miniaudio/SDL3 audio (or current cross-platform FMOD Core); only those files change.
 
