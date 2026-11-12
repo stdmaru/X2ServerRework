@@ -4,7 +4,6 @@
 // message pump and the frame loop, now on SDL3 through x2::app (decision T32). Same names and callback signatures as
 // DXUT's, so X2.cpp and KTDXLIB call it unchanged; only the subset the client uses, grown as layers are compiled.
 // The device is KTDXLIB's D3D9 device on x2::render (decision T38), created with the window; the callbacks receive it.
-// DXUTCreateDevice, DXUTGetBackBufferSurfaceDesc, device settings and lost/reset arrive when the engine needs them.
 // See docs/porting/client-dxut.md.
 
 #include "x2/platform/win32.h"
@@ -26,11 +25,21 @@ typedef void    (CALLBACK *LPDXUTCALLBACKFRAMEMOVE)(IDirect3DDevice9* pd3dDevice
 typedef void    (CALLBACK *LPDXUTCALLBACKFRAMERENDER)(IDirect3DDevice9* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext);
 typedef void    (CALLBACK *LPDXUTCALLBACKKEYBOARD)(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext);
 typedef LRESULT (CALLBACK *LPDXUTCALLBACKMSGPROC)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext);
+typedef HRESULT (CALLBACK *LPDXUTCALLBACKDEVICECREATED)(IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
+typedef HRESULT (CALLBACK *LPDXUTCALLBACKDEVICERESET)(IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
+typedef void    (CALLBACK *LPDXUTCALLBACKDEVICELOST)(void* pUserContext);
+typedef void    (CALLBACK *LPDXUTCALLBACKDEVICEDESTROYED)(void* pUserContext);
 
 void DXUTSetCallbackFrameMove(LPDXUTCALLBACKFRAMEMOVE pCallbackFrameMove, void* pUserContext = nullptr);
 void DXUTSetCallbackFrameRender(LPDXUTCALLBACKFRAMERENDER pCallbackFrameRender, void* pUserContext = nullptr);
 void DXUTSetCallbackKeyboard(LPDXUTCALLBACKKEYBOARD pCallbackKeyboard, void* pUserContext = nullptr);
 void DXUTSetCallbackMsgProc(LPDXUTCALLBACKMSGPROC pCallbackMsgProc, void* pUserContext = nullptr);
+// The device's life (2026-11-12): DXUTCreateDevice calls Created then Reset; closing the window calls Lost then
+// Destroyed before the device goes. KTDXLIB's device is never lost (T38), so they run once each.
+void DXUTSetCallbackDeviceCreated(LPDXUTCALLBACKDEVICECREATED pCallbackDeviceCreated, void* pUserContext = nullptr);
+void DXUTSetCallbackDeviceReset(LPDXUTCALLBACKDEVICERESET pCallbackDeviceReset, void* pUserContext = nullptr);
+void DXUTSetCallbackDeviceLost(LPDXUTCALLBACKDEVICELOST pCallbackDeviceLost, void* pUserContext = nullptr);
+void DXUTSetCallbackDeviceDestroyed(LPDXUTCALLBACKDEVICEDESTROYED pCallbackDeviceDestroyed, void* pUserContext = nullptr);
 
 // Initialization. The command line is not parsed (the client passes false); default hotkeys are not implemented (the
 // client passes false, and DXUT's were all commented out but Pause). Alt+Enter toggles full screen, as in DXUT.
@@ -40,6 +49,14 @@ HRESULT DXUTInit(bool bParseCommandLine = true, bool bHandleDefaultHotkeys = tru
 // scale. hInstance, hIcon and hMenu are ignored: the window takes the executable's icon (x2_windows_icon).
 HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle = L"Direct3D Window", HINSTANCE hInstance = nullptr,
                          HICON hIcon = nullptr, HMENU hMenu = nullptr, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT);
+#ifndef D3DADAPTER_DEFAULT
+#define D3DADAPTER_DEFAULT 0
+#endif
+// Hands the window's device to the application: sizes the client area (when windowed and a size is given), then calls
+// the Created and Reset callbacks. Fails without a window, or when a callback fails (the window is closed then).
+// DXUT's device enumeration and its IsDeviceAcceptable/ModifyDeviceSettings callbacks are gone: there is one device.
+HRESULT DXUTCreateDevice(UINT AdapterOrdinal = D3DADAPTER_DEFAULT, bool bWindowed = true, int nSuggestedWidth = 0,
+                         int nSuggestedHeight = 0);
 // Pumps messages and runs frames (FrameMove, FrameRender, present) until the window is closed.
 HRESULT DXUTMainLoop();
 // The window procedure: every translated SDL event goes through it, as DXUT's own WndProc did. Exposed, as in DXUT.
@@ -103,6 +120,10 @@ void DXUTSetFullscreenClientRectAtModeChange(int width, int height);
 // anything else: the vertical blank).
 UINT DXUTGetVerticalSync();  // the present interval (D3DPRESENT_INTERVAL_*)
 void DXUTSetVerticalSync(int iVal_);
+// The statistics lines of DXUT's HUD (X2.cpp's debug text): "<fps> fps (<width>x<height>), vsync on|off" and the
+// renderer ("<backend> (<driver>)"). Valid until the next call.
+const WCHAR* DXUTGetFrameStats();
+const WCHAR* DXUTGetDeviceStats();
 // Restarts the frame-rate count (KOG's addition, called when a battlefield loads).
 void DXUTResetStatsUpdateFrame();
 // The display's modes, for the resolution list (in place of DXUT's CD3DEnumeration: X2Lib read the adapter's modes

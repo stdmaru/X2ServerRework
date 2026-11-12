@@ -11,6 +11,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <spawn.h>
+#include <sys/file.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
@@ -28,6 +29,53 @@ extern char** environ;
 #endif
 
 namespace x2::platform {
+
+std::unique_ptr<SingleInstance> SingleInstance::Acquire(const std::string& name)
+{
+    std::unique_ptr<SingleInstance> lock(new SingleInstance);
+#if defined(_WIN32)
+    HANDLE mutex = ::CreateMutexW(nullptr, TRUE, Utf8ToWide(name).c_str());
+    if (mutex == nullptr)
+        return nullptr;
+    if (::GetLastError() == ERROR_ALREADY_EXISTS) {
+        ::CloseHandle(mutex);
+        return nullptr;
+    }
+    lock->m_mutex = mutex;
+#else
+    std::error_code ec;
+    std::filesystem::path dir;
+    if (const char* runtime = std::getenv("XDG_RUNTIME_DIR"); runtime && *runtime)
+        dir = runtime;
+    else
+        dir = std::filesystem::temp_directory_path(ec);
+    if (dir.empty())
+        return nullptr;
+    const std::string path = (dir / (name + ".lock")).string();
+    const int fd = ::open(path.c_str(), O_RDWR | O_CREAT | O_CLOEXEC, 0600);
+    if (fd < 0)
+        return nullptr;
+    if (::flock(fd, LOCK_EX | LOCK_NB) != 0) {
+        ::close(fd);
+        return nullptr;
+    }
+    lock->m_fd = fd;
+#endif
+    return lock;
+}
+
+SingleInstance::~SingleInstance()
+{
+#if defined(_WIN32)
+    if (m_mutex) {
+        ::ReleaseMutex(m_mutex);
+        ::CloseHandle(m_mutex);
+    }
+#else
+    if (m_fd >= 0)
+        ::close(m_fd);   // drops the flock
+#endif
+}
 
 long long CurrentProcessId()
 {

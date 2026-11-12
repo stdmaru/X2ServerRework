@@ -85,6 +85,16 @@ TEST_CASE("process: the machine's physical memory")
     CHECK(available <= total);
 }
 
+TEST_CASE("process: a single-instance lock is held once")
+{
+    const std::string name = "x2-test-single-instance-" + std::to_string(x2::platform::CurrentProcessId());
+    auto first = x2::platform::SingleInstance::Acquire(name);
+    REQUIRE(first);
+    CHECK_FALSE(x2::platform::SingleInstance::Acquire(name));
+    first.reset();
+    CHECK(x2::platform::SingleInstance::Acquire(name));
+}
+
 TEST_CASE("process: environment set here reaches the children")
 {
     SetEnvironment("X2_TEST_ENV", "value with space");

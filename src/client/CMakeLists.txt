@@ -127,10 +127,11 @@ target_link_libraries(x2_client_x2lib PUBLIC x2::client_ktdxlib x2::client_serve
 # IDC_CURSOR1 of x2.exe's resources (CX2Cursor).
 x2_embed_file(x2_client_x2lib ${CMAKE_CURRENT_SOURCE_DIR}/X2/DefaultCursor.cur X2DefaultCursorFile)
 
-# The executable (x2.exe in the original). X2/X2Skeleton.cpp stands in for X2.cpp until KTDXLIB and X2Lib build
+# The executable (x2.exe in the original): X2.cpp sets up DXUT's callbacks and runs CKTDXApp/CX2Main
 # (docs/porting/client-x2.md).
-add_executable(x2_client X2/X2Skeleton.cpp)
-target_link_libraries(x2_client PRIVATE x2::client_dxut)
+add_executable(x2_client X2/X2.cpp)
+target_include_directories(x2_client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/X2/Common)
+target_link_libraries(x2_client PRIVATE x2::client_x2lib)
 set_target_properties(x2_client PROPERTIES OUTPUT_NAME x2 WIN32_EXECUTABLE TRUE)  # SDL_main.h provides WinMain
 x2_windows_icon(x2_client ${CMAKE_CURRENT_SOURCE_DIR}/X2/Elsword.ico)
 
