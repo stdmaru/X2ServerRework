@@ -13,6 +13,7 @@
 #include <bit>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 
 namespace x2::d3d9 {
 namespace {
@@ -628,7 +629,9 @@ void Device::GetPixelShader(IDirect3DPixelShader9** shader) const
 
 UINT Device::GetAvailableTextureMem() const
 {
-    return 512u * 1024u * 1024u;
+    // The backend does not say. D3D9 reports at most a UINT's worth (about 4 GB), as on any current GPU; the automatic
+    // graphics options score video memory against 4 GB, and a smaller fixed value chose Low textures (2026-11-12).
+    return std::numeric_limits<UINT>::max();
 }
 
 void Device::SetStreamSource(UINT stream, VertexBuffer* buffer, UINT offset, UINT stride)
