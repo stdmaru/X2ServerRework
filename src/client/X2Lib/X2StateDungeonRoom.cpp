@@ -24,7 +24,7 @@ m_fTimeLeftStartReq( 0.f ),
 m_fElapsedIdleTime( 0.f ),
 m_bCheckSendLeaveRoomByRequireLevel( false ),
 m_pDLG_Dungeon_Help( NULL ),
-m_bReserveCashShopOpen( NULL )
+m_bReserveCashShopOpen( 0 )
 {
 	DialogLog( "\nCX2StateDungeonRoom::CX2StateDungeonRoom Start\n" );
 

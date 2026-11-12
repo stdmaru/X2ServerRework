@@ -415,7 +415,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 			{
 			case CX2PVPRoom::PGT_TEAM_DEATH:
 				{
-					if( m_KillCountForCreateRoomIndex >= ARRAY_SIZE( TEAM_DEATH_PVP_KILL_COUNT )-1 )
+					if( static_cast<size_t>( m_KillCountForCreateRoomIndex ) >= ARRAY_SIZE( TEAM_DEATH_PVP_KILL_COUNT )-1 )
 					{
 						m_KillCountForCreateRoomIndex = ARRAY_SIZE( TEAM_DEATH_PVP_KILL_COUNT )-1;
 					}
@@ -427,7 +427,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			case CX2PVPRoom::PGT_SURVIVAL:
 				{
-					if( m_KillCountForCreateRoomIndex >= ARRAY_SIZE( SURVIVAL_PVP_KILL_COUNT )-1 )
+					if( static_cast<size_t>( m_KillCountForCreateRoomIndex ) >= ARRAY_SIZE( SURVIVAL_PVP_KILL_COUNT )-1 )
 					{
 						m_KillCountForCreateRoomIndex = ARRAY_SIZE( SURVIVAL_PVP_KILL_COUNT )-1;
 					}
@@ -498,7 +498,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 			{
 			case CX2PVPRoom::PGT_TEAM:
 				{
-					if( m_PlayTimeForCreateRoomIndex >= ARRAY_SIZE( TEAM_PVP_PLAY_TIME )-1 )
+					if( static_cast<size_t>( m_PlayTimeForCreateRoomIndex ) >= ARRAY_SIZE( TEAM_PVP_PLAY_TIME )-1 )
 					{
 						m_PlayTimeForCreateRoomIndex = ARRAY_SIZE( TEAM_PVP_PLAY_TIME )-1;
 					}
@@ -511,7 +511,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			case CX2PVPRoom::PGT_TEAM_DEATH:
 				{
-					if( m_PlayTimeForCreateRoomIndex >= ARRAY_SIZE( TEAM_DEATH_PVP_PLAY_TIME )-1 )
+					if( static_cast<size_t>( m_PlayTimeForCreateRoomIndex ) >= ARRAY_SIZE( TEAM_DEATH_PVP_PLAY_TIME )-1 )
 					{
 						m_PlayTimeForCreateRoomIndex = ARRAY_SIZE( TEAM_DEATH_PVP_PLAY_TIME )-1;
 					}
@@ -523,7 +523,7 @@ bool CX2StatePvPLobby::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 
 			case CX2PVPRoom::PGT_SURVIVAL:
 				{
-					if( m_PlayTimeForCreateRoomIndex >= ARRAY_SIZE( SURVIVAL_PVP_PLAY_TIME )-1 )
+					if( static_cast<size_t>( m_PlayTimeForCreateRoomIndex ) >= ARRAY_SIZE( SURVIVAL_PVP_PLAY_TIME )-1 )
 					{
 						m_PlayTimeForCreateRoomIndex = ARRAY_SIZE( SURVIVAL_PVP_PLAY_TIME )-1;
 					}

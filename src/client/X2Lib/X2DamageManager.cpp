@@ -1889,7 +1889,7 @@ bool CX2DamageManager::CollisionDataToUnit( DamageData* pDamageData )
 
 bool CX2DamageManager::OpenDamageSoundScript( const WCHAR* wszFileName )
 {
-	if ( NULL == wszFileName || NULL == wszFileName[0] )
+	if ( NULL == wszFileName || L'\0' == wszFileName[0] )
 		return false;
 
 //{{ robobeg : 2008-10-28
@@ -1998,7 +1998,7 @@ bool CX2DamageManager::OpenDamageSoundScript( const WCHAR* wszFileName )
 
 bool CX2DamageManager::ParseDamageSoundBlock( KLuaManager& luaManager, HIT_TYPE eHitType, const char* pszTableNameUTF8 )
 {
-	if( pszTableNameUTF8 == NULL || pszTableNameUTF8[0] == NULL )
+	if( pszTableNameUTF8 == NULL || pszTableNameUTF8[0] == '\0' )
 		return false;
 
 	if( true == luaManager.BeginTable( pszTableNameUTF8 ) )
@@ -2522,7 +2522,7 @@ float CX2DamageManager::GetDestRageWSPGain_Elesis()
 }
 bool CX2DamageManager::OpenWayOfSwordScript( const WCHAR* wszFileName )
 {
-	if ( NULL == wszFileName || NULL == wszFileName[0] )
+	if ( NULL == wszFileName || L'\0' == wszFileName[0] )
 		return false;
 
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState(), 0, true );

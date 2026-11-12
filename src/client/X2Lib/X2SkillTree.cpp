@@ -1368,7 +1368,7 @@ bool CX2SkillTree::Handler_EGS_INIT_SKILL_TREE_ACK( HWND /*hWnd*/, UINT /*uMsg*/
 				}
 				// UI��..
 				if( NULL != g_pData->GetUIManager() &&
-					NULL != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
+					0 != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
 				{
 					g_pData->GetUIManager()->GetUIInventory()->UpdateInventorySlotList(kEvent.m_vecInventorySlotInfo);
 
@@ -2224,7 +2224,7 @@ bool CX2SkillTree::Handler_EGS_INIT_GUILD_SKILL_TREE_ACK( HWND /*hWnd*/, UINT /*
 				}
 				// UI��..
 				if( NULL != g_pData->GetUIManager() &&
-					NULL != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
+					0 != g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
 				{
 					g_pData->GetUIManager()->GetUIInventory()->UpdateInventorySlotList(kEvent.m_vecInventorySlotInfo);
 

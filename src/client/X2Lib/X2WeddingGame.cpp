@@ -911,7 +911,7 @@ bool CX2WeddingGame::IsWeddingHeroineByUID( UidType uiUserUID ) const
 bool CX2WeddingGame::GetIsCanWeddingStart() const
 {
 	// 결혼식 주인공 접속 체크
-	if( m_iNessesaryHeroineNum != GetWeddingHeroineNum() )
+	if( static_cast<UINT>( m_iNessesaryHeroineNum ) != GetWeddingHeroineNum() )
 		return false;
 
 	return true;

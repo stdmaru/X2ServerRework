@@ -151,7 +151,7 @@ bool CX2StateJoin::ServerConnectAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wPar
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
 			//g_pData->GetServerProtocol()->SetConnectAccept();
-			NewUserJoinReq( NULL,NULL,NULL,NULL );
+			NewUserJoinReq( NULL,0,0,NULL );
 		}
 		else
 		{

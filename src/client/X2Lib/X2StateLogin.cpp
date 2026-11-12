@@ -496,7 +496,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_REQ()
 	// The password Steam logins send: typed by hand without Steam, the client quits (CX2Steam::IsValidSteamUser of the
 	// original; there is no Steam client in the port).
 	if( kPacket.m_wstrPassword == L"J2380DE81621XZ" )
-		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 
 	g_pData->GetServerProtocol()->SendChPacket( ECH_VERIFY_ACCOUNT_REQ, kPacket );
 	g_pMain->AddServerPacket( ECH_VERIFY_ACCOUNT_ACK );

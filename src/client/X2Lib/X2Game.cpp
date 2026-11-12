@@ -980,7 +980,7 @@ bool CX2Game::P2PPacketHandler( CKTDNUDP::RecvData* pRecvData )
         return true;
     case XPT_UDP_PACKET_PACK:
         {
-            if ( pRecvData->m_Size < sizeof(XPT_UDP_PACKET_PACK_PREFIX) + sizeof(WORD) )
+            if ( static_cast<size_t>( pRecvData->m_Size ) < sizeof(XPT_UDP_PACKET_PACK_PREFIX) + sizeof(WORD) )
                 return false;
         }
         break;
@@ -2744,7 +2744,7 @@ HRESULT	CX2Game::OnFrameMove( double fTime, float fElapsedTime )
 						|| pCX2GUNPC->GetGameUnitState() == CX2GameUnit::GUSI_DIE )
 					{
 //#ifdef  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
-						if ( bRegularSend == true && bRegularNPCSent == false && m_iNPCRobustPacketSendIndex == i )
+						if ( bRegularSend == true && bRegularNPCSent == false && static_cast<UINT>( m_iNPCRobustPacketSendIndex ) == i )
 						{
 							m_iNPCRobustPacketSendIndex++;
 						}
@@ -2752,7 +2752,7 @@ HRESULT	CX2Game::OnFrameMove( double fTime, float fElapsedTime )
 						continue;
 					}
 //#ifdef  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
-					if ( bRegularSend == true && bRegularNPCSent == false && m_iNPCRobustPacketSendIndex == i )
+					if ( bRegularSend == true && bRegularNPCSent == false && static_cast<UINT>( m_iNPCRobustPacketSendIndex ) == i )
 					{
 						if( g_pMain->IsEnableUdpPacketOverlap() )
 							pCX2GUNPC->SendReserve( 1 );
@@ -12160,7 +12160,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	// 몬스터 소환
 	for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST4); ++i)
 	{
-		if( dwItemID == DUNGEON_ITEM_LIST4[i] )
+		if( dwItemID == static_cast<DWORD>( DUNGEON_ITEM_LIST4[i] ) )
 		{
 			return CX2Item::SIT_SUMMON_MONSTER;
 		}
@@ -12169,7 +12169,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	// 비약
 	for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST1); ++i)
 	{
-		if( dwItemID == DUNGEON_ITEM_LIST1[i] )
+		if( dwItemID == static_cast<DWORD>( DUNGEON_ITEM_LIST1[i] ) )
 		{
 			bNostrum = true;
 			return CX2Item::SIT_NOSTRUM;
@@ -12181,7 +12181,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	{
 		for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST2); ++i)
 		{
-			if( dwItemID == DUNGEON_ITEM_LIST2[i] )
+			if( dwItemID == static_cast<DWORD>( DUNGEON_ITEM_LIST2[i] ) )
 			{
 				bSpirit = true;
 				return CX2Item::SIT_GENIUS;
@@ -12194,7 +12194,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	{
 		for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST3); ++i)
 		{
-			if( dwItemID == DUNGEON_ITEM_LIST3[i] )
+			if( dwItemID == static_cast<DWORD>( DUNGEON_ITEM_LIST3[i] ) )
 			{
 				return CX2Item::SIT_CREST;
 			}
@@ -14183,7 +14183,7 @@ void CX2Game::ProcessGetEDItem( CX2GUUser* pCX2GUUser, bool bIsEDItem,
 			CX2Unit::UnitData* pUnitData = &g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData();
 			std::wstringstream strStream;
 
-			if ( pUnitData->m_ED >= _CONST_X2GAME_::g_iMaxED )
+			if ( static_cast<UINT>( pUnitData->m_ED ) >= _CONST_X2GAME_::g_iMaxED )
 			{
 				strStream << GET_STRING( STR_ID_2683 );
 			}
@@ -14194,7 +14194,7 @@ void CX2Game::ProcessGetEDItem( CX2GUUser* pCX2GUUser, bool bIsEDItem,
 
 				pUnitData->m_ED += iSumED;
 
-				if ( pUnitData->m_ED > _CONST_X2GAME_::g_iMaxED )
+				if ( static_cast<UINT>( pUnitData->m_ED ) > _CONST_X2GAME_::g_iMaxED )
 				{
 					iSumED -= ( pUnitData->m_ED - _CONST_X2GAME_::g_iMaxED );
 					pUnitData->m_ED = _CONST_X2GAME_::g_iMaxED;

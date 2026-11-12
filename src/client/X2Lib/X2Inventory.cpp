@@ -372,7 +372,7 @@ int CX2Inventory::GetNumItemByTID( int itemTID, bool bExcludeEquipped /*= false*
 		const InvenSlotData* pInvenSlotData = iter->second;
 		if ( pInvenSlotData->m_pItem != NULL &&
 			pInvenSlotData->m_pItem->GetItemTemplet() &&
-			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == itemTID
+			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( itemTID )
             )
 		{
 			if( true == bExcludeEquipped &&
@@ -425,7 +425,7 @@ CX2Item* CX2Inventory::GetItemByTID( int itemTID, bool bIncludeBankType /* = fal
 		const InvenSlotData* pInvenSlotData = iter->second;
 		if ( pInvenSlotData->m_pItem != NULL &&
 			pInvenSlotData->m_pItem->GetItemTemplet() &&
-			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == itemTID
+			pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( itemTID )
             )
 		{
 			//{{ kimhc // 2009-08-08 // SortType이 ST_BANK인 것을 찾을 것인가?
@@ -850,7 +850,7 @@ bool CX2Inventory::CheckEquippingItem( int itemID, UidType itemUID /*= -1*/ ) co
                 && pInvenSlotData->m_pItem->GetItemTemplet() != NULL
                 )
 			{
-                if ( pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == itemID )
+                if ( pInvenSlotData->m_pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( itemID ) )
 				{
 					if( itemUID < 0 || pInvenSlotData->m_pItem->GetUID() == itemUID )
 					return true;

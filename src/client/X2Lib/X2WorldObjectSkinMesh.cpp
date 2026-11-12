@@ -699,7 +699,7 @@ void CX2WorldObjectSkinMesh::AddAnim_LUA( const char* pAnimName )
 {
     ASSERT( ::GetCurrentThreadId() != g_pKTDXApp->GetDeviceManager()->GetThreadID() );
 
-	if ( pAnimName != NULL && pAnimName[0] != NULL )
+	if ( pAnimName != NULL && pAnimName[0] != '\0' )
     {
 		wstring tempName;
 		ConvertCharToWCHAR( tempName, pAnimName );
@@ -771,7 +771,7 @@ void CX2WorldObjectSkinMesh::SetAnimAniXET_LUA( const char* pFileName )
 {
     ASSERT( ::GetCurrentThreadId() != g_pKTDXApp->GetDeviceManager()->GetThreadID() );
 
-	if ( pFileName == NULL || pFileName[0] == NULL )
+	if ( pFileName == NULL || pFileName[0] == '\0' )
 		return;
 
 	wstring strBuf;
@@ -792,7 +792,7 @@ void CX2WorldObjectSkinMesh::AddXSkinModel_LUA( const char* pFileName )
 {
     ASSERT( ::GetCurrentThreadId() != g_pKTDXApp->GetDeviceManager()->GetThreadID() );
 
-	if ( pFileName == NULL || pFileName[0] == NULL )
+	if ( pFileName == NULL || pFileName[0] == '\0' )
 		return;
 
 	ConvertCharToWCHAR( m_wstrModelXSkinMeshName, pFileName );
@@ -961,7 +961,7 @@ void CX2WorldObjectSkinMesh::SetMultiTexXET_LUA( const char* pFileName )
     ASSERT( ::GetCurrentThreadId() != g_pKTDXApp->GetDeviceManager()->GetThreadID() );
 
 	CKTDXDeviceXET* pOldXET = m_pMultiTexXET;
-    if ( pFileName != NULL && pFileName[0] != NULL )
+    if ( pFileName != NULL && pFileName[0] != '\0' )
 	{
 		wstring strBuf;
 		ConvertCharToWCHAR( strBuf, pFileName );
@@ -984,7 +984,7 @@ void CX2WorldObjectSkinMesh::SetChangeTexXET_LUA( const char* pFileName )
     ASSERT( ::GetCurrentThreadId() != g_pKTDXApp->GetDeviceManager()->GetThreadID() );
 
 	CKTDXDeviceXET* pOldXET = m_pChangeTexXET;
-    if ( pFileName != NULL || pFileName[0] != NULL )
+    if ( pFileName != NULL || pFileName[0] != '\0' )
     {
 		wstring strBuf;
 		ConvertCharToWCHAR( strBuf, pFileName );

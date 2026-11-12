@@ -8137,7 +8137,7 @@ bool CX2Community::Handler_EGS_REQUEST_FRIEND_REQ( wstring wstrNickName, wstring
 	kPacket.m_wstrNickName = wstrNickName;
 	kPacket.m_wstrMessage = wstrMessage;
 
-	if ( kPacket.m_wstrNickName.find( L"__DELETED__") != -1 )
+	if ( kPacket.m_wstrNickName.find( L"__DELETED__") != std::wstring::npos )
 	{
 		g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_73 ), m_pStage );
 		return true;

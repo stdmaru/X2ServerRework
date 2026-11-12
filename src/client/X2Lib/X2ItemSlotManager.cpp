@@ -1825,7 +1825,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 
 	//{{ megagame : 박교현 : [2010-04-18] (마우스 오른쪽 버튼으로 사용)
     const wchar_t* pwszDescription = pkItemTemplet->GetDescription();
-	if ( pwszDescription[0] != NULL )
+	if ( pwszDescription[0] != L'\0' )
 	{
 		StringCchPrintf( buff, 1024, L"\n\n%s", pwszDescription );
 		//wsprintf( buff, L"\n\n%s", pkItemTemplet->m_Description.c_str() );
@@ -1958,7 +1958,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 			slotItemDesc += L"ModelName :";
 
 			const wchar_t* pCIMName = pkItemTemplet->GetCommonItemModelName( g_pData->GetSelectUnitType() );
-			if ( NULL == pCIMName[0] )
+			if ( L'\0' == pCIMName[0] )
 			{
 				slotItemDesc +=	pkItemTemplet->GetModelName(0);
 			}

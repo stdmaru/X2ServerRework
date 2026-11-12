@@ -3468,7 +3468,7 @@ vector<int> CX2CashShop::GetItemByCategory( CASH_SHOP_CATEGORY categoryID )
 							TempItemID.clear();
 							if( g_pData->GetItemManager()->CheckKeepShowItem( itemID , TempItemID ) == true )
 							{
-								for( int i = 0; i < TempItemID.size(); ++i )
+								for( int i = 0; i < static_cast<int>( TempItemID.size() ); ++i )
 								{
 									if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempItemID[i] ) == NULL )
 									{
@@ -3603,7 +3603,7 @@ vector<int> CX2CashShop::GetItemByCategory( CASH_SHOP_CATEGORY categoryID, CASH_
 							TempItemID.clear();
 							if( g_pData->GetItemManager()->CheckKeepShowItem( itemID , TempItemID ) == true )
 							{
-								for( int i = 0; i < TempItemID.size(); ++i )
+								for( int i = 0; i < static_cast<int>( TempItemID.size() ); ++i )
 								{
 									if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempItemID[i] ) == NULL )
 									{
@@ -5093,7 +5093,7 @@ void CX2CashShop::CashShopSlot::SetInfo( bool /*bAutoPayment*/ /*= false*/ )
 		int TempProDuctNo = 0;
 		if( pkKBillProductInfo != NULL && (g_pData->GetItemManager()->DisCountItemID_Find(m_ItemID,TempList,TempProDuctNo) == true) )
 		{
-			for(int i = 0; i < TempList.size(); ++i)
+			for(int i = 0; i < static_cast<int>( TempList.size() ); ++i)
 			{
 				if( NULL == g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempList[i] ) )
 				{
@@ -5315,7 +5315,7 @@ void CX2CashShop::CashShopSlotManager::Reset( const vector<int>& vecItemID, bool
 					TempItemID.clear();
 					if( g_pData->GetItemManager()->CheckKeepShowItem( vecItemID[i] , TempItemID ) == true )
 					{
-						for( int i = 0; i < TempItemID.size(); ++i )
+						for( int i = 0; i < static_cast<int>( TempItemID.size() ); ++i )
 						{
 							if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempItemID[i] ) == NULL )
 							{
@@ -5576,7 +5576,7 @@ void CX2CashShop::BuyItemPopupSlot::UpdateUI()
 
 	{
 		wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 97, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, tempName.c_str() );
 		}
@@ -5591,7 +5591,7 @@ void CX2CashShop::BuyItemPopupSlot::UpdateUI()
 	if ( pItemName != NULL && pItemName->GetString(0) != NULL )
 	{
 			wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 97, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, L"" );
 
@@ -5737,7 +5737,7 @@ void CX2CashShop::CashItemToInvenPopupSlot::UpdateUI()
 	if ( pItemName != NULL && pItemName->GetString(0) != NULL )
 	{
 		wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 224, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, tempName.c_str() );
 		}
@@ -5752,7 +5752,7 @@ void CX2CashShop::CashItemToInvenPopupSlot::UpdateUI()
 	if ( pItemName != NULL && pItemName->GetString(0) != NULL )
 	{
 		wstring tempName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetName(), 224, pItemName->GetString(0)->fontIndex );
-		if ( tempName.find( L"\n" ) == -1 ) //���� ¥��
+		if ( tempName.find( L"\n" ) == std::wstring::npos ) //���� ¥��
 		{
 			pItemName->SetString( 0, L"" );
 
@@ -5984,7 +5984,7 @@ void CX2CashShop::BuyItemPopup::ChangeItemPeriod( CKTDGUIDialogType pDialog, int
 			int TempProDuctNum = 0;
 			if(g_pData->GetItemManager()->DisCountItemID_Find(itemID,TempVec,TempProDuctNum) == true)
 			{
-				for(int i = 0; i < TempVec.size(); ++i)
+				for(int i = 0; i < static_cast<int>( TempVec.size() ); ++i)
 				{
 					if( NULL == g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( TempVec[i] ) )
 					{
@@ -6052,7 +6052,7 @@ void CX2CashShop::BuyItemPopup::UpdateCashUI()
 					int nTempProDuctNum = 0;
 					if(g_pData->GetItemManager()->DisCountItemID_Find(itemID,nTempVec,nTempProDuctNum) == true)
 					{
-						for(int i = 0; i < nTempVec.size(); ++i)
+						for(int i = 0; i < static_cast<int>( nTempVec.size() ); ++i)
 						{
 							if( NULL == g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( nTempVec[i] ) )
 							{
@@ -6628,7 +6628,7 @@ void CX2CashShop::CashItemToInvenPopup::GetPackageInfo( unsigned long ulTranNo, 
 	for ( int i = 0; i < (int)m_vecKBillPackageInfo.size(); i++ )
 	{
 		KBillPackageInfo& kKBillPackageInfo = m_vecKBillPackageInfo[i];
-		if ( kKBillPackageInfo.m_iPackageNo == ulTranNo )
+		if ( static_cast<size_t>( kKBillPackageInfo.m_iPackageNo ) == ulTranNo )
 			vecKBillPackageInfo.push_back( kKBillPackageInfo );
 	}
 }

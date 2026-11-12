@@ -4541,7 +4541,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 	for(int i=0; i<std::ssize(PET_ITEM_ID); ++i)
 	{
 		if(
-            pItem->GetItemTemplet()->GetItemID() == PET_ITEM_ID[i]
+            pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( PET_ITEM_ID[i] )
         )
 		{
 			if( NULL != g_pMain && CX2Main::XS_BATTLE_FIELD != g_pMain->GetNowStateID() && g_pX2Game != NULL )
@@ -4563,7 +4563,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 
 	for( int i = 0; i < std::ssize(RIDING_PET_ITEM_ID); ++i )
 	{
-		if( pItem->GetItemTemplet()->GetItemID() == RIDING_PET_ITEM_ID[i] )
+		if( pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( RIDING_PET_ITEM_ID[i] ) )
 		{
 			if( NULL != g_pMain && CX2Main::XS_BATTLE_FIELD != g_pMain->GetNowStateID() && g_pX2Game != NULL )
 			{
@@ -4782,7 +4782,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 			// Īȣ��� ������
 			for(int i=0; i<std::ssize(TITLE_ITEM); ++i)
 			{
-                if( pItem->GetItemTemplet()->GetItemID() == TITLE_ITEM[i] )
+                if( pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( TITLE_ITEM[i] ) )
 				{
 					wstring wstrMsg = GET_REPLACED_STRING( ( STR_ID_3712, "L", pItem->GetFullName()) );
 					m_TitleItemUID = pItemSlot->GetItemUID();
@@ -6652,7 +6652,7 @@ void CX2UIInventory::OpenElChangerResultWindow( std::map< int, int >& mapInserte
 			if ( pStaticSlot != NULL && pStaticSlot->GetPicture(j) != NULL )
 			{
                 const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-				if ( pwszShopImage[0] != NULL )
+				if ( pwszShopImage[0] != L'\0' )
 					pStaticSlot->GetPicture(j)->SetTex( pwszShopImage );
 				else
 					pStaticSlot->GetPicture(j)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -6962,7 +6962,7 @@ bool CX2UIInventory::CheckUseItem(CX2Item *pItem)
 //#ifdef TITLE_SYSTEM
 	for(int i=0; i<std::ssize(TITLE_ITEM); ++i)
 	{
-        if( pItem->GetItemTemplet()->GetItemID() == TITLE_ITEM[i] )
+        if( pItem->GetItemTemplet()->GetItemID() == static_cast<DWORD>( TITLE_ITEM[i] ) )
 		{
 			if(g_pData != NULL && g_pData->GetTitleManager() != NULL && g_pData->GetTitleManager()->GetTakeTitle( TITLE_ID[i] ) == true)
 			{
@@ -7639,7 +7639,7 @@ void CX2UIInventory::OpenResolveWindow( CX2SlotItem* pSlot )
 			if ( pStaticSlot != NULL && pStaticSlot->GetPicture(0) != NULL )
 			{
                 const wchar_t* pwszShopImage = pItem->GetItemTemplet()->GetShopImage();
-				if ( pwszShopImage[0] != NULL )
+				if ( pwszShopImage[0] != L'\0' )
 					pStaticSlot->GetPicture(0)->SetTex( pwszShopImage );
 				else
 					pStaticSlot->GetPicture(0)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -7839,7 +7839,7 @@ void CX2UIInventory::ChangeResolveResultPage( bool bNextPage )
 						if ( pStaticSlot != NULL && pStaticSlot->GetPicture(index) != NULL )
 						{
                             const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-							if ( pwszShopImage[0] != NULL )
+							if ( pwszShopImage[0] != L'\0' )
 								pStaticSlot->GetPicture(index)->SetTex( pwszShopImage );
 							else
 								pStaticSlot->GetPicture(index)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -7847,7 +7847,7 @@ void CX2UIInventory::ChangeResolveResultPage( bool bNextPage )
 
 						bool bCheckTwoLine = false;
 						wstring wstrFullName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetFullName_(), 145, XUF_DODUM_13_SEMIBOLD );
-						if ( wstrFullName.find( L"\n") != -1 )
+						if ( wstrFullName.find( L"\n") != std::wstring::npos )
 							bCheckTwoLine = true;
 
 						if(pStaticName->GetString(index*2) != NULL)
@@ -7909,7 +7909,7 @@ void CX2UIInventory::ChangeResolveResultPage( bool bNextPage )
 						if ( pStaticSlot != NULL && pStaticSlot->GetPicture(index) != NULL )
 						{
                             const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-							if ( pwszShopImage[0] != NULL )
+							if ( pwszShopImage[0] != L'\0' )
 								pStaticSlot->GetPicture(index)->SetTex( pwszShopImage );
 							else
 								pStaticSlot->GetPicture(index)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -10091,7 +10091,7 @@ void CX2UIInventory::InitItemObtainResult(const WCHAR* pFileName, std::map< int,
 			if ( pStaticSlot != NULL && pStaticSlot->GetPicture(index) != NULL )
 			{
                 const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-				if ( pwszShopImage[0] != NULL )
+				if ( pwszShopImage[0] != L'\0' )
 					pStaticSlot->GetPicture(index)->SetTex( pwszShopImage );
 				else
 					pStaticSlot->GetPicture(index)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -10099,7 +10099,7 @@ void CX2UIInventory::InitItemObtainResult(const WCHAR* pFileName, std::map< int,
 
 			bool bCheckTwoLine = false;
 			wstring wstrFullName = CWordLineHandler::GetStrByLineBreakInX2Main( pItemTemplet->GetFullName_(), 145, XUF_DODUM_13_SEMIBOLD );
-			if ( wstrFullName.find( L"\n") != -1 )
+			if ( wstrFullName.find( L"\n") != std::wstring::npos )
 				bCheckTwoLine = true;
 
 			if(pStaticName->GetString(index*2) != NULL)
@@ -10186,7 +10186,7 @@ void CX2UIInventory::InitItemResolveResult(const WCHAR* pFileName, std::map< int
 			if ( pStaticSlot != NULL && pStaticSlot->GetPicture(index) != NULL )
 			{
                 const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-				if ( pwszShopImage[0] != NULL )
+				if ( pwszShopImage[0] != L'\0' )
 					pStaticSlot->GetPicture(index)->SetTex( pwszShopImage );
 				else
 					pStaticSlot->GetPicture(index)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -10348,7 +10348,7 @@ void CX2UIInventory::UseUSCJobPopup()
 {
 	//���� �۾� �Ѵ�. �� Ŭ������ ���� �Ͻðڽ��ϱ�? ����ϴ�.
 	if( NULL != g_pData && NULL != g_pData->GetMyUser() &&
-		NULL != g_pData->GetMyUser()->GetSelectUnit()->GetClass() )
+		0 != g_pData->GetMyUser()->GetSelectUnit()->GetClass() )
 	{
 		CX2Unit::UNIT_CLASS cUnitClass = static_cast<CX2Unit::UNIT_CLASS>(m_iSelectedUSCJob);
 		wstring strClassName = g_pData->GetUnitManager()->GetUnitTemplet( cUnitClass )->m_Name;

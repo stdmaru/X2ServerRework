@@ -157,7 +157,7 @@ CX2TextManager::CX2Text::CX2Text( int fontIndex, D3DXVECTOR2 pos, const WCHAR* p
 		while( iFoundIndex != -1 && iFoundIndex < (int)m_TextMsg.length() )
 		{
 			iFoundIndex = m_TextMsg.find( L"\n", iEndIndex );
-			if( iFoundIndex == std::wstring::npos || -1 == iFoundIndex || iFoundIndex == iEndIndex )
+			if( static_cast<size_t>( iFoundIndex ) == std::wstring::npos || -1 == iFoundIndex || iFoundIndex == iEndIndex )
 				break;
 
 			m_iLineCount += 1;

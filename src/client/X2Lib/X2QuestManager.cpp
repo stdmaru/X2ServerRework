@@ -382,7 +382,7 @@ bool CX2QuestManager::AddAccountQuestDate_LUA()
 	LUA_GET_VALUE(	luaManager, "AccountQuestID",	iAccountQuestID, -1 );
 	LUA_GET_VALUE(	luaManager, "DayOfWeek",		iDayOfWeek, -1 );
 
-	if( -1 == iAccountQuestID || -1 == iDayOfWeek )
+	if( -1 == iAccountQuestID || static_cast<UINT>( -1 ) == iDayOfWeek )
 		return false;
 
 	m_mapDayOfTheWeekQuestList[iAccountQuestID] = iDayOfWeek; // 요일별 퀘스트 요일 정보

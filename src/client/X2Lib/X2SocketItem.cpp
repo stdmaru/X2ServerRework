@@ -305,7 +305,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 			if ( stringIndex != -1 )
 			{
 				wstring tempMonsterID;
-				while( monsterIDDamageReduced.find( L" ", stringIndex + 1 ) != -1 )
+				while( monsterIDDamageReduced.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 				{
 					int debugIndex = monsterIDDamageReduced.find( L" ", stringIndex + 1 );
 					tempMonsterID = monsterIDDamageReduced.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -417,7 +417,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 		if ( stringIndex != -1 )
 		{
 			wstring tempSkillID;
-			while( skillGroupID.find( L" ", stringIndex + 1 ) != -1 )
+			while( skillGroupID.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 			{
 				int debugIndex = skillGroupID.find( L" ", stringIndex + 1 );
 				tempSkillID = skillGroupID.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -479,7 +479,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 			if ( stringIndex != -1 )
 			{
 				wstring tempMonsterID;
-				while( monsterIDForDamageUp.find( L" ", stringIndex + 1 ) != -1 )
+				while( monsterIDForDamageUp.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 				{
 					int debugIndex = monsterIDForDamageUp.find( L" ", stringIndex + 1 );
 					tempMonsterID = monsterIDForDamageUp.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -513,7 +513,7 @@ bool CX2SocketItem::AddSocketData_LUA()
 			if ( stringIndex != -1 )
 			{
 				wstring tempMonsterID;
-				while( monsterIDForEvade.find( L" ", stringIndex + 1 ) != -1 )
+				while( monsterIDForEvade.find( L" ", stringIndex + 1 ) != std::wstring::npos )
 				{
 					int debugIndex = monsterIDForEvade.find( L" ", stringIndex + 1 );
 					tempMonsterID = monsterIDForEvade.substr( stringIndex + 1, debugIndex - stringIndex - 1 );
@@ -890,7 +890,7 @@ bool CX2SocketItem::GetIsPossibleSocketItemByOnlyItemType( int itemID )
 
 		if( pSkillTemplet != NULL )
 		{
-			if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == -1 )
+			if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == std::wstring::npos )
 			{
 				wstrstm << pSkillTemplet->m_wstrName.c_str() << L" ";
 				wstrstm << GET_REPLACED_STRING ( (STR_ID_25218, "i", sSkillLevelUpIDAndNum.second ) );
@@ -919,7 +919,7 @@ bool CX2SocketItem::GetIsPossibleSocketItemByOnlyItemType( int itemID )
 
 				if( pSkillTemplet != NULL )
 				{
-					if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == -1 )
+					if ( pSkillTemplet->m_wstrName.rfind( GET_STRING( STR_ID_489 ) ) == std::wstring::npos )
 					{
 						wstrstm << pSkillTemplet->m_wstrName.c_str() << L" ";
 						wstrstm << GET_REPLACED_STRING ( (STR_ID_25218, "i", SkillLevelUPIDAndNumList.second ) );

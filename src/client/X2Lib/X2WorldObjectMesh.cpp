@@ -572,7 +572,7 @@ void CX2WorldObjectMesh::SetMultiTexXET_LUA( const char* pFileName )
 {
     ASSERT( ::GetCurrentThreadId() != g_pKTDXApp->GetDeviceManager()->GetThreadID() );
 	CKTDXDeviceXET* pXET = m_pMultiTexXET;
-    if ( pFileName  != NULL && pFileName [0] != NULL )
+    if ( pFileName  != NULL && pFileName [0] != '\0' )
     {
 		wstring strBuf;
 		ConvertUtf8ToWCHAR( strBuf, pFileName );

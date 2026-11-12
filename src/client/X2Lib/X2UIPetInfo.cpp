@@ -1016,7 +1016,7 @@ void CX2UIPetInfo::SetShow(bool val, UidType eTab)
 	{
 		g_pData->GetUIManager()->UIOpened(CX2UIManager::UI_MENU_PET_LIST);
 
-		if( eTab == NULL )
+		if( eTab == 0 )
 		{
 			if( g_pData->GetPetManager()->GetMyPet() != NULL )
 			{

@@ -5768,7 +5768,7 @@ bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_ACK( HWND /*hWnd*/, UINT /*uMs
 			case NetError::ERR_UNKNOWN		:// OTP 틀린 경우 ..
 				{
 					MessageBox( g_pKTDXApp->GetHWND(), GET_STRING( STR_ID_648 ), L"Quit", MB_OK );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 				} break;
 			default:
 				break;

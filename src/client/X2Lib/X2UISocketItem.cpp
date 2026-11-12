@@ -333,7 +333,7 @@ void CX2UISocketItem::ResetSocketWindow( UidType Uid )
 					wstring socketDesc = CWordLineHandler::GetStrByLineBreakInX2Main( pSocketData->GetSocketDesc( iSocketLevel ).c_str(), 190, XUF_DODUM_13_SEMIBOLD );
 		//}} kimhc // 2011-07-21 // 옵션 수치화
 
-					if ( socketDesc.find( L"\n") != -1 )
+					if ( socketDesc.find( L"\n") != std::wstring::npos )
 						bCheckTwoLine = true;
 
 					if ( bCheckTwoLine == false )
@@ -663,7 +663,7 @@ void CX2UISocketItem::ShowSocketDescExpected(int iSlotIndex)
 		}
 	}
 
-	if ( -1 < iIndex && iArraySize > iIndex )
+	if ( -1 < iIndex && iArraySize > static_cast<UINT>( iIndex ) )
 	{
 		// 포인터의 위치 계산으로 인덱스를 구해준다.
 		if ( g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetSelectUnit() != NULL )
@@ -703,7 +703,7 @@ void CX2UISocketItem::ShowSocketDescExpected(int iSlotIndex)
 
 	bool bCheckTwoLine = false;
 	wstring socketDesc = CWordLineHandler::GetStrByLineBreakInX2Main( wstrDesc.str().c_str(), 190, XUF_DODUM_13_SEMIBOLD );
-	if ( socketDesc.find( L"\n") != -1 )
+	if ( socketDesc.find( L"\n") != std::wstring::npos )
 		bCheckTwoLine = true;
 
 	if ( bCheckTwoLine == false )
@@ -959,7 +959,7 @@ bool CX2UISocketItem::OnRClickedItem( D3DXVECTOR2 mousePos )
 					wstring socketDesc = CWordLineHandler::GetStrByLineBreakInX2Main(pSocketData->GetSocketDesc( iSocketLevel ).c_str(), 190, XUF_DODUM_13_SEMIBOLD );
 					//}} kimhc // 2011-07-21 // 옵션 수치화
 
-					if ( socketDesc.find( L"\n") != -1 )
+					if ( socketDesc.find( L"\n") != std::wstring::npos )
 						bCheckTwoLine = true;
 
 					if ( bCheckTwoLine == false )

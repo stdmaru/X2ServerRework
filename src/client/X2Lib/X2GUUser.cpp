@@ -4044,7 +4044,7 @@ void CX2GUUser::InitState()
 	for( iter = m_StateList.begin(); iter != m_StateList.end(); iter++ )
 	{
 		UserUnitStateData* pData = &(iter->second);
-		if( pData->StateInit != NULL )
+		if( pData->StateInit != 0 )
 			pData->StateInit();
 	}
 }
@@ -4723,7 +4723,7 @@ void CX2GUUser::DoStateEndStartFuture()
 		bool bTableOpen = m_LuaManager.BeginTableByReference( m_FutureStateData.stateID );
 		{
 			m_FrameDataFuture.syncData.stateChangeNum = m_FrameDataFuture.unitCondition.stateChangeNum ;
-			if( m_FutureStateData.StateEndFuture != NULL )
+			if( m_FutureStateData.StateEndFuture != 0 )
 				m_FutureStateData.StateEndFuture();
 			else
 				CommonStateEndFuture();
@@ -4748,7 +4748,7 @@ void CX2GUUser::DoStateEndStartFuture()
 
 		bTableOpen = m_LuaManager.BeginTableByReference( m_FutureStateData.stateID );
 		{
-			if( m_FutureStateData.StateStartFuture != NULL )
+			if( m_FutureStateData.StateStartFuture != 0 )
 				m_FutureStateData.StateStartFuture();
 			else
 				CommonStateStartFuture();
@@ -4770,7 +4770,7 @@ void CX2GUUser::DoStateEndStart()
 
 		bool bTableOpen = m_LuaManager.BeginTableByReference( m_NowStateData.stateID );
 		{
-			if( m_NowStateData.StateEnd != NULL )
+			if( m_NowStateData.StateEnd != 0 )
 				m_NowStateData.StateEnd();
 			else
 				CommonStateEnd();
@@ -4791,7 +4791,7 @@ void CX2GUUser::DoStateEndStart()
 
 		bTableOpen = m_LuaManager.BeginTableByReference( m_NowStateData.stateID );
 		{
-			if( m_NowStateData.StateStart != NULL )
+			if( m_NowStateData.StateStart != 0 )
 				m_NowStateData.StateStart();
 			else
 				CommonStateStart();
@@ -4810,12 +4810,12 @@ void CX2GUUser::DoFrameMoveFuture()
 
 	bool bTableOpen = m_LuaManager.BeginTableByReference( m_FutureStateData.stateID );
 	{
-		if( m_FutureStateData.OnFrameMoveFuture != NULL )
+		if( m_FutureStateData.OnFrameMoveFuture != 0 )
 			m_FutureStateData.OnFrameMoveFuture();
 		else
 			CommonFrameMoveFuture();
 
-		if( m_FutureStateData.OnEventProcess != NULL )
+		if( m_FutureStateData.OnEventProcess != 0 )
 			m_FutureStateData.OnEventProcess();
 	}
 
@@ -4831,7 +4831,7 @@ void CX2GUUser::DoFrameMove()
 
 	bool bTableOpen = m_LuaManager.BeginTableByReference( m_NowStateData.stateID );
 	{
-		if( m_NowStateData.OnFrameMove != NULL )
+		if( m_NowStateData.OnFrameMove != 0 )
 			m_NowStateData.OnFrameMove();
 		else
 			CommonFrameMove();
@@ -5211,7 +5211,7 @@ HRESULT CX2GUUser::OnCameraMove()
 			if( true == m_LuaManager.BeginTableByReference( m_NowStateData.stateID ) )
 			{
 				// �ٸ� ī�޶� ���갡 �ִ� ��� �ڽ��� ���� �Ǵ� �Ÿ��� �����Ÿ� ���� �ִ� ������ �ƴϸ� ī�޶� �ߵ� ����
-				if( m_NowStateData.OnCameraMove != NULL )
+				if( m_NowStateData.OnCameraMove != 0 )
 					//&& ( IsMyUnit() || GetDistance3Sq( g_pX2Game->GetMyUnit()->GetPos(), GetPos() ) ) )
 					m_NowStateData.OnCameraMove();
 				else
@@ -25959,7 +25959,7 @@ void CX2GUUser::SetDamageExceptionProcess( CX2DamageManager::DamageData* pDamage
 {
 	CX2GameUnit::SetDamageExceptionProcess(pDamageData_, fPowerRate);
 
-	if( null != pDamageData_->optrAttackerGameUnit != NULL && pDamageData_->optrAttackerGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
+	if( null != pDamageData_->optrAttackerGameUnit != 0 && pDamageData_->optrAttackerGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
 	{
 		CX2GUUser *pUser = static_cast<CX2GUUser*>( pDamageData_->optrAttackerGameUnit.GetObservable() );
 		CX2DamageManager::DAMAGE_TYPE eDamageType;

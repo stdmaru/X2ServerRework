@@ -2311,7 +2311,7 @@ void CX2GURaven::InitStateWeaponTaker()
 
 /*virtual*/ void CX2GURaven::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -13803,7 +13803,7 @@ void CX2GURaven::RSI_SA_RRF_WILD_CHARGE_READY_StateStartFuture()
 	CommonStateStartFuture();
 
 	// m_eSlotID_WildCharge�� ��� normal ������Ʈ�� �����̳Ŀ� ����, �����ϴ� Ű�� �������� �˾Ƴ�
-	switch ( m_WildChargeDataPtr->GetSlotID_WildCharge() )
+	switch ( static_cast<USER_STATE_ID>( m_WildChargeDataPtr->GetSlotID_WildCharge() ) )
 	{
 	case USI_SPECIAL_ATTACK_1:
 		m_WildChargeDataPtr->SetChargeKeyPointer( &m_InputData.pureA );

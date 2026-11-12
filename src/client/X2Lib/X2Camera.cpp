@@ -2855,20 +2855,20 @@ bool CX2Camera::ParsingEyeTypeAndPos( KLuaManager& luaManger_, const CX2GameUnit
 	//{{ 2009.01.19 김태완 : 코드정리
 	switch ( eEyeType )
 	{
-	case LT_BONE:
+	case ET_BONE:
 		{
 			vEyePos_ = pFocusUnit_->GetBonePos( wstrEyeParts.c_str() );
 		} break;
-	case LT_IMPACT_POINT:
+	case ET_IMPACT_POINT:
 		{
 			vEyePos_ = pFocusUnit_->GetImpactPos();
 		}break;
-	case LT_WEAPON:
+	case ET_WEAPON:
 		{
 			// fix!! 일단은 0번 무기의 0번째 메시를 보는 걸로 하드코딩
 			vEyePos_ = pFocusUnit_->GetWeaponBonePos( 0, wstrEyeParts.c_str(), 0 );
 		} break;
-	case LT_UNIT_POSITION:
+	case ET_UNIT_POSITION:
 		{
 			vEyePos_ = pFocusUnit_->GetPos();
 		} break;

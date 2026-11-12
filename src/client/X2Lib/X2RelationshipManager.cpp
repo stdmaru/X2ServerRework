@@ -966,7 +966,7 @@ bool CX2RelationshipManager::Handler_EGS_WEDDING_ITEM_INFO_ACK ( HWND /*hWnd*/, 
 	KEGS_WEDDING_ITEM_INFO_ACK kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	if ( NULL != g_pData->GetMyUser()->GetUID() )
+	if ( 0 != g_pData->GetMyUser()->GetUID() )
 	{
 		if(g_pMain->DeleteServerPacket( EGS_WEDDING_ITEM_INFO_ACK ) )
 		{

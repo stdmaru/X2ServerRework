@@ -28,7 +28,7 @@ def unescape(s: str) -> str:
     return re.sub(r"\\(.)", lambda m: {"n": "\n", "t": "\t"}.get(m.group(1), m.group(1)), s)
 
 
-def run(entry: dict, warnings: list[str]) -> str:
+def run(entry: dict, warnings: list[str], extra: tuple[str, ...] = ()) -> str:
     args = entry["arguments"] if "arguments" in entry else shlex.split(entry["command"])
     out = []
     skip = False
@@ -43,7 +43,7 @@ def run(entry: dict, warnings: list[str]) -> str:
             continue
         out.append(a)
     cmd = [args[0], *out, "-fsyntax-only", "-Wno-everything", *[f"-W{w}" for w in warnings],
-           "-fdiagnostics-parseable-fixits", "-ferror-limit=0"]
+           "-fdiagnostics-parseable-fixits", "-ferror-limit=0", *extra]
     return subprocess.run(cmd, cwd=entry["directory"], capture_output=True, text=True, errors="replace").stderr
 
 

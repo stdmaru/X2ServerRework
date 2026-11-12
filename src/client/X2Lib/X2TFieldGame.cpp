@@ -4414,7 +4414,7 @@ void CX2TFieldGame::SquareUI::UpdateSquareSlotList( KEGS_SQUARE_LIST_ACK& kEvent
 		// 디폴트 커서 지정
 		CKTDGUIButton *pButton = (CKTDGUIButton*)pDialog->GetControl(L"Room_Over");
         ASSERT( pButton != NULL );
-		if(m_iNowIndex == i)
+		if(static_cast<UINT>( m_iNowIndex ) == i)
 			pButton->SetDownStateAtNormal(true);
 		else
 			pButton->SetDownStateAtNormal(false);
@@ -4483,7 +4483,7 @@ void CX2TFieldGame::SquareUI::SetFocus(int iFocus)
 			{
 				CKTDGUIButton *pButton = (CKTDGUIButton*)pDialog->GetControl(L"Room_Over");
 
-				if(m_iNowIndex == i)
+				if(static_cast<UINT>( m_iNowIndex ) == i)
 					pButton->SetDownStateAtNormal(true);
 				else
 					pButton->SetDownStateAtNormal(false);

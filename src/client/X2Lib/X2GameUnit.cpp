@@ -144,7 +144,7 @@ m_iDieCount(0)
 //	m_TeamNumOriginal			= teamNum;
 //#endif PVP_BOSS_COMBAT_TEST
 
-	if ( pScriptFileName != NULL && pScriptFileName[0] != NULL )
+	if ( pScriptFileName != NULL && pScriptFileName[0] != 0 )
 	{
 		m_ScriptFileName			= pScriptFileName;
 	}
@@ -2686,7 +2686,7 @@ void CX2GameUnit::InitComponent()
 			SetSmallGage();
 		}
 
-		if ( NULL == IsNullGageUI() )
+		if ( 0 == IsNullGageUI() )
 			m_pGageUI->InitUI();
 
 		wstring seqName;
@@ -4364,7 +4364,7 @@ void CX2GameUnit::DeleteEnchantWeaponEffectUnitSpecific( int index )
 void CX2GameUnit::SetMajorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshInstance* pMeshPlayer )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return;
 
 //#ifdef HEAVY_LOG_TEST
@@ -4386,7 +4386,7 @@ void CX2GameUnit::SetMajorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshIns
 void CX2GameUnit::ClearMajorMeshPlayer_LUA( int index )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return;
 
 
@@ -4411,7 +4411,7 @@ void CX2GameUnit::SetDoubleAttack(wstring wstrHitSound, float fDamage, D3DXVECTO
 CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMajorMeshPlayer_LUA( int index )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return NULL;
 
 //#ifdef HEAVY_LOG_TEST
@@ -4430,7 +4430,7 @@ CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMajorMeshPlayer_LUA( int index
 CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GameUnit::GetMajorMeshPlayerHandle( int index )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return INVALID_MESH_INSTANCE_HANDLE;
 
 	return m_hMajorMeshPlayerList[index];
@@ -4440,7 +4440,7 @@ CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GameUnit::GetMajorMeshPlayerHandle( in
 void CX2GameUnit::SetMinorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshInstance* pMeshPlayer )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return;
 
 
@@ -4458,7 +4458,7 @@ void CX2GameUnit::SetMinorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshIns
 void CX2GameUnit::ClearMinorMeshPlayer_LUA( int index )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return;
 
 	m_hMinorMeshPlayerList[index] = INVALID_MESH_INSTANCE_HANDLE;
@@ -4467,7 +4467,7 @@ void CX2GameUnit::ClearMinorMeshPlayer_LUA( int index )
 CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMinorMeshPlayer_LUA( int index )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return NULL;
 
 
@@ -4483,7 +4483,7 @@ CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMinorMeshPlayer_LUA( int index
 CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GameUnit::GetMinorMeshPlayerHandle( int index )
 {
 	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
-	if( index < 0 || index >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
+	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return INVALID_MESH_INSTANCE_HANDLE;
 
 	return m_hMinorMeshPlayerList[index];

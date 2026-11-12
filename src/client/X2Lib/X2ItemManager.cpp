@@ -140,7 +140,7 @@ bool CX2ItemManager::OpenScriptFile( const WCHAR* pFileName )
 
 bool    CX2ItemManager::DoMemoryNotEncrypt( const char* pBuffer, long nSize )
 {
-	if( pBuffer != NULL && nSize >= sizeof(CX2Item::KItemFormatHeader) )
+	if( pBuffer != NULL && static_cast<size_t>( nSize ) >= sizeof(CX2Item::KItemFormatHeader) )
     {
         CX2Item::KItemFormatHeader kHeader = *( (const CX2Item::KItemFormatHeader*) ( pBuffer ) );
         if ( kHeader.m_dwMagic == KX2ITEMMANAGER_FORMAT_MAGIC
@@ -2003,7 +2003,7 @@ bool CX2ItemManager::CheckDisCountItemList( int TempProDuct ,bool& bIdexReset )
 	{
 		if( mit->second.m_DisCountProNo == TempProDuct )
 		{
-			for(int i = 0; i < mit->second.m_DisCountKeepItem.size(); ++i)
+			for(int i = 0; i < static_cast<int>( mit->second.m_DisCountKeepItem.size() ); ++i)
 			{
 				if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID(mit->second.m_DisCountKeepItem[i]) == NULL )
 				{
@@ -2015,14 +2015,14 @@ bool CX2ItemManager::CheckDisCountItemList( int TempProDuct ,bool& bIdexReset )
 		}
 		else if( mit->second.m_BasicProNo == TempProDuct )
 		{
-			for(int i = 0; i < mit->second.m_DisCountKeepItem.size(); ++i)
+			for(int i = 0; i < static_cast<int>( mit->second.m_DisCountKeepItem.size() ); ++i)
 			{
 				if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID(mit->second.m_DisCountKeepItem[i]) != NULL )
 				{
 					nCount++;
 				}
 			}
-			if( nCount == mit->second.m_DisCountKeepItem.size() )
+			if( static_cast<size_t>( nCount ) == mit->second.m_DisCountKeepItem.size() )
 			{
 				return false;
 			}

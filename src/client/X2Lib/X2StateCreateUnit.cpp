@@ -2568,14 +2568,14 @@ CX2Unit * CX2StateCreateUnit::GetViewerUnitByUnitType ( CX2Unit::UNIT_TYPE eUnit
 		break;
 
 	case CX2Unit::UT_ARA :
-		return m_pDummyEve;
+		return m_pDummyAra;
 		break;
 
 	case CX2Unit::UT_ELESIS :
 		return m_pDummyEL;
 		break;
 
-	case CX2Unit::UC_ADD_NASOD_RULER	:
+	case CX2Unit::UT_ADD :
 		return m_pDummyAdd;
 		break;
 

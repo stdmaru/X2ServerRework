@@ -951,7 +951,7 @@ bool	CX2GuildManager::Handler_EGS_CREATE_GUILD_REQ( const wstring& wszGuildName 
 {
 	KEGS_CREATE_GUILD_REQ kPacket;
 
-	if( m_iUseGuildItemUID != NULL )
+	if( m_iUseGuildItemUID != 0 )
 	{
 		kPacket.m_iItemUID = m_iUseGuildItemUID;
 		kPacket.m_wstrGuildName = wszGuildName;

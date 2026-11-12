@@ -309,7 +309,7 @@ void CX2UserSkillTree::SetEquippedSkill( const int iSlotIndex_, const bool bSlot
 {
 	if ( bSlotB_ )
 	{
-		if ( iSlotIndex_ >= 0 && iSlotIndex_ < ARRAY_SIZE( m_aEquippedSkillSlotB ) )
+		if ( iSlotIndex_ >= 0 && static_cast<size_t>( iSlotIndex_ ) < ARRAY_SIZE( m_aEquippedSkillSlotB ) )
 		{
 			m_aEquippedSkillSlotB[iSlotIndex_].Init();
 			m_aEquippedSkillSlotB[iSlotIndex_].m_eID			= static_cast<CX2SkillTree::SKILL_ID>( equippedSkillData_.m_iSkillID );
@@ -318,7 +318,7 @@ void CX2UserSkillTree::SetEquippedSkill( const int iSlotIndex_, const bool bSlot
 	}
 	else
 	{
-		if ( iSlotIndex_ >= 0 && iSlotIndex_ < ARRAY_SIZE( m_aEquippedSkill ) )
+		if ( iSlotIndex_ >= 0 && static_cast<size_t>( iSlotIndex_ ) < ARRAY_SIZE( m_aEquippedSkill ) )
 		{
 			m_aEquippedSkill[iSlotIndex_].Init();
 			m_aEquippedSkill[iSlotIndex_].m_eID			= static_cast<CX2SkillTree::SKILL_ID>( equippedSkillData_.m_iSkillID );
@@ -361,12 +361,12 @@ void CX2UserSkillTree::SetEquippedSkillLevelPlusBySlotIndex( const int iEquipped
 {
 	if ( bIsSlotB_ )
 	{
-		if ( iSlotIndex_ >= 0 && iSlotIndex_ < ARRAY_SIZE( m_aEquippedSkillSlotB ) )
+		if ( iSlotIndex_ >= 0 && static_cast<size_t>( iSlotIndex_ ) < ARRAY_SIZE( m_aEquippedSkillSlotB ) )
 			m_aEquippedSkillSlotB[iSlotIndex_].m_iSkillLevelPlus = iEquippedSkillLevelPlus_;
 	}
 	else
 	{
-		if ( iSlotIndex_ >= 0 && iSlotIndex_ < ARRAY_SIZE( m_aEquippedSkill ) )
+		if ( iSlotIndex_ >= 0 && static_cast<size_t>( iSlotIndex_ ) < ARRAY_SIZE( m_aEquippedSkill ) )
 			m_aEquippedSkill[iSlotIndex_].m_iSkillLevelPlus = iEquippedSkillLevelPlus_;
 	}
 }
@@ -414,7 +414,7 @@ void CX2UserSkillTree::SetAcquiredSkill( const std::vector<KUserSkillPageData>& 
 	{
 		for( const KUserSkillData& userSkillData : userSkillPageData.m_vecUserSkillData )
 		{
-			if ( true == m_vecSkillDataMap.empty() || iPage >= m_vecSkillDataMap.size() )
+			if ( true == m_vecSkillDataMap.empty() || static_cast<size_t>( iPage ) >= m_vecSkillDataMap.size() )
 				continue;
 
 			SkillDataMap::iterator mit;
@@ -873,7 +873,7 @@ void CX2UserSkillTree::SetSkillSlotInfo( int iSkillSlotID, CX2SkillTree::SKILL_I
 */
 USHORT CX2UserSkillTree::GetCBConsumption( const int iSlotIndex_, const bool bSlotB_ ) const
 {
-	if( iSlotIndex_ < 0 || iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+	if( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 		return 0;
 
 	if( true == bSlotB_ )
@@ -892,7 +892,7 @@ USHORT CX2UserSkillTree::GetCBConsumption( const int iSlotIndex_, const bool bSl
 */
 void CX2UserSkillTree::SetCBConsumption( int iSlotIndex_, bool bSlotB_, USHORT usCBConsumption_ )
 {
-	if( iSlotIndex_ < 0 || iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+	if( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 		return;
 
 	if( true == bSlotB_ )
@@ -911,7 +911,7 @@ void CX2UserSkillTree::SetCBConsumption( int iSlotIndex_, bool bSlotB_, USHORT u
 */
 USHORT CX2UserSkillTree::GetFPConsumption( const int iSlotIndex_, const bool bSlotB_ ) const
 {
-	if( iSlotIndex_ < 0 || iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+	if( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 		return 0;
 
 	if( true == bSlotB_ )
@@ -929,7 +929,7 @@ USHORT CX2UserSkillTree::GetFPConsumption( const int iSlotIndex_, const bool bSl
 */
 void CX2UserSkillTree::SetFPConsumption( int iSlotIndex_, bool bSlotB_, USHORT usFPConsumption_ )
 {
-	if( iSlotIndex_ < 0 || iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+	if( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 		return;
 
 	if( true == bSlotB_ )
@@ -947,7 +947,7 @@ void CX2UserSkillTree::SetFPConsumption( int iSlotIndex_, bool bSlotB_, USHORT u
 */
 USHORT CX2UserSkillTree::GetFPGainCount( const int iSlotIndex_, const bool bSlotB_ ) const
 {
-	if( iSlotIndex_ < 0 || iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+	if( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 		return 0;
 
 	if( true == bSlotB_ )
@@ -965,7 +965,7 @@ USHORT CX2UserSkillTree::GetFPGainCount( const int iSlotIndex_, const bool bSlot
 */
 void CX2UserSkillTree::SetFPGainCount( int iSlotIndex_, bool bSlotB_, USHORT usFPGainCount_ )
 {
-	if( iSlotIndex_ < 0 || iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+	if( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 		return;
 
 	if( true == bSlotB_ )
@@ -993,7 +993,7 @@ bool CX2UserSkillTree::SetSkillSlot( int iSlotIndex_, CX2SkillTree::SKILL_ID eSk
 									 USHORT usFPConsume, bool bSlotB_ )
 {
 	if( iSlotIndex_ < 0 ||
-		iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) - 1 )
+		static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) - 1 )
 	{
 		return false;
 	}
@@ -1035,7 +1035,7 @@ bool CX2UserSkillTree::SetSkillSlot( int iSlotIndex_, CX2SkillTree::SKILL_ID eSk
 const CX2UserSkillTree::SkillSlotData* CX2UserSkillTree::GetSkillSlot( int iSlotIndex, bool bSlotB ) const
 {
 	if( iSlotIndex < 0 ||
-		iSlotIndex > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+		static_cast<size_t>( iSlotIndex ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 	{
 		return NULL;
 	}
@@ -1107,7 +1107,7 @@ void CX2UserSkillTree::ChangeMpConsumptionPercent( const CX2SkillTree::SKILL_ID 
 */
 void CX2UserSkillTree::SetMpConsumption( int iSlotIndex_, bool bSlotB_, float fMpConsumption_ )
 {
-	if( iSlotIndex_ < 0 || iSlotIndex_ > ARRAY_SIZE( m_aEquippedSkill ) -1 )
+	if( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) > ARRAY_SIZE( m_aEquippedSkill ) -1 )
 		return;
 
 	if( true == bSlotB_ )
@@ -2109,7 +2109,7 @@ int CX2UserSkillTree::UpdateEquippedSkillLevelFromAcqureidMap( const CX2SkillTre
 		SkillDataMap::const_iterator cmItr = m_vecSkillDataMap[m_usUsingPage].find( eSkillID );
 		if ( m_vecSkillDataMap[m_usUsingPage].end() != cmItr )
 		{
-			if ( iSlotIndex_ >= 0 && iSlotIndex_ < ARRAY_SIZE( m_aEquippedSkill ) )
+			if ( iSlotIndex_ >= 0 && static_cast<size_t>( iSlotIndex_ ) < ARRAY_SIZE( m_aEquippedSkill ) )
 			{
 				if( true == bSlotB )
 				{

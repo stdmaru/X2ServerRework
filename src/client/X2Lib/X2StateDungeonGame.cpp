@@ -1074,6 +1074,8 @@ bool CX2StateDungeonGame::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 							EndDungeonGameReq( CX2Room::TN_RED );
 
 						} break;
+					default:
+						break;
 					}
 				}
 				break;
@@ -1094,6 +1096,8 @@ bool CX2StateDungeonGame::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 							CX2StateTrainingGame* pStateTrainingGame = (CX2StateTrainingGame*) g_pMain->GetNowState();
 							pStateTrainingGame->Handler_EGS_END_TC_GAME_REQ( false );
 						} break;
+					default:
+						break;
 					}
 				}
 				break;
@@ -5183,7 +5187,7 @@ void CreateMonsterListDialog::Update( bool bSortAlphabetical )
 	std::wstring::size_type iEndIndex = wstrEnumString.find( L"\"", iFoundIndex );
 
 	int iCount = 0;
-	while( iFoundIndex != -1 )
+	while( iFoundIndex != static_cast<size_t>( -1 ) )
 	{
 
 		if( iCount%2 == 0 )
@@ -5196,7 +5200,7 @@ void CreateMonsterListDialog::Update( bool bSortAlphabetical )
 
 		iFoundIndex = wstrEnumString.find( L"NUI_", iEndIndex );
 
-		if( iFoundIndex == std::wstring::npos || -1 == iFoundIndex || iFoundIndex == iEndIndex )
+		if( iFoundIndex == std::wstring::npos || static_cast<size_t>( -1 ) == iFoundIndex || iFoundIndex == iEndIndex )
 			break;
 
 		iEndIndex = wstrEnumString.find( L"\"", iFoundIndex );

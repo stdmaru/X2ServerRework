@@ -969,7 +969,7 @@ bool CX2ChatBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam,
 				int iIndexSecondSpace = 3;
 				iIndexSecondSpace = wstrChatMsg.find( L" ", iIndexSecondSpace );
 
-				if ( 3 == iIndexSecondSpace || std::wstring::npos == iIndexSecondSpace )
+				if ( 3 == iIndexSecondSpace || std::wstring::npos == static_cast<size_t>( iIndexSecondSpace ) )
 					return true;
 
 				wstrWhisperTargetNickName = wstrChatMsg.substr( iIndexFirstSpace+1, iIndexSecondSpace-iIndexFirstSpace-1 );

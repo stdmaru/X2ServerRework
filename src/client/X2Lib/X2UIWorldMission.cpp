@@ -262,10 +262,10 @@ void CX2UIWorldMission::UpdateTimeDlg( int iTime )
 	const UINT uiSizeOfTextureKey = ARRAY_SIZE( MAGIC_TEXTURE_KEY );
 
 	int iMinTen			= iMin / 10 % 10;
-	if ( uiSizeOfTextureKey <= iMinTen )
+	if ( uiSizeOfTextureKey <= static_cast<UINT>( iMinTen ) )
 		iMinTen = 0;
 	int iSecTen			= iSec / 10 % 10;
-	if ( uiSizeOfTextureKey <= iSecTen )
+	if ( uiSizeOfTextureKey <= static_cast<UINT>( iSecTen ) )
 		iSecTen = 0;
 
 	if( pStaticTime != NULL )

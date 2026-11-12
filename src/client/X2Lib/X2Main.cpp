@@ -8221,8 +8221,8 @@ void CX2Main::UdpPacketOverlapTest_LUA( [[maybe_unused]] bool bEnable )
 void    CX2Main::SetUDPMode_LUA( const char* pszGameType, const char* pszUDPMode )
 {
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( false == ( pszGameType != NULL && pszGameType[0] != NULL
-        && pszUDPMode != NULL && pszUDPMode[0] != NULL ) )
+    if ( false == ( pszGameType != NULL && pszGameType[0] != '\0'
+        && pszUDPMode != NULL && pszUDPMode[0] != '\0' ) )
         return;
 
     const char* apszGameType[] =

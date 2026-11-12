@@ -1189,7 +1189,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 				int slotIndex = pModifyButton->GetDummyInt(0);
 				m_PickedShopItemIndex = slotIndex + (m_iNowPageIndex-1)*3;
 				SlotInfo* pSlotInfo = m_vecSlotInfo[m_PickedShopItemIndex];
-				if(pSlotInfo->m_ItemUID != NULL)
+				if(pSlotInfo->m_ItemUID != 0)
 					OpenDLGItemEnroll( pSlotInfo->m_ItemUID );
 			}
 			return true;

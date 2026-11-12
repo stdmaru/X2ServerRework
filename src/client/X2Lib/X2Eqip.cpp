@@ -120,14 +120,14 @@ CX2Eqip::CX2Eqip( CX2Item* pItem, CKTDGXSkinAnimPtr pUnitXSkinAnim, int enchantL
         ) // 공용 아이템
 	{
         const wchar_t* pCIMName = m_pItemTemplet->GetCommonItemModelName( eUnitType );
-        if ( pCIMName[0] != NULL )
+        if ( pCIMName[0] != L'\0' )
         {
 			bCommonItem = true;
 			m_ModelName[0] = pCIMName;
 
 			// 오현빈 // 공용 아이템 XET 적용 되도록 추가
 			const wchar_t* pCIMXetName = m_pItemTemplet->GetCommonItemXETName( eUnitType );
-			if( pCIMXetName[0] != NULL )
+			if( pCIMXetName[0] != L'\0' )
 				m_ChangeTexName = pCIMXetName;
 			else
 				m_ChangeTexName = m_pItemTemplet->GetTextureChangeXETName();
@@ -479,7 +479,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					//{{ kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_REAL_COLOR;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -489,7 +489,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 
 					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( CARTOON_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_CARTOON;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -499,7 +499,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					// JHKang / 2012.8.29 / 알파 값 처리할 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -511,7 +511,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -528,7 +528,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 						bool bAllAlphaBlend = false;
 						for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 						{
-							if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
+							if( static_cast<DWORD>( ALL_ALPHA_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 							{
 								bAllAlphaBlend = true;
 								break;
@@ -621,7 +621,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					//{{ kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_REAL_COLOR;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -631,7 +631,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 
 					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( CARTOON_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->renderType	= CKTDGXRenderer::RT_CARTOON;
 							pEqipRenderParam->fOutLineWide	= 0.0f;
@@ -641,7 +641,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					// JHKang / 2012.8.29 / 알파 값 처리할 UT_ATTACH_ANIM 악세사리
 					for ( int i = 0; i < std::ssize( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -653,7 +653,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 
 					for ( int i = 0; i < std::ssize( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							pEqipRenderParam->bAlphaBlend = true;
 							pEqipRenderParam->bZEnable = true;
@@ -669,7 +669,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 						bool bAllAlphaBlend = false;
 						for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 						{
-							if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
+							if( static_cast<DWORD>( ALL_ALPHA_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 							{
 								bAllAlphaBlend = true;
 								break;
@@ -722,7 +722,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 				{
 					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
-						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if ( static_cast<DWORD>( CARTOON_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							m_AttatchNormalRenderParam.renderType = CKTDGXRenderer::RT_CARTOON;
 							m_AttatchNormalRenderParam.fOutLineWide= 0.0f;
@@ -734,7 +734,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					bool bAlphaBlend = false;
 					for( int i=0; i<std::ssize( ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALPHA_BLEND_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALPHA_BLEND_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAlphaBlend = true;
 							break;
@@ -759,7 +759,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					bool bAlphaBlend = false;
 					for( int i=0; i<std::ssize( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAlphaBlend = true;
 							break;
@@ -785,7 +785,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					bool bDestAlphaBlend = false;
 					for( int i=0; i<std::ssize( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bDestAlphaBlend = true;
 							break;
@@ -806,7 +806,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					bool bAllAlphaBlend = false;
 					for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALL_ALPHA_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAllAlphaBlend = true;
 							break;
@@ -830,7 +830,7 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 					bool bAlphaCullNone = false;
 					for( int i=0; i<std::ssize( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID ); i++ )
 					{
-						if( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID[i] == dwItemID )
+						if( static_cast<DWORD>( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID[i] ) == dwItemID )
 						{
 							bAlphaCullNone = true;
 							break;
@@ -2149,7 +2149,7 @@ void CX2Eqip::InitAttatchAnim()
 				}
 				else
 				{
-					if( m_pItemTemplet->GetAttachFrameName(i)[0] != NULL )
+					if( m_pItemTemplet->GetAttachFrameName(i)[0] != L'\0' )
 					{
 			        	pFrame =
                         ( m_pUnitXSkinAnim != NULL ) ? m_pUnitXSkinAnim->GetCloneFrame( m_pItemTemplet->GetAttachFrameName(i) ) : NULL;
@@ -2332,7 +2332,7 @@ void CX2Eqip::InitAttatchNormal()
 				}
 				else
 				{
-					if( m_pItemTemplet->GetAttachFrameName(i)[0] != NULL )
+					if( m_pItemTemplet->GetAttachFrameName(i)[0] != L'\0' )
 					{
 						pFrame = ( m_pUnitXSkinAnim != NULL ) ? m_pUnitXSkinAnim->GetCloneFrame( m_pItemTemplet->GetAttachFrameName(i) ) : NULL;
 						if( NULL != pFrame )

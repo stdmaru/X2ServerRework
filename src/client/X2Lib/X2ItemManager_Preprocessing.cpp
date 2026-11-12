@@ -1171,7 +1171,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 			    //}
 
                 ASSERT( ( mesh.m_dwOffset_Name & 0x800000000 ) == 0 );
-			    if( (int)wstrTemp.find( L"Jiggle_Bone" ) != std::wstring::npos ) // 찾았다
+			    if( static_cast<size_t>( (int)wstrTemp.find( L"Jiggle_Bone" ) ) != std::wstring::npos ) // 찾았다
 			    {
                     mesh.m_dwOffset_Name |= 0x80000000;
 			    }

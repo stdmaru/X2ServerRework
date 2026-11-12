@@ -1385,7 +1385,7 @@ std::wstring CX2UIWatch::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool
 
 		//{{ megagame : 박교현 : [2010-04-18] (마우스 오른쪽 버튼으로 사용)
         const wchar_t* pwszDescription = pkItemTemplet->GetDescription();
-		if ( pwszDescription[0] != NULL )
+		if ( pwszDescription[0] != L'\0' )
 		{
 			//wsprintf( buff, L"\n\n%s", pkItemTemplet->m_Description.c_str() );
 			StringCchPrintf( buff, 512, L"\n\n%s", pwszDescription );

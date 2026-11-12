@@ -614,7 +614,7 @@ HRESULT	CX2PET::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 
-	if( NULL != g_pX2Game != NULL && NULL != pMasterUserUnit )
+	if( NULL != g_pX2Game != 0 && NULL != pMasterUserUnit )
 	{
 		if( pMasterUserUnit->GetSyncData().bFrameStop == true )
 		{

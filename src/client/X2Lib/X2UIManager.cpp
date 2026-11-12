@@ -1247,7 +1247,7 @@ bool CX2UIManager::ToggleUI(UI_MENU menuInx, bool forOpen, UidType arg)
 
 			if(forOpen)
 			{
-				if(arg != NULL)
+				if(arg != 0)
 				{
 					CloseAllNPCDlg();
 					m_pQuestNew->SetNPCID((CX2UnitManager::NPC_UNIT_ID)arg);
@@ -1505,7 +1505,7 @@ bool CX2UIManager::ToggleUI(UI_MENU menuInx, bool forOpen, UidType arg)
 		{
 			if(forOpen)
 			{
-				if(arg  == NULL)
+				if(arg  == 0)
 					return false;
 				if(m_pPersonalTrade == NULL)
 				{
@@ -2071,7 +2071,7 @@ void CX2UIManager::SetUILayerIndex(UI_MENU menuInx, bool bAdd /* true면 추가 
 		if(menu == menuInx)
 		{
 			// 추가(또는 최상단 설정)을 하려고 하는데 i가 제일 뒤면 현재 최상위인 다이얼로그다 : 재정렬 필요 없음.
-			if(i == m_vLayer.size() - 1 && true == bAdd)
+			if(static_cast<size_t>( i ) == m_vLayer.size() - 1 && true == bAdd)
 				return;
 			// 목표물을 원래 벡터에서 지워준다.
 			m_vLayer.erase( m_vLayer.begin() + i );

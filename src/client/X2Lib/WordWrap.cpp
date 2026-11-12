@@ -745,7 +745,7 @@ void CWordLineHandler::LineBreakInTalkBoxManagerImp( CKTDGFontManager::CUKFont* 
 		WCHAR wChar = wstrSpeech[i];
 
 		WCHAR wNextChar = L'\0';
-		if( (i+1) < (int) wstrSpeech.length() )
+		if( (i+1) < static_cast<UINT>( (int) wstrSpeech.length() ) )
 			wNextChar = wstrSpeech[i+1];
 
 
@@ -825,7 +825,7 @@ void CWordLineHandler::LineBreakInTalkBoxManagerImp( CKTDGFontManager::CUKFont* 
 
 
 				// end()까지해서 == 값 까지는 insert 가능함
-				if( wstrSpeech.size() >= iLastCutPoint )
+				if( wstrSpeech.size() >= static_cast<size_t>( iLastCutPoint ) )
 				{
 					wstring::iterator tmp_it = wstrSpeech.begin() + iLastCutPoint;
 					wstrSpeech.insert(tmp_it, wsTemp.begin(), wsTemp.end());
@@ -1010,7 +1010,7 @@ wstring CWordLineHandler::GetStrByLineBreakInX2Main( const WCHAR* pOrgStr, int w
 
 
 					// end()까지해서 == 값 까지는 insert 가능함
-					if( tempText.size() >= iLastCutPoint )
+					if( tempText.size() >= static_cast<size_t>( iLastCutPoint ) )
 					{
 						wstring::iterator tmp_it = tempText.begin() + iLastCutPoint;
 						tempText.insert(tmp_it, wsTemp.begin(), wsTemp.end());
@@ -1325,7 +1325,7 @@ wstring CWordLineHandler::GetStrByLineBreakColorInX2Main( const WCHAR* pOrgStr, 
 
 
 					// end()까지해서 == 값 까지는 insert 가능함
-					if( tempText.size() >= iLastCutPoint )
+					if( tempText.size() >= static_cast<size_t>( iLastCutPoint ) )
 					{
 						wstring::iterator tmp_it = tempText.begin() + iLastCutPoint;
 						tempText.insert(tmp_it, wsTemp.begin(), wsTemp.end());
@@ -2276,7 +2276,7 @@ int CWordLineHandler::LineBreakInX2MainMsgBox(wstring& tempText, CKTDGFontManage
 
 
 				// end()까지해서 == 값 까지는 insert 가능함
-				if( tempText.size() >= iLastCutPoint )
+				if( tempText.size() >= static_cast<size_t>( iLastCutPoint ) )
 				{
 					wstring::iterator tmp_it = tempText.begin() + iLastCutPoint;
 					tempText.insert(tmp_it, wsTemp.begin(), wsTemp.end());
@@ -2681,7 +2681,7 @@ std::wstring CWordLineHandler::GetStrByLineBreakInX2MainWithEllipse( const WCHAR
 	{
 		if(lineNum < nLineNum - 1)
 		{
-			if(iPos == wstring::npos || (int)wstrText.size() == iPos + 1)
+			if(static_cast<size_t>( iPos ) == wstring::npos || (int)wstrText.size() == iPos + 1)
 			{
 				wstrTempName += wstrText.substr((ilastCutPoint + 1) * lineNum, (int)wstrText.size() - ((ilastCutPoint + 1) * lineNum));
 
@@ -2697,7 +2697,7 @@ std::wstring CWordLineHandler::GetStrByLineBreakInX2MainWithEllipse( const WCHAR
 		}
 		else
 		{
-			if(iPos == wstring::npos || (int)wstrText.size() == iPos + 1)
+			if(static_cast<size_t>( iPos ) == wstring::npos || (int)wstrText.size() == iPos + 1)
 			{
 				if( (int)wstrText.size() > ((ilastCutPoint + 1) * lineNum) )
 				{
@@ -2743,7 +2743,7 @@ std::wstring CWordLineHandler::CutStringWithEllipse( const WCHAR* pOrgStr, int w
 	{
 		if(lineNum < nLineNum - 1)
 		{
-			if(iPos == wstring::npos || (int)wstrText.size() == iPos + 1)
+			if(static_cast<size_t>( iPos ) == wstring::npos || (int)wstrText.size() == iPos + 1)
 			{
 				wstrTempName += wstrText.substr((ilastCutPoint + 1) * lineNum, (int)wstrText.size() - ((ilastCutPoint + 1) * lineNum));
 
@@ -2759,7 +2759,7 @@ std::wstring CWordLineHandler::CutStringWithEllipse( const WCHAR* pOrgStr, int w
 		}
 		else
 		{
-			if(iPos == wstring::npos || (int)wstrText.size() == iPos + 1)
+			if(static_cast<size_t>( iPos ) == wstring::npos || (int)wstrText.size() == iPos + 1)
 			{
 				wstrTempName += wstrText.substr((ilastCutPoint + 1) * lineNum, (int)wstrText.size() - ((ilastCutPoint + 1) * lineNum));
 

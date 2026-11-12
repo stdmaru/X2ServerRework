@@ -2532,7 +2532,7 @@ void CX2PartyMemberGageUI::SetLevelString( const UINT uiLevel_ )
 
 		 if ( NULL != pStaticLevel )
 		 {
-			 if( -1 == uiLevel_ )
+			 if( static_cast<UINT>( -1 ) == uiLevel_ )
 			 {	//������ -1�� �����Ǿ������� �Ⱥ����ֱ�( ����NPC)
 				 pStaticLevel->SetShow(false);
 				 return;
@@ -2967,7 +2967,7 @@ void CX2PVPPlayerGageUI::SetLevelString( const UINT uiLevel_ )
 
 		 if ( NULL != pStaticLevel )
 		 {
-			 if( -1 == uiLevel_ )
+			 if( static_cast<UINT>( -1 ) == uiLevel_ )
 			 {	//������ -1�� �����Ǿ������� �Ⱥ����ֱ�( ����NPC)
 				 pStaticLevel->SetShow(false);
 				 return;

@@ -692,7 +692,7 @@ void CX2PremiumBuffManager::InsertPremiumBuff( const CX2PremiumBuffTemplet::BUFF
 {
 	const WCHAR* pFileName	= NULL;
 	const WCHAR* pKeyName	= NULL;
-	bool		 bUsingIcon = NULL; //���� ������ ��� ����
+	bool		 bUsingIcon = 0; //���� ������ ��� ����
 
 	//if ( false == GetFileAndKeyName( ePremiumBuffID_, &pFileName, &pKeyName ) )
 	if ( false == GetFileAndKeyName( ePremiumBuffID_, &pFileName, &pKeyName, &bUsingIcon ) )

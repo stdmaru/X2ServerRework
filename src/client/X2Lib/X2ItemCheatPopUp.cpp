@@ -182,6 +182,8 @@ void CX2ItemCheatPopUp::UpdateItemList()
 		{
 			std::sort( vecItemList.begin(), vecItemList.end(), CX2Item::ItemTemplet::LessName() );
 		} break;
+	default:
+		break;
 	}
 
 

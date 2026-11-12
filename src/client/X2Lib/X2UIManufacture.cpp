@@ -1030,7 +1030,7 @@ bool CX2UIManufacture::Handler_EGS_ITEM_MANUFACTURE_ACK( HWND /*hWnd*/, UINT /*u
 					if ( pStatic != NULL && pStatic->GetPicture(0) != NULL )
 					{
                         const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-						if ( pwszShopImage[0] != NULL )
+						if ( pwszShopImage[0] != L'\0' )
 							pStatic->GetPicture(0)->SetTex( pwszShopImage );
 						else
 							pStatic->GetPicture(0)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );

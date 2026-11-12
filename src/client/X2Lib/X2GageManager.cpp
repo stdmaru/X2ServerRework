@@ -235,7 +235,7 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 
 								if ( NULL != pGUIButton )
 								{
-									if( pPartyMemberGageUI->GetPositionIndex() == pGUIButton->GetDummyInt(0) )
+									if( pPartyMemberGageUI->GetPositionIndex() == static_cast<UINT>( pGUIButton->GetDummyInt(0) ) )
 									{
 										if ( true == Handler_EGS_FORCED_EXIT_VOTE_REQ ( true, pPartyMemberGageUI->GetUidTypeThisPartyMember() ) )
 											return true;
@@ -595,7 +595,7 @@ CX2PartyMemberGageUI * CX2GageManager::GetPartyMemberDataByIndex ( const int ind
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );		// PartyMemberGageUI 를 얻어온다.
 
-			if ( pPartyMemberGageUI->GetPositionIndex() == index_ )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
+			if ( pPartyMemberGageUI->GetPositionIndex() == static_cast<UINT>( index_ ) )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
 			{
 				return pPartyMemberGageUI;		// 해당 클래스를 반환한다.
 			}
@@ -3517,7 +3517,7 @@ UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex ) cons
 
 			if ( NULL != pPartyMemberGageUI )
 			{
-				if ( pPartyMemberGageUI->GetPositionIndex() == iIndex )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
+				if ( pPartyMemberGageUI->GetPositionIndex() == static_cast<UINT>( iIndex ) )	// 얻어온 PartyMember 의 UID 가 전달인자와 같다면
 				{
 					return ptrGageSet_->GetUid();
 				}

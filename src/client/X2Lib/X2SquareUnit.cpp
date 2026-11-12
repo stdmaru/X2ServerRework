@@ -3200,7 +3200,7 @@ bool CX2SquareUnit::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId)
 	if(m_pUnit != NULL)
 	{
 		const char* pszEmotionStateName = m_pUnit->GetEmotionName(eEmotionId);
-		if( pszEmotionStateName == NULL || pszEmotionStateName[0] == NULL )
+		if( pszEmotionStateName == NULL || pszEmotionStateName[0] == '\0' )
 			return false;
 
 		if(m_bMyUnit == false)

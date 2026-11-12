@@ -545,7 +545,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			{
 				if ( NULL != g_pData->GetGuildManager() &&
 					 NULL != g_pData->GetGuildManager()->GetMyGuildInfo() &&
-					 NULL != g_pData->GetGuildManager()->GetMyGuildInfo()->m_iGuildUID > 0 )
+					 0 != g_pData->GetGuildManager()->GetMyGuildInfo()->m_iGuildUID > 0 )
 				{
 					g_pData->GetRelationshipManager()->Send_EGS_GET_GUILD_USER_LIST_REQ();
 					ShowInviteWeddingUserListDlg(true, false, RIT_GUILD);

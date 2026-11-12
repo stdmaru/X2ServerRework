@@ -341,7 +341,7 @@ void CX2TrainingGameUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 
 					if( pMyUnit->GetNowStateID() == (const char) waitSeqState.vecStateID[ waitSeqState.iStateIndex ] )
 					{
-						if( waitSeqState.iStateIndex == waitSeqState.vecStateID.size()-1 )
+						if( static_cast<size_t>( waitSeqState.iStateIndex ) == waitSeqState.vecStateID.size()-1 )
 						{
 							// 성공~
 							waitSeqState.iStateIndex = 0;

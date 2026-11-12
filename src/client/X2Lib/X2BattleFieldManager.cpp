@@ -441,7 +441,7 @@ UINT CX2BattleFieldManager::GetReturnVillageId( UINT uiBattleFieldId_ /*= -1*/) 
 		else
 		{
 			//오현빈//2012-10-25//인자 비워서 호출하면 현재 필드의 ReturnVillageId 구하도록 변경
-			if( -1 == uiBattleFieldId_ )
+			if( static_cast<UINT>( -1 ) == uiBattleFieldId_ )
 			{
 				uiBattleFieldId_ = m_BattleFieldPositionInfo.m_uiBattleFieldIdWhereIam;
 			}

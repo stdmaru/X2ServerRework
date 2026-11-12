@@ -86,7 +86,7 @@ bool CX2SlotItem::CreateItemUI( CX2Item* pItem, int itemQuantity /* = -1 */ )
 	// 아이템 이미지
 	CKTDGUIControl::CPictureData* pPicture = new CKTDGUIControl::CPictureData();
     const wchar_t* pwszShopImage = pItem->GetItemTemplet()->GetShopImage();
-    if ( pwszShopImage[0]	 != NULL &&
+    if ( pwszShopImage[0]	 != L'\0' &&
 		g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
 	{
 		pPicture->SetTex( pwszShopImage );
@@ -478,7 +478,7 @@ bool CX2SlotItem::ResetItemUI( CX2Item* pItem )
 		if ( pPicture != NULL )
 		{
             const wchar_t* pwszShopImage = pItem->GetItemTemplet()->GetShopImage();
-			if ( pwszShopImage[0] != NULL && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
+			if ( pwszShopImage[0] != L'\0' && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
 			{
 				pPicture->SetTex( pwszShopImage );
 			}
@@ -722,7 +722,7 @@ bool CX2SlotItem::ResetItemUI( int itemID, int itemQuantity, bool bUseImpossible
 	if ( pPicture != NULL )
 	{
         const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-		if ( pwszShopImage[0] != NULL && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
+		if ( pwszShopImage[0] != L'\0' && g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile( pwszShopImage ) == true )
 		{
 			pPicture->SetTex( pwszShopImage );
 		}

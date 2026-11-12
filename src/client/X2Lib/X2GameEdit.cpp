@@ -406,7 +406,7 @@ void CX2GameEdit::PetCheat_LUA( int iCheatType, int iValue )
 void CX2GameEdit::PetActionCheat_LUA( const char *motionName )
 {
 
-	if ( motionName == NULL || motionName[0] == NULL )
+	if ( motionName == NULL || motionName[0] == '\0' )
 		return;
 
 	if( g_pData != NULL && g_pData->GetPetManager() != NULL )

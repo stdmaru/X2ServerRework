@@ -557,7 +557,7 @@ void CX2PlayGuide::SetMouseClickIndex(int val)
 	if( false == GetActiveNoviceGuide() )
 		return;
 
-	if( m_uiCurrentGuideStep == val )
+	if( m_uiCurrentGuideStep == static_cast<UINT>( val ) )
 	{
 		m_bStart = false;
 		return;

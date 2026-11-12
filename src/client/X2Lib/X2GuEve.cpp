@@ -1857,7 +1857,7 @@ void CX2GUEve::InitState()
 
 /*virtual*/ void CX2GUEve::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -4592,7 +4592,7 @@ void CX2GUEve::CommonFrameMove()
 
 		[[maybe_unused]] int iNowState = -1;
 
-		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > iSlotIndex && 0 < iSlotIndex )
+		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > static_cast<size_t>( iSlotIndex ) && 0 < iSlotIndex )
 		{
 			if( GetRemainHyperModeTime() > 0.f )
 			{
@@ -4645,7 +4645,7 @@ void CX2GUEve::CommonFrameMove()
 
 		[[maybe_unused]] int iNowState = -1;
 
-		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > iSlotIndex && 0 < iSlotIndex )
+		if ( ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) > static_cast<size_t>( iSlotIndex ) && 0 < iSlotIndex )
 		{
 			if( GetRemainHyperModeTime() > 0.f )
 			{

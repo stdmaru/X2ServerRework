@@ -22637,7 +22637,7 @@ void CX2GUNPC::CreateEltrionEvenlyLockonMissile()
 
 CX2DamageEffect::CEffect*	CX2GUNPC::GetDamageEffect_LUA( int index )
 {
-    if ( index < 0 || index >= ARRAY_SIZE( m_ahDamageEffect ) )
+    if ( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE( m_ahDamageEffect ) )
         return NULL;
     CX2DamageEffect::CEffect*   pEffect = g_pX2Game->GetDamageEffect()->GetInstance( m_ahDamageEffect[index] );
     if ( pEffect == NULL )
@@ -22647,7 +22647,7 @@ CX2DamageEffect::CEffect*	CX2GUNPC::GetDamageEffect_LUA( int index )
 
 void    CX2GUNPC::SetDamageEffect_LUA( int index, CX2DamageEffect::CEffect* val)
 {
-    if ( index < 0 || index >= ARRAY_SIZE( m_ahDamageEffect ) )
+    if ( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE( m_ahDamageEffect ) )
         return;
     if ( val == NULL || g_pX2Game->GetDamageEffect()->IsLiveInstance( val ) == false )
         m_ahDamageEffect[index] = INVALID_DAMAGE_EFFECT_HANDLE;
@@ -22657,7 +22657,7 @@ void    CX2GUNPC::SetDamageEffect_LUA( int index, CX2DamageEffect::CEffect* val)
 
 void    CX2GUNPC::ClearDamageEffect_LUA( int index )
 {
-    if ( index < 0 || index >= ARRAY_SIZE( m_ahDamageEffect ) )
+    if ( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE( m_ahDamageEffect ) )
         return;
     m_ahDamageEffect[index] = INVALID_DAMAGE_EFFECT_HANDLE;
 }

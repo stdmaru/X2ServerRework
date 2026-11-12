@@ -848,7 +848,7 @@ void CX2UIShop::SetShow(bool val)
 
 	if(val)	// 켜질 때 처리해야 할 부분
 	{
-		if(m_HouseID == NULL) return;
+		if(m_HouseID == 0) return;
 
 		RegisterLuaBind();
 		if(m_pDLGShop == NULL)
@@ -2543,7 +2543,7 @@ void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 /*pos*/)
 	if ( pStaticSlot != NULL && pStaticSlot->GetPicture(0) != NULL )
 	{
         const wchar_t* pwszShopImage = pItem->GetItemTemplet()->GetShopImage();
-		if ( pwszShopImage[0] != NULL )
+		if ( pwszShopImage[0] != L'\0' )
 			pStaticSlot->GetPicture(0)->SetTex( pwszShopImage );
 		else
 			pStaticSlot->GetPicture(0)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );
@@ -3278,7 +3278,7 @@ void CX2UIShop::OpenEnchantResultWindow( KEGS_ENCHANT_ITEM_ACK& kEGS_ENCHANT_ITE
 			if ( pStaticSlot != NULL && pStaticSlot->GetPicture(0) != NULL )
 			{
                 const wchar_t* pwszShopImage = pItemTemplet->GetShopImage();
-				if ( pwszShopImage[0] != NULL )
+				if ( pwszShopImage[0] != L'\0' )
 					pStaticSlot->GetPicture(0)->SetTex( pwszShopImage );
 				else
 					pStaticSlot->GetPicture(0)->SetTex( L"HQ_Shop_Ui_Noimage.dds" );

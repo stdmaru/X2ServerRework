@@ -2316,7 +2316,7 @@ void CX2GUElsword_SwordMan::InitStateCommon()
 
 /*virtual*/ void CX2GUElsword_SwordMan::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -15130,7 +15130,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_A_ES_DEFENCE_READY_StartFuture()
 
 	if( NULL != m_GuardForElswordPtr )
 	{
-		switch( m_GuardForElswordPtr->GetSkillSlotID_Guard() )
+		switch( static_cast<USER_STATE_ID>( m_GuardForElswordPtr->GetSkillSlotID_Guard() ) )
 		{
 		case USI_SPECIAL_ATTACK_1:
 			m_GuardForElswordPtr->SetGuardKeyPointer( &m_InputData.pureA );

@@ -2638,7 +2638,7 @@ void CX2GUChung::InitStateByUnitClass()
 */
 /*virtual*/ void CX2GUChung::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -12193,7 +12193,7 @@ void CX2GUChung::CSI_SI_A_CFG_GUARD_READY_StartFuture()
 	CommonStateStartFuture();
 
 	// m_eSlotID_WildCharge�� ��� normal ������Ʈ�� �����̳Ŀ� ����, �����ϴ� Ű�� �������� �˾Ƴ�
-	switch ( m_GuardForFuryGuardianPtr->GetSkillSlotID_Guard() )
+	switch ( static_cast<USER_STATE_ID>( m_GuardForFuryGuardianPtr->GetSkillSlotID_Guard() ) )
 	{
 	case USI_SPECIAL_ATTACK_1:
 		m_GuardForFuryGuardianPtr->SetGuardKeyPointer( &m_InputData.pureA );

@@ -2585,7 +2585,7 @@ void CX2GULire_ElvenRanger::InitEquippedActiveSkillState(bool bOnlySkillLevel /*
 
 /*virtual*/ void CX2GULire_ElvenRanger::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );
@@ -17033,7 +17033,7 @@ void CX2GULire_ElvenRanger::LESI_A_LGA_RAPID_SHOT_READY_StartFuture()
 {
 	CommonStateStartFuture();
 
-	switch( m_RapidShotDataPtr->GetSlotID_RapidShot() )
+	switch( static_cast<USER_STATE_ID>( m_RapidShotDataPtr->GetSlotID_RapidShot() ) )
 	{
 	case USI_SPECIAL_ATTACK_1:
 		m_RapidShotDataPtr->SetSkillKeyPointer( &m_InputData.pureA );

@@ -72,7 +72,7 @@ CX2GUAra::CX2GUAra( int iUnitIndex_, int iTeamNum_, IN lua_State* pScriptLuaStat
 
 	, m_fShadowKnotTime( 0.f )
     , m_hShadowKnotWeaponMesh( INVALID_DAMAGE_EFFECT_HANDLE )
-	, m_fZZZXChargeTime( 0.f ), m_hPullinPierce( NULL )
+	, m_fZZZXChargeTime( 0.f ), m_hPullinPierce( 0 )
 	, m_fPullingDragonPowerRate( 1.f )
 	, m_bAbleQuickStand( false ) ,m_iGainMpByFpConversion( 0 ), m_fPreRenderParamColorA (1.f), m_fRenderParamColorA( 1.f )
 	, m_fBlockingRate( 0.f ), m_fTurningRate( 0.f ), m_bBrutalPiercing( false )
@@ -1708,7 +1708,7 @@ void CX2GUAra::InitStateByUnitClass()
 /*virtual*/ void CX2GUAra::SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_,
 																 const bool bSlotB_ )
 {
-	if ( iSlotIndex_ < 0 || iSlotIndex_ >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
+	if ( iSlotIndex_ < 0 || static_cast<size_t>( iSlotIndex_ ) >= ARRAY_SIZE( _CONST_GUUSER_::aNormalSkillStateID ) )
 		return;
 
 	int iNormalStateID = ( bSlotB_ == false ? _CONST_GUUSER_::aNormalSkillStateID[iSlotIndex_] : _CONST_GUUSER_::aNormalSkillStateIDSlotB[iSlotIndex_] );

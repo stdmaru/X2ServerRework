@@ -81,7 +81,7 @@ m_bShowQuickQuestDLG(false)	// kimhc // 2009-12-18 // 가질수 있는 선택 �
 	m_pTalkBoxManager->SetOverUI( true );
 
 	WCHAR buffer[256] = {0,};
-	for(int i=0; i<_CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage; i++)
+	for(int i=0; i<static_cast<int>( _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage ); i++)
 	{
 
 		//wsprintf( buffer, L"Button_Category%d", i);
@@ -247,7 +247,7 @@ void CX2UIQuestNew::FocusQuest( bool bDown )
 	if(bDown)
 	{
 		iSelectedQuestSlotIndex++;
-		if(iSelectedQuestSlotIndex > _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage - 1)
+		if(static_cast<UINT>( iSelectedQuestSlotIndex ) > _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage - 1)
 		{
 			return;
 		}
@@ -256,7 +256,7 @@ void CX2UIQuestNew::FocusQuest( bool bDown )
 		if(m_vecUIQuestSlotInfo[iSelectedQuestSlotIndex].m_bIsCategory == true)
 		{
 			iSelectedQuestSlotIndex++;
-			if(iSelectedQuestSlotIndex > _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage - 1 ||
+			if(static_cast<UINT>( iSelectedQuestSlotIndex ) > _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage - 1 ||
 				m_vecUIQuestSlotInfo[iSelectedQuestSlotIndex].m_bIsCategory == true ||
 				m_vecUIQuestSlotInfo[iSelectedQuestSlotIndex].m_QuestID == -1)
 			{
@@ -868,7 +868,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 						return true;
 					}
 
-					if( veciCheckedItemTID.size() != pQuestTemplet->m_SelectReward.m_iSelectionCount )
+					if( veciCheckedItemTID.size() != static_cast<size_t>( pQuestTemplet->m_SelectReward.m_iSelectionCount ) )
 					{
 						g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_893 ), g_pMain->GetNowState() );
 
@@ -2181,7 +2181,7 @@ void CX2UIQuestNew::UpdateNavi()
 	CKTDGUINavigation* pNavi = (CKTDGUINavigation*) m_pDLGUIQuestList->GetControl( L"Navi_QuestList" );
 	if( NULL != pNavi )
 	{
-		if( m_iSizeQuestInfoList <= _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage )
+		if( static_cast<UINT>( m_iSizeQuestInfoList ) <= _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage )
 		{
 			pNavi->SetShow(false);
 			return;
@@ -4522,7 +4522,7 @@ void CX2UIQuestNew::UpdateUIQuestSlotInfo( UINT iQuestSlotInfoIndex,  QuestInfo&
 
 void CX2UIQuestNew::InitUIQuestSlotInfo()
 {
-	for(int i=0; i<_CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage; i++)
+	for(int i=0; i<static_cast<int>( _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage ); i++)
 	{
 		if( NULL != m_vecUIQuestSlotInfo[i].m_pButtonCategory )
 			m_vecUIQuestSlotInfo[i].m_pButtonCategory->SetShowEnable(false, false);
@@ -4548,7 +4548,7 @@ void CX2UIQuestNew::InitUIQuestSlotInfo()
 
 void CX2UIQuestNew::HideUIQuestSlotInfo()
 {
-	for(int i=0; i<_CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage; i++)
+	for(int i=0; i<static_cast<int>( _CONST_UIQUESTNEW_INFO_::g_iNumQuestSlotPerPage ); i++)
 	{
 		if( NULL != m_vecUIQuestSlotInfo[i].m_pButtonCategory )
 			m_vecUIQuestSlotInfo[i].m_pButtonCategory->SetShowEnable(false, false);

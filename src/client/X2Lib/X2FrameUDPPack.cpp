@@ -10,7 +10,7 @@ void    CX2FrameUDPPack::UpdateUDPMaxSize()
     if ( g_pData != NULL && g_pData->GetGameUDP() != NULL )
     {
         int iData = g_pData->GetGameUDP()->EstimateEffectiveMTUSize();
-        if ( iData >= sizeof(WORD) )
+        if ( static_cast<size_t>( iData ) >= sizeof(WORD) )
         {
             m_wUDPMaxSize = (WORD) iData;
         }

@@ -575,7 +575,7 @@ bool CX2UIPersonalTrade::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM
 			m_pDLGItemEnroll = NULL;
 			m_pTargetDragItemSlot	= NULL;
 			m_iItemEnrollNum = 0;
-			m_EnrollItemUid = NULL;
+			m_EnrollItemUid = 0;
 		}
 		break;
 	case UPTCM_REGISTER_QUANTITY_PLUS:

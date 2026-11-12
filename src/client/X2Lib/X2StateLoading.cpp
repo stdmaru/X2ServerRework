@@ -694,7 +694,7 @@ void CX2StateLoading::DropItemLoading()
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_735 ), this );
 
 			g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );									// fix!! id 변경
-			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 		}
 
 		return false;

@@ -1247,7 +1247,7 @@ float CX2BuffPassMpFinalizerTemplet::GetCriterionByPercent( CX2GameUnit* pGameUn
 	if ( NULL != g_pX2Game && CX2Game::GT_DUNGEON == g_pX2Game->GetGameType() )
 	{
 		CX2DungeonGame* pDungeonGame = static_cast<CX2DungeonGame*>(g_pX2Game);
-		if ( DidReserveToFinish() || pDungeonGame->GetNowStageIndex() != m_uiIndex )	/// 버프를 시작 되었을 때하고 스테이지가 다르면
+		if ( DidReserveToFinish() || static_cast<UINT>( pDungeonGame->GetNowStageIndex() ) != m_uiIndex )	/// 버프를 시작 되었을 때하고 스테이지가 다르면
 			return true;	/// 종료
 		else
 			return false;

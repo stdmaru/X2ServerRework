@@ -783,7 +783,7 @@ void CX2StateServerSelect::OnFrameMove_GameServerConnect( double /*fTime*/, floa
 			//{{ kimhc // 2010-05-07 // ????�? ???? ???? ???? ????? ????
 			// 	 int* x = NULL;
 			// 	 *x = 1;
-			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 			//}} kimhc // 2010-05-07 // ????�? ???? ???? ???? ????? ????
 		}
 	}
@@ -1101,7 +1101,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 					wstring tempNickName = m_pSelectUnit->GetNickName();
 					if(tempNickName.length() != 0 )
 					{
-						if ( tempNickName.find( L"_") != -1 )
+						if ( tempNickName.find( L"_") != std::wstring::npos )
 						{
 							g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(260, 275), GET_STRING( STR_ID_713 ), this, -1, -1.f, L"DLG_UI_OKMsgBoxPlusNew.lua", D3DXVECTOR2 ( 0, -130 ),  L"UI_PopUp_Negative_01.ogg" );
 							return false;
@@ -1527,7 +1527,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 				if ( NULL != m_pSelectUnit )
 				{
 					wstring tempNickName = m_pSelectUnit->GetNickName();
-					if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != -1 )
+					if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != std::string::npos )
 					{
 						//??????? ???? ?????? ??????? ???? ??????? ???�?? ????.
 						OpenRenameMsgBox( true );
@@ -1633,7 +1633,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 		case SSSUCM_DOUBLE_CONNECT:
 			{
 				g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_DOUBLE_CONNECT );
-				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 			}break;
 	}
 
@@ -2152,7 +2152,7 @@ void CX2StateServerSelect::CreateUnitButton()
 		CKTDGUIStatic* pStaticChangeNickMessage = (CKTDGUIStatic*) pUnitSlot->GetControl( L"standby" );
 
 		wstring tempNickName = pUnit->GetNickName();
-		if ( tempNickName.find( L"__DELETED__") != -1 )
+		if ( tempNickName.find( L"__DELETED__") != std::wstring::npos )
 		{
 			pStaticID->GetString(0)->msg = GET_STRING(STR_ID_29404);
 
@@ -2409,8 +2409,8 @@ void CX2StateServerSelect::UnitButtonUp( CX2Unit* pUnit )
 	if ( m_pSelectUnit == pUnit )
 	{
 		wstring tempNickName = m_pSelectUnit->GetNickName();
-		if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != -1 ||
-			 tempNickName.find( L"__DELETED__") != -1 )
+		if ( tempNickName.find( GET_STRING(STR_ID_29404) ) != std::string::npos ||
+			 tempNickName.find( L"__DELETED__") != std::wstring::npos )
 		{
 			//??????? ???? ?????? ??????? ???? ??????? ???�?? ????.
 			OpenRenameMsgBox( true );
@@ -3771,7 +3771,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_ACK( HWND /*hWnd*/, UIN
 		{
 			SAFE_DELETE_DIALOG( m_pDLGMsgBox );
 
-			switch( g_pData->GetMyUser()->GetAuthLevel() )
+			switch( static_cast<int>( g_pData->GetMyUser()->GetAuthLevel() ) )
 			{
 			case -2:
 			case -3:
@@ -4235,7 +4235,7 @@ void CX2StateServerSelect::UpdateChannelListUI()
 			wstring wstrLvWordCheck = L"";
 			bool bStrLvWordCheck = false;
 
-			for ( int istrNumCheck = 0; istrNumCheck< wstrChannelLv.length(); ++istrNumCheck )
+			for ( int istrNumCheck = 0; istrNumCheck< static_cast<int>( wstrChannelLv.length() ); ++istrNumCheck )
 			{
 				CKTDGUIControl::CPictureData* pLvPicture = new CKTDGUIControl::CPictureData();
 				CKTDGUIControl::UIPointData* pLvPointData = new CKTDGUIControl::UIPointData();
@@ -4967,7 +4967,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 		//g_pData->DeleteServerProtocol();
 		//g_pData->DeleteMyUser();
 		g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_INVALID_ID_OR_PASSWORD );
-		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 	}
 
 	m_bWaitingEGS_CONNECT_REQ_ChannelButtonUp = false;
@@ -5001,13 +5001,13 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/
 			default:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 				} break;
 
 			case NetError::ERR_CONNECT_00:
 				{
 					MessageBox( g_pKTDXApp->GetHWND(), GET_STRING( STR_ID_727 ), L"Quit", MB_OK );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 				} break;
 
 			case NetError::ERR_CONNECT_04:
@@ -5213,7 +5213,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /
 			default:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_VERIFY_ACCOUNT );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 				} break;
 			}
 
@@ -5851,7 +5851,7 @@ bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /
 			case NetError::ERR_VERIFY_20:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
 				} break;
 			default:
 				{
@@ -6660,7 +6660,7 @@ void CX2StateServerSelect::SetFocusUnitButtonByIndex ( const int iIndex_ )
 			continue;
 
 		CKTDGUIButton* pCharButton = reinterpret_cast<CKTDGUIButton*>( pUnitSlot->GetControl( 0 ) );
-		if ( i == iIndex_ )
+		if ( i == static_cast<UINT>( iIndex_ ) )
 			pCharButton->SetDownStateAtNormal( true );
 		else
 			pCharButton->SetDownStateAtNormal( false );
@@ -6874,7 +6874,7 @@ void CX2StateServerSelect::SetShowSelectUnitInfo( CX2Unit * pUnit )
 				pGameStartStatic->SetShow( true );
 				pGameStartStatic->SetString( 0, wstringstreamLevelInfo.str().c_str() );
 				wstring wstrNickname = pUnit->GetNickName();
-				if ( -1 != wstrNickname.find ( L"__DELETED__") )
+				if ( std::wstring::npos != wstrNickname.find ( L"__DELETED__") )
 				{
 					wstrNickname = GET_STRING(STR_ID_29404);//????? ????
 				}
@@ -7431,8 +7431,8 @@ void CX2StateServerSelect::ChangeUnitButtonInfo ()
 			{
 				wstring tempNickName = pUnit->GetNickName();
 
-				if ( tempNickName.find( L"__DELETED__") != -1
-					|| tempNickName.find( GET_STRING(STR_ID_29404) ) != -1
+				if ( tempNickName.find( L"__DELETED__") != std::wstring::npos
+					|| tempNickName.find( GET_STRING(STR_ID_29404) ) != std::string::npos
 					)
 				{
 					if( NULL != pStaticID )
