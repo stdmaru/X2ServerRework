@@ -39,6 +39,10 @@ struct DxutState {
     LPDXUTCALLBACKDEVICEDESTROYED deviceDestroyed = nullptr;
     void* deviceDestroyedContext = nullptr;
     bool deviceHandedOut = false;  // DXUTCreateDevice called the Created callback: Destroyed is owed
+    int resetWidth = 0;            // back buffer size the Reset callback last saw
+    int resetHeight = 0;
+    int resolutionWidth = 0;       // the game's resolution (pp.BackBufferWidth/Height), windowed or full screen
+    int resolutionHeight = 0;
 
     bool handleAltEnter = true;
     std::vector<std::string> commandLine;
@@ -181,6 +185,43 @@ void ReleaseDeviceObjects(DxutState& state)
     if (state.deviceDestroyed) {
         state.deviceDestroyed(state.deviceDestroyedContext);
     }
+}
+
+// D3D9's Reset after a mode change: the game sets its viewport, projection and UI scale and remakes its render
+// targets in the Lost/Reset callbacks, so they run whenever the window's pixel size is no longer the one they saw
+// (a resolution chosen in the options, full screen toggled, or the window manager resizing the window).
+void ResetIfResized(DxutState& state)
+{
+    if (!state.deviceHandedOut || !state.window || !state.d3dDevice) {
+        return;
+    }
+    int width = 0;
+    int height = 0;
+    SDL_GetWindowSizeInPixels(state.window->Handle(), &width, &height);
+    if (width <= 0 || height <= 0 || (width == state.resetWidth && height == state.resetHeight)) {
+        return;
+    }
+    SDL_LogInfo(SDL_LOG_CATEGORY_VIDEO, "DXUT: back buffer %dx%d", width, height);
+    state.resetWidth = width;
+    state.resetHeight = height;
+    if (state.deviceLost) {
+        state.deviceLost(state.deviceLostContext);
+    }
+    if (state.deviceReset) {
+        state.deviceReset(state.d3dDevice.get(), DXUTGetBackBufferSurfaceDesc(), state.deviceResetContext);
+    }
+}
+
+// Full screen shows the game's resolution: the closest display mode to it (emulated and scaled by the compositor on
+// Wayland), or the desktop when no resolution is known.
+bool SetFullscreenMode(SDL_Window* window, int width, int height)
+{
+    SDL_DisplayMode mode;
+    if (width > 0 && height > 0 &&
+        SDL_GetClosestFullscreenDisplayMode(SDL_GetDisplayForWindow(window), width, height, 0.f, true, &mode)) {
+        return SDL_SetWindowFullscreenMode(window, &mode);
+    }
+    return SDL_SetWindowFullscreenMode(window, nullptr);
 }
 
 void ReleaseWindow(DxutState& state)
@@ -425,6 +466,10 @@ HRESULT DXUTCreateDevice(UINT /*AdapterOrdinal*/, bool bWindowed, int nSuggested
         return S_OK;
     }
     SDL_Window* window = state.window->Handle();
+    if (nSuggestedWidth > 0 && nSuggestedHeight > 0) {
+        state.resolutionWidth = nSuggestedWidth;
+        state.resolutionHeight = nSuggestedHeight;
+    }
     if (bWindowed && nSuggestedWidth > 0 && nSuggestedHeight > 0) {
         SDL_SetWindowSize(window, nSuggestedWidth, nSuggestedHeight);
         SDL_SyncWindow(window);
@@ -434,6 +479,8 @@ HRESULT DXUTCreateDevice(UINT /*AdapterOrdinal*/, bool bWindowed, int nSuggested
     }
     state.deviceHandedOut = true;
     const D3DSURFACE_DESC* desc = DXUTGetBackBufferSurfaceDesc();
+    state.resetWidth = desc ? static_cast<int>(desc->Width) : 0;
+    state.resetHeight = desc ? static_cast<int>(desc->Height) : 0;
     if ((state.deviceCreated && FAILED(state.deviceCreated(state.d3dDevice.get(), desc, state.deviceCreatedContext))) ||
         (state.deviceReset && FAILED(state.deviceReset(state.d3dDevice.get(), desc, state.deviceResetContext)))) {
         SDL_Log("DXUT: the application could not set up the device");
@@ -541,6 +588,7 @@ HRESULT DXUTMainLoop()
             SDL_WaitEventTimeout(nullptr, 100);
             continue;
         }
+        ResetIfResized(state);
         Render3DEnvironment(state);
         WaitForFrameLimit(state);
     }
@@ -590,11 +638,19 @@ HRESULT DXUTToggleFullScreen()
     if (!state.window) {
         return E_FAIL;
     }
-    // Borderless desktop full screen (SDL's default); exclusive modes come with the graphics port.
-    if (!SDL_SetWindowFullscreen(state.window->Handle(), state.windowed)) {
+    SDL_Window* window = state.window->Handle();
+    if (state.windowed && !SetFullscreenMode(window, state.resolutionWidth, state.resolutionHeight)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "DXUT: full screen mode: %s", SDL_GetError());
+    }
+    if (!SDL_SetWindowFullscreen(window, state.windowed)) {
         return E_FAIL;
     }
     state.windowed = !state.windowed;
+    if (state.windowed && state.resolutionWidth > 0 && state.resolutionHeight > 0) {
+        SDL_SetWindowSize(window, state.resolutionWidth, state.resolutionHeight);
+    }
+    SDL_SyncWindow(window);
+    ResetIfResized(state);
     return S_OK;
 }
 
@@ -796,10 +852,20 @@ HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, boo
     }
     SDL_Window* window = state.window->Handle();
     const D3DPRESENT_PARAMETERS& pp = pNewDeviceSettings->pp;
-    if (state.windowed && pp.BackBufferWidth > 0 && pp.BackBufferHeight > 0 &&
-        !SDL_SetWindowSize(window, static_cast<int>(pp.BackBufferWidth), static_cast<int>(pp.BackBufferHeight))) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "DXUT: SDL_SetWindowSize failed: %s", SDL_GetError());
-        return E_FAIL;
+    if (pp.BackBufferWidth > 0 && pp.BackBufferHeight > 0) {
+        const int width = static_cast<int>(pp.BackBufferWidth);
+        const int height = static_cast<int>(pp.BackBufferHeight);
+        state.resolutionWidth = width;
+        state.resolutionHeight = height;
+        if (state.windowed && !SDL_SetWindowSize(window, width, height)) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "DXUT: SDL_SetWindowSize failed: %s", SDL_GetError());
+            return E_FAIL;
+        }
+        if (!state.windowed && !SetFullscreenMode(window, width, height)) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "DXUT: full screen mode: %s", SDL_GetError());
+            return E_FAIL;
+        }
+        SDL_SyncWindow(window);
     }
     if (pp.PresentationInterval != state.presentInterval) {
         const bool immediate = pp.PresentationInterval == static_cast<UINT>(D3DPRESENT_INTERVAL_IMMEDIATE);
@@ -813,6 +879,7 @@ HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, boo
                     immediate ? "off" : "on");
         state.presentInterval = pp.PresentationInterval;
     }
+    ResetIfResized(state);
     return S_OK;
 }
 
