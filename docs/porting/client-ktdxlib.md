@@ -266,17 +266,25 @@ drawn and submitted, a frame with no stage), `KFileSerializer` save/load/cap/mis
 ending in CRLF, each code unit but the CRLF XORed with 16, `\n` written as text. The file is found in the current
 folder regardless of case (the client ships `general.ess`).
 
-## Preprocessed `.tet` and `.xet` (2026-11-12, `client/x2-run`)
+## Preprocessed files: `.tet`, `.xet`, `Item.kim` (2026-11-12, `client/x2-run`)
 
-The original's tools wrote `.tet` (texture UV keys) and `.xet` (texture changes and animations) on Windows: their
-strings are a WORD length, then UTF-16 code units and a null. `CKTDXDeviceTET_Preprocessing` and
+The original's tools wrote `.tet` (texture UV keys), `.xet` (texture changes and animations) and `Item.kim` (the item
+templets, which the client builds from the item scripts when the file is missing) on Windows: their strings are a WORD
+length, then UTF-16 code units and a null. `CKTDXDeviceTET_Preprocessing` and
 `CKTDXDeviceXET_Preprocessing` cast them to `wchar_t*`, 4 bytes outside Windows, so no key was ever found on Linux
 (the login screen drew `DLG_Login0.TGA`'s "BG01" as one texel, the other quads with size 0). They now read them with
 `KReadPreprocessedString` (`KFileSerializer.h`, a `std::u16string_view`) and compare with
 `KComparePreprocessedString` (code units; ignoring case lowers both, as `_wcsicmp`); `GetString` and `GetKeyFromIndex`
-return `std::wstring`. `KFileSerializer::AppendWideString` still writes the native `wchar_t`: the item templets are
-built and read in memory (`CX2ItemManager`), and the `.tet`/`.xet` proxies that wrote files are unused (the tool is
-[out of scope](../original/out-of-scope.md)). Test: `x2_client_tests -tc="ktdxlib: preprocessed*"`.
+return `std::wstring`.
+
+- `CX2Item::KItemFormatTemplet::GetWideString` read `Item.kim`'s strings the same way, so every model name was garbage
+  and the character select drew no character (`ErrorEnum(10093)` in `CX2Eqip::InitSkin`). Outside Windows it converts
+  each string once and keeps it by offset (callers hold the pointers); `_SetData`/`_ResetData` clear the cache.
+- `KFileSerializer::AppendWideString` writes UTF-16 (lengths in UTF-16 units, aligned to 2), so the item templets the
+  client builds in memory have the same layout as the files. `KMemoryDeserializer::RetrieveWideString*` still read
+  `wchar_t` (no caller).
+
+Test: `x2_client_tests -tc="ktdxlib: preprocessed*"`.
 
 ## Status
 

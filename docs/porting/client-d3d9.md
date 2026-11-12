@@ -113,7 +113,7 @@ What the engine sets and reads back but the fixed-function shaders do not use ye
 - **Pixel shaders and vertex declarations**: no such objects exist (the effects are KTDXLIB's own shaders, T37); setting
   one is ignored, getting one gives null. `IDirect3DVertexDeclaration9`/`PixelShader9` are declared only as interfaces;
   `IDirect3DVertexShader9` is the [effects'](#effects-2026-11-07-clienteffects) `x2::d3d9::VertexShader`.
-- `GetAvailableTextureMem` reports a fixed 512 MB (the backend does not say); `EvictManagedResources` does nothing.
+- `GetAvailableTextureMem` reports the largest `UINT` (about 4 GB, what D3D9 reports on current GPUs; the backend does not say). The fixed 512 MB it reported before 2026-11-12 made `CX2GameOption`'s automatic options choose Low textures. `EvictManagedResources` does nothing.
 - `UpdateTexture(source, destination)` copies the levels both textures have from the source's CPU copy and uploads them
   (same size and format); `Texture::AddDirtyRect` is accepted (whole levels are copied).
 

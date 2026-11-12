@@ -254,7 +254,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         [Client: X2](../porting/client-x2.md#x2cpp-2026-11-12-clientx2-link).
   - [ ] `client/x2-run`: headless start-up test, mass script tests, then login → channel → world on the Linux servers.
         Headless start-up reaches `XS_LOGIN` in the [client folder](../tools/client-folder.md) (2026-11-12).
-        With a window it shows the textured login screen on Hyprland (2026-11-12).
+        With a window it shows the textured login screen on Hyprland, logs in to the Linux servers and draws the
+        character select (2026-11-12).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`
       (2026-11-07).

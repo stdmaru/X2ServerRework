@@ -69,9 +69,17 @@ Left in the logs, from the data and as in the original:
 
 With a window (2026-11-12, Hyprland, workspace 9): the window floats at 1024×768 and shows the login screen with its
 textures. Fixed on the way: the string table (`general.ess`, see [Client: KTDXLIB](client-ktdxlib.md)), the `.tet` UV
-keys (the screen was a 512×512 orange quad: [Preprocessed `.tet` and `.xet`](client-ktdxlib.md#preprocessed-tet-and-xet-2026-11-12-clientx2-run)),
+keys (the screen was a 512×512 orange quad: [Preprocessed `.tet` and `.xet`](client-ktdxlib.md#preprocessed-files-tet-xet-itemkim-2026-11-12-clientx2-run)),
 "not responding" during start-up and while a message box waits ([Client: DXUT](client-dxut.md)), and the graphics
 options question asked at every start ([Client: X2Lib](client-x2lib.md#game-options-file-2026-11-12-clientx2-run)).
+
+With the six Linux servers (2026-11-12): login (`test`/`test`) reaches the character select, which draws the character
+once `Item.kim`'s strings are read as UTF-16 ([Client: KTDXLIB](client-ktdxlib.md#preprocessed-files-tet-xet-itemkim-2026-11-12-clientx2-run)).
+Also fixed: Backspace, Enter, Tab, Esc and Ctrl+letter type their control characters ([Client: DXUT](client-dxut.md)),
+vsync presents in mailbox mode (the fixed 85 Hz step showed ~72–77 fps on 144 Hz), and the automatic options chose Low
+textures because the device reported 512 MB of video memory ([Client: D3D9 device](client-d3d9.md)).
+Seen, not changed: a connection refused at once (server down) opens "failed to connect" while Enter is still held, and the
+OK button's `GetKeyState(DIK_RETURN)` closes it at once; on Windows the refused connect takes about a second.
 
 ## Status
 
