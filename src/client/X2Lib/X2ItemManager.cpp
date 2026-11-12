@@ -172,8 +172,8 @@ bool	CX2ItemManager::OpenItemScriptFile( const WCHAR* pKimFile, unsigned uNumScr
             return true;
     }
 
-    if ( uNumScriptFiles == 0 || apScriptFileName == NULL )
-        return false;
+	if ( uNumScriptFiles == 0 || apScriptFileName == NULL )
+		return false;
 
 	{
 		/* 오현빈 // X2OPTIMIZE_ITEM_TEMPLET_PREPROCESSING주석 // 제가 이해한 내용을 바탕으로 작성 해서 틀린 내용 일 수 있습니다.
@@ -645,7 +645,7 @@ std::pair< CX2ItemManager::RandomItemItr, CX2ItemManager::RandomItemItr > CX2Ite
 
 bool CX2ItemManager::IsRandomItem( std::pair< CX2ItemManager::RandomItemItr, CX2ItemManager::RandomItemItr >& pairValue )
 {
-	if ( ( pairValue.first == m_multimapRandomItem.end() ) && ( pairValue.second == m_multimapRandomItem.end() )
+	if ( (( pairValue.first == m_multimapRandomItem.end() ) && ( pairValue.second == m_multimapRandomItem.end() ))
 		 || ( pairValue.first == pairValue.second ) )
 		return false;
 	else

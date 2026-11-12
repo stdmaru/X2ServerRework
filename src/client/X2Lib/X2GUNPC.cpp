@@ -469,8 +469,8 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
                     float   fSpeedY = halfToFloat( xPT_UNIT_NPC_SYNC.m_usNowSpeedY );
                     if ( fY + fUnitHeight < kSimState.m_v2ReactionYMinMax.x
                         || fY > kSimState.m_v2ReactionYMinMax.y
-                        || ( fSpeedY > 0.f && fY + fSpeedY * fTimeTolerance > kSimState.m_v2ReactionYMinMax.y
-                                || fSpeedY < 0.f && fY + fUnitHeight + fSpeedY * fTimeTolerance < kSimState.m_v2ReactionYMinMax.x ) )
+                        || ( (fSpeedY > 0.f && fY + fSpeedY * fTimeTolerance > kSimState.m_v2ReactionYMinMax.y)
+                                || (fSpeedY < 0.f && fY + fUnitHeight + fSpeedY * fTimeTolerance < kSimState.m_v2ReactionYMinMax.x) ) )
                     {
                         bBroken = true;
 //printf( "NPC State outofrange %S(%d)\n", GetStateNameByStateID( xPT_UNIT_NPC_SYNC.m_cNowState ).c_str(),
@@ -1165,8 +1165,8 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_RetrieveRelativePosInfo( bool 
                     break;
                 }
             }//if.. else..
-            if ( m_eNowStateReaction != REACTION_STATE_FIRST && m_eNowStateReaction != REACTION_STATE_CONTINUE
-                        || bMyUnit == true && m_eNowStateReaction == REACTION_STATE_CONTINUE )
+            if ( (m_eNowStateReaction != REACTION_STATE_FIRST && m_eNowStateReaction != REACTION_STATE_CONTINUE)
+                        || (bMyUnit == true && m_eNowStateReaction == REACTION_STATE_CONTINUE) )
             {
                 bReservePosReliable = true;
                 if ( iDirection != 0 )
@@ -5581,8 +5581,8 @@ void CX2GUNPC::DoFrameMove( bool bNoFrameMove )
 
     }//if
 
-    if ( GetNowStateID() == GUSI_DIE )
-        goto out_state_change;
+	if ( GetNowStateID() == GUSI_DIE )
+		goto out_state_change;
 
 	if( ( m_pidHostUID == 0 || m_pidHostUID != g_pX2Game->GetHostSlotUID() )
         || bLocalUnit == true )
@@ -6350,8 +6350,8 @@ int CX2GUNPC::StateChange_CheckOnly( int state, bool /*bDirectChange*/ )
         return 0;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return 0;
+	if ( GetNowStateID() == GUSI_DIE )
+		return 0;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 	if( GetNowHp() > 0.f ) // 죽은 몬스터의 경우에 석화나 얼음이 동작하지 않기 때문에 살아있는 몬스터에 대해서만 처리
@@ -6381,8 +6381,8 @@ bool CX2GUNPC::StateChange( int state, bool bDirectChange )
 		return false;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return false;
+	if ( GetNowStateID() == GUSI_DIE )
+		return false;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 	if( GetNowHp() > 0.f ) // 죽은 몬스터의 경우에 석화나 얼음이 동작하지 않기 때문에 살아있는 몬스터에 대해서만 처리
@@ -6410,9 +6410,9 @@ bool CX2GUNPC::StateChange( int state, bool bDirectChange )
 
 void CX2GUNPC::UnDoStateChange_Reaction()
 {
-    if ( m_NPCFrameData.unitCondition.nextState == GUSI_DIE
-        || m_kNonHostReaction.IsNextStateRection_NONE() == true )
-        return;
+	if ( m_NPCFrameData.unitCondition.nextState == GUSI_DIE
+		|| m_kNonHostReaction.IsNextStateRection_NONE() == true )
+		return;
 	m_NPCFrameData.unitCondition.nextState		= m_NPCFrameData.syncData.nowState;
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
     m_NPCFrameData.unitCondition.stateChangeParts.stateChangeNum	= m_NPCFrameData.syncData.stateChangeParts.stateChangeNum;
@@ -6431,8 +6431,8 @@ bool CX2GUNPC::StateChange_Reaction_FIRST( int state, int iAttackerUnitIndex, co
 		return false;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return false;
+	if ( GetNowStateID() == GUSI_DIE )
+		return false;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 
@@ -6481,8 +6481,8 @@ bool CX2GUNPC::StateChange_Reaction_Continue( int state, bool bWait )
 		return false;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( GetNowStateID() == GUSI_DIE )
-        return false;
+	if ( GetNowStateID() == GUSI_DIE )
+		return false;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 
@@ -8985,8 +8985,8 @@ void CX2GUNPC::DoStateRage()
 void CX2GUNPC::DamageReact_Rage( CX2DamageManager::DamageData* pDamageData )
 {
     const StateData& nowStateData = GetNowStateData();
-    if ( NOWSTATE_FLAG( CANNOT_RAGE) == true )
-        return;
+	if ( NOWSTATE_FLAG( CANNOT_RAGE) == true )
+		return;
 
 	//{{ oasis907 : 김상윤 [2010.4.21] //
 	if( m_iRageHPPercent != 0)
@@ -9902,8 +9902,8 @@ bool CX2GUNPC::GetIsFallDowning()
     const StateData& nowStateData = GetNowStateData();
     if ( NOWSTATE_FLAG( DAMAGE_DOWN ) == false )
         return false;
-    if( GetIsDamageDown() == false)
-        return false;
+	if( GetIsDamageDown() == false)
+		return false;
 
 	if( m_NPCFrameData.syncData.nowState == (char)m_CommonState.m_DownDamageLandFront
 		|| m_NPCFrameData.syncData.nowState == (char)m_CommonState.m_DownDamageLandBack )
@@ -10544,8 +10544,8 @@ void CX2GUNPC::CommonStateStart()
 
     if ( NOWSTATE_FLAG( SET_ANIM_SPEED ) == true )
         m_fAnimSpeed = nowStateData.m_fSetAnimSpeedValue;
-    else
-        m_fAnimSpeed = m_fDefaultAnimSpeed;
+	else
+		m_fAnimSpeed = m_fDefaultAnimSpeed;
 
 
 	ResetAnimSpeed();
@@ -11009,8 +11009,8 @@ void CX2GUNPC::CommonStateStart()
 	//{{ JHKang / 강정훈 / 2011/01/13 / 몬스터 State당 렌더링 방식 변경
     if ( NOWSTATE_FLAG( SET_RENDER_PARAM ) == true )
         m_RenderParam.renderType = nowStateData.m_eSetRenderParamValue;
-    else
-        m_RenderParam.renderType = m_BasicRenderType;
+	else
+		m_RenderParam.renderType = m_BasicRenderType;
 	m_RenderParam.fOutLineWide	= 1.7f;
 	if( g_pX2Game->GetWorld() != NULL )
 		m_RenderParam.lightPos	= g_pX2Game->GetWorld()->GetLightPos();
@@ -14476,8 +14476,8 @@ void CX2GUNPC::CommonFrameMove_MindFlagParticle()
     const StateData& nowStateData = GetNowStateData();
 
 
-    if ( NOWSTATE_FLAG( USE_MIND_FLAG ) == false )
-        return;
+	if ( NOWSTATE_FLAG( USE_MIND_FLAG ) == false )
+		return;
 
 
 	D3DXVECTOR3 markerPos(0, 0, 0);
@@ -16679,8 +16679,8 @@ RENDER_HINT CX2GUNPC::OnFrameRender_Prepare()
         return RENDER_HINT_NORENDER;
 
     m_pXSkinAnim->SetInstantShow( false );
-    if ( !m_pXSkinAnim->GetShowObject() )
-        return RENDER_HINT_NORENDER;
+	if ( !m_pXSkinAnim->GetShowObject() )
+		return RENDER_HINT_NORENDER;
 
 	if( g_pMain->GetGameOption().GetOptionList().m_UnitDetail == CX2GameOption::OL_HIGH && g_pX2Game->GetWorld() != NULL && m_bFog == true)
 	{
@@ -17302,8 +17302,8 @@ void CX2GUNPC::PhysicProcess()
 			fBuoyancy = pLineData->m_fBuoyancy;
 		}
 
-		if( m_NPCFrameData.stateParam.bLandConnect == false && NULL == m_pAI
-		    || m_NPCFrameData.stateParam.bLandConnect == false && m_pAI != NULL && m_pAI->GetAIFlyNowState() == false
+		if( (m_NPCFrameData.stateParam.bLandConnect == false && NULL == m_pAI)
+		    || (m_NPCFrameData.stateParam.bLandConnect == false && m_pAI != NULL && m_pAI->GetAIFlyNowState() == false)
           )
 		{
             for( int i = 0; i < m_iFrameAccumCounter; i++ )
@@ -18181,8 +18181,8 @@ bool    CX2GUNPC::GetMotionEnd()
 
 void    CX2GUNPC::ReceiveMiniSyncData( UidType uidUnitUID, DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_NPC_MINISYNC& kMiniSync )
 {
-    if ( m_bReceiveFirstSyncPacket == false )
-        return;
+	if ( m_bReceiveFirstSyncPacket == false )
+		return;
 	if( IsLocalUnit() == true )
 		return;
     if ( uidUnitUID == 0 || uidUnitUID != g_pX2Game->GetHostSlotUID() )
@@ -18377,8 +18377,8 @@ bool    CX2GUNPC::SendMiniSyncPacket( CX2FrameUDPPack& kFrameUDPPack )
         }//if
     }//if
 
-    if ( m_kNonHostReaction.UpdateLastSentMiniInfo( iTargetUnitIndex ) == 0 )
-        return false;
+	if ( m_kNonHostReaction.UpdateLastSentMiniInfo( iTargetUnitIndex ) == 0 )
+		return false;
 
 	KDYNAMIC_UNIT_NPC_MINISYNC kMiniSync;
 	kMiniSync.m_iUnitUID				= (int)m_UnitUID;
@@ -18630,8 +18630,8 @@ void CX2GUNPC::SendReserve( int iMaxCount )
 	KTDXPROFILE();
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( iMaxCount <= 0 )
-        return;
+	if ( iMaxCount <= 0 )
+		return;
 
 	m_iSendReserveCount = __max( m_iSendReserveCount, iMaxCount );
 //#else//SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -19128,8 +19128,8 @@ void CX2GUNPC::RenderName()
 		return;
 
 
-    if( m_SpeedDyingFly > 0 && m_bDyingStart == true && GetNPCTemplet().m_ClassType == CX2UnitManager::NCT_BASIC && m_bDieFly == true )
-        return;
+	if( m_SpeedDyingFly > 0 && m_bDyingStart == true && GetNPCTemplet().m_ClassType == CX2UnitManager::NCT_BASIC && m_bDieFly == true )
+		return;
 
 	if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
 		return;
@@ -21815,8 +21815,8 @@ void CX2GUNPC::GetBuffInfo( OUT vector<KNpcUnitBuffInfo>& vecNpcUnitBuffInfo_ ) 
 	const float fGameUnitYMax = fGameUnitYMin + pGameUnit_->GetUnitHeight( true );
 
     int iReliableDirection = iDirection;
-    if ( iReliableDirection != 1 && iReliableDirection != 2 )
-        iReliableDirection = iLocalDirection;
+	if ( iReliableDirection != 1 && iReliableDirection != 2 )
+		iReliableDirection = iLocalDirection;
 
 	if( (fGameUnitYMin >= vMyUnitMinMaxY_.x && fGameUnitYMin <= vMyUnitMinMaxY_.y) ||
 		(fGameUnitYMax >= vMyUnitMinMaxY_.x && fGameUnitYMax <= vMyUnitMinMaxY_.y) ||
@@ -22910,8 +22910,8 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
 		            m_NPCFrameData.unitCondition.fStop2Time <= 0.0f )
         {
             if ( m_cbufReceiveDynamicPacket.size() > 1
-                || m_cbufReceiveDynamicPacket.size() == 1
-                    && m_cbufReceiveDynamicPacket.front().m_bMiniSync == false )
+                || (m_cbufReceiveDynamicPacket.size() == 1
+                    && m_cbufReceiveDynamicPacket.front().m_bMiniSync == false) )
             {
 		        m_iFrameMoveIntervalCounter = iFrameMoveInterval;
                 return;
@@ -22932,8 +22932,8 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
 				|| g_pData->GetGameUDP()->GetRelayUIDs().empty() == false );
     if ( bHostSendPacket == true )
     {
-        if ( m_iSendReserveCount > 0 && ( m_bImmediate == true || g_pX2Game->IsPacketSendFrame() == true )
-            || m_kNonHostReaction.CheckLastSentMiniInfo() == true && g_pX2Game->IsPacketSendFrame() == true )
+        if ( (m_iSendReserveCount > 0 && ( m_bImmediate == true || g_pX2Game->IsPacketSendFrame() == true ))
+            || (m_kNonHostReaction.CheckLastSentMiniInfo() == true && g_pX2Game->IsPacketSendFrame() == true) )
         {
 		    m_iFrameMoveIntervalCounter = iFrameMoveInterval;
 		    return;
@@ -23095,8 +23095,8 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
         }
     }
 
-    if ( m_iFrameMoveIntervalCounter >= iFrameMoveInterval )
-        return;
+	if ( m_iFrameMoveIntervalCounter >= iFrameMoveInterval )
+		return;
 
 	// 가장 가까운 유저와의 거리는..?
 

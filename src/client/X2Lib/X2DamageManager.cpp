@@ -601,8 +601,8 @@ bool CX2DamageManager::GroundHit( DamageData* pDamageData, bool bAttackOnlyThisU
 
     CKTDGLineMap* pLineMap = g_pX2Game->GetWorld()->GetLineMap();
     ASSERT( pLineMap != NULL );
-    if ( pLineMap == NULL )
-        return false;
+	if ( pLineMap == NULL )
+		return false;
 
 	if(pAttackerEffect != NULL)
 	{

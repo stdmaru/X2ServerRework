@@ -2227,7 +2227,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND /*hWnd*/, UINT /*uMsg*
 
 			if ( pSlotData->m_pUnit->GetUID() == kEvent.m_UnitUID )
 			{
-				if ( (pSlotData->m_bHost == true || pSlotData->GetSlotState() == CX2Room::SS_WAIT && pSlotData->m_bReady == false) &&
+				if ( (pSlotData->m_bHost == true || (pSlotData->GetSlotState() == CX2Room::SS_WAIT && pSlotData->m_bReady == false)) &&
 					pSlotData->m_pUnitViewer->GetPlayerEmotion() == false )
 
 				{

@@ -1646,8 +1646,8 @@ CX2EffectSet::Handle CX2EffectSet::PlayEffectSetByPet( const wstring& wstrEffect
 
 
     EffectSetInstance* pEffectSetInstance = _CreateEffectSetInstance( pEffectSetData, tempPtr, NULL, NULL, CX2SquareUnitPtr(), pPet );
-    if ( pEffectSetInstance == NULL )
-        return INVALID_EFFECTSET_HANDLE;
+	if ( pEffectSetInstance == NULL )
+		return INVALID_EFFECTSET_HANDLE;
 
 	pEffectSetInstance->m_bHyper = false;
 	pEffectSetInstance->m_fPowerRate = -1.f;

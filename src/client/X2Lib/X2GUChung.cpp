@@ -16829,7 +16829,7 @@ void CX2GUChung::CSI_SI_A_SIEGE_SHELLING_X_FrameMove()
     // 	else if( m_pXSkinAnim->EventTimerOneshot( 0) )
 // 		bBoneRotate = true;
 
-	if( bBoneRotate = true )
+	if( (bBoneRotate = true) )
 	{
 		float fMinCoefficient = -1.f * tan( D3DX_PI * 10.f / 180.f );
 		float fMaxCoefficient = tan( D3DX_PI * 60.f / 180.f);

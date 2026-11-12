@@ -1416,8 +1416,8 @@ void CX2TFieldNpc::OnFrameRender_Draw()
 	if( false == m_bEnable )
 		return;
 
-    if ( m_pWorld == NULL )
-        return;
+	if ( m_pWorld == NULL )
+		return;
 
 
 	if( m_pXSkinAnim != NULL && GetShowObject() == true )
@@ -2052,8 +2052,8 @@ bool CX2TFieldNpc::Handler_EGS_TALK_WITH_NPC_ACK( HWND /*hWnd*/, UINT /*uMsg*/, 
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
     ASSERT( pBuff != NULL );
-    if ( pBuff == NULL )
-        return false;
+	if ( pBuff == NULL )
+		return false;
 
 	KEGS_TALK_WITH_NPC_ACK kEvent;
 	DeSerialize( pBuff, &kEvent );
@@ -2136,8 +2136,8 @@ void CX2TFieldNpc::SetCanTalkNpc(bool val, bool bForce )
 
     if ( bForce == false )
         m_bReservedCanTalkNpc = true;
-    else
-        m_bReservedCanTalkNpc = false;
+	else
+		m_bReservedCanTalkNpc = false;
 
 	return;
 }

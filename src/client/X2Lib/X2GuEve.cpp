@@ -262,8 +262,8 @@ void CX2GUEve::ReInit( bool bRandom, int startPosIndex )
 	SetSelfDestructSummonedNPC( CX2UnitManager::NUI_SI_HA_FERDINAND );
 
 	ClearThousandStar();
-    if ( m_hEffectSweepParadeTriangle != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeTriangle );
+	if ( m_hEffectSweepParadeTriangle != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeTriangle );
 
 	if ( INVALID_EFFECTSET_HANDLE != m_hEffectEnergeticHeart  )
 	{
@@ -8888,8 +8888,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_End()
 {
 	m_ahMajorMeshInstance[MajorMID_DashComboZ] = INVALID_MESH_INSTANCE_HANDLE;
 
-    if ( m_hEffectElectraDashComboZ != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZ );
+	if ( m_hEffectElectraDashComboZ != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZ );
 
 	CommonStateEnd();
 }
@@ -18766,7 +18766,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
 										ASSERT( pEffect != NULL );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 2.5f );
@@ -18780,7 +18780,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
 										ASSERT( pEffect != NULL );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 1.0f );
@@ -18868,7 +18868,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve, L"EVE_EBS_INDUCTION_LASER_SPECIAL",
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 2.5f );
@@ -18881,7 +18881,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 											m_pEveElectraSystem->m_pGUEve, L"EVE_EBS_INDUCTION_LASER",
 											m_pEveElectraSystem->m_pGUEve->GetPowerRate(), vEffectEndPos,
 											m_pEveElectraSystem->m_pGUEve->GetRotateDegree(), m_pEveElectraSystem->m_pGUEve->GetRotateDegree() );
-                                        if ( pMeshInstance = pEffect->GetMainEffect() )
+                                        if ( (pMeshInstance = pEffect->GetMainEffect()) )
                                         {
 										    pMeshInstance->SetNowLifeTime( 0.f );
 										    pMeshInstance->SetMaxLifeTime( 1.0f );
@@ -20412,11 +20412,11 @@ void CX2GUEve::EveElectraSystem::LaserAttackLineSet( CX2DamageEffect::CEffect* _
 	if( _pDamageEffect == NULL )
 		return;
     CKTDGXMeshPlayer::CXMeshInstance* pMainEffect = _pDamageEffect->GetMainEffect();
-    if ( pMainEffect == NULL || pMainEffect->GetXSkinAnim() == NULL )
-        return;
+	if ( pMainEffect == NULL || pMainEffect->GetXSkinAnim() == NULL )
+		return;
 	CKTDXCollision::CollisionDataList* pCollisionDataList = &pMainEffect->GetXSkinAnim()->GetAttackDataListNonConst();
-    if ( pCollisionDataList == NULL )
-        return;
+	if ( pCollisionDataList == NULL )
+		return;
 
 	for( CKTDXCollision::CollisionData* pColA : *pCollisionDataList )
 	{
@@ -21949,8 +21949,8 @@ void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZ_FrameMove()
 
 void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZ_End()
 {
-    if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
+	if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
 	g_pX2Game->GetMajorXMeshPlayer()->DestroyInstanceHandle( m_hElectraDashComboZMesh );
 	CommonStateEnd();
 }
@@ -22144,8 +22144,8 @@ void CX2GUEve::ENSI_EPR_DASH_COMBO_ZZZ_End()
 {
     if ( m_hEffectElectraDashComboZ != INVALID_DAMAGE_EFFECT_HANDLE )
 	    g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZ );
-    if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
-    	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
+	if ( m_hEffectElectraDashComboZZ != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectElectraDashComboZZ );
 	CommonStateEnd();
 
 	m_bBlinkInvisibility			= false;
@@ -22709,14 +22709,14 @@ void CX2GUEve::ENSI_SA_EPR_SWEEP_ROLLING_CHARGE_EventProcess()
 		m_FrameDataFuture.syncData.nowAction = UAI_ELECTRA_PLANE_ANGLE_DOWN;
 	}
 
-	if( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true ||
-		m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true ||
-		m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true ||
-		m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true
-		|| m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true
-		|| m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true
-		|| m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true
-		|| m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true
+	if( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true) ||
+		(m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true)
 		)
 	{
 		StateChange( ENSI_SA_EPR_SWEEP_ROLLING_FIRE );
@@ -22733,8 +22733,8 @@ void CX2GUEve::ENSI_SA_EPR_SWEEP_ROLLING_CHARGE_End()
 {
     if ( m_hEffectSweepParadeLight != INVALID_DAMAGE_EFFECT_HANDLE )
         g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeLight );
-    if ( m_hEffectSweepParadeElectric != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeElectric );
+	if ( m_hEffectSweepParadeElectric != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeElectric );
 	CommonStateEnd();
 	m_FrameDataNow.stateParam.bSuperArmorNotRed = true;
 }
@@ -25845,10 +25845,10 @@ void CX2GUEve::ENSI_SA_EEL_Sweep_Rolling_Tri_Vulcan_Fire_EventProcess()
 		m_FrameDataFuture.syncData.nowAction = UAI_ELECTRA_PLANE_ANGLE_DOWN;
 	}
 
-	if( ( m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true || m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true
-		|| m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true || m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true
-		|| m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true || m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true
-		|| m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true || m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true )
+	if( ( (m_eSpecialAttackKeyPressed == SAKP_A && m_InputData.pureA != true) || (m_eSpecialAttackKeyPressed == SAKP_S && m_InputData.pureS != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_D && m_InputData.pureD != true) || (m_eSpecialAttackKeyPressed == SAKP_C && m_InputData.pureC != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_Q && m_InputData.pureQ != true) || (m_eSpecialAttackKeyPressed == SAKP_W && m_InputData.pureW != true)
+		|| (m_eSpecialAttackKeyPressed == SAKP_E && m_InputData.pureE != true) || (m_eSpecialAttackKeyPressed == SAKP_R && m_InputData.pureR != true) )
 		&& m_fEffectStartTime >= 3.0f )
 	{
 		StateChange( ENSI_SA_EEN_SWEEP_ROLLING_TRI_VULCAN_END );

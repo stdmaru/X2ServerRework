@@ -633,8 +633,8 @@ bool CX2TutorSystem::OpenScriptFile( const WCHAR* pFileName )
 	// TutorSystem.lua 파일을 읽어서 UTF-8 포맷이 아니면 변환한다
 
     KLuaManagerProxy luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
-    if ( g_pKTDXApp->LoadAndDoMemory_LocalFile( &luaManager, pFileName ) == false )
-        return false;
+	if ( g_pKTDXApp->LoadAndDoMemory_LocalFile( &luaManager, pFileName ) == false )
+		return false;
 
 
 	int iUnitIndex = 0;

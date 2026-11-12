@@ -2476,8 +2476,8 @@ HRESULT	CX2Game::OnFrameMove( double fTime, float fElapsedTime )
 
 					    if ( pCX2GameUnit != NULL )
 					    {
-                            if ( iUnitType == 0 && pCX2GameUnit->GetGameUnitType() != CX2GameUnit::GUT_USER
-                                || iUnitType == 1 && pCX2GameUnit->GetGameUnitType() != CX2GameUnit::GUT_NPC )
+                            if ( (iUnitType == 0 && pCX2GameUnit->GetGameUnitType() != CX2GameUnit::GUT_USER)
+                                || (iUnitType == 1 && pCX2GameUnit->GetGameUnitType() != CX2GameUnit::GUT_NPC) )
                                 continue;
 
 						    // user의 경우 unit이나 unitdata가 유효하지 않은 데이타가 들어가있는 경우가 있다.
@@ -4207,8 +4207,8 @@ bool CX2Game::DeleteAllNPCUnit()
 
     CX2GUNPC::ResetReactionSimulationCounter();
 
-    if ( g_pKTDXApp->GetLuaBinder() != NULL )
-        g_pKTDXApp->GetLuaBinder()->FlushJitCompileMode();
+	if ( g_pKTDXApp->GetLuaBinder() != NULL )
+		g_pKTDXApp->GetLuaBinder()->FlushJitCompileMode();
 
 	return true;
 }

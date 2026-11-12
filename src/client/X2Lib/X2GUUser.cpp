@@ -1976,8 +1976,8 @@ void CX2GUUser::InitPosition( bool bUseTeamPos, int startPosIndex )
     DWORD   dwFrameMoveCount = 0;
     if ( m_ReceiveSyncDataList.empty() == false )
         dwFrameMoveCount = m_ReceiveSyncDataList.back().dwFrameMoveCount;
-    else
-        dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
+	else
+		dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 	while( m_FrameBufferNum > (int)m_ReceiveSyncDataList.size() )
 	{
@@ -2181,8 +2181,8 @@ void CX2GUUser::InitPosByBattleFieldPosition()
                 DWORD   dwFrameMoveCount = 0;
                 if ( m_ReceiveSyncDataList.empty() == false )
                     dwFrameMoveCount = m_ReceiveSyncDataList.back().dwFrameMoveCount;
-                else
-                    dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
+				else
+					dwFrameMoveCount = m_FrameDataNow.syncData.dwFrameMoveCount;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 	            while( m_FrameBufferNum > (int)m_ReceiveSyncDataList.size() )
 	            {
@@ -9727,8 +9727,8 @@ void CX2GUUser::AttackResult()
 
 	default:
 		{
-			if( g_pX2Game != NULL && g_pX2Game->GetDamageEffect() != NULL &&
-				( GetHitCreateDamageEffectRate() > 0.f && GetRandomFloat() <= GetHitCreateDamageEffectRate() ) ||
+			if( (g_pX2Game != NULL && g_pX2Game->GetDamageEffect() != NULL &&
+				( GetHitCreateDamageEffectRate() > 0.f && GetRandomFloat() <= GetHitCreateDamageEffectRate() )) ||
 				( m_DamageData.m_fCreateDamageEffectRate > 0.f && GetRandomFloat() <= m_DamageData.m_fCreateDamageEffectRate ) )
 			{
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, m_DamageData.m_wstrCreateDamageEffectName.c_str(),
@@ -16651,8 +16651,8 @@ bool CX2GUUser::PopFrameData( bool bPopOnce, OUT bool& bFrameBufferPass )
 		if( (int)m_ReceiveSyncDataList.size() > m_FrameBufferNum + m_AddFrameBuffer )
 		{
 //#ifdef  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
-            if ( m_FrameDataNow.syncData.nowState == USI_WAIT
-                && m_ReceiveSyncDataList.front().nowState == USI_WAIT
+            if ( (m_FrameDataNow.syncData.nowState == USI_WAIT
+                && m_ReceiveSyncDataList.front().nowState == USI_WAIT)
                 || bPopOnce == false )
                 bPopAgain = true;
 //#else   SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND

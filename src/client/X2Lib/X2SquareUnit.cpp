@@ -963,8 +963,8 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 	if( m_bFirstGetPacket == false && m_bMyUnit == false )
 		return S_OK;
 
-    if ( !GetShowObject() )
-        return S_OK;
+	if ( !GetShowObject() )
+		return S_OK;
 
 //}} robobeg : 2008-10-18
 
@@ -1352,8 +1352,8 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 
 /*virtual*/ RENDER_HINT CX2SquareUnit::OnFrameRender_Prepare()
 {
-    if ( m_bInit == false || (m_bFirstGetPacket == false && m_bMyUnit == false) )
-        return RENDER_HINT_NORENDER;
+	if ( m_bInit == false || (m_bFirstGetPacket == false && m_bMyUnit == false) )
+		return RENDER_HINT_NORENDER;
 
 	if( GetPersonalShopState() == PSS_SHOP )
         return RENDER_HINT_NORENDER;

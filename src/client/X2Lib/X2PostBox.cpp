@@ -395,8 +395,8 @@ HRESULT CX2PostBox::OnFrameMove(double fTime, float fElapsedTime)
 	}
 	//}} 김상훈 : 2010.10.06 전체선택 체크박스
 
-    if( false == GetEnable() )
-        return S_OK;
+	if( false == GetEnable() )
+		return S_OK;
 
 	if( (m_pDLGMailSend != NULL && m_pDLGMailSend->GetIsOverControl() == true) ||
 		(m_pDlgMailReceive != NULL && m_pDlgMailReceive->GetIsOverControl() == true) ||
@@ -1350,8 +1350,8 @@ bool CX2PostBox::OnRClickedItemInInven( D3DXVECTOR2 mousePos )
     }
 
 
-    if ( pItemSlot->GetSlotType() != CX2SlotManager::CX2Slot::ST_INVENTORY )
-        return false;
+	if ( pItemSlot->GetSlotType() != CX2SlotManager::CX2Slot::ST_INVENTORY )
+		return false;
 
 	return false;
 }
@@ -1671,8 +1671,8 @@ bool CX2PostBox::MouseUp( D3DXVECTOR2 mousePos )
 bool CX2PostBox::MouseDown( D3DXVECTOR2 mousePos )
 {
     // 현재 메일관련 기능 수행중이거나 수량등록, 아이템등록, 메일확인/뷰 중일때는 처리하지 않는다.
-    if(m_bProcess || m_bRegisteredTrade || m_bAttachItem == false || m_CurrentState == 0)
-        return false;
+	if(m_bProcess || m_bRegisteredTrade || m_bAttachItem == false || m_CurrentState == 0)
+		return false;
 
 	return CX2ItemSlotManager::MouseDown( mousePos );
 }
@@ -2997,8 +2997,8 @@ void CX2PostBox::OpenMail(int inx)
 
 void CX2PostBox::SetMailView(int inx)
 {
-    if(inx < 0 || inx >= 6)
-        return;
+	if(inx < 0 || inx >= 6)
+		return;
 
 	m_pDlgMailView->SetShowEnable(false, false);
 	if( IsSystemMail() == true)
@@ -3271,8 +3271,8 @@ void CX2PostBox::GetItemLetter(int inx)
     if(inx < 0 || inx >= 6)
         return;
 
-    if(m_listSlot[inx].m_ItemId <= 0 || m_listSlot[inx].m_postID <= 0)
-        return;
+	if(m_listSlot[inx].m_ItemId <= 0 || m_listSlot[inx].m_postID <= 0)
+		return;
 
 	//{{ 09.04.28 태완 : ED 한계초과 체크
 	if(m_listSlot[inx].m_ItemId == 127000 || m_listSlot[inx].m_ItemId == 127040)

@@ -1514,8 +1514,8 @@ bool CX2TitleManager::GetUnitType(int titleid)
 {
     const TitleInfo *pTitle = GetTitleInfo(titleid);
 
-    if(pTitle == NULL)
-        return false;
+	if(pTitle == NULL)
+		return false;
 
 	if(	pTitle->m_eUnitType == CX2Unit::UT_NONE ||
 		(	g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetSelectUnit() != NULL &&

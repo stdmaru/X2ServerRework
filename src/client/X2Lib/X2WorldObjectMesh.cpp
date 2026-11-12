@@ -247,8 +247,8 @@ void    CX2WorldObjectMesh::OnFrameRender_Draw()
 	if( pXMesh == NULL )
 		return;
 
-	if ( m_pChangeTexXET != NULL && m_pChangeTexXET->IsLoaded() == false
-		|| m_pMultiTexXET != NULL && m_pMultiTexXET->IsLoaded() == false )
+	if ( (m_pChangeTexXET != NULL && m_pChangeTexXET->IsLoaded() == false)
+		|| (m_pMultiTexXET != NULL && m_pMultiTexXET->IsLoaded() == false) )
 		return;
 
 	//랜더 파라메터 세팅
@@ -266,8 +266,8 @@ void    CX2WorldObjectMesh::OnFrameRender_Draw()
 
     if ( IsAlphaObject() )
         renderParam.bAlphaBlend = true;
-    else
-        renderParam.bAlphaBlend = false;
+	else
+		renderParam.bAlphaBlend = false;
 
 	g_pKTDXApp->GetDGManager()->GetXRenderer()->OnFrameRender( renderParam, worldMatrix, *pXMesh, m_pChangeTexXET, m_pMultiTexXET, NULL, 0, 1, &m_vecDrawSubset );
 
@@ -306,8 +306,8 @@ void CX2WorldObjectMesh::SetLOD( bool bLOD )
 bool CX2WorldObjectMesh::RayHit( D3DXVECTOR3 rayStart, D3DXVECTOR3 rayEnd, float* pHitDistance )
 {
 //#ifdef BACKGROUND_LOADING_TEST // 2008-10-20
-    if ( !IsValidMesh() )
-        return false;
+	if ( !IsValidMesh() )
+		return false;
 //#endif // BACKGROUND_LOADING_TEST // 2008-10-20
 
 	D3DXVECTOR3 rayDir = rayEnd - rayStart;

@@ -7717,10 +7717,10 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, 
                     ASSERT( pStateBattleField != NULL );
 
 
-                    if ( pStateBattleField != NULL )
-                        pStateBattleField->FlushSendFrameAverage();
+					if ( pStateBattleField != NULL )
+						pStateBattleField->FlushSendFrameAverage();
 
-	                CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
+					CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
 	                battleFieldManager.SetBattleFieldIdWhereIam( kEvent.m_kBattleFieldJoinInfo.m_iBattleFieldID );
                     battleFieldManager.SetBattleFieldPositionIndexWhereIShouldBe( kEvent.m_kBattleFieldJoinInfo.m_iStartPosIndex );
                     battleFieldManager.SetNowBattleFieldPositionInfoStartPosition( kEvent.m_kBattleFieldJoinInfo.m_bNowBattleFieldPositionInfoStartPosition );
@@ -9496,10 +9496,10 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT( HWND /*hWnd*/, U
                 ASSERT( pStateBattleField != NULL );
 
 
-                if ( pStateBattleField != NULL )
-                    pStateBattleField->FlushSendFrameAverage();
+				if ( pStateBattleField != NULL )
+					pStateBattleField->FlushSendFrameAverage();
 
-	            CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
+				CX2BattleFieldManager& battleFieldManager = g_pData->GetBattleFieldManager();
 	            battleFieldManager.SetBattleFieldIdWhereIam( kEvent.m_kBattleFieldJoinInfo.m_iBattleFieldID );
                 battleFieldManager.SetBattleFieldPositionIndexWhereIShouldBe( kEvent.m_kBattleFieldJoinInfo.m_iStartPosIndex );
                 battleFieldManager.SetNowBattleFieldPositionInfoStartPosition( kEvent.m_kBattleFieldJoinInfo.m_bNowBattleFieldPositionInfoStartPosition );

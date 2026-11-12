@@ -502,8 +502,8 @@ void CX2SmallGageUI::DrawSmallGage()
 						NULL != g_pX2Game->GetMyUnit() )
 					{
 						if( ( NULL != g_pX2Room->GetMySlot() && g_pX2Room->GetMySlot()->m_bObserver == true ) ||
-							true == g_pX2Game->GetMyUnit()->GetCashItemAbility().m_bShowOppnentMP
-							&& g_pX2Game->GetMyUnit()->GetTeam() != m_optrGameUnit->GetTeam() )
+							(true == g_pX2Game->GetMyUnit()->GetCashItemAbility().m_bShowOppnentMP
+							&& g_pX2Game->GetMyUnit()->GetTeam() != m_optrGameUnit->GetTeam()) )
 						{
 							vOut.y += ( 5 * g_pKTDXApp->GetResolutionScaleY() );
 							DrawMpGage( vOut );

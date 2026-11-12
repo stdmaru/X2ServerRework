@@ -305,8 +305,8 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 
 	//{{ kimhc // 2009-12-15 // 이전에 플레이 했던 서버군 저장
 	//SaveScriptServerGroupFile();
-    if ( g_pInstanceData != NULL )
-        g_pInstanceData->SaveScriptServerGroupFile();
+	if ( g_pInstanceData != NULL )
+		g_pInstanceData->SaveScriptServerGroupFile();
 	//}} kimhc // 2009-12-15 // 이전에 플레이 했던 서버군 저장
 
 	//{{ JHKang / 강정훈 / 2011.6.26 / 휴면 복귀 버프 남은 기간 표시
@@ -735,8 +735,8 @@ bool CX2TFieldGame::GetEnableKey()
 void CX2TFieldGame::JoinFieldUnit( KFieldUserInfo* pKFieldUserInfo )
 {
     ASSERT( pKFieldUserInfo != NULL );
-    if ( pKFieldUserInfo == NULL )
-        return;
+	if ( pKFieldUserInfo == NULL )
+		return;
 
 	CX2SquareUnit* pCX2FieldUnit = NULL;
 
@@ -851,14 +851,14 @@ bool    CX2TFieldGame::AddUnitToDeviceList( CX2Unit* pUnit
 CX2SquareUnit* CX2TFieldGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit )
 {
     ASSERT( pUnit != NULL );
-    if ( pUnit == NULL )
-        return NULL;
+	if ( pUnit == NULL )
+		return NULL;
 
 	CX2SquareUnitPtr pCX2FieldUnit = CX2SquareUnit::CreateSquareUnit( bMyUnit, pUnit,
 		CX2SquareUnit::GetSquareUnitScriptFileName( pUnit->GetClass() ), true );
     ASSERT( pCX2FieldUnit != NULL );
-    if ( pCX2FieldUnit == NULL )
-        return NULL;
+	if ( pCX2FieldUnit == NULL )
+		return NULL;
 
 
 
@@ -866,8 +866,8 @@ CX2SquareUnit* CX2TFieldGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit 
 		pCX2FieldUnit->Init();
 
 //#ifdef TITLE_SYSTEM
-    if( bInit == false )
-        pCX2FieldUnit->UpdateEquippedEmblem();
+	if( bInit == false )
+		pCX2FieldUnit->UpdateEquippedEmblem();
 //#endif
 
 
@@ -1239,8 +1239,8 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 		{
 			CKTDGParticleSystem::CParticleEventSequence* pSeqPortal	= GetUiParticle()->GetInstanceSequence( m_hOtherLine );
 			D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos( otherLinePos );
-            if ( pSeqPortal != NULL )
-		        pSeqPortal->SetPosition(D3DXVECTOR3(finalPos.x, finalPos.y - 200.f, 0.f));
+			if ( pSeqPortal != NULL )
+				pSeqPortal->SetPosition(D3DXVECTOR3(finalPos.x, finalPos.y - 200.f, 0.f));
 
 			if(bShowUp == true)
 			{
@@ -2539,8 +2539,8 @@ void CX2TFieldGame::SetFreeCamera( bool bFreeCamera )
 
 void CX2TFieldGame::SyncUnitFrame()
 {
-    if ( m_pMyUnit == NULL )
-        return;
+	if ( m_pMyUnit == NULL )
+		return;
 
 	std::vector<CX2SquareUnit::SyncUnitState> syncData;
 	D3DXVECTOR3 unitPos(0,0,0);
@@ -3005,8 +3005,8 @@ void CX2TFieldGame::ByeNpc()
 
 bool CX2TFieldGame::TalkNpc()
 {
-    if ( m_pMyUnit == NULL )
-        return false;
+	if ( m_pMyUnit == NULL )
+		return false;
 
 	// 마켓진입구인지 확인
 	if(m_bJoinMarket == true && m_iJoinMarketIndex >= 0)
@@ -3905,8 +3905,8 @@ void CX2TFieldGame::OpenFieldName()
 
 	m_pDLGFieldName = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_Field_Title.lua" );
     ASSERT( m_pDLGFieldName != NULL );
-    if ( m_pDLGFieldName != NULL )
-    	g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGFieldName );
+	if ( m_pDLGFieldName != NULL )
+		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGFieldName );
 
 	m_fFieldNameTime = 0.f;
 	switch(g_pData->GetLocationManager()->GetCurrentVillageID())
@@ -4753,8 +4753,8 @@ bool CX2TFieldGame::GetIsRightNpc(int iHouseID)
 {
 	bool bRight = false;
 
-    if ( m_pMyUnit == NULL )
-        return bRight;
+	if ( m_pMyUnit == NULL )
+		return bRight;
 
 	for(UINT i=0; i<m_vecFieldNpc.size(); ++i)
 	{

@@ -57,8 +57,8 @@ void CX2SimplePathFinder::FollowTargetPath( /*float fElapsedTime,*/ const D3DXVE
 
 	const CKTDGLineMap::LineData* pFinalDestLineData = pLineMap->GetLineData(iFinalDestLineDataIndex);
     CKTDGLineMap::LineGroupID pFinalDestLineGroup;
-    if ( pFinalDestLineData != NULL )
-        pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
+	if ( pFinalDestLineData != NULL )
+		pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
 
 	if( pFinalDestLineData != NULL )
@@ -525,8 +525,8 @@ void CX2SimplePathFinder::EscapeTargetPath( /*float fElapsedTime,*/ const D3DXVE
 
 	const CKTDGLineMap::LineData*			pFinalDestLineData	= pLineMap->GetLineData(iFinalDestLineDataIndex);
     CKTDGLineMap::LineGroupID	    pFinalDestLineGroup;
-    if ( pFinalDestLineData != NULL )
-        pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
+	if ( pFinalDestLineData != NULL )
+		pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
 	D3DXVECTOR3 vFinalDestDir	= vFinalDestPos - vCurrPos;
 	[[maybe_unused]] float fFinalDestDist		= D3DXVec3Length( &vFinalDestDir );
@@ -698,8 +698,8 @@ void CX2SimplePathFinder::FollowTargetPathFly( /*float fElapsedTime,*/ const D3D
 
 	const CKTDGLineMap::LineData* pFinalDestLineData = pLineMap->GetLineData(iFinalDestLineDataIndex);
     CKTDGLineMap::LineGroupID   pFinalDestLineGroup;
-    if ( pFinalDestLineData != NULL )
-        pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
+	if ( pFinalDestLineData != NULL )
+		pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
 	if( pFinalDestLineData != NULL )
 	{
@@ -1116,8 +1116,8 @@ void CX2SimplePathFinder::SimpleFollowTargetPath( float /*fElapsedTime*/, D3DXVE
 
 	const CKTDGLineMap::LineData* pFinalDestLineData = pLineMap->GetLineData(iFinalDestLineDataIndex);
     CKTDGLineMap::LineGroupID pFinalDestLineGroup;
-    if ( pFinalDestLineData != NULL )
-        pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
+	if ( pFinalDestLineData != NULL )
+		pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
 	D3DXVECTOR3 vFinalDestDir = vFinalDestPos - vCurrPos;
 	[[maybe_unused]] float fFinalDestDist = D3DXVec3LengthSq( &vFinalDestDir );
@@ -1551,8 +1551,8 @@ void CX2SimplePathFinder::SimpleFollowTargetPathFly( float /*fElapsedTime*/, D3D
 
 	const CKTDGLineMap::LineData* pFinalDestLineData = pLineMap->GetLineData(iFinalDestLineDataIndex);
     CKTDGLineMap::LineGroupID   pFinalDestLineGroup;
-    if ( pFinalDestLineData != NULL )
-        pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
+	if ( pFinalDestLineData != NULL )
+		pFinalDestLineGroup = pFinalDestLineData->m_lineGroupID;
 
 	D3DXVECTOR3 vFinalDestDir = vFinalDestPos - vCurrPos;
 

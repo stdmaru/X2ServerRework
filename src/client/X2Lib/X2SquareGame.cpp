@@ -295,8 +295,8 @@ CX2SquareUnit* CX2SquareGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit 
 		pCX2SquareUnit->Init();
 
 //#ifdef TITLE_SYSTEM
-    if( bInit == false )
-        pCX2SquareUnit->UpdateEquippedEmblem();
+	if( bInit == false )
+		pCX2SquareUnit->UpdateEquippedEmblem();
 //#endif
 
 	pCX2SquareUnit->StateChange( pCX2SquareUnit->GetStateID().m_Wait  );

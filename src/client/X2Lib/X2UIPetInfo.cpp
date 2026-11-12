@@ -495,7 +495,7 @@ bool CX2UIPetInfo::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM 
 		break;
 	}
 
-	if( m_pDLGUIPetInfo != NULL && m_pDLGUIPetInfo->GetShow() == true
+	if( (m_pDLGUIPetInfo != NULL && m_pDLGUIPetInfo->GetShow() == true)
 		|| ( m_pDLGUIRidingPetInfo != NULL && m_pDLGUIRidingPetInfo->GetShow() == true )
 		)
 	{

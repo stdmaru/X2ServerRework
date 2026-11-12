@@ -3961,7 +3961,7 @@ bool CX2Main::GetNativeAndEnglisKeyState() //???? ??? ??? ??????	// TRUE ?? ???
 {
 	bool bRet = false;
 	HIMC hIMC = NULL;
-	if ( hIMC = x2::dxut::imm::ImmGetContext( g_pKTDXApp->GetHWND() ) )
+	if ( (hIMC = x2::dxut::imm::ImmGetContext( g_pKTDXApp->GetHWND() )) )
 	{
 		DWORD fdwConversion, fdwSentence;
 
@@ -6751,10 +6751,10 @@ bool CX2Main::KeyProcess()
 	{
 
 
-		if( g_pInstanceData != NULL &&
-			GetNowStateID() == CX2Main::XS_VILLAGE_MAP ||
-			GetNowStateID() == CX2Main::XS_BATTLE_FIELD &&
-			g_pInstanceData->GetIsDungeonLounge() == false )
+		if( (g_pInstanceData != NULL &&
+			GetNowStateID() == CX2Main::XS_VILLAGE_MAP) ||
+			(GetNowStateID() == CX2Main::XS_BATTLE_FIELD &&
+			g_pInstanceData->GetIsDungeonLounge() == false) )
 		{
 			// ???
 			if ( bHideDialog == false && GET_KEY_STATE( GA_PVE ) == TRUE ) //DIK_P
@@ -7009,7 +7009,7 @@ bool CX2Main::KeyProcess()
 
 		if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_DELETE) == TRUE &&
 			(	g_pData->GetUIManager()->GetUIPersonalTrade() == NULL ||
-				g_pData->GetUIManager()->GetUIPersonalTrade() != NULL && g_pData->GetUIManager()->GetUIPersonalTrade()->IsTrading() == false
+				(g_pData->GetUIManager()->GetUIPersonalTrade() != NULL && g_pData->GetUIManager()->GetUIPersonalTrade()->IsTrading() == false)
 			)
 		)
 		{

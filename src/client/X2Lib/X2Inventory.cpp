@@ -465,7 +465,7 @@ CX2Item* CX2Inventory::GetItem( UidType itemUID, bool bIncludeBankType /* = fals
 		if ( pInvenSlotData != NULL )
 		{
 			//{{ kimhc // 2009-08-08 // SortType이 ST_BANK인 것을 찾을 것인가?
-			if ( bIncludeBankType == true || pInvenSlotData->m_SortType	!= ST_BANK && pInvenSlotData->m_SortType != ST_SHARE_BANK )
+			if ( bIncludeBankType == true || (pInvenSlotData->m_SortType	!= ST_BANK && pInvenSlotData->m_SortType != ST_SHARE_BANK) )
 				pItem	= pInvenSlotData->m_pItem;
 			//}} kimhc // 2009-08-08 // SortType이 ST_BANK인 것을 찾을 것인가?
 
@@ -516,8 +516,8 @@ CX2Inventory::SORT_TYPE CX2Inventory::GetItemSortType( UidType itemUID ) const
 
 int CX2Inventory::GetUsedSlotNum( CX2Inventory::SORT_TYPE sortType ) const
 {
-    if ( false == ( sortType >= SORT_TYPE(0) && sortType < ST_END ) )
-        return 0;
+	if ( false == ( sortType >= SORT_TYPE(0) && sortType < ST_END ) )
+		return 0;
 
 	int slotCount = 0;
 

@@ -1884,8 +1884,8 @@ void CX2UIShop::AllEquippingItemRepairREQ()
 // 주의 : 사용시 NULL CHECK!
 CKTDGUIRadioButton* CX2UIShop::GetRadioButtonNameByCategory( BUY_ITEM_CATEGORY buyItemCategory )
 {
-    if( m_pDLGShop == NULL )
-        return NULL;
+	if( m_pDLGShop == NULL )
+		return NULL;
 
 	CKTDGUIRadioButton* pRButton = NULL;
 	switch(buyItemCategory)

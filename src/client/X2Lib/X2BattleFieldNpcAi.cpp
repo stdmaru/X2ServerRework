@@ -387,8 +387,8 @@ bool CX2BattleFieldNpcAi::CheckAndResetTargetLost()
 
 void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTargetCandidateUnitList_ )
 {
-    if ( vecTargetCandidateUnitList_.empty() == true )
-        return;
+	if ( vecTargetCandidateUnitList_.empty() == true )
+		return;
 	switch ( GetAIData()->targetData.targetPriority )
 	{
 	case TP_HIGH_LEVEL_FIRST:

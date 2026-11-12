@@ -773,8 +773,8 @@ void CX2GUNPCAI::TargetingNPC( float fElapsedTime )
     // 1번씩 trigger 되어 실행된다. 따라서 random 계산할 때는 CX2GUNPC::EstimateFrameOneshotPercent 을 이용하도록 한다
     // <- 기존의 random 계산법과 동일
 
-    if( CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->targetData.targetSuccessRate ) == false )
-        return TargetUpdate( false );
+	if( CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->targetData.targetSuccessRate ) == false )
+		return TargetUpdate( false );
 
 
 	// 이전 타겟을 유지할까요?
@@ -1018,8 +1018,8 @@ void CX2GUNPCAI::TargetUpdate( bool bAccumulate_ )
 			m_vPivotPoint = m_vPosition;	// 현재 자리를 기점으로 패트롤?
 			m_iPivotPointLineIndex = m_iLastTouchLineIndex;
 
-            if( bAccumulate_ == true && m_pMasterNPC->EstimateFrameAccumPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true
-                || bAccumulate_ == false && CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true )
+            if( (bAccumulate_ == true && m_pMasterNPC->EstimateFrameAccumPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true)
+                || (bAccumulate_ == false && CX2GUNPC::EstimateFrameOneshotPercent( m_pAIData->patrolMoveData.patrolBeginRate ) == true) )
 				SetNowPatroling( true );
 			else
 				SetNowPatroling( false );

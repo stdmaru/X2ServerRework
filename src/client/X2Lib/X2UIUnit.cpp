@@ -152,8 +152,8 @@ HRESULT CX2UIUnit::OnFrameMove( double fTime, float fElapsedTime )
 //{{ robobeg : 2008-10-18
 	//if ( m_bShow == false )
 	//	return S_OK;
-    if ( !GetShowObject())
-        return S_OK;
+	if ( !GetShowObject())
+		return S_OK;
 
 //}} robobeg : 2008-10-18
 

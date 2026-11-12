@@ -340,8 +340,8 @@ HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRen
 		return E_FAIL;
     DWORD   dwItemID = m_pItemTemplet->GetItemID();
 
-    if ( pRenderParam == NULL )
-        return S_OK;
+	if ( pRenderParam == NULL )
+		return S_OK;
 
 	for( int i=0; i< CX2Item::MAX_MODEL_COUNT_A_ITEM ; i++ )
 	{
@@ -1678,11 +1678,11 @@ void CX2Eqip::_UpdateSkin(int iIndex_)
 		switch( m_iXSkinModelAttachment )
 		{
 		case 1:
-            if ( m_pUnitXSkinAnim != NULL )
+			if ( m_pUnitXSkinAnim != NULL )
 			m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
 			break;
 		case 2:
-            if ( m_pUnitXSkinAnim != NULL )
+			if ( m_pUnitXSkinAnim != NULL )
 			m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
 			break;
 		}
@@ -1761,11 +1761,11 @@ void CX2Eqip::_UpdateSkin()
 			switch( m_iXSkinModelAttachment )
 			{
 			case 1:
-                if ( m_pUnitXSkinAnim != NULL )
+				if ( m_pUnitXSkinAnim != NULL )
 				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
 				break;
 			case 2:
-                if ( m_pUnitXSkinAnim != NULL )
+				if ( m_pUnitXSkinAnim != NULL )
 				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
 				break;
 			}
@@ -1784,7 +1784,7 @@ void CX2Eqip::_UpdateSkin()
 					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
 
 				default:
-                    if ( m_pUnitXSkinAnim != NULL )
+					if ( m_pUnitXSkinAnim != NULL )
 					m_pUnitXSkinAnim->AddModelXSkinMesh( m_pHyperXSkinModel[i], m_pHyperAniXET, NULL, m_pHyperTexChangeXET );
 					m_iXSkinModelAttachment = 2;
 				}
@@ -1800,7 +1800,7 @@ void CX2Eqip::_UpdateSkin()
 					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
 
 				default:
-                    if ( m_pUnitXSkinAnim != NULL )
+					if ( m_pUnitXSkinAnim != NULL )
 					m_pUnitXSkinAnim->AddModelXSkinMesh( m_pNormalXSkinModel[i], m_pNormalAniXET, NULL, m_pNormalTexChangeXET );
 					if( NULL != m_pNormalXSkinModel[i] )
 						m_iXSkinModelAttachment = 1;

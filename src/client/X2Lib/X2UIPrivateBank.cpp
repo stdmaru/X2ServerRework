@@ -1066,8 +1066,8 @@ bool CX2UIPrivateBank::OnDropAnyItem( D3DXVECTOR2 mousePos )
 		return false;
 
 	const CX2Inventory* pInventory = GetMyInventory();
-    if ( pInventory == NULL )
-        return false;
+	if ( pInventory == NULL )
+		return false;
 
 	switch ( (*m_pSlotBeforeDragging)->GetSlotType() )
 	{

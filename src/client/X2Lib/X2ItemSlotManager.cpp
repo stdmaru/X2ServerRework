@@ -757,8 +757,8 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 
 	CX2Unit* pkUnit = g_pData->GetMyUser()->GetSelectUnit();
     const CX2Item::ItemTemplet* pkItemTemplet = g_pData->GetItemManager()->GetItemTemplet( itemTID );
-    if ( pkItemTemplet == NULL )
-        return  slotItemDesc;
+	if ( pkItemTemplet == NULL )
+		return  slotItemDesc;
 
 	//{{ kimhc // 2009-08-26 // 아이템 봉인 시 디스크립션 변경
 	const CX2Item::ItemData*	pItemData		= NULL;

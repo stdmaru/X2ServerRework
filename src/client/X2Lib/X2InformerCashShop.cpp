@@ -65,8 +65,8 @@ bool CX2InformerCashShop::IsNowInfoChange()
 		{
 			CX2Unit* pUnit = g_pData->GetMyUser()->GetSelectUnit();
 
-			if( 15 > m_LastCheckLevel && 15 <= pUnit->GetUnitData().m_Level ||
-				35 > m_LastCheckLevel && 35 <= pUnit->GetUnitData().m_Level )
+			if( (15 > m_LastCheckLevel && 15 <= pUnit->GetUnitData().m_Level) ||
+				(35 > m_LastCheckLevel && 35 <= pUnit->GetUnitData().m_Level) )
 			{
 				m_bCanClassChange = true;
 			}

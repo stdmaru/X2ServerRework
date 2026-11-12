@@ -2378,8 +2378,8 @@ void CX2UnitViewerUI::RemoveAllEquips()
 
 void CX2UnitViewerUI::AddEquipByTID( int itemTID, bool bBasicItem  )
 {
-    if ( itemTID <= 0 )
-        return;
+	if ( itemTID <= 0 )
+		return;
 
 	// 아이템 생성
 	CX2Item* pItem = NULL;
@@ -2573,16 +2573,16 @@ void CX2UnitViewerUI::AddEqip( UidType itemUID )
     if ( itemUID <= 0 )
         return;
 
-    if ( m_ViewEquipMap.find( itemUID ) != m_ViewEquipMap.end() )
-        return;
+	if ( m_ViewEquipMap.find( itemUID ) != m_ViewEquipMap.end() )
+		return;
 
 	CX2Item* pItem = m_pUnit->GetInventory().GetItem( itemUID );
 	if( pItem == NULL )
 		return;
 
     ASSERT( pItem->GetUID() == itemUID );
-    if ( pItem->GetUID() != itemUID )
-        return;
+	if ( pItem->GetUID() != itemUID )
+		return;
 
 	if ( m_pUnit != NULL )
 	{
@@ -2597,8 +2597,8 @@ void CX2UnitViewerUI::AddEqip( UidType itemUID )
 
     CX2Unit::EQIP_POSITION ePos = pItemTemplet->GetEqipPosition();
     ASSERT( ePos >= CX2Unit::EQIP_POSITION( 0 ) && ePos < CX2Unit::EP_END );
-    if ( !( ePos >= CX2Unit::EQIP_POSITION( 0 ) && ePos < CX2Unit::EP_END ) )
-        return;
+	if ( !( ePos >= CX2Unit::EQIP_POSITION( 0 ) && ePos < CX2Unit::EP_END ) )
+		return;
 
 	int enchantLevel = pItem->GetItemData().m_EnchantLevel;
 	/*
@@ -2643,8 +2643,8 @@ void CX2UnitViewerUI::AddEqip( UidType itemUID )
     if ( pX2Eqip == NULL )
         return;
     pX2Eqip->SetManagerObject( this );
-    if ( IsRecursivelyManagedByDGManager() )
-        g_pKTDXApp->GetDGManager()->AddObjectChain( pX2Eqip.get() );
+	if ( IsRecursivelyManagedByDGManager() )
+		g_pKTDXApp->GetDGManager()->AddObjectChain( pX2Eqip.get() );
 
 	if(m_bFixed && (pX2Eqip->GetEqipType() == CX2Item::UT_ATTACH_ANIM || pX2Eqip->GetEqipType() == CX2Item::UT_ATTACH_NORMAL ) )
 		pX2Eqip->SetFixed();

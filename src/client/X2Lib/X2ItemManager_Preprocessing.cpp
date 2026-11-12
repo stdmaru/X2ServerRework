@@ -103,8 +103,8 @@ CX2ItemManager::KProxy2::KProxy2( const std::set<DWORD>& setItemIDs, const std::
 
 DWORD   CX2ItemManager::KProxy2::AppendD3DXVECTOR3( const D3DXVECTOR3& v, bool bDefaultOne )
 {
-    if ( bDefaultOne == false && v.x == 0.f && v.y == 0.f && v.z == 0.f
-        || bDefaultOne == true && v.x == 1.f && v.y == 1.f && v.z == 1.f )
+    if ( (bDefaultOne == false && v.x == 0.f && v.y == 0.f && v.z == 0.f)
+        || (bDefaultOne == true && v.x == 1.f && v.y == 1.f && v.z == 1.f) )
         return  0;
     KD3DXVECTOR3OffsetMap::const_iterator iter = m_mapVectorOffset.find( v );
     if ( iter != m_mapVectorOffset.end() )

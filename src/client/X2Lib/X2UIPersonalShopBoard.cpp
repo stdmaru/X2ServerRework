@@ -1872,9 +1872,9 @@ bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_REQ()
 	int uMaxLevel = 0;
 
 	// 해외팀 변경
-	if( m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == 0 ||
-		m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == _CONST_X2GAME_::g_iMaxLevel ||
-		m_iIMEEditMinLevel == _CONST_X2GAME_::g_iMaxLevel && m_iIMEEditMaxLevel == 0)
+	if( (m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == 0) ||
+		(m_iIMEEditMinLevel == 0 && m_iIMEEditMaxLevel == _CONST_X2GAME_::g_iMaxLevel) ||
+		(m_iIMEEditMinLevel == _CONST_X2GAME_::g_iMaxLevel && m_iIMEEditMaxLevel == 0))
 	{
 		uMinLevel = -1;
 		uMaxLevel = -1;

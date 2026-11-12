@@ -1439,7 +1439,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND /*hWnd*/, UINT /*u
 
 			if ( pSlotData->m_pUnit->GetUID() == kEvent.m_UnitUID )
 			{
-				if ( pSlotData->m_bHost == true || pSlotData->GetSlotState() == CX2Room::SS_WAIT && pSlotData->m_bReady == false )
+				if ( pSlotData->m_bHost == true || (pSlotData->GetSlotState() == CX2Room::SS_WAIT && pSlotData->m_bReady == false) )
 				{
 					//wstring motionName = g_pX2Room->GetMotionName( (CX2Room::ROOM_MOTION)kEvent.m_cMotionID );
 					//pSlotData->m_pUnitViewer->PlayAnim(  motionName.c_str(), CKTDGXSkinAnim::XAP_ONE_WAIT, true );
@@ -2447,7 +2447,7 @@ void CX2StateDungeonRoom::UIFrameMove()
 
 		CX2DungeonRoom::SlotData* pSlotData = m_pCX2DungeonRoom->GetSlotData( i );
 
-		if( pSlotData != NULL && pSlotData->m_SlotState == CX2DungeonRoom::SS_LOADING
+		if( (pSlotData != NULL && pSlotData->m_SlotState == CX2DungeonRoom::SS_LOADING)
 			|| pSlotData->m_SlotState == CX2DungeonRoom::SS_PLAY
 			|| pSlotData->m_SlotState == CX2DungeonRoom::SS_WAIT )
 		{

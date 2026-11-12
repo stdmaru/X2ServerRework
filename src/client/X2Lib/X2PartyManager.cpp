@@ -2003,8 +2003,8 @@ bool CX2PartyManager::Handler_EGS_GAME_START_PVP_MATCH_NOT( HWND /*hWnd*/, UINT 
 	CX2Room::SetPvpNpcSlotInfo( kEvent.m_mapPvpNpcInfo );
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if ( g_pData != NULL && g_pData->GetGameUDP() != NULL && g_pMain != NULL )
-        g_pData->GetGameUDP()->SetForceConnectMode( g_pMain->GetUDPMode( CX2Game::GT_PVP ) );
+	if ( g_pData != NULL && g_pData->GetGameUDP() != NULL && g_pMain != NULL )
+		g_pData->GetGameUDP()->SetForceConnectMode( g_pMain->GetUDPMode( CX2Game::GT_PVP ) );
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 

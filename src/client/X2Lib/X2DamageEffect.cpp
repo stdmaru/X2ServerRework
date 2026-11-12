@@ -391,10 +391,10 @@ CX2DamageEffect::CEffect*  CX2DamageEffect::GetInstance( CEffectHandle handle, b
     if ( wIndex >= m_coInstanceHandleList.storage_size() )
         return NULL;
     KInstanceHandleInfo& info = m_coInstanceHandleList.data( wIndex );
-    if ( info.m_pInstance == NULL || info.m_wStamp != wStamp || bLiveOnly == true &&
+    if ( info.m_pInstance == NULL || info.m_wStamp != wStamp || (bLiveOnly == true &&
         ( info.m_eListType != LIST_LIVE
             || info.m_pInstance->GetLive() == false
-         )
+         ))
         )
         return NULL;
     return info.m_pInstance;
@@ -1880,8 +1880,8 @@ void CX2DamageEffect::CEffect::OnFrameMove( double fTime, float fElapsedTime )
 
 void CX2DamageEffect::CEffect::OnFrameMove_SoundData()
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	ASSERT( pMeshInst != NULL );
@@ -1952,8 +1952,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_SoundData()
 
 void CX2DamageEffect::CEffect::OnFrameMove_BlackHoleData( float fElapsedTime )
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	ASSERT( pMeshInst != NULL );
@@ -2096,8 +2096,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_BlackHoleData( float fElapsedTime )
 
 void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	ASSERT( pMeshInst != NULL );
@@ -2581,8 +2581,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_SineMoveData( float fElapsedTime )
 {
 	//**
 
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	//ASSERT( pMeshInst != NULL );
@@ -2736,8 +2736,8 @@ void CX2DamageEffect::CEffect::AttackResult()
 
 	KTDXPROFILE();
 
-    if( m_DamageData.reActResult == CX2DamageManager::RT_NO_DAMAGE )
-        return;
+	if( m_DamageData.reActResult == CX2DamageManager::RT_NO_DAMAGE )
+		return;
 
 	CX2GameUnit* pOwnerGameUnit = ( null != m_optrOwnerUnit ? m_optrOwnerUnit.GetObservable() : NULL );
 	CX2GameUnit *pDefenderGameUnit = m_DamageData.optrDefenderGameUnit.GetObservable();
@@ -3339,8 +3339,8 @@ void CX2DamageEffect::CEffect::AttackResult()
 	{
 		CX2GUNPC* pGUNPC = (CX2GUNPC*) pDefenderGameUnit;
 		if( pGUNPC->GetAbsorbMagicState() == true &&
-			( m_DamageData.bCanReflexMagic == true || true == pGUNPC->GetAbsorbMagicSpecial() &&
-			CX2DamageManager::AT_EFFECT == m_DamageData.attackerType && CX2DamageManager::AT_NORMAL == m_DamageData.attackType ) )
+			( m_DamageData.bCanReflexMagic == true || (true == pGUNPC->GetAbsorbMagicSpecial() &&
+			CX2DamageManager::AT_EFFECT == m_DamageData.attackerType && CX2DamageManager::AT_NORMAL == m_DamageData.attackType) ) )
 		{
 			bCreateHitEffect = false;
 			bCreateAbsorbMagicEffect = true;
@@ -4724,8 +4724,8 @@ void CX2DamageEffect::CEffect::FollowLine()
 	D3DXVECTOR3 outPos;
 	int			lineIndex = 0;
 
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	if( NULL == pMeshInst )
@@ -4945,8 +4945,8 @@ void CX2DamageEffect::CEffect::LoadSinMoveData()
 //kimhc // 2010-12-17 // D3DXVECTOR3를 인자로 넘기는 것을 const D3DXVECTOR3&로 변경함
 void CX2DamageEffect::CEffect::VectorLockOn( const D3DXVECTOR3& targetPos )
 {
-    if ( g_pX2Game == NULL )
-        return;
+	if ( g_pX2Game == NULL )
+		return;
 
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hMeshInstHandle );
 	if( NULL == pMeshInst )

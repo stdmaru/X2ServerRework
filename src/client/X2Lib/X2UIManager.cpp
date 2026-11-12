@@ -203,8 +203,8 @@ HRESULT CX2UIManager::OnFrameMove( double fTime, float fElapsedTime )
 
 	if(m_pQuickSlot != NULL && m_pQuickSlot->GetShow()) m_pQuickSlot->OnFrameMove( fTime, fElapsedTime );
 	if(m_pCharInfo != NULL && m_pCharInfo->GetShow()) m_pCharInfo->OnFrameMove( fTime, fElapsedTime );
-	if(m_pInventory != NULL && m_pInventory->GetShow()
-		|| m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE
+	if((m_pInventory != NULL && m_pInventory->GetShow())
+		|| (m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE)
 		) m_pInventory->OnFrameMove( fTime, fElapsedTime );
 	if(m_pWatch != NULL && m_pWatch->GetShow()) m_pWatch->OnFrameMove(fTime, fElapsedTime );
 	if(m_pPersonalShop != NULL && m_pPersonalShop->GetShow()) m_pPersonalShop->OnFrameMove(fTime, fElapsedTime);
@@ -639,7 +639,7 @@ bool CX2UIManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			return true;
 	}
 	else if(m_pInventory != NULL && m_pInventory->GetDLGResolveItemResult() != NULL
-		|| m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE
+		|| (m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE)
 		)
 	{
 		// oasis907 : 김상윤 [2010.7.27] // 인벤토리창은 닫혔는데 큐브 결과창은 열린상태

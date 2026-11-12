@@ -251,8 +251,8 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 	CX2State::Handler_EGS_GET_ACTIVE_LAGCHECK_REQ();
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK_VER2
 
-    if ( g_pData->GetGameUDP() != NULL )
-        g_pData->GetGameUDP()->RemoveAllPendingPingSends();
+	if ( g_pData->GetGameUDP() != NULL )
+		g_pData->GetGameUDP()->RemoveAllPendingPingSends();
 
 	/// 만약 어둠의 문 입장중이라면, 소환 퀵슬롯 설정
 	if ( NULL != g_pData &&

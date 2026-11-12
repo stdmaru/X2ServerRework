@@ -765,8 +765,8 @@ void CX2DungeonGame::StageStart()
 	KOGGamePerformanceCheck::GetInstance()->Resume();
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 
-    if ( g_pData->GetGameUDP() != NULL )
-        g_pData->GetGameUDP()->RemoveAllPendingPingSends();
+	if ( g_pData->GetGameUDP() != NULL )
+		g_pData->GetGameUDP()->RemoveAllPendingPingSends();
 
 	if( NULL != m_pDungeon && NULL != m_pDungeon->GetDungeonData() &&
 		m_pDungeon->GetDungeonData()->m_bShowStageTime == true )
@@ -1072,8 +1072,8 @@ void CX2DungeonGame::SubStageStart()
 	KOGGamePerformanceCheck::GetInstance()->Resume();
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 
-    if ( g_pData->GetGameUDP() != NULL )
-        g_pData->GetGameUDP()->RemoveAllPendingPingSends();
+	if ( g_pData->GetGameUDP() != NULL )
+		g_pData->GetGameUDP()->RemoveAllPendingPingSends();
 
 	if( NULL != GetMyUnit() && GetMyUnit()->GetUnitType() == CX2Unit::UT_ADD )
 	{
@@ -1907,7 +1907,7 @@ void CX2DungeonGame::TextOutTutorial_LUA( int nMsg, float fTime )
 				CanNotInputAndDisalbeNPCAI(true);
 			}
 
-			if( true == pCX2GUNPC->GetFocusCamera() && pCX2GUNPC->GetStartState() == (int)pCX2GUNPC->GetGameUnitState()
+			if( (true == pCX2GUNPC->GetFocusCamera() && pCX2GUNPC->GetStartState() == (int)pCX2GUNPC->GetGameUnitState())
 				|| true == pCX2GUNPC->GetFocusCameraAtCurrentState() )
 			{
 				if( true == pCX2GUNPC->GetApplyCinematicUI() && true == g_pMain->IsInheritStateMenu())

@@ -2159,8 +2159,8 @@ bool CX2PET::StateChange( int iStateId, bool bForce, bool bCheck )
 	m_petSyncData.bStateChange	= true;
 	m_PetStateData = m_StateList[m_petSyncData.nowState];
 
-    if ( m_pXSkinAnim != NULL )
-        m_pXSkinAnim->ResetOneshotPerformed();
+	if ( m_pXSkinAnim != NULL )
+		m_pXSkinAnim->ResetOneshotPerformed();
 
 	//다음 스테이트를 시작한다
 	bTableOpen = m_LuaManager.BeginTableByReference( m_PetStateData.stateID );

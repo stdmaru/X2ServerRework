@@ -4548,8 +4548,8 @@ void CX2GameUnit::DeleteEffectSetOnCustomState()
 
 void CX2GameUnit::AddEffectiveBlackHoleDamageEffect( CX2DamageEffect::CEffectHandle hDamageEffect )
 {
-    if ( hDamageEffect == INVALID_DAMAGE_EFFECT_HANDLE )
-        return;
+	if ( hDamageEffect == INVALID_DAMAGE_EFFECT_HANDLE )
+		return;
 	m_setEffectiveBlackHoleDamageEffect.insert( hDamageEffect );
 }
 
@@ -7434,10 +7434,10 @@ RENDER_HINT CX2GameUnit::Weapon::OnFrameRender_Prepare()
     if ( m_pXSkinWeapon != NULL  )
     {
         m_pXSkinWeapon->SetInstantShow( false );
-        if ( !m_pXSkinWeapon->GetShowObject() )
-            return RENDER_HINT_NORENDER;
+		if ( !m_pXSkinWeapon->GetShowObject() )
+			return RENDER_HINT_NORENDER;
 
-	    CKTDGXRenderer::RenderParam* pRenderParam = m_pXSkinWeapon->GetRenderParam();
+		CKTDGXRenderer::RenderParam* pRenderParam = m_pXSkinWeapon->GetRenderParam();
         ASSERT( pRenderParam != NULL );
 	    *pRenderParam = GetOwnerUnit().GetUnitRenderParam();
 
@@ -11076,8 +11076,8 @@ void CX2GameUnit::PlayEffectSetHittedByBuff()
 */
 bool CX2GameUnit::ApplyBuffToGameUnitInDamageReact( const CX2DamageManager::DamageData* pDamageData_ )
 {
-    if ( pDamageData_ == NULL )
-        return false;
+	if ( pDamageData_ == NULL )
+		return false;
 
 	bool bBeApplied = false;
 
