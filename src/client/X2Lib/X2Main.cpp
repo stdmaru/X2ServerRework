@@ -2632,7 +2632,6 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 		m_NowStateID = (X2_STATE)stateID;
 		StateInLog();
 		AllDeleteServerPacket();
-		g_pKTDXApp->SetFrameRate( 75.f );
 
 		//{{ ????? : [2009/7/21] //	????? ????? ? ??????
 		if(g_pChatBox != NULL)
@@ -2739,7 +2738,6 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 
 					//g_pData->GetEventScene()->BlackLayOutMove( false, 1.0f, false, true, 3.0f, 1.0f );
 
-					g_pKTDXApp->SetFrameRate( 60.f ); // Originally 40.0f
 
 					g_pData->DeleteAllRooms();
 
@@ -2813,7 +2811,6 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 
 			case XS_DUNGEON_GAME:
 				{
-					g_pKTDXApp->SetFrameRate( 70.f );
 
 					g_pData->DeleteBattleFieldRoom();
 					g_pData->DeletePVPRoom();	/// ??? ??? ??? ???? ?? ??????...
@@ -2831,7 +2828,6 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 
 			case XS_SQUARE_GAME:
 				{
-					g_pKTDXApp->SetFrameRate( 40.f );
 
 					SAFE_DELETE(g_pTFieldGame);
 					m_pNowState = new CX2StateSquareGame();
@@ -2856,7 +2852,6 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 				break;
 			case XS_BATTLE_FIELD:
 				{
-					g_pKTDXApp->SetFrameRate( 72.f );
 
 					g_pData->DeleteAllRooms();
 					g_pData->ResetBattleFieldRoom();
@@ -2871,7 +2866,6 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 
 			case XS_WEDDING_GAME:
 				{
-					g_pKTDXApp->SetFrameRate( 40.f );
 					//SAFE_DELETE(g_pTFieldGame);
 					m_pNowState = new CX2StateWeddingGame();
 

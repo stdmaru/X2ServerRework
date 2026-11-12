@@ -104,7 +104,9 @@ CKTDXApp::CKTDXApp( HWND hWnd, HINSTANCE hInstance, IDirect3DDevice9* pd3dDevice
     m_dwMainThreadID    = ::GetCurrentThreadId();
     //}} seojt // 2009-1-14, 20:50
 	m_bAppDestroy		= false;
-	m_fConstElapsedTime	= (1.0f/85.0f);
+	// One simulation rate for every state (T43): the original set 40 to 85 per state with SetFrameRate, as frame caps
+	// from when a tick was also a drawn frame; rendering is free of the ticks since T41.
+	m_fConstElapsedTime	= 1.0f / kSimulationRate;
 
 	m_dTime				= 0.0f;
 	m_BeforeFrameTime	= (float)DXUTGetGlobalTimer()->GetTime();

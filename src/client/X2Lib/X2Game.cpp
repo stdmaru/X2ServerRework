@@ -6,7 +6,7 @@
 
 
 
-#define X2GAME_NPC_ROBUST_PACKET_SEND_INTERVAL  (3*70)
+#define X2GAME_NPC_ROBUST_PACKET_SEND_INTERVAL  (3*60)   // 3 seconds of simulation steps (T43; 3*70 at the original's dungeon rate)
 
 
 bool CX2Game::m_sbRenderNPCName = true;

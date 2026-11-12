@@ -287,12 +287,14 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       unchanged. The audio APIs (FMOD, DirectSound, MP3) are confined to 9 `KTDXLIB` files (`KTDXDeviceSound.*`,
       `KTDSManager.*`, `KTDSMP3Play.*`, `Always.h`, `KTDXErrorDefine.h`) and 3 in `X2Lib` (2026-11-05).
 - [ ] Graphics improvements before audio (user, 2026-11-12; content may change, [T42](decisions.md)), in this order:
-  - [ ] `client/resolution`: choosing another resolution or fullscreen resizes the window and the swapchain.
+  - [x] `client/global-tick`: one simulation rate of 60 steps per second in every state ([T43](decisions.md), PR #61).
+  - [x] `client/resolution`: choosing another resolution or full screen resets the game's device objects; full screen at
+        the closest display mode (Hyprland refuses windowed resizes) (2026-11-12, PR #60).
+  - [ ] `client/interpolation-2`: everything that still moves at tick rate (T41 later phases; before MSAA, user 2026-11-12): mesh players, particles, UI and
+        billboards (quest balloons).
   - [ ] `client/msaa`: MSAA 2x/4x/8x on the back buffer and its resolve.
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
-  - [ ] `client/interpolation-2`: what still moves at tick rate (T41 later phases): mesh players, particles, UI and
-        billboards (quest balloons).
   - [ ] `client/graphics-options`: a larger options dialog with the new settings (vsync, frame limit, MSAA, resolution).
   - [ ] `client/widescreen`, after audio: native widescreen, UI anchored instead of stretched.
 - [ ] **Audio, last** (user, 2026-11-05): replace the silent backend with a real one, FMOD Ex / DirectSound →

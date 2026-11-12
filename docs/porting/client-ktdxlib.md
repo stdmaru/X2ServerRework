@@ -303,7 +303,7 @@ Test: `x2_client_tests -tc="ktdxlib: preprocessed*"`.
 ## Frame pacing (2026-11-12, `client/frame-pacing`, [T41](../project/decisions.md))
 
 **Behavior change.** `CKTDXApp::OnFrameMove` keeps the original's fixed steps (`m_fConstElapsedTime`, set per state by
-`SetFrameRate`) but no longer sleeps until the next one: it runs the steps that are due (none if less than one is) and
+`SetFrameRate` in the original; one rate of 60 since [T43](../project/decisions.md)) but no longer sleeps until the next one: it runs the steps that are due (none if less than one is) and
 every loop renders. The step logic is the original's single-step branch for every step (stop-frame delay, stop frames,
 `m_bFinalFrame` on the last step of a loop); a hitch over a second still drops the backlog.
 
@@ -322,6 +322,20 @@ over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMa
 Measured on 2026-11-12 (optimized build, 144 Hz display, vsync off): character select ~1,200 fps, village ~600, field
 ~350; with vsync, 144.
 
+
+### One simulation rate (2026-11-12, `client/global-tick`, [T43](../project/decisions.md))
+
+**Behavior change.** Every state steps at `CKTDXApp::kSimulationRate` (60 per second); `SetFrameRate` is removed with its
+per-state calls in `CX2Main::ChangeState` (the original: 75 by default and in PvP, 60 village (once 40), 70 dungeon,
+72 field, 40 square and wedding; 85 for PvP only with `OPTIMIZED_P2P`, which the build leaves off). What the game counts in
+steps (audited 2026-11-12):
+
+- converted to seconds with the step length, so unchanged: non-host NPC reaction tolerance (`X2GUNPC.cpp`), buff time
+  sent with a step count (`X2BuffFinalizerTemplet.cpp`, with the measured `GetFrameMoveFPS`);
+- the NPC robust packet interval, `3*70` steps: now `3*60`, still 3 seconds;
+- the P2P batches of `CX2Main::GetFrameBufferNum` (7 steps) and the NPC frame-move intervals stay in steps: 117 ms per
+  batch instead of 100 ms in dungeons;
+- the non-host NPC position history keeps at least 70 entries, now 1.17 s.
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)
