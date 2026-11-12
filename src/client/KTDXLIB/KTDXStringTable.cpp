@@ -3,6 +3,7 @@
 #include <KncUtil.h>
 #include "KTDXStringTable.h"
 
+#include "x2/platform/file.h"
 #include "x2/platform/string.h"
 #include "x2/platform/unicode.h"
 
@@ -204,25 +205,6 @@ const std::wstring& CKTDXStringTable::GetScriptString( int iID )
 
 }
 
-namespace
-{
-// The file in the current folder whose name matches regardless of case (the client ships "general.ess"; the original
-// opened "General.ess" on a case-insensitive file system). Empty when there is none.
-std::filesystem::path FindInCurrentFolder( const std::wstring& wstrFileName )
-{
-    const std::filesystem::path wanted( wstrFileName );
-    std::error_code ec;
-    if( std::filesystem::is_regular_file( wanted, ec ) )
-        return wanted;
-    for( const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator( std::filesystem::current_path( ec ), ec ) )
-    {
-        if( entry.is_regular_file( ec ) &&
-            x2::platform::IEquals( entry.path().filename().wstring(), wanted.filename().wstring() ) )
-            return entry.path();
-    }
-    return {};
-}
-}
 
 // The string table (.ess): UTF-16LE with a BOM, one "[index]\t[string]" line per string ending in CRLF, every code
 // unit of a line but the CRLF XORed with 16. Read as bytes and decoded here: the original's _wfopen + fgetws relied on
@@ -231,7 +213,7 @@ bool CKTDXStringTable::LoadStringTable( std::wstring& wstrFileName, std::vector<
 {
     vecStringTable.clear();
 
-    const std::filesystem::path path = FindInCurrentFolder( wstrFileName );
+    const std::filesystem::path path = x2::platform::FindFileIgnoreCase( std::filesystem::current_path(), std::filesystem::path( wstrFileName ) );
     std::ifstream file( path, std::ios::binary );
     ASSERT( file );
     if( path.empty() || !file )

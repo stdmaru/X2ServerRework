@@ -59,3 +59,19 @@ TEST_CASE("ReadOnlyFile: positional reads, size, errors")
     CHECK(error.find("cannot open") != std::string::npos);
     CHECK_FALSE(ReadOnlyFile::Open(std::filesystem::temp_directory_path(), error));
 }
+
+TEST_CASE("FindFileIgnoreCase: exact names, other cases, missing files")
+{
+    const auto dir = std::filesystem::temp_directory_path() / "x2_platform_find_ignore_case";
+    std::filesystem::remove_all(dir);
+    std::filesystem::create_directories(dir / "sub");
+    std::ofstream(dir / "movie_create_ara_base.avi") << "x";
+
+    CHECK(x2::platform::FindFileIgnoreCase(dir, "movie_create_ara_base.avi") == dir / "movie_create_ara_base.avi");
+    CHECK(x2::platform::FindFileIgnoreCase(dir, "Movie_Create_Ara_Base.avi") == dir / "movie_create_ara_base.avi");
+    CHECK(x2::platform::FindFileIgnoreCase(dir, "Movie_Create_Ara_SD.avi").empty());
+    CHECK(x2::platform::FindFileIgnoreCase(dir, "SUB").empty());     // directories are not files
+    CHECK(x2::platform::FindFileIgnoreCase(dir / "missing", "a.avi").empty());
+
+    std::filesystem::remove_all(dir);
+}

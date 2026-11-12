@@ -1,5 +1,7 @@
 #include "x2/platform/file.h"
 
+#include "x2/platform/string.h"
+
 #include <system_error>
 
 #if defined(_WIN32)
@@ -148,5 +150,21 @@ bool ReadOnlyFile::ReadAt(std::uint64_t offset, void* buffer, std::size_t count,
 }
 
 #endif
+
+std::filesystem::path FindFileIgnoreCase(const std::filesystem::path& directory, const std::filesystem::path& name)
+{
+    std::error_code ec;
+    const std::filesystem::path exact = directory / name;
+    if (std::filesystem::is_regular_file(exact, ec)) {
+        return exact;
+    }
+    const std::wstring wanted = name.filename().wstring();
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(directory, ec)) {
+        if (entry.is_regular_file(ec) && IEquals(entry.path().filename().wstring(), wanted)) {
+            return entry.path();
+        }
+    }
+    return {};
+}
 
 } // namespace x2::platform

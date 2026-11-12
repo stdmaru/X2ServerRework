@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "x2/platform/file.h"
 #include "./KTDGUIControl.h"
 
 CKTDGUIControl::CKTDGUIControl()
@@ -1700,6 +1702,16 @@ CKTDGUIControl::CMovieData::CMovieData()
 
 CKTDGUIControl::CMovieData::~CMovieData()
 {
+	// DLG_Unit_Create_Front_Menu_New.lua calls g_pPromotionMovie:SetLoop(true), but that global still holds
+	// the movie of the character-select dialog, which is deleted by then. Point such globals at a sink that
+	// is never shown, instead of letting the script write into freed memory.
+	static CMovieData s_sink;
+	if (this != &s_sink && g_pKTDXApp != NULL && g_pKTDXApp->GetLuaBinder() != NULL
+		&& g_pKTDXApp->GetLuaBinder()->GetLuaState() != NULL)
+	{
+		lua_tinker::retarget_globals(g_pKTDXApp->GetLuaBinder()->GetLuaState(),
+			lua_tinker::class_name<CMovieData>::name(), this, &s_sink);
+	}
 	SAFE_CLOSE( m_pRenderTargetTexture );
 	SAFE_DELETE( m_pFrameTexture );
 }
@@ -1722,8 +1734,10 @@ void CKTDGUIControl::CMovieData::SetMovieFileName( const WCHAR* wstrMovieFileNam
 	m_Player.Close();
 	SAFE_DELETE( m_pFrameTexture );
 
-	const std::filesystem::path path = std::filesystem::current_path() / L"movie" / std::filesystem::path( m_wstrMovieFileName );
-	if ( m_Player.Open( path ) )
+	// Found regardless of case: the scripts ask for "Movie_Create_Ara_Base.avi", the client ships lower-case names.
+	const std::filesystem::path path = x2::platform::FindFileIgnoreCase( std::filesystem::current_path() / L"movie",
+		std::filesystem::path( m_wstrMovieFileName ) );
+	if ( !path.empty() && m_Player.Open( path ) )
 	{
 		// A8R8G8B8 is B, G, R, A in memory, what MoviePlayer::GetFrameBgra writes. Managed: lockable, and kept over
 		// device resets.
