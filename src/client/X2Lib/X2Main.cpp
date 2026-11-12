@@ -642,12 +642,12 @@ CX2Main::~CX2Main(void)
 //{{ 2013.02.27 ?????	??? ?? ???? ??? (SERV_GLOBAL_BASE)
 std::wstring CX2Main::GetWstrBasicConfigFile()
 {
-	// The US configs of datai015.kom. The importer left the original's `#elif CLIENT_COUNTRY_US` (1 under /D) as an
-	// undefined `#if`, so the client asked for Config_INTERNAL.lua, which the US client does not have (2026-11-12).
+	// One variant (US): the configs have no country in their names (Config_US_*.lua of datai015.kom renamed,
+	// 2026-11-12).
 #if X2_DEV_TOOLS
-	return L"Config_US_INTERNAL.lua";
+	return L"Config_INTERNAL.lua";
 #else
-	return L"Config_US_SERVICE.lua";
+	return L"Config_SERVICE.lua";
 #endif
 }
 

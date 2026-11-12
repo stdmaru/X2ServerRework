@@ -55,8 +55,19 @@ The executable links warning-free on Clang (dev tools ON) and GCC (dev tools OFF
   original showed the 32-bit virtual address space), through `x2::platform::PhysicalMemory`/`CurrentProcessMemory`.
   Legacy `swprintf` calls became `swprintf_s` (MSVC `%s` semantics).
 
+## Start-up (2026-11-12, `client/x2-run`)
+
+In the [client folder](../tools/client-folder.md), headless (`null` renderer, dev tools ON), the client reaches
+`XS_LOGIN` in about 4 seconds. Fixed on the way: the config file name (T40; the importer had left the original's
+`#elif CLIENT_COUNTRY_US` as an undefined `#if`, so the client asked for `Config_INTERNAL.lua` under the US names).
+
+Left in the logs, from the data and as in the original:
+
+- `OpenXET` fails for 40 `MOTION_*.XET` (e.g. `MOTION_ELSWORD_LK.XET`): no archive has them.
+- 48 `_GetControl` misses while the community dialogs load.
+- First start only: `GameOptions.lua` and `TutorSystem.lua` missing (the client writes them).
+
 ## Status
 
-`x2` links and starts on Linux (2026-11-12). Without the game's `.kom` files in the working directory, it stops in
-`CX2Main` with "Cannot load the game data". Running it is the next step, `client/x2-run`
-([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+`x2` links and starts on Linux, and reaches the login screen headless (2026-11-12). Next: the window on a GPU, then
+login → channel → world on the Linux servers ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
