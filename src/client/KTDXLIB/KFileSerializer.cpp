@@ -2,9 +2,44 @@
 
 #include "x2/platform/unicode.h"
 
+#include <cstring>
+#include <cwctype>
 #include <filesystem>
 #include <fstream>
 #include <system_error>
+
+std::u16string_view KReadPreprocessedString( const std::vector<BYTE>& vecData, DWORD dwOffset )
+{
+    if ( dwOffset == 0 || (size_t) dwOffset + sizeof(WORD) > vecData.size() || dwOffset % sizeof(char16_t) != 0 )
+        return {};
+    WORD wLength = 0;
+    memcpy( &wLength, &vecData[dwOffset], sizeof(WORD) );
+    if ( wLength == 0 || (size_t) dwOffset + sizeof(WORD) + ( (size_t) wLength + 1 ) * sizeof(char16_t) > vecData.size() )
+        return {};
+    const char16_t* pString = reinterpret_cast<const char16_t*>( &vecData[dwOffset + sizeof(WORD)] );
+    if ( pString[wLength] != 0 )
+        return {};
+    return { pString, wLength };
+}
+
+int KComparePreprocessedString( std::u16string_view a, const wchar_t* b, bool bIgnoreCase )
+{
+    size_t u = 0;
+    for ( ; u != a.size() && b[u] != 0; ++u )
+    {
+        wint_t ca = a[u], cb = static_cast<wint_t>( b[u] );
+        if ( bIgnoreCase )
+        {
+            ca = std::towlower( ca );
+            cb = std::towlower( cb );
+        }
+        if ( ca != cb )
+            return ca < cb ? -1 : 1;
+    }
+    if ( u == a.size() )
+        return b[u] == 0 ? 0 : -1;
+    return 1;
+}
 
 static const char*	s_pcNullString = "";
 static const wchar_t*	s_pwcNullString = L"";

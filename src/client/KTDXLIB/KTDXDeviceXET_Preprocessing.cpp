@@ -37,11 +37,11 @@ int CKTDXDeviceXET_Preprocessing::FindChangeTextureIndex( const wchar_t* pwszTex
     const CKTDXDeviceXET_Preprocessing* pThis = this;
     auto StringLessCB = [pThis]( const KXETFormatChangeTexture& kChangeTexture, const wchar_t* pwszTexName ) -> bool
     {
-        return  _wcsicmp( pThis->GetString( kChangeTexture.m_dwOffset_OrgTexName ), pwszTexName ) < 0;
+        return  KComparePreprocessedString( KReadPreprocessedString( pThis->m_vecData, kChangeTexture.m_dwOffset_OrgTexName ), pwszTexName, true ) < 0;
     };
     const KXETFormatChangeTexture* pChangeTextureFound = std::lower_bound( pChangeTextureArray, pChangeTextureArrayEnd, pwszTexName, StringLessCB );
     if ( pChangeTextureFound == pChangeTextureArrayEnd
-        || _wcsicmp( pwszTexName, GetString( pChangeTextureFound->m_dwOffset_OrgTexName ) ) < 0 )
+        || KComparePreprocessedString( KReadPreprocessedString( m_vecData, pChangeTextureFound->m_dwOffset_OrgTexName ), pwszTexName, true ) > 0 )
         return -1;
     return (int) ( pChangeTextureFound - pChangeTextureArray );
 }
@@ -62,11 +62,11 @@ int CKTDXDeviceXET_Preprocessing::FindAniDataIndex( const wchar_t* pwszAniName )
     const CKTDXDeviceXET_Preprocessing* pThis = this;
     auto StringLessCB = [pThis]( const KXETFormatAniData& kAniData, const wchar_t* pwszAniName ) -> bool
     {
-        return  _wcsicmp( pThis->GetString( kAniData.m_dwOffset_AniName ), pwszAniName ) < 0;
+        return  KComparePreprocessedString( KReadPreprocessedString( pThis->m_vecData, kAniData.m_dwOffset_AniName ), pwszAniName, true ) < 0;
     };
     const KXETFormatAniData* pAniDataArrayFound = std::lower_bound( pAniDataArray, pAniDataArrayEnd, pwszAniName, StringLessCB );
     if ( pAniDataArrayFound == pAniDataArrayEnd
-        || _wcsicmp( pwszAniName, GetString( pAniDataArrayFound->m_dwOffset_AniName ) ) < 0 )
+        || KComparePreprocessedString( KReadPreprocessedString( m_vecData, pAniDataArrayFound->m_dwOffset_AniName ), pwszAniName, true ) > 0 )
         return -1;
     return (int) ( pAniDataArrayFound - pAniDataArray );
 }
@@ -91,12 +91,12 @@ int CKTDXDeviceXET_Preprocessing::FindAniTexChangeEventIndex( const KXETFormatAn
     const CKTDXDeviceXET_Preprocessing* pThis = this;
     auto StringLessCB = [pThis]( const KXETFormatAniTexChangeEvent& kAniEvent, const wchar_t* pwszTexName ) -> bool
     {
-        return  _wcsicmp( pThis->GetString( kAniEvent.m_dwOffset_OrgTexName ), pwszTexName ) < 0;
+        return  KComparePreprocessedString( KReadPreprocessedString( pThis->m_vecData, kAniEvent.m_dwOffset_OrgTexName ), pwszTexName, true ) < 0;
     };
 
     const KXETFormatAniTexChangeEvent* pAniEventArrayFound = std::lower_bound( pAniEventArray, pAniEventArrayEnd, pwszTexName, StringLessCB );
     if ( pAniEventArrayFound == pAniEventArrayEnd
-        || _wcsicmp( pwszTexName, GetString( pAniEventArrayFound->m_dwOffset_OrgTexName ) ) < 0 )
+        || KComparePreprocessedString( KReadPreprocessedString( m_vecData, pAniEventArrayFound->m_dwOffset_OrgTexName ), pwszTexName, true ) > 0 )
         return -1;
     DWORD   dwOffsetTexName = pAniEventArrayFound->m_dwOffset_OrgTexName;
 	for( ; pAniEventArrayFound != pAniEventArrayEnd && pAniEventArrayFound->m_dwOffset_OrgTexName == dwOffsetTexName; pAniEventArrayFound++ )
@@ -166,25 +166,9 @@ const KXETFormatHeader& CKTDXDeviceXET_Preprocessing::GetHeader() const
 }
 
 
-const wchar_t*  CKTDXDeviceXET_Preprocessing::GetString( DWORD dwOffset ) const
+std::wstring    CKTDXDeviceXET_Preprocessing::GetString( DWORD dwOffset ) const
 {
-    if ( dwOffset == 0 )
-        return L"";
-    ASSERT( dwOffset + sizeof(WORD) <= m_vecData.size() );
-    if ( dwOffset + sizeof(WORD) > m_vecData.size() )
-        return L"";
-    const BYTE* pStringLength = ( (const BYTE*) &m_vecData.front() ) + dwOffset;
-    WORD   wLength = * ( (const WORD*) pStringLength );
-    if ( wLength == 0 )
-        return L"";
-    ASSERT( dwOffset + sizeof(WORD) + wLength + 1 <= m_vecData.size() );
-    if ( dwOffset + sizeof(WORD) + wLength + 1 > m_vecData.size() )
-        return L"";
-    const wchar_t* pwszString = (const wchar_t*) ( pStringLength + sizeof(WORD) );
-    ASSERT( pwszString[ wLength ] == 0 );
-    if ( pwszString[ wLength ] != 0 )
-        return L"";
-    return pwszString;
+    return x2::platform::Utf16ToWide( KReadPreprocessedString( m_vecData, dwOffset ) );
 }
 
 

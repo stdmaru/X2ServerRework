@@ -51,10 +51,10 @@ public:
     void                        Swap( std::vector<BYTE>& vecData ) { m_vecData.swap( vecData ); }
     bool	                    OpenFile( const BYTE* pbFileData, int iFileSize, const std::wstring& wstrDeviceID );
 
-    const wchar_t*              GetString( DWORD dwOffset ) const;
+    std::wstring                GetString( DWORD dwOffset ) const;
 
     unsigned                    GetNumTexUVs() const;
-    const wchar_t*              GetKeyFromIndex( unsigned uIndex ) const;
+    std::wstring                GetKeyFromIndex( unsigned uIndex ) const;
     const KTETFormatTextureUV*  GetTexUVFromIndex( unsigned uIndex ) const;
     const KTETFormatTextureUV*  GetTexUV( const wchar_t* pwszKey ) const;
     const KTETFormatTextureUV*  GetTexUV( const std::wstring& wstrKey ) const { return GetTexUV( wstrKey.c_str() );  }
