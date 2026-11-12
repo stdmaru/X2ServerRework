@@ -111,6 +111,38 @@ render::BlendOp BlendOperation(DWORD op)
     }
 }
 
+// A stage without a texture whose operation combines D3DTA_TEXTURE with another argument gives that other argument,
+// as D3D9 drivers do: the slash traces add D3DTA_TEXTURE's alpha to the diffuse one with ADDSIGNED and no texture, and
+// fade out with the diffuse alpha in the original. Selecting the texture alone still reads the white texel.
+void WithoutTexture(std::int32_t (&stage)[4])
+{
+    const std::int32_t op = stage[0];
+    if (op < D3DTOP_MODULATE || op > D3DTOP_ADDSMOOTH) {   // the arithmetic of two arguments
+        return;
+    }
+    const bool texture1 = (stage[1] & 0xF) == D3DTA_TEXTURE;
+    const bool texture2 = (stage[2] & 0xF) == D3DTA_TEXTURE;
+    if (texture1 != texture2) {
+        stage[0] = texture1 ? D3DTOP_SELECTARG2 : D3DTOP_SELECTARG1;
+    }
+}
+
+// Render-target formats with an alpha channel; D3D9 reads the others' alpha as 1.
+bool TargetHasAlpha(D3DFORMAT format)
+{
+    switch (format) {
+    case D3DFMT_X8R8G8B8:
+    case D3DFMT_R8G8B8:
+    case D3DFMT_R5G6B5:
+    case D3DFMT_X1R5G5B5:
+    case D3DFMT_X4R4G4B4:
+    case D3DFMT_X8B8G8R8:
+        return false;
+    default:
+        return true;
+    }
+}
+
 // D3DBLEND_BOTHSRCALPHA / BOTHINVSRCALPHA set the destination factor too (D3D9 ignores DESTBLEND then).
 void BlendPair(DWORD src, DWORD dst, render::BlendFactor& srcFactor, render::BlendFactor& dstFactor)
 {
@@ -341,6 +373,7 @@ Device::Device(render::Device& render, SDL_Window* window) : m_render(render), m
 
 Device::~Device()
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     if (m_frame) {
         EndPass();
         m_frame->Cancel();
@@ -383,6 +416,7 @@ Device::~Device()
 
 bool Device::Fail(std::string message)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     m_error = "d3d9: " + std::move(message);
     // The engine ignores most return values: log each distinct error once so failed draws are visible.
     if (m_reported.size() < 256 && m_reported.insert(m_error).second) {
@@ -673,6 +707,7 @@ Device::Target Device::CurrentTarget() const
 
 bool Device::EnsureFrame()
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     if (m_frame) {
         return true;
     }
@@ -777,6 +812,7 @@ bool Device::EndScene()
 
 bool Device::Present()
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     if (m_frameNumber == 0) {
         if (const char* trace = SDL_getenv("X2_D3D9_TRACE")) {
             m_traceFrame = std::strtol(trace, nullptr, 10);
@@ -802,6 +838,7 @@ bool Device::Present()
 
 bool Device::SubmitFrame()
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     EndPass();
     const bool uploaded = FlushUploads();       // before the frame, whose draws read them
     const bool submitted = m_frame->Submit();
@@ -953,13 +990,28 @@ PipelineKey Device::MakePipelineKey(D3DPRIMITIVETYPE type, DWORD fvf, UINT strid
     }
     w[kBlendEnable] = rs[D3DRS_ALPHABLENDENABLE] != FALSE;
     if (w[kBlendEnable]) {
-        w[kSrcBlend] = rs[D3DRS_SRCBLEND];
-        w[kDestBlend] = rs[D3DRS_DESTBLEND];
+        // The game's back buffer is X8R8G8B8: D3D9 reads its alpha as 1, whatever was drawn. Ours keeps an alpha
+        // channel, so factors that read the destination's alpha are resolved here as D3D9 would (the slash traces
+        // blend with D3DBLEND_DESTALPHA and otherwise never faded out).
+        const bool destinationAlpha = m_target && TargetHasAlpha(m_target->Format());
+        const auto factor = [destinationAlpha](DWORD blend) -> DWORD {
+            if (destinationAlpha) {
+                return blend;
+            }
+            switch (blend) {
+            case D3DBLEND_DESTALPHA: return D3DBLEND_ONE;
+            case D3DBLEND_INVDESTALPHA: return D3DBLEND_ZERO;
+            case D3DBLEND_SRCALPHASAT: return D3DBLEND_ZERO;    // min(As, 1 - Ad)
+            default: return blend;
+            }
+        };
+        w[kSrcBlend] = factor(rs[D3DRS_SRCBLEND]);
+        w[kDestBlend] = factor(rs[D3DRS_DESTBLEND]);
         w[kBlendOp] = rs[D3DRS_BLENDOP];
         w[kSeparateAlpha] = rs[D3DRS_SEPARATEALPHABLENDENABLE] != FALSE;
         if (w[kSeparateAlpha]) {
-            w[kSrcBlendAlpha] = rs[D3DRS_SRCBLENDALPHA];
-            w[kDestBlendAlpha] = rs[D3DRS_DESTBLENDALPHA];
+            w[kSrcBlendAlpha] = factor(rs[D3DRS_SRCBLENDALPHA]);
+            w[kDestBlendAlpha] = factor(rs[D3DRS_DESTBLENDALPHA]);
             w[kBlendOpAlpha] = rs[D3DRS_BLENDOPALPHA];
         }
     }
@@ -1136,6 +1188,10 @@ void Device::PushUniforms(DWORD fvf)
         f.alphaStage[stage][2] = static_cast<std::int32_t>(ts[D3DTSS_ALPHAARG2]);
         f.alphaStage[stage][3] = static_cast<std::int32_t>(ts[D3DTSS_ALPHAARG0]);
         f.texCoordIndex[stage] = static_cast<std::int32_t>(std::min<DWORD>(ts[D3DTSS_TEXCOORDINDEX] & 0xFFFF, 2));
+        if (!m_textures[stage] || !m_textures[stage]->m_texture) {
+            WithoutTexture(f.colorStage[stage]);
+            WithoutTexture(f.alphaStage[stage]);
+        }
     }
     const render::Color factor = ColorFromD3D(m_renderStates[D3DRS_TEXTUREFACTOR]);
     f.textureFactor[0] = factor.r;
@@ -1384,6 +1440,7 @@ std::optional<render::TransferBufferLocation> Device::Stage(std::span<const std:
 
 bool Device::UploadToBuffer(render::Buffer buffer, std::uint32_t offset, std::span<const std::byte> bytes, bool cycle)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     const auto source = Stage(bytes);
     render::CopyPass* pass = source ? UploadPass() : nullptr;
     if (!pass) {
@@ -1396,6 +1453,7 @@ bool Device::UploadToBuffer(render::Buffer buffer, std::uint32_t offset, std::sp
 bool Device::UploadToTexture(render::Texture texture, std::uint32_t level, std::uint32_t width, std::uint32_t height,
                              std::span<const std::byte> bytes, bool cycle)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     const auto source = Stage(bytes);
     render::CopyPass* pass = source ? UploadPass() : nullptr;
     if (!pass) {
@@ -1408,6 +1466,7 @@ bool Device::UploadToTexture(render::Texture texture, std::uint32_t level, std::
 
 bool Device::FlushUploads()
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     if (!m_uploads) {
         return true;
     }
@@ -1426,6 +1485,7 @@ bool Device::FlushUploads()
 
 void Device::ForgetTexture(Texture* texture)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     for (Texture*& bound : m_textures) {
         if (bound == texture) {
             bound = nullptr;
@@ -1439,6 +1499,7 @@ void Device::ForgetTexture(Texture* texture)
 
 void Device::ForgetBuffer(Buffer* buffer)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     if (m_stream == buffer) {
         m_stream = nullptr;
     }

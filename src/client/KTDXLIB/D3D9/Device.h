@@ -27,6 +27,7 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
@@ -338,6 +339,11 @@ private:
     template <class T>
     bool InitBuffer(T& buffer, UINT length, DWORD usage, const char* name);
     bool Fail(std::string message);
+
+    // KTDXLIB loads textures and meshes on a background thread (CKTDXDeviceManager::RunThread) while the main thread
+    // renders. Everything that creates, uploads, releases or submits takes this lock, so the GPU device and its
+    // command buffers are never used from two threads at once; draws, recorded only by the main thread, do not.
+    mutable std::recursive_mutex m_gpuMutex;
 
     render::Device& m_render;
     SDL_Window* m_window;

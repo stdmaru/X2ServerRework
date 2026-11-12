@@ -87,6 +87,19 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
   the back buffer; the viewport resets to the whole target, as in D3D9. The depth buffer is attached only when the target
   has the back buffer's size.
 - Resources destroyed while bound are unbound; resources that outlive the device are detached (their calls fail).
+- **Background loading** (2026-11-12, `client/frame-pacing`): KTDXLIB creates textures and buffers on its loading
+  thread (`CKTDXDeviceManager::RunThread`) while the main thread renders. Creating, uploading, releasing, acquiring and
+  submitting take one recursive mutex (`m_gpuMutex`), so the GPU device and the upload command buffer are never used
+  by two threads at once (the NVIDIA driver crashed in `SDL_SubmitGPUCommandBuffer` entering a field). Draws, recorded
+  only by the main thread on the frame's command buffer, take no lock.
+- **Destination alpha** (2026-11-12): the game's back buffer is `X8R8G8B8`, whose alpha D3D9 reads as 1; ours has an
+  alpha channel. On a target without alpha (the back buffer, `X8R8G8B8` and other `X` formats) `D3DBLEND_DESTALPHA`
+  becomes `ONE`, `INVDESTALPHA` `ZERO` and `SRCALPHASAT` `ZERO`. The effect scripts use `DESTALPHA` about 8,600 times
+  (additive glows): before, the slash traces piled up, EXP particles had black halos and dust and shadows turned black.
+- **Stages without a texture** (2026-11-12): an arithmetic operation (`MODULATE` to `ADDSMOOTH`) that takes
+  `D3DTA_TEXTURE` and another argument gives that other argument, as the original client shows: the slash trace's
+  `ADDSIGNED` alpha fades with the diffuse alpha (with the white texel it stayed above 0.5 and vanished at once).
+  `SELECTARG` of the texture still reads the white texel.
 
 ## Textures
 

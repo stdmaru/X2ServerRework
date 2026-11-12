@@ -98,6 +98,7 @@ bool Device::SupportsTextureFormat(D3DFORMAT format, DWORD usage) const
 std::unique_ptr<Texture> Device::CreateTexture(UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format,
                                                D3DPOOL pool)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     if (width == 0 || height == 0) {
         Fail("CreateTexture: empty size");
         return nullptr;
@@ -159,6 +160,7 @@ std::unique_ptr<Texture> Device::CreateTexture(UINT width, UINT height, UINT lev
 Texture::~Texture()
 {
     if (m_device) {
+        const std::scoped_lock gpuLock(m_device->m_gpuMutex);
         m_device->ForgetTexture(this);
         m_device->m_render.ReleaseTexture(m_texture);
     }
@@ -212,6 +214,7 @@ bool Texture::UnlockRect(UINT level)
     }
     std::vector<std::byte> scratch;
     const std::span<const std::byte> bytes = Convert(m_format, m_renderFormat, l.bytes, l.width * l.height, scratch);
+    const std::scoped_lock gpuLock(m_device->m_gpuMutex);
     // Cycling gives a fresh texture with only this level defined: only for single-level textures.
     const bool cycle = m_levels.size() == 1 && !(m_usage & D3DUSAGE_AUTOGENMIPMAP);
     if (!m_device->UploadToTexture(m_texture, level, l.width, l.height, bytes, cycle)) {
@@ -230,6 +233,7 @@ bool Texture::UnlockRect(UINT level)
 
 bool Device::UpdateTexture(Texture* source, Texture* destination)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     if (source == nullptr || destination == nullptr || source == destination ||
         source->m_width != destination->m_width || source->m_height != destination->m_height ||
         source->m_format != destination->m_format || source->m_levels.empty() || source->m_levels[0].bytes.empty()) {
@@ -258,6 +262,7 @@ bool Device::UpdateTexture(Texture* source, Texture* destination)
 template <class T>
 bool Device::InitBuffer(T& buffer, UINT length, DWORD usage, const char* name)
 {
+    const std::scoped_lock gpuLock(m_gpuMutex);
     buffer.m_device = this;
     buffer.m_usage = usage;
     buffer.m_bytes.resize(length);
@@ -303,6 +308,7 @@ std::unique_ptr<IndexBuffer> Device::CreateIndexBuffer(UINT length, DWORD usage,
 Buffer::~Buffer()
 {
     if (m_device) {
+        const std::scoped_lock gpuLock(m_device->m_gpuMutex);
         m_device->ForgetBuffer(this);
         m_device->m_render.ReleaseBuffer(m_buffer);
     }
@@ -336,6 +342,7 @@ bool Buffer::Unlock()
     if (m_lockFlags & D3DLOCK_READONLY) {
         return true;
     }
+    const std::scoped_lock gpuLock(m_device->m_gpuMutex);
     // NOOVERWRITE: the caller promises not to touch data in use; DISCARD: the rest is undefined, so a fresh buffer
     // with the locked range. Without flags the old data must stay for draws already recorded: a fresh buffer holding
     // the whole CPU copy.
