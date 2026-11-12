@@ -12,6 +12,9 @@ Unlike the importer, these edit `src/` in place: run, review the diff, and commi
 | `fix_typename.py` | Inserts `typename` required by GCC (`need 'typename' before ...`) at reported column | build log |
 | `gen_packet_tests.py` | Generates `src/server/Common/tests/test_packets_*.cpp` (round-trip all serialized types) and checks `PUT`/`GET` symmetry. `--check` only checks (used by ctest) | packet `.cpp` files |
 | `fix_warnings.py` | `-Wswitch` → `default: break;`; `-Wunused-parameter` → `/*name*/`; `-Wreorder` → declaration-order initializer list | build log |
+| `fix_unused.py` | `-Wunused-variable`/`-Wunused-but-set-variable`: deletes the local (keeping a side-effecting right-hand side) or marks it `[[maybe_unused]]`; `--maybe-unused` only marks (for locals one configuration does not read, e.g. without `X2_DEV_TOOLS`) | build log |
+| `clang_fixits.py` | Recompiles the reported files with `compile_commands.json` and applies Clang's fix-its for the chosen warnings (warning and first note) | build log |
+| `fix_sign_compare.py` | `-Wsign-compare`: `find(...) == -1` → `npos`; `for (int i = 0; i < x.size(); ...)` → `static_cast<int>(x.size())`; otherwise casts the signed operand | build log |
 
 Typical use:
 
@@ -23,7 +26,10 @@ python3 tools/port/fix_warnings.py build.log --only switch,unused-parameter,reor
 
 ## Precautions
 
-- **GCC columns are display columns** (tab = 8 columns), not byte offsets. Scripts convert them (`display_to_index`).
+- **Run passes one at a time and rebuild between them.** Line numbers come from the log, and a pass that inserts lines
+  (`switch`) shifts every later warning. Run `switch` last.
+- `clang_fixits.py` needs the caret output: do not pass `-fno-caret-diagnostics`, which also drops the fix-its.
+- **GCC columns are display columns** (tab = 8 columns, East Asian wide character = 2), not byte offsets; Clang's are bytes. Scripts convert them (`display_to_index`).
 - For `-Wswitch`, GCC points to the parenthesis, not the word `switch`: script searches for `switch` on the same line.
   An earlier version searched forward and edited the next `switch`.
 - For `-Wreorder`, order comes from declarations **at the class's own scope**, using the line reported by GCC.

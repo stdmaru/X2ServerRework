@@ -246,7 +246,9 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         warning-free (target `x2::client_x2lib`); Themida/Virtualizer, WinINet, libxml (now `x2::platform::ParseXml`) and
         Boost gone from the headers; DXUT's `CFirstPersonCamera` and `x2::bimap` added (2026-11-07). See
         [Client: X2Lib](../porting/client-x2lib.md#header-chain-2026-11-07-clientx2lib-headers).
-  - [ ] `client/x2lib-build-*`: the `.cpp` files, by area.
+  - [x] `client/x2lib-build`: all 265 `.cpp` files compile warning-free in `x2::client_x2lib` (Clang, GCC; clang-cl in
+        CI); Boost, Win32 window/string calls and x86 hooks gone, the anti-cheat scan on `x2::platform`, about 40 original
+        bugs fixed (2026-11-11). See [Client: X2Lib](../porting/client-x2lib.md#cpp-files-2026-11-11-clientx2lib-build).
   - [ ] `client/x2-link`: `X2.cpp` replaces `X2Skeleton.cpp`; the client links.
   - [ ] `client/x2-run`: headless start-up test, mass script tests, then login → channel → world on the Linux servers.
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,

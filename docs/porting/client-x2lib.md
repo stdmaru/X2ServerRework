@@ -83,13 +83,90 @@ the next steps ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
   one; it is now the non-virtual `DidReceiveFirstSyncPacketOfUser()`, called where the static type is `CX2GUUser*`
   ([Original bugs](../original/bugs.md)).
 
-## Status
+## `.cpp` files (2026-11-11, `client/x2lib-build`)
 
-The header chain compiles (2026-11-07); the `.cpp` files do not yet
+Target `x2::client_x2lib` compiles all 265 X2Lib `.cpp` files warning-free on Clang (dev tools ON) and GCC (dev tools
+OFF). It does not link yet: `X2.cpp` and the executable are the next step
 ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
 
-Notes for the `.cpp` steps (2026-11-07):
+- **Error passes.**
+  - Boost: `BOOST_SCOPE_EXIT` → `x2::scope_exit`, `BOOST_FOREACH` → range-for, `iequals` → `x2::platform::IEquals`,
+    `singleton_pool` → `KSingletonPool`; tokenizer, assign and `scoped_array` replaced by hand.
+  - Win32 string helpers (`StrCmp`, `StrStrW`, `_itow`, `wsprintf`) → CRT and safe calls; legacy `swprintf` calls give
+    their size.
+  - DXUT gains the window and mouse calls (`GetCursorPos`, `ScreenToClient`, `WindowFromPoint`, ...), an SDL cursor
+    from `x2.exe`'s `DefaultCursor.cur` (embedded with `x2_embed_file`), `DXUTDeviceSettings`, KOG's vertical sync,
+    and the display-mode list that replaces `CD3DEnumeration`.
+  - Standard C++: `goto` over initializations, temporaries bound to non-const references, out-of-line `const` return
+    types. X2Lib's `NetError` copy gives way to the shared Common one (T33).
+- **Anti-cheat and reports.** These run on `x2::platform` (`system_scan.h`: processes, windows, named events and
+  mutexes; loaded modules; `IsDebuggerAttached`). The machine ID keeps the layout the servers check, built from
+  `x2::platform::MachineIdentity`. Removed: the cases that only sent mail (SMTP is gone), the CrashRpt reporter, GDI
+  font registration, BasicExcel, and the dead debug methods (`RenderStateParam` & co.).
+  - `CX2DLLManager` keeps only `ForceFreeModule`. Its `LoadLibrary` hooks were 32-bit x86 jumps that the original
+    never installed (the start function returned `false` first).
+  - `Handler_EGS_TRAFFIC_ATTACKER_NOT` no longer kills the machine's `csrss.exe`; it only ends the client.
+- **Warning passes** (`tools/port`, see [Mechanical porting](../tools/mechanical-porting.md)):
+  - mechanical: switch defaults, unused parameters, member init order, unused locals, parentheses fix-its,
+    sign-compare;
+  - `NULL` passed as `LPARAM`/`WPARAM` → `0`, `const` dropped from by-value cast types, `[[fallthrough]]` on the
+    intended fallthroughs;
+  - virtual destructors (`TimeLimited`, `RoomSimpleInfo`, `CEffect`, `CX2PETAI`), about 30 private fields that were
+    only initialized, `#pragma once` in `.cpp` files, trigraphs in strings and comments;
+  - `[[maybe_unused]]` on locals and parameters that only `X2_DEV_TOOLS` code reads.
+- **Strings.** `GET_STRING` goes through `CKTDXStringTable::GetDisplayString()`, which caches the debug text in
+  `m_mapDebugInfoString`, so the pointer it returns outlives the call.
+- **`KProtectedType<float>`** computes its check value with `std::bit_cast` instead of writing through an `int*` (same
+  value, no aliasing UB).
+- **Original bugs fixed:**
+  - Missing `break`s:
+    - the personal-shop "OK" fell into using the pet-pickup item;
+    - the system menu with the bank open fell into the student list;
+    - "cut disciple" on another tab fell into the PVP invite;
+    - the personal-shop board's leg-accessory filter fell into the arm check, so it never matched.
+  - Inverted or impossible conditions:
+    - `CX2UIPersonalShop` refreshes the board: the original tested `NULL == g_pData && NULL == ...->Get()`, so it never
+      ran;
+    - `SetSkillAbilityMap` called `EndTable` on a `NULL` manager;
+    - `X2SlotItem`'s gift-ribbon fallback set up the `NULL` picture instead of the new one;
+    - the `UT_ARA` case of the unit-creation switch now returns `m_pDummyAra`.
+  - Wrong comparisons:
+    - `NPCUnitDieReq` returns `true`;
+    - the riding-pet loops used `iter ==` for `iter =`;
+    - the wedding motion-name check is `NULL == p || L'\0' == p[0]`;
+    - the guild date uses `npos` instead of `find() >= 0`;
+    - the buff `SKILL_ID` check tests the factor before the unsigned cast;
+    - the dungeon skill-list highlight kept state IDs in `char`, so states above 127 never matched.
+  - `NULL` guards followed by `||` are grouped under the guard (cash shop, dungeon game, party UI, quest UI, skill tree).
+  - Uninitialized reads now have a value or are scoped to where they are set:
+    - the chain-gate light rotation;
+    - the dungeon map's open position;
+    - notice statics and guide arrows;
+    - wedding notice colors (white with a black outline when no hall is set);
+    - a new dungeon clear entry;
+    - the number-to-words table (an unknown language returns);
+    - the line-map projection point;
+    - `bUserUnit`, `pInformer` and `iFinalLeft`;
+    - `m_pKeyPad` (its `REFORM_UI_KEYPAD` guard is gone).
+  - Out of bounds:
+    - `SkillCutIn` built a `D3DXVECTOR3` from a `D3DXVECTOR2` and read past it (`z` is now 0);
+    - the SHA1 report wrote `" 255"` into `szTemp[4]`;
+    - `CX2ComboManager` cleared half of `m_ComboContent`.
+  - `ZeroMemory` over non-trivial types replaced by assignment (cash-shop dialog handles, the reserved resurrect packet).
+  - `DXUTGetVerticalSync` returns `UINT`; SHA1 file hashing fails on a short read.
+- **Removed as dead:** a copy of the premium-buff event dispatch after a `break` in `CX2State` (the reachable one runs
+  first); the commented-out P2P connect-result packets in `CX2GUUser::OnFrameMove`.
+- **Kept, recorded as bugs** ([Original bugs](../original/bugs.md)): quest reward auto-selection compares the item's
+  class with itself; Ara's energy reinforce tests `AT_NORMAL` on a damage type; the shop's accessory warning tests
+  `SPT_GP` on a period type; the result screens' `=-` timer; the field-entry period notices that never show; Arme
+  falling into Lire's body reform.
+
+## Status
+
+All 265 `.cpp` files compile warning-free (2026-11-11). The client does not link yet
+([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+
+Notes for linking (2026-11-07):
 
 - `CSystemInfo` (the machine ID) is still used by `X2Main.cpp`: the login packet needs it.
-- `CX2Cursor`'s hardware cursor comes from an exe resource (`IDC_CURSOR1`); outside Windows it needs an SDL cursor.
 - The `switch( GetPublisher() )` branches for other countries are dead.
