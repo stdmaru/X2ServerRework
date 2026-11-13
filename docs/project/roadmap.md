@@ -301,22 +301,26 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         attached equipment drawn between steps with their units (user confirmed in the field and the village).
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
-  - [ ] **Widescreen, after audio** (user, 2026-11-12): no distortion at any aspect ratio. Today the UI's 1024×768
-        layout is scaled by separate X and Y factors (about 270 uses in 70 files, 2026-11-12), so it stretches; the
-        3D camera already uses the window's aspect ratio (it shows more at the sides), the fonts scale by Y only. Steps:
-    - [ ] `client/widescreen-scale`: one uniform scale (screen height / 768) and a virtual canvas as wide as the
-          screen (1365 at 16:9), through one conversion in `KTDXApp` used by dialogs, mouse input, world-attached UI
-          (`GetProj3DPos`: names, HP bars, balloons) and tooltip bounds; full-screen backgrounds and fades per D7. Starts
-          with an inventory of the scale's users; also the 2D orthographic mode (fixed 1024×768) and 1024×768 render
-          targets. Nothing stretches; the UI still sits at the left.
-    - [ ] `client/widescreen-anchors`: a horizontal anchor per dialog (left, center, right: x moves by
-          (canvas width − 1024) × 0, ½ or 1), defaults per D8, overrides in the client_data; per-control anchors or
-          stretched middle pieces for the HUD and dialogs spanning the width. Probably two PRs (HUD, windows).
+  - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
+        ratio, ultrawide included. Today the UI's 1024×768 layout is scaled by separate X and Y factors (about 290 uses
+        in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it stretches; the 3D camera
+        already uses the window's aspect ratio, the fonts scale by Y only. Open: [D9, D10](decisions.md#pending). Steps:
+    - [ ] `client/widescreen-scale`: one uniform scale (screen height / 768) and a canvas as wide as the screen,
+          through one conversion in `KTDXApp` used by dialogs, mouse input, world-attached UI (`GetProj3DPos`: names,
+          HP bars, balloons), tooltip bounds, the 2D orthographic mode (fixed 1024×768) and 1024×768 render targets;
+          the literal positions become canvas expressions. The whole 4:3 layout is drawn as a centered 1024-wide
+          column and full-screen 4:3 images get bars at the sides. Starts with an inventory of the scale's users and
+          the screen capture tool below. Nothing stretches; the UI sits in the middle.
+    - [ ] `client/widescreen-anchors`: horizontal anchors (left, center, right) per dialog or control in the Lua
+          layouts (client_data, T42); the pieces spanning the screen (the bottom EXP/stamina bar) built as long as the
+          canvas from their end and middle pieces. Probably two PRs (HUD, windows).
+    - [ ] `client/widescreen-backgrounds`: full-screen images (login, loading screens, cut-ins) redrawn for wider
+          screens, replacing the side bars; same formats (T1).
     - [ ] `client/ui-scale`: a "UI scale" option (automatic, 100–200%) and a pixel-perfect mode (integer scale,
           nearest texels: 1× at 1080p, 2× at 4K), since a fractional scale (1.41 at 1080p) blurs the UI a little.
-    - [ ] `client/ui-hd-assets`, later: 2× UI textures, same formats and names in a separate package (T42); the
-          engine divides the `.tet` UV keys by the loaded texture's scale; offline upscaling (Real-ESRGAN or similar)
-          with manual review of text and thin outlines, the original as fallback.
+    - [ ] `client/ui-hd-assets`, later: 2× and 4× UI textures, same formats and names in a separate package (T42);
+          sizes stay in canvas units, the engine divides the `.tet` UV keys by the loaded texture's scale; the
+          original as fallback.
     - Validation for every step: a dev tool that captures the main screens (login, character select, village, field,
           dungeon, PvP, inventory, shop) at 4:3, 16:9, 16:10 and 21:9 to compare across PRs.
 - [ ] **Audio, last** (user, 2026-11-05): replace the silent backend with a real one, FMOD Ex / DirectSound →
