@@ -209,10 +209,15 @@ class CKTDXApp
 
 		D3DXVECTOR2 ConvertByResolution( float fX, float fY ) const
 		{
-			return D3DXVECTOR2( m_UIOrigin.x + fX * m_ResolutionScale.x, m_UIOrigin.y + fY * m_ResolutionScale.y );
+			return D3DXVECTOR2( ConvertXByResolution( fX ), m_UIOrigin.y + fY * m_ResolutionScale.y );
 		}
 		D3DXVECTOR2 ConvertByResolution( const D3DXVECTOR2& fSrc ) const { return ConvertByResolution( fSrc.x, fSrc.y ); }
-		float ConvertXByResolution( float fX ) const { return m_UIOrigin.x + fX * m_ResolutionScale.x; }
+		float ConvertXByResolution( float fX ) const
+		{
+			if ( m_kUIStretch.pZones != nullptr )
+				fX = m_kUIStretch.pZones->Map( fX, m_kUIStretch.fBase, m_kUIStretch.fLeft, m_kUIStretch.fExtra );
+			return m_UIOrigin.x + fX * m_ResolutionScale.x;
+		}
 		float ConvertYByResolution( float fY ) const { return m_UIOrigin.y + fY * m_ResolutionScale.y; }
 		D3DXVECTOR2 ConvertSizeByResolution( float fWidth, float fHeight ) const
 		{
@@ -228,7 +233,10 @@ class CKTDXApp
 		const float& GetResolutionScaleY() const { return m_ResolutionScale.y; }
 		D3DXVECTOR2 MouseConvertByResolution( float fX, float fY ) const
 		{
-			return D3DXVECTOR2( ( fX - m_UIOrigin.x ) / m_ResolutionScale.x, ( fY - m_UIOrigin.y ) / m_ResolutionScale.y );
+			float fLayoutX = ( fX - m_UIOrigin.x ) / m_ResolutionScale.x;
+			if ( m_kUIStretch.pZones != nullptr )
+				fLayoutX = m_kUIStretch.pZones->Unmap( fLayoutX, m_kUIStretch.fBase, m_kUIStretch.fLeft, m_kUIStretch.fExtra );
+			return D3DXVECTOR2( fLayoutX, ( fY - m_UIOrigin.y ) / m_ResolutionScale.y );
 		}
 		D3DXVECTOR2 MouseConvertByResolution( const D3DXVECTOR2& fSrc ) const { return MouseConvertByResolution( fSrc.x, fSrc.y ); }
 		// Screen position of the layout's origin (the centered column's top left), in pixels.
@@ -237,6 +245,10 @@ class CKTDXApp
 		// anchor shift in effect goes with the origin.
 		void SetUIOrigin( const D3DXVECTOR2& vOrigin, float fAnchorShift = 0.f ) { m_UIOrigin = vOrigin; m_fUIAnchorShift = fAnchorShift; }
 		float GetUIAnchorShiftInEffect() const { return m_fUIAnchorShift; }
+		// A stretched piece being drawn (UIAnchorScope with UIAnchor::Stretch): positions go through its map.
+		using UIStretchState = ::UIStretchState;
+		const UIStretchState& GetUIStretch() const { return m_kUIStretch; }
+		void SetUIStretch( const UIStretchState& kState ) { m_kUIStretch = kState; }
 
 		// Horizontal anchors (T44, KTDGUIAnchor.h).
 		// How far, in layout units, an anchor moves the layout from the centered column on this screen.
@@ -251,24 +263,61 @@ class CKTDXApp
 			}
 		}
 		// Draws and reads the mouse under an anchor while it lives: the UI origin moves by the anchor's shift, so
-		// every position converted meanwhile (vertices, text, hit tests) lands where the anchor puts it.
+		// every position converted meanwhile (vertices, text, hit tests) lands where the anchor puts it. Under
+		// UIAnchor::Stretch, x goes through the stretch map instead (pStretch: the dialog's zones, null for a plain
+		// fill; fBase: the dialog's x).
 		class UIAnchorScope
 		{
 		public:
-			UIAnchorScope( CKTDXApp& kApp, UIAnchor eAnchor )
-				: m_kApp( kApp ), m_vOrigin( kApp.m_UIOrigin ), m_fShift( kApp.m_fUIAnchorShift )
+			UIAnchorScope( CKTDXApp& kApp, UIAnchor eAnchor, const CKTDGUIStretch* pStretch = nullptr, float fBase = 0.f )
+				: m_kApp( kApp ), m_vOrigin( kApp.m_UIOrigin ), m_fShift( kApp.m_fUIAnchorShift ), m_kStretch( kApp.m_kUIStretch )
 			{
+				if ( eAnchor == UIAnchor::Stretch )
+				{
+					static const CKTDGUIStretch s_kPlain;
+					kApp.m_UIOrigin.x -= kApp.m_fUIAnchorShift * kApp.m_ResolutionScale.x;	// the centered column
+					kApp.m_fUIAnchorShift = 0.f;
+					kApp.m_kUIStretch.pZones = nullptr;
+					const float fLeft = kApp.GetUIAnchorShift( UIAnchor::Left );
+					kApp.m_kUIStretch = { pStretch != nullptr ? pStretch : &s_kPlain, fBase, fLeft,
+						kApp.GetUIAnchorShift( UIAnchor::Right ) - fLeft };
+					return;
+				}
 				const float fShift = kApp.GetUIAnchorShift( eAnchor );
 				kApp.m_UIOrigin.x += ( fShift - kApp.m_fUIAnchorShift ) * kApp.m_ResolutionScale.x;
 				kApp.m_fUIAnchorShift = fShift;
+				kApp.m_kUIStretch.pZones = nullptr;
 			}
-			~UIAnchorScope() { m_kApp.m_UIOrigin = m_vOrigin; m_kApp.m_fUIAnchorShift = m_fShift; }
+			~UIAnchorScope() { m_kApp.m_UIOrigin = m_vOrigin; m_kApp.m_fUIAnchorShift = m_fShift; m_kApp.m_kUIStretch = m_kStretch; }
 			UIAnchorScope( const UIAnchorScope& ) = delete;
 			UIAnchorScope& operator=( const UIAnchorScope& ) = delete;
 		private:
 			CKTDXApp& m_kApp;
 			D3DXVECTOR2 m_vOrigin;
 			float m_fShift;
+			UIStretchState m_kStretch;
+		};
+		// While a stretched piece draws, moves what must keep its size (its text) whole, by the stretch at its
+		// anchor point fX (layout units), instead of stretching it.
+		class UIStretchPointScope
+		{
+		public:
+			UIStretchPointScope( CKTDXApp& kApp, float fX )
+				: m_kApp( kApp ), m_fOriginX( kApp.m_UIOrigin.x ), m_kStretch( kApp.m_kUIStretch )
+			{
+				if ( m_kStretch.pZones == nullptr )
+					return;
+				const float fMapped = m_kStretch.pZones->Map( fX, m_kStretch.fBase, m_kStretch.fLeft, m_kStretch.fExtra );
+				kApp.m_kUIStretch.pZones = nullptr;
+				kApp.m_UIOrigin.x += ( fMapped - fX ) * kApp.m_ResolutionScale.x;
+			}
+			~UIStretchPointScope() { m_kApp.m_UIOrigin.x = m_fOriginX; m_kApp.m_kUIStretch = m_kStretch; }
+			UIStretchPointScope( const UIStretchPointScope& ) = delete;
+			UIStretchPointScope& operator=( const UIStretchPointScope& ) = delete;
+		private:
+			CKTDXApp& m_kApp;
+			float m_fOriginX;
+			UIStretchState m_kStretch;
 		};
 		// The whole screen in reference units: its left/top edge (<= 0) and its size (>= 1024x768).
 		D3DXVECTOR2 GetUICanvasMin() const { return MouseConvertByResolution( 0.f, 0.f ); }
@@ -497,6 +546,7 @@ class CKTDXApp
 		D3DXVECTOR2				m_ResolutionScale;	// T44: screen pixels per layout unit, equal on both axes
 		D3DXVECTOR2				m_UIOrigin{ 0.f, 0.f };	// screen position of the layout's (0, 0)
 		float					m_fUIAnchorShift = 0.f;	// layout units m_UIOrigin is moved by (UIAnchorScope)
+		UIStretchState			m_kUIStretch;			// the stretched piece being drawn (UIAnchorScope)
 		//KLuabinder				m_LuaBinder;
 
 		CKTDXCollision*			m_pCollision;

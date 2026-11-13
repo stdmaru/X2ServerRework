@@ -146,6 +146,8 @@ HRESULT CKTDGUIStatic::OnFrameRender()
 		CKTDGUIControl::UIStringData* pStringData = m_StringDataList[i];
 		if( pStringData->msg.size() <= 0 )
 			continue;
+		// T44: the text of a stretched piece keeps its size and moves with the point it is placed at.
+		const CKTDXApp::UIStretchPointScope kStretchPoint( *g_pKTDXApp, pStringData->pos.x + m_pDialog->GetPos().x + m_OffsetPos.x );
 
 		if ( pStringData->bUseUkFont == true )
 		{

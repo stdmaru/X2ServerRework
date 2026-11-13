@@ -891,6 +891,9 @@ void CKTDXApp::RenderStageNow( CKTDXStage* stage_ )
 		return;
 	if ( stage_ != NULL && m_pd3dDevice->BeginScene() )
 	{
+		// The original drew these frames over whatever the back buffer held, hidden by full-screen pictures; on a wide
+		// canvas the margins beside the centered column showed it (T44).
+		m_pd3dDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 );
 		stage_->OnFrameRender();
 		m_pd3dDevice->EndScene();
 	}

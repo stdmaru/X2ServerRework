@@ -456,10 +456,39 @@ centered column; undeclared ones stay centered (`KTDGUIAnchor.h`).
   ```
 
   Script names are matched without folder and case; a control name not in the dialog is reported on stderr.
-- `STRETCH` is accepted and drawn as center until the stretched pieces exist (`client/widescreen-stretch`).
+- `STRETCH` spans the screen; see [Stretched pieces](#stretched-pieces-2026-11-13-clientwidescreen-stretch-t44).
 
 Checked at 1920×1080 (2026-11-13) with the example above: the login buttons and fields drawn 240 pixels to the right,
 the background centered, the moved ID field taking clicks and text and the moved LOG-IN button its press.
+
+## Stretched pieces (2026-11-13, `client/widescreen-stretch`, [T44](../project/decisions.md))
+
+A control declared `STRETCH` spans the screen: its layout x (0–1024) goes through a piecewise-linear map to the canvas
+(`CKTDGUIStretch`, `KTDGUIAnchor.h`).
+
+- **Zones:** `STRETCH_ZONES = { { min, max }, ... }` on the dialog's `UIAnchors.lua` entry (layout x relative to the
+  dialog) are the plain middles that grow; they share the extra width by their length and are linear inside, while
+  the end pieces between them keep their size. With no zones the piece is scaled whole (a plain fill).
+- **Mechanism:** `UIAnchorScope` takes the dialog's `CKTDGUIStretch` and, for a stretched control, sets
+  `CKTDXApp`'s stretch state; `ConvertXByResolution` maps through it and `MouseConvertByResolution` inverts it, so the
+  pictures and the hit tests follow. `CKTDGUIDialog::ToControlPoint` turns a dialog point into a control's for every
+  anchor kind (it replaced seven copies of the same math), and `ControlXToDialogX` places a control's tooltip.
+- **Text is not stretched:** a static's string is translated by the map at its anchor point
+  (`UIStretchPointScope`), so the loading percentage stays right-aligned at the bar's end.
+- Render targets suspend the stretch while they draw, as they do the anchor shift.
+
+Checked at 1920×1080 (2026-11-13): the EXP and vigor bars span the screen with their end pieces intact, their
+tooltips and hover detection follow, and the first loading bar fills the width with the version string at the left.
+
+## Loading frames clear the screen (2026-11-13, `client/widescreen-stretch`)
+
+`CKTDXApp::RenderStageNow`, which the loading screens call between long loads, drew over whatever the back buffer
+held: the original's full-screen pictures hid it. On a wide canvas the margins beside the centered column showed it,
+so the loading percentage (anchored to the right edge) sat on stray pixels. It now clears to black first.
+
+Known, not fixed: UI pieces drawn at a fractional pixel with linear filtering pick up their atlas neighbours. The vigor
+bar's end piece (`EXP_BG_RIGHT_2`, next to a transparent white texel) shows a light 1-pixel column at 1920×1080; it does
+with the centered HUD too.
 
 ## Status
 

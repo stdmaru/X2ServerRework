@@ -334,8 +334,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           This includes the content fixes for full-screen images whose texture does not match its rectangle (the
           character select background: 512×512 drawn at 1024×768, also stretched in the original), found by comparing
           `.tet` UVs with script rectangles.
-    - [ ] `client/widescreen-stretch`: the pieces spanning the screen (bottom EXP/stamina bar, menu bar, boss bars),
-          each built as long as the canvas from its end and middle pieces.
+    - [x] `client/widescreen-stretch` (2026-11-13, PR #71): `STRETCH` controls span the screen through a
+          piecewise-linear map whose `STRETCH_ZONES` (the plain middles) grow while end pieces keep their size; text is
+          translated, not stretched ([KTDXLIB](../porting/client-ktdxlib.md#stretched-pieces-2026-11-13-clientwidescreen-stretch-t44)).
+          The EXP/vigor bar and the loading bars stretched (user checked in game); loading frames now clear the screen
+          and the vigor bar's 1-unit overlap (in the original too) is fixed in the client_data. Other spanning pieces
+          (boss bars, the NPC talk shade) go with the migration's next part.
     - [ ] `client/widescreen-backgrounds`, art permitting: full-screen images (login, loading screens, cut-ins)
           redrawn for wider screens, replacing the side bars; same formats (T1).
     - [ ] `client/ui-scale`: a "UI scale" option (automatic, 100–200%) and a pixel-perfect mode (integer scale,

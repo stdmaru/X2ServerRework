@@ -61,6 +61,51 @@ bool ParseUIAnchor( const char* pszName, UIAnchor& eAnchor )
 	return false;
 }
 
+void CKTDGUIStretch::AddZone( float fMin, float fMax )
+{
+	if ( fMax <= fMin )
+		return;
+	m_vecZones.emplace_back( fMin, fMax );
+	std::sort( m_vecZones.begin(), m_vecZones.end() );
+	m_fZonesWidth += fMax - fMin;
+}
+
+float CKTDGUIStretch::Map( float fX, float fBase, float fLeft, float fExtra ) const
+{
+	if ( m_vecZones.empty() )
+		return fLeft + fX * ( CKTDXApp::kUILayoutWidth + fExtra ) / CKTDXApp::kUILayoutWidth;
+
+	float fGrown = 0.f;
+	for ( const auto& [fMin, fMax] : m_vecZones )
+	{
+		const float fWidth = fMax - fMin;
+		const float fT = std::clamp( ( fX - fBase - fMin ) / fWidth, 0.f, 1.f );
+		fGrown += fExtra * fWidth / m_fZonesWidth * fT;
+	}
+	return fX + fLeft + fGrown;
+}
+
+float CKTDGUIStretch::Unmap( float fCanvasX, float fBase, float fLeft, float fExtra ) const
+{
+	if ( m_vecZones.empty() )
+		return ( fCanvasX - fLeft ) * CKTDXApp::kUILayoutWidth / ( CKTDXApp::kUILayoutWidth + fExtra );
+
+	float fX = fCanvasX - fLeft;	// layout x plus what the zones before it grew
+	float fGrown = 0.f;
+	for ( const auto& [fMin, fMax] : m_vecZones )
+	{
+		const float fWidth = fMax - fMin;
+		const float fZoneExtra = fExtra * fWidth / m_fZonesWidth;
+		const float fFromMin = fX - fGrown - ( fBase + fMin );
+		if ( fFromMin <= 0.f )
+			break;
+		if ( fFromMin <= fWidth + fZoneExtra )
+			return fBase + fMin + fFromMin * fWidth / ( fWidth + fZoneExtra );
+		fGrown += fZoneExtra;
+	}
+	return fX - fGrown;
+}
+
 const std::unordered_map<std::wstring, CKTDGUIAnchors::Entry>& CKTDGUIAnchors::Get()
 {
 	static const std::unordered_map<std::wstring, Entry> s_mapEntries = Load();
@@ -96,6 +141,32 @@ std::unordered_map<std::wstring, CKTDGUIAnchors::Entry> CKTDGUIAnchors::Load()
 					kEntry.bHasDialog = ParseUIAnchor( lua_tostring( L, -1 ), kEntry.eDialog );
 					if ( kEntry.bHasDialog == false )
 						std::fprintf( stderr, "UIAnchors.lua: unknown anchor for %s\n", pszScript );
+				}
+				lua_pop( L, 1 );
+
+				lua_getfield( L, -1, "STRETCH_ZONES" );	// { { min, max }, ... }
+				if ( lua_istable( L, -1 ) )
+				{
+					lua_pushnil( L );
+					while ( lua_next( L, -2 ) != 0 )
+					{
+						bool bGood = false;
+						if ( lua_istable( L, -1 ) )
+						{
+							lua_rawgeti( L, -1, 1 );
+							lua_rawgeti( L, -2, 2 );
+							if ( lua_isnumber( L, -2 ) && lua_isnumber( L, -1 ) && lua_tonumber( L, -2 ) < lua_tonumber( L, -1 ) )
+							{
+								kEntry.vecStretchZones.emplace_back( static_cast<float>( lua_tonumber( L, -2 ) ),
+									static_cast<float>( lua_tonumber( L, -1 ) ) );
+								bGood = true;
+							}
+							lua_pop( L, 2 );
+						}
+						if ( bGood == false )
+							std::fprintf( stderr, "UIAnchors.lua: bad stretch zone in %s\n", pszScript );
+						lua_pop( L, 1 );
+					}
 				}
 				lua_pop( L, 1 );
 
@@ -136,6 +207,11 @@ void CKTDGUIAnchors::Apply( CKTDGUIDialog& kDialog, const wchar_t* pwszScriptNam
 	const Entry& kEntry = it->second;
 	if ( kEntry.bHasDialog && kDialog.IsAnchorDeclared() == false )
 		kDialog.SetAnchor( kEntry.eDialog );
+	if ( kDialog.GetStretch().HasZones() == false )
+	{
+		for ( const auto& [fMin, fMax] : kEntry.vecStretchZones )
+			kDialog.GetStretch().AddZone( fMin, fMax );
+	}
 
 	for ( const auto& [wstrControl, eAnchor] : kEntry.mapControls )
 	{
