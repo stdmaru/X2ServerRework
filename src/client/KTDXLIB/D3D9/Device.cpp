@@ -225,7 +225,7 @@ enum KeyWord : std::size_t {
     kZEnable, kZWrite, kZFunc, kStencilEnable, kStencilFail, kStencilZFail, kStencilPass, kStencilFunc,
     kStencilMask, kStencilWriteMask,
     kBlendEnable, kSrcBlend, kDestBlend, kBlendOp, kSeparateAlpha, kSrcBlendAlpha, kDestBlendAlpha, kBlendOpAlpha,
-    kColorWrite, kDepthBias, kSlopeScaleDepthBias, kVertexProgram, kKeyWordCount,
+    kColorWrite, kDepthBias, kSlopeScaleDepthBias, kVertexProgram, kSampleCount, kAlphaToCoverage, kKeyWordCount,
 };
 static_assert(kKeyWordCount == std::tuple_size_v<decltype(PipelineKey::words)>);
 
@@ -410,6 +410,8 @@ Device::~Device()
     }
     m_render.ReleaseTexture(m_white);
     m_render.ReleaseTexture(m_depth);
+    m_render.ReleaseTexture(m_msaaColor);
+    m_render.ReleaseTexture(m_textureDepth);
     m_render.ReleaseBuffer(m_fanIndices);
     m_render.ReleaseBuffer(m_dynamicVertices);
 }
@@ -699,10 +701,140 @@ bool Device::SetRenderTarget(DWORD index, Texture* target)
 
 Device::Target Device::CurrentTarget() const
 {
+    Target t;
     if (m_target) {
-        return {m_target->m_texture, m_target->m_renderFormat, m_target->m_width, m_target->m_height};
+        t.color = m_target->m_texture;
+        t.colorFormat = m_target->m_renderFormat;
+        t.width = m_target->m_width;
+        t.height = m_target->m_height;
+        t.depth = m_msaaSamples > 1 ? m_textureDepth : m_depth;     // single-sampled, like the texture
+    } else {
+        t.color = m_backBuffer.texture;
+        t.colorFormat = m_backBufferFormat;
+        t.width = m_backBuffer.width;
+        t.height = m_backBuffer.height;
+        if (t.color && m_msaaSamples > 1) {
+            t.color = m_msaaColor;
+            t.samples = m_msaaSamples;
+        }
+        t.depth = m_depth;
     }
-    return {m_backBuffer.texture, m_backBufferFormat, m_backBuffer.width, m_backBuffer.height};
+    // The depth buffer is attached only to targets of the back buffer's size.
+    if (t.depth && t.width == m_depthWidth && t.height == m_depthHeight) {
+        t.depthFormat = m_depthFormat;
+    } else {
+        t.depth = {};
+    }
+    return t;
+}
+
+namespace {
+
+render::SampleCount SampleCountOf(UINT samples)
+{
+    return samples >= 8 ? render::SampleCount::X8
+         : samples >= 4 ? render::SampleCount::X4
+         : samples >= 2 ? render::SampleCount::X2
+                        : render::SampleCount::X1;
+}
+
+}  // namespace
+
+void Device::SetMultisample(UINT samples)
+{
+    m_samples = samples >= 8 ? 8 : samples >= 4 ? 4 : samples >= 2 ? 2 : 1;
+}
+
+void Device::SetAnisotropy(UINT level)
+{
+    m_anisotropy = std::clamp<UINT>(level, 1, 16);
+}
+
+// The back buffer's depth-stencil buffer and, with anti-aliasing, its multisampled color texture and the
+// single-sampled depth buffer of same-size render target textures. Recreated when the size or the samples change.
+bool Device::EnsureBackBufferTextures()
+{
+    if (!m_backBuffer.texture) {
+        return true;
+    }
+    const UINT width = m_backBuffer.width, height = m_backBuffer.height;
+    const render::TextureFormat depthFormat =
+        m_render.TextureSupportsFormat(render::TextureFormat::D24UnormS8Uint, render::TextureType::Texture2D,
+                                       render::TextureUsage::DepthStencilTarget)
+            ? render::TextureFormat::D24UnormS8Uint
+            : render::TextureFormat::D32FloatS8Uint;
+    UINT samples = m_samples;
+    while (samples > 1 && !(m_render.TextureSupportsSampleCount(m_backBufferFormat, SampleCountOf(samples)) &&
+                            m_render.TextureSupportsSampleCount(depthFormat, SampleCountOf(samples)))) {
+        samples /= 2;
+    }
+    if (m_depth && width == m_depthWidth && height == m_depthHeight && samples == m_msaaSamples &&
+        (samples == 1 || m_msaaFormat == m_backBufferFormat)) {
+        return true;
+    }
+    m_render.ReleaseTexture(m_depth);
+    m_render.ReleaseTexture(m_msaaColor);
+    m_render.ReleaseTexture(m_textureDepth);
+    m_depth = m_msaaColor = m_textureDepth = {};
+    m_msaaFormat = render::TextureFormat::Invalid;
+    if (samples > 1) {
+        m_msaaColor = m_render.CreateTexture({.format = m_backBufferFormat,
+                                              .usage = render::TextureUsage::ColorTarget,
+                                              .width = width,
+                                              .height = height,
+                                              .sampleCount = SampleCountOf(samples),
+                                              .name = "d3d9 multisampled back buffer"});
+        m_textureDepth = m_render.CreateTexture({.format = depthFormat,
+                                                 .usage = render::TextureUsage::DepthStencilTarget,
+                                                 .width = width,
+                                                 .height = height,
+                                                 .name = "d3d9 render target depth-stencil"});
+        if (!m_msaaColor || !m_textureDepth) {
+            Fail("multisampled back buffer: " + m_render.LastError());
+            m_render.ReleaseTexture(m_msaaColor);
+            m_render.ReleaseTexture(m_textureDepth);
+            m_msaaColor = m_textureDepth = {};
+            samples = 1;
+        } else {
+            m_msaaFormat = m_backBufferFormat;
+        }
+    }
+    m_msaaSamples = samples;
+    m_depth = m_render.CreateTexture({.format = depthFormat,
+                                      .usage = render::TextureUsage::DepthStencilTarget,
+                                      .width = width,
+                                      .height = height,
+                                      .sampleCount = SampleCountOf(samples),
+                                      .name = "d3d9 depth-stencil"});
+    m_depthFormat = m_depth ? depthFormat : render::TextureFormat::Invalid;
+    m_depthWidth = m_depth ? width : 0;
+    m_depthHeight = m_depth ? height : 0;
+    if (m_samples > 1 || samples > 1) {
+        SDL_LogInfo(SDL_LOG_CATEGORY_RENDER, "d3d9: back buffer %ux%u, %u samples (%u asked)", width, height, samples,
+                    m_samples);
+    }
+    return static_cast<bool>(m_depth);
+}
+
+bool Device::ResolveBackBuffer()
+{
+    const render::ColorTargetInfo color{.texture = m_msaaColor,
+                                        .loadOp = render::LoadOp::Load,
+                                        .storeOp = render::StoreOp::Resolve,
+                                        .resolveTexture = m_backBuffer.texture};
+    render::RenderPass* pass = m_frame->BeginRenderPass({&color, 1}, nullptr);
+    if (!pass) {
+        return Fail("resolve: " + m_render.LastError());
+    }
+    pass->End();
+    return true;
+}
+
+bool Device::AlphaToCoverage() const
+{
+    const auto& rs = m_renderStates;
+    return m_msaaSamples > 1 && !m_target && rs[D3DRS_ALPHATESTENABLE] && !rs[D3DRS_ALPHABLENDENABLE] &&
+           (rs[D3DRS_ALPHAFUNC] == D3DCMP_GREATER || rs[D3DRS_ALPHAFUNC] == D3DCMP_GREATEREQUAL);
 }
 
 bool Device::EnsureFrame()
@@ -730,22 +862,7 @@ bool Device::EnsureFrame()
             m_viewport.Width = m_backBuffer.width;
             m_viewport.Height = m_backBuffer.height;
         }
-        if (m_backBuffer.texture && (m_depthWidth != m_backBuffer.width || m_depthHeight != m_backBuffer.height)) {
-            m_render.ReleaseTexture(m_depth);
-            const render::TextureFormat depthFormat =
-                m_render.TextureSupportsFormat(render::TextureFormat::D24UnormS8Uint, render::TextureType::Texture2D,
-                                               render::TextureUsage::DepthStencilTarget)
-                    ? render::TextureFormat::D24UnormS8Uint
-                    : render::TextureFormat::D32FloatS8Uint;
-            m_depth = m_render.CreateTexture({.format = depthFormat,
-                                              .usage = render::TextureUsage::DepthStencilTarget,
-                                              .width = m_backBuffer.width,
-                                              .height = m_backBuffer.height,
-                                              .name = "d3d9 depth-stencil"});
-            m_depthFormat = m_depth ? depthFormat : render::TextureFormat::Invalid;
-            m_depthWidth = m_depth ? m_backBuffer.width : 0;
-            m_depthHeight = m_depth ? m_backBuffer.height : 0;
-        }
+        EnsureBackBufferTextures();
     }
     return true;
 }
@@ -764,8 +881,8 @@ render::RenderPass* Device::EnsurePass()
         color.loadOp = render::LoadOp::Clear;
         color.clearColor = m_pendingClear.colorValue;
     }
-    render::DepthStencilTargetInfo depth{.texture = m_depth};
-    const bool withDepth = m_depth && target.width == m_depthWidth && target.height == m_depthHeight;
+    render::DepthStencilTargetInfo depth{.texture = target.depth};
+    const bool withDepth = static_cast<bool>(target.depth);
     if (withDepth) {
         depth.loadOp = m_pendingClear.depth ? render::LoadOp::Clear : render::LoadOp::Load;
         depth.clearDepth = m_pendingClear.depthValue;
@@ -840,6 +957,9 @@ bool Device::SubmitFrame()
 {
     const std::scoped_lock gpuLock(m_gpuMutex);
     EndPass();
+    if (m_msaaSamples > 1 && m_msaaColor && m_backBuffer.texture) {
+        ResolveBackBuffer();
+    }
     const bool uploaded = FlushUploads();       // before the frame, whose draws read them
     const bool submitted = m_frame->Submit();
     m_frame = nullptr;
@@ -964,12 +1084,14 @@ PipelineKey Device::MakePipelineKey(D3DPRIMITIVETYPE type, DWORD fvf, UINT strid
     PrimitiveShape shape{};
     Shape(type, 1, shape);
     const Target target = CurrentTarget();
-    const bool withDepth = m_depth && target.width == m_depthWidth && target.height == m_depthHeight;
+    const bool withDepth = static_cast<bool>(target.depth);
     w[kPrimitive] = static_cast<std::uint32_t>(shape.type);
     w[kFvf] = fvf;
     w[kStride] = stride;
     w[kColorFormat] = static_cast<std::uint32_t>(target.colorFormat);
-    w[kDepthFormat] = withDepth ? static_cast<std::uint32_t>(m_depthFormat) : 0;
+    w[kDepthFormat] = withDepth ? static_cast<std::uint32_t>(target.depthFormat) : 0;
+    w[kSampleCount] = target.samples;
+    w[kAlphaToCoverage] = AlphaToCoverage() ? 1 : 0;
     w[kCull] = rs[D3DRS_CULLMODE];
     w[kFill] = rs[D3DRS_FILLMODE] == D3DFILL_WIREFRAME ? D3DFILL_WIREFRAME : D3DFILL_SOLID;
     if (withDepth) {
@@ -1067,6 +1189,8 @@ render::GraphicsPipeline Device::Pipeline(const PipelineKey& key, DWORD fvf, UIN
     desc.vertexBuffers = {&buffer, 1};
     desc.vertexAttributes = attributes;
     desc.primitiveType = static_cast<render::PrimitiveType>(w[kPrimitive]);
+    desc.sampleCount = SampleCountOf(w[kSampleCount]);
+    desc.alphaToCoverage = w[kAlphaToCoverage] != 0;
     // D3D9's front faces are clockwise; D3DCULL_CCW (the default) culls counterclockwise triangles.
     desc.rasterizer.frontFace = render::FrontFace::Clockwise;
     desc.rasterizer.cullMode = w[kCull] == D3DCULL_CCW ? render::CullMode::Back
@@ -1133,6 +1257,7 @@ render::Sampler Device::SamplerFor(DWORD stage)
                                      D3DSAMP_MAXANISOTROPY}) {
         key = (key ^ ss[type]) * 0x100000001B3ULL;
     }
+    key = (key ^ m_anisotropy) * 0x100000001B3ULL;
     if (auto it = m_samplers.find(key); it != m_samplers.end()) {
         return it->second;
     }
@@ -1146,6 +1271,11 @@ render::Sampler Device::SamplerFor(DWORD stage)
     desc.mipLodBias = BitsFloat(ss[D3DSAMP_MIPMAPLODBIAS]);
     if (ss[D3DSAMP_MINFILTER] == D3DTEXF_ANISOTROPIC || ss[D3DSAMP_MAGFILTER] == D3DTEXF_ANISOTROPIC) {
         desc.maxAnisotropy = static_cast<float>(std::max<DWORD>(1, ss[D3DSAMP_MAXANISOTROPY]));
+    }
+    // The anisotropic filtering option: mipmapped textures filtered linearly (the world; the UI is not minified).
+    if (m_anisotropy > 1 && ss[D3DSAMP_MIPFILTER] != D3DTEXF_NONE && desc.minFilter == render::Filter::Linear &&
+        desc.magFilter == render::Filter::Linear) {
+        desc.maxAnisotropy = std::max(desc.maxAnisotropy, static_cast<float>(m_anisotropy));
     }
     // D3DSAMP_MAXMIPLEVEL is the largest level used (0 is the biggest); D3DTEXF_NONE samples that level only.
     desc.minLod = static_cast<float>(ss[D3DSAMP_MAXMIPLEVEL]);
@@ -1201,6 +1331,7 @@ void Device::PushUniforms(DWORD fvf)
     f.alphaTest[0] = static_cast<float>(m_renderStates[D3DRS_ALPHATESTENABLE] ? m_renderStates[D3DRS_ALPHAFUNC]
                                                                                : DWORD{D3DCMP_ALWAYS});
     f.alphaTest[1] = static_cast<float>(m_renderStates[D3DRS_ALPHAREF] & 0xFF);
+    f.alphaTest[2] = AlphaToCoverage() ? 1.0f : 0.0f;
     const render::Color fog = ColorFromD3D(m_renderStates[D3DRS_FOGCOLOR]);
     f.fogColor[0] = fog.r;
     f.fogColor[1] = fog.g;

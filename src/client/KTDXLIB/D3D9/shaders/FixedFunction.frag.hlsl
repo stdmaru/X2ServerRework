@@ -18,7 +18,7 @@ cbuffer FragmentUniforms : register(b0, space3)
     int4 alphaStage[3];     // D3DTSS_ALPHAOP, ALPHAARG1, ALPHAARG2, ALPHAARG0
     int4 texCoordIndex;     // D3DTSS_TEXCOORDINDEX of stages 0 to 2 (0 to 2)
     float4 textureFactor;   // D3DRS_TEXTUREFACTOR
-    float4 alphaTest;       // D3DRS_ALPHAFUNC (D3DCMP_ALWAYS when the test is off), D3DRS_ALPHAREF
+    float4 alphaTest;       // D3DRS_ALPHAFUNC (D3DCMP_ALWAYS when the test is off), D3DRS_ALPHAREF, alpha-to-coverage
     float4 fogColor;        // D3DRS_FOGCOLOR; w: 1 with D3DRS_FOGENABLE, else 0
 };
 
@@ -130,7 +130,13 @@ float4 main(Input input) : SV_Target0
             }
         }
     }
-    if (!AlphaTest(int(alphaTest.x), current.a, alphaTest.y)) {
+    if (alphaTest.z != 0.0) {
+        // Alpha-to-coverage (anti-aliasing, opaque draws with a GREATER or GREATEREQUAL test): instead of cutting at
+        // the reference, the alpha becomes the share of samples covered across about one pixel around it, so cut-out
+        // edges (leaves, grass, fences) are smoothed like geometry edges. Blending is off, so only the coverage reads it.
+        const float value = saturate(current.a) * 255.0;
+        current.a = saturate((value - alphaTest.y) / max(fwidth(value), 0.0001) + 0.5);
+    } else if (!AlphaTest(int(alphaTest.x), current.a, alphaTest.y)) {
         discard;
     }
     if (fogColor.w != 0.0) {

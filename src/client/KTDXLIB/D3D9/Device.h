@@ -168,7 +168,7 @@ private:
 
 // The pipeline state of a draw as D3D9 values, before translation. Public for tests.
 struct PipelineKey {
-    std::array<std::uint32_t, 29> words{};
+    std::array<std::uint32_t, 31> words{};
     friend bool operator==(const PipelineKey&, const PipelineKey&) = default;
 };
 
@@ -275,6 +275,16 @@ public:
     // Whether CreateTexture takes this format with this usage (D3DUSAGE_RENDERTARGET, D3DUSAGE_AUTOGENMIPMAP).
     bool SupportsTextureFormat(D3DFORMAT format, DWORD usage) const;
 
+    // Anti-aliasing (2026-11-12, not in D3D9's interface): the back buffer is drawn with this many samples (1, 2, 4
+    // or 8; lowered to what the GPU takes) and resolved at Present. Opaque alpha-tested draws on it use
+    // alpha-to-coverage. Takes effect at the next frame.
+    void SetMultisample(UINT samples);
+    UINT Multisample() const { return m_samples; }
+    // Anisotropic filtering for every mipmapped texture sampled with linear filtering, up to `level` (1: off, as the
+    // game asks; at most 16). Samplers the game sets anisotropic keep their own level if higher.
+    void SetAnisotropy(UINT level);
+    UINT Anisotropy() const { return m_anisotropy; }
+
     // The back buffer's size this frame (0 x 0 while minimized or before the first scene).
     UINT BackBufferWidth() const { return m_backBuffer.width; }
     UINT BackBufferHeight() const { return m_backBuffer.height; }
@@ -292,6 +302,9 @@ private:
         render::Texture color;
         render::TextureFormat colorFormat = render::TextureFormat::Invalid;
         UINT width = 0, height = 0;
+        UINT samples = 1;
+        render::Texture depth;      // none when no depth buffer fits the target
+        render::TextureFormat depthFormat = render::TextureFormat::Invalid;
     };
 
     struct PendingClear {
@@ -321,6 +334,10 @@ private:
     render::RenderPass* EnsurePass();
     void EndPass();
     Target CurrentTarget() const;
+    bool EnsureBackBufferTextures();
+    bool ResolveBackBuffer();
+    // Whether the next draw uses alpha-to-coverage (the pipeline and the fragment uniforms must agree).
+    bool AlphaToCoverage() const;
     bool SubmitFrame();
 
     // Draws
@@ -381,9 +398,17 @@ private:
     render::RenderPass* m_pass = nullptr;
     render::SwapchainTexture m_backBuffer;
     render::TextureFormat m_backBufferFormat = render::TextureFormat::Invalid;
-    render::Texture m_depth;
+    render::Texture m_depth;                    // the back buffer's, with its samples
     render::TextureFormat m_depthFormat = render::TextureFormat::Invalid;
     UINT m_depthWidth = 0, m_depthHeight = 0;
+    // Anti-aliasing: m_samples asked; the back buffer is drawn into m_msaaColor (m_msaaSamples samples) and resolved
+    // into the swapchain texture. Render target textures stay single-sampled and use m_textureDepth.
+    UINT m_samples = 1;
+    UINT m_msaaSamples = 1;
+    render::Texture m_msaaColor;
+    render::TextureFormat m_msaaFormat = render::TextureFormat::Invalid;
+    render::Texture m_textureDepth;
+    UINT m_anisotropy = 1;
     PendingClear m_pendingClear;
     bool m_inScene = false;
 

@@ -8,7 +8,9 @@
 
 #include "x2/render/null.h"
 
+#include <SDL3/SDL_hints.h>
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_video.h>
 #include <doctest/doctest.h>
 
 #include <algorithm>
@@ -230,6 +232,46 @@ TEST_CASE("d3d9: pipelines are cached by the states that live in them")
     CHECK(device.PipelineCount() == 3);
     device.EndScene();
     device.Present();
+}
+
+TEST_CASE("d3d9: anti-aliasing draws the back buffer multisampled and resolves it")
+{
+    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO));
+    SDL_Window* window = SDL_CreateWindow("d3d9", 64, 32, 0);
+    REQUIRE(window);
+    auto render = NullRender();
+    REQUIRE(render->ClaimWindow(window));
+    {
+        x2::d3d9::Device device(*render, window);
+        REQUIRE(device.Ok());
+        device.SetMultisample(6);       // rounded down to 4
+        CHECK(device.Multisample() == 4);
+        ScreenVertex quad[4];
+        Quad(quad, 0, 0, 8, 8, 0xFFFFFFFF);
+        device.SetFVF(kScreenFvf);
+        REQUIRE(device.BeginScene());
+        CHECK(device.Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFF0000FF, 1.0f, 0));
+        CHECK(device.DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(ScreenVertex)));
+        // Alpha-tested opaque draws use alpha-to-coverage: a pipeline of their own.
+        device.SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+        device.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+        CHECK(device.DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(ScreenVertex)));
+        CHECK(device.PipelineCount() == 2);
+        // Render target textures stay single-sampled, with a depth buffer of their own.
+        auto target = device.CreateTexture(64, 32, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT);
+        CHECK(device.SetRenderTarget(0, target.get()));
+        CHECK(device.DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(ScreenVertex)));
+        CHECK(device.PipelineCount() == 3);
+        CHECK(device.SetRenderTarget(0, nullptr));
+        CHECK(device.EndScene());
+        CHECK(device.Present());
+        CHECK(Has(*render, "store=resolve->"));
+    }
+    render->ReleaseWindow(window);
+    render.reset();
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
 TEST_CASE("d3d9: texture locks upload in the device's format")
