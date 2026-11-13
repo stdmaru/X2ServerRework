@@ -29,6 +29,10 @@ LAYOUT_W = 1024.0
 LAYOUT_H = 768.0
 EDGE = 24.0          # within this many units of an edge counts as held to it
 THIRD = LAYOUT_W / 3
+SCREEN_W = 600.0     # a dialog at least this wide and SCREEN_H tall is a whole screen composed of pieces
+SCREEN_H = 450.0
+BAND_H = LAYOUT_H / 2  # taller than this, a dialog spanning the width with a background is a screen
+BACK_SHARE = 0.4     # a control covering this share of the dialog's box is its background
 
 
 @dataclass
@@ -144,6 +148,17 @@ def propose(script: str, controls: dict[str, Control]) -> Proposal:
     union = Box(min(b.min_x for b in parts.values()), min(b.min_y for b in parts.values()),
                 max(b.max_x for b in parts.values()), max(b.max_y for b in parts.values()))
     proposal.notes.append(f"at {pos[0]},{pos[1]}; controls {union}")
+    # A background covering much of the dialog makes it a window or a whole screen, not a sparse HUD.
+    has_back = any(b.width * b.height >= BACK_SHARE * union.width * union.height for b in parts.values())
+    if has_back and union.width >= SCREEN_W and union.height >= SCREEN_H:
+        proposal.review = f"a whole screen ({union}): left centered; anchor its pieces by hand if wanted"
+        return proposal
+    if has_back and union.at_left() and union.at_right() and union.height >= BAND_H:
+        proposal.review = f"spans the width with a background ({union}): left centered"
+        return proposal
+    if union.at_left() != union.at_right() and union.width >= SCREEN_W:
+        proposal.review = f"wide and at one edge ({union}): left centered"
+        return proposal
     if union.at_left() and union.at_right():
         for name, box in sorted(parts.items()):
             anchor, why = control_anchor(box)
