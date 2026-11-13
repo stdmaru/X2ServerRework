@@ -6707,6 +6707,9 @@ void CX2StateServerSelect::SetShowServerStateButtonSet ( bool bIsShowUnitListSta
 		{
 			pSelectUnitTitleStatic->SetShow ( bIsShowUnitListState );
 		}
+		// The list's label, a static of its own in the client_data so that it follows the list to the right (T44).
+		if ( CKTDGUIControl* pListLabel = m_pDLGUnitSelectBack->GetControl( L"characListLabel" ) )
+			pListLabel->SetShow( bIsShowUnitListState );
 
 		for ( UINT i = 0; i < m_vecUnitSlot.size(); ++i )
 		{
@@ -6781,6 +6784,8 @@ void CX2StateServerSelect::SetShowServerStateButtonSet ( bool bIsShowUnitListSta
 		{
 			pChannelListStatic->SetShow ( bIsShowChannelListState );
 		}
+		if ( CKTDGUIControl* pListLabel = m_pDLGUnitSelectBack->GetControl( L"ChannelListLabel" ) )
+			pListLabel->SetShow( bIsShowChannelListState );
 
 
 
