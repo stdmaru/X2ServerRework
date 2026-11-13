@@ -209,6 +209,11 @@ Each use of the old X/Y scale is now a position, a size or a canvas edge:
   `X2GameOption.cpp`). The original used 1024×768. A failed mode change falls back to 1280×720, as does the low-spec
   preset (was 800×600), and the device opens at 1280×720 (`X2.cpp`). 4:3 sizes remain in the options list.
 
+Anchors placed by the code (2026-11-13, `client/widescreen-migration`): the gauges of other players use one script on
+both sides of the screen, so `CX2PartyMemberGageUI::SetPosition` anchors the party list left, and
+`CX2PVPPlayerGageUI::SetPosition` anchors each PvP team to the side it is placed on (x 6 left, x 868 right). The
+anchors of single-sided dialogs are in `UIAnchors.lua` ([client_data](../tools/client-data.md)).
+
 Known, left for the migration: screens whose texture does not match its rectangle's aspect stay as the original drew
 them. The character select background, for example, is a 512×512 texture drawn at 1024×768, so it is stretched 33% in
 the original as well.
