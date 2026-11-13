@@ -329,6 +329,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           scripts: 14 anchored (the HUD), 44 centered as windows, 29 to review; more is recorded during the migration.
     - [ ] `client/widescreen-migration`: `UIAnchors.lua` filled and reviewed, HUD first, then windows, then the rest;
           the C++ placement sites (about 224) sorted into layout and derived positions along the way. Two or three PRs.
+          Part 1, the HUD, done 2026-11-13 (with the code-placed pieces it showed: quick slot items, minimap, party and
+          PvP gauges, buffs); next, full screens (character select, PvP rooms, cash shop) and the review list.
           This includes the content fixes for full-screen images whose texture does not match its rectangle (the
           character select background: 512×512 drawn at 1024×768, also stretched in the original), found by comparing
           `.tet` UVs with script rectangles.
