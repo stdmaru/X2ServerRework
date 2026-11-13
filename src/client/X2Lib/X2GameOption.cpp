@@ -740,6 +740,8 @@ bool CX2GameOption::OpenScriptFile()
 
 		LUA_GET_VALUE( luaManager, "VERTICALSYNC",					m_OptionList.m_bVerticalSync,		false );
 		LUA_GET_VALUE( luaManager, "FRAME_LIMIT",					m_OptionList.m_iFrameLimit,			0 );
+		LUA_GET_VALUE( luaManager, "MULTISAMPLE",					m_OptionList.m_iMultisample,		1 );
+		LUA_GET_VALUE( luaManager, "ANISOTROPY",					m_OptionList.m_iAnisotropy,			1 );
 		LUA_GET_VALUE_ENUM( luaManager, "SKILL_CUTIN_SHOW", 		m_OptionList.m_eSkillCutinShowState,	SKILL_CUTIN_SHOW_STATE,		SCSS_ONESELF );
 
 		LUA_GET_VALUE( luaManager, "SKILL_SLOT_UI_TYPE_A",			m_OptionList.m_bIsSkillUITypeA,		true );
@@ -1023,6 +1025,8 @@ bool CX2GameOption::SaveScriptFile()
 	else
 		FilePrintf( file, L"\tVERTICALSYNC			= FALSE, \n" );
 	FilePrintf( file, L"\tFRAME_LIMIT			= %d, \n", m_OptionList.m_iFrameLimit );
+	FilePrintf( file, L"\tMULTISAMPLE			= %d, \n", m_OptionList.m_iMultisample );
+	FilePrintf( file, L"\tANISOTROPY			= %d, \n", m_OptionList.m_iAnisotropy );
 
 
 	switch( m_OptionList.m_eSkillCutinShowState )
@@ -1095,6 +1099,8 @@ void CX2GameOption::ApplyAllOption( bool bForce /*= false*/ )
 {
 	SetVerticalSync( m_OptionList.m_bVerticalSync );
 	SetFrameLimit( m_OptionList.m_iFrameLimit );
+	SetMultisample( m_OptionList.m_iMultisample );
+	SetAnisotropy( m_OptionList.m_iAnisotropy );
 
 	// GRAPHIC
 	SetUnitDetail( m_OptionList.m_UnitDetail, bForce );
@@ -1326,6 +1332,22 @@ void CX2GameOption::SetFrameLimit( IN int iFps_ )
 {
 	m_OptionList.m_iFrameLimit = iFps_ > 0 ? iFps_ : 0;
 	DXUTSetFrameLimit( static_cast<float>( m_OptionList.m_iFrameLimit ) );
+}
+
+// Anti-aliasing and anisotropic filtering (2026-11-12, client/msaa): new options, applied by the D3D9 device from
+// the next frame.
+void CX2GameOption::SetMultisample( IN int iSamples_ )
+{
+	m_OptionList.m_iMultisample = iSamples_ >= 8 ? 8 : iSamples_ >= 4 ? 4 : iSamples_ >= 2 ? 2 : 1;
+	if( IDirect3DDevice9* pDevice = DXUTGetD3DDevice() )
+		pDevice->SetMultisample( static_cast<UINT>( m_OptionList.m_iMultisample ) );
+}
+
+void CX2GameOption::SetAnisotropy( IN int iLevel_ )
+{
+	m_OptionList.m_iAnisotropy = iLevel_ >= 16 ? 16 : iLevel_ >= 8 ? 8 : iLevel_ >= 4 ? 4 : iLevel_ >= 2 ? 2 : 1;
+	if( IDirect3DDevice9* pDevice = DXUTGetD3DDevice() )
+		pDevice->SetAnisotropy( static_cast<UINT>( m_OptionList.m_iAnisotropy ) );
 }
 
 void CX2GameOption::SetVerticalSync( IN bool bVal_ )

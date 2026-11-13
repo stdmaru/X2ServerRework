@@ -2,6 +2,44 @@
 
 #include "./X2StateOption.h"
 
+namespace
+{
+	// The values of the graphics options' combo boxes (2026-11-12, client/msaa), in the order of their items in
+	// DLG_UI_Option_Graphic.lua, which holds the labels.
+	constexpr int kMultisampleItems[] = { 1, 2, 4, 8 };
+	constexpr int kAnisotropyItems[] = { 1, 2, 4, 8, 16 };
+	constexpr int kFrameLimitItems[] = { 0, 30, 60, 120, 144, 165, 240 };
+
+	// The value of a combo box's selected item, or -1.
+	template <std::size_t N>
+	int SelectedValue( CKTDGUIDialogType pDialog, const WCHAR* wszName, const int ( &aValues )[N] )
+	{
+		CKTDGUIComboBox* pCombo = (CKTDGUIComboBox*) pDialog->GetControl( wszName );
+		if( NULL == pCombo )
+			return -1;
+		const int iIndex = pCombo->GetSelectedItemIndex();
+		return iIndex >= 0 && iIndex < static_cast<int>( N ) ? aValues[iIndex] : -1;
+	}
+
+	// Selects the item of a value; nothing if the value has none (an option edited in GameOptions.lua).
+	template <std::size_t N>
+	void SelectValue( CKTDGUIDialogType pDialog, const WCHAR* wszName, const int ( &aValues )[N], int iValue )
+	{
+		CKTDGUIComboBox* pCombo = (CKTDGUIComboBox*) pDialog->GetControl( wszName );
+		if( NULL == pCombo )
+			return;
+		for( std::size_t i = 0; i < N; ++i )
+		{
+			if( aValues[i] == iValue )
+			{
+				pCombo->SetSelectedByIndex( static_cast<UINT>( i ) );
+				return;
+			}
+		}
+		pCombo->SetUnSelected();
+	}
+}
+
 
 
 
@@ -901,6 +939,30 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			pGameOption->SetVerticalSync( false );
 			return true;
 		} break;
+
+	case SOUCM_OPTION_GRAPHIC_MULTISAMPLE:
+		{
+			const int iValue = SelectedValue( m_pDLGOptionWindow, L"Option_Multisample", kMultisampleItems );
+			if( iValue > 0 )
+				pGameOption->SetMultisample( iValue );
+			return true;
+		} break;
+
+	case SOUCM_OPTION_GRAPHIC_ANISOTROPY:
+		{
+			const int iValue = SelectedValue( m_pDLGOptionWindow, L"Option_Anisotropy", kAnisotropyItems );
+			if( iValue > 0 )
+				pGameOption->SetAnisotropy( iValue );
+			return true;
+		} break;
+
+	case SOUCM_OPTION_GRAPHIC_FRAME_LIMIT:
+		{
+			const int iValue = SelectedValue( m_pDLGOptionWindow, L"Option_FrameLimit", kFrameLimitItems );
+			if( iValue >= 0 )
+				pGameOption->SetFrameLimit( iValue );
+			return true;
+		} break;
 	case SOUCM_OPTION_OHTER_SCSS_ONESELF:
 		{
 			pGameOption->SetStateCutinShowState(CX2GameOption::SCSS_ONESELF);
@@ -1302,6 +1364,14 @@ void CX2StateOption::ShowGraphicOption( bool bShow )
 	{
 		pCheckFlashEffect->SetShow( bShow );
 	}
+
+	// Added on 2026-11-12 (client/msaa); vertical sync moved here from the other options.
+	for( const WCHAR* wszName : { L"Option_Multisample", L"Option_Anisotropy", L"Option_FrameLimit", L"VerticalSync",
+		L"OptionMultisample", L"OptionAnisotropy", L"OptionFrameLimit", L"OptionVerticalSync" } )
+	{
+		if( CKTDGUIControl* pControl = m_pDLGOptionWindow->GetControl( wszName ) )
+			pControl->SetShowEnable( bShow, bShow );
+	}
 }
 
 void CX2StateOption::ShowSoundOption( bool bShow )
@@ -1443,12 +1513,6 @@ void CX2StateOption::ShowOtherOption( bool bShow )
 
 	pRadio_Play_Guide_On->SetShow( bShow );
 	pRadio_Play_Guide_Off->SetShow( bShow );
-
-	CKTDGUIRadioButton* pRadio_Vertical_Sync_On		= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Option_Vertical_Sync_On" );
-	CKTDGUIRadioButton* pRadio_Vertical_Sync_Off	= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Option_Vertical_Sync_Off" );
-
-	pRadio_Vertical_Sync_On->SetShow( bShow );
-	pRadio_Vertical_Sync_Off->SetShow( bShow );
 
 	CKTDGUIRadioButton* pRadio = static_cast<CKTDGUIRadioButton*> (m_pDLGOptionWindow->GetControl( L"Option_SkillCutin_OneSelf" ));
 	pRadio->SetShow( bShow );
@@ -1601,12 +1665,6 @@ void CX2StateOption::ShowStaticOther( bool bShow )
 	pStatic_Other = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"onGuide" );
 	pStatic_Other->SetShowEnable(bShow, bShow);
 	pStatic_Other = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"offGuide" );
-	pStatic_Other->SetShowEnable(bShow, bShow);
-	pStatic_Other = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"FRAME" );
-	pStatic_Other->SetShowEnable(bShow, bShow);
-	pStatic_Other = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"onVerticalSync" );
-	pStatic_Other->SetShowEnable(bShow, bShow);
-	pStatic_Other = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"offVerticalSync" );
 	pStatic_Other->SetShowEnable(bShow, bShow);
 }
 //{{2011.09.21 이준호 반디캠 옵션 설정 메소드 추가 X_x88
@@ -1822,6 +1880,12 @@ void CX2StateOption::InitGraphicOption()
 	{
 		pCheckFlashEffect->SetChecked( pOptionList->m_bFlashEffect );
 	}
+
+	SelectValue( m_pDLGOptionWindow, L"Option_Multisample", kMultisampleItems, pOptionList->m_iMultisample );
+	SelectValue( m_pDLGOptionWindow, L"Option_Anisotropy", kAnisotropyItems, pOptionList->m_iAnisotropy );
+	SelectValue( m_pDLGOptionWindow, L"Option_FrameLimit", kFrameLimitItems, pOptionList->m_iFrameLimit );
+	if( CKTDGUICheckBox* pCheckVerticalSync = (CKTDGUICheckBox*) m_pDLGOptionWindow->GetControl( L"VerticalSync" ) )
+		pCheckVerticalSync->SetChecked( pOptionList->m_bVerticalSync );
 }
 
 
@@ -1887,12 +1951,6 @@ void CX2StateOption::InitOtherOption()
 
 	pRadio_Play_Guide_On->SetChecked( pOptionList->m_bPlayGuide );
 	pRadio_Play_Guide_Off->SetChecked( !pOptionList->m_bPlayGuide );
-
-	CKTDGUIRadioButton* pRadio_Vertical_Sync_On		= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Option_Vertical_Sync_On" );
-	CKTDGUIRadioButton* pRadio_Vertical_Sync_Off	= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Option_Vertical_Sync_Off" );
-
-	pRadio_Vertical_Sync_On->SetChecked( pOptionList->m_bVerticalSync );
-	pRadio_Vertical_Sync_Off->SetChecked( !pOptionList->m_bVerticalSync );
 
 	switch( pOptionList->m_eSkillCutinShowState )
 	{

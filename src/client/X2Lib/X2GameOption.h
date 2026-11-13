@@ -107,7 +107,9 @@ class CX2GameOption
 
 			bool			m_bFlashEffect;		/// 화면 번쩍임 효과
 			bool			m_bVerticalSync;	/// vertical sync
-			int				m_iFrameLimit;		/// T41: at most this many frames per second, 0 for no limit (GameOptions.lua only)
+			int				m_iFrameLimit;		/// T41: at most this many frames per second, 0 for no limit
+			int				m_iMultisample;		/// anti-aliasing samples: 1 (off), 2, 4 or 8
+			int				m_iAnisotropy;		/// anisotropic filtering: 1 (off), 2, 4, 8 or 16
 
 
 #ifdef PVP_ZOOM_CAMERA
@@ -192,6 +194,8 @@ class CX2GameOption
 				m_bFlashEffect			= false;
 				m_bVerticalSync			= false;
 				m_iFrameLimit			= 0;
+				m_iMultisample			= 1;
+				m_iAnisotropy			= 1;
 
 #ifdef PVP_ZOOM_CAMERA
 				m_bAutoCamera				= false;
@@ -382,6 +386,10 @@ class CX2GameOption
 		bool GetVerticalSync() const { return m_OptionList.m_bVerticalSync; }
 		void SetFrameLimit( IN int iFps_ );
 		int GetFrameLimit() const { return m_OptionList.m_iFrameLimit; }
+		void SetMultisample( IN int iSamples_ );
+		int GetMultisample() const { return m_OptionList.m_iMultisample; }
+		void SetAnisotropy( IN int iLevel_ );
+		int GetAnisotropy() const { return m_OptionList.m_iAnisotropy; }
 
 
 #ifdef PVP_ZOOM_CAMERA
