@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "./X2Eqip.h"
+#include "KTDXTickInterpolation.h"
 
 
 // constructor
@@ -84,6 +85,7 @@ CX2Eqip::CX2Eqip( CX2Item* pItem, CKTDGXSkinAnimPtr pUnitXSkinAnim, int enchantL
 	{
 		m_pUnitMatrix[i]	= NULL;
 		D3DXMatrixIdentity( &m_mAttachNormalMatrix[i] );
+		D3DXMatrixIdentity( &m_mAttachNormalPrevMatrix[i] );
 
 		m_pNormalXSkinAnim[i] = NULL;
 		m_pHyperXSkinAnim[i] = NULL;
@@ -1100,6 +1102,14 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 
 	case CX2Item::UT_ATTACH_NORMAL:
 		{
+			const int iTick = g_pKTDXApp->GetFrameMoveCount();
+			if( iTick != m_iAttachNormalTick )
+			{
+				for( int i=0; i< CX2Item::MAX_MODEL_COUNT_A_ITEM ; i++ )
+					m_mAttachNormalPrevMatrix[i] = m_mAttachNormalMatrix[i];
+				m_iAttachNormalPrevTick = m_iAttachNormalTick;
+				m_iAttachNormalTick = iTick;
+			}
 			for( int i=0; i< CX2Item::MAX_MODEL_COUNT_A_ITEM ; i++ )
 			{
 				if( NULL != m_pUnitMatrix[i] )
@@ -1148,6 +1158,18 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 
 //{{ robobeg : 2008-10-17
 /*virtual*/
+// An attached mesh between the last two steps, like the body it hangs from (CKTDGXSkinAnim::PrepareRenderPose).
+D3DXMATRIX CX2Eqip::GetAttachNormalRenderMatrix( int i ) const
+{
+	const float t = x2::ktdx::UpdateFraction( m_iAttachNormalPrevTick, m_iAttachNormalTick,
+		g_pKTDXApp->GetFrameMoveCount(), g_pKTDXApp->GetTickInterpolation() );
+	if( t >= 1.f || x2::ktdx::IsWorldJump( m_mAttachNormalPrevMatrix[i], m_mAttachNormalMatrix[i] ) )
+		return m_mAttachNormalMatrix[i];
+	D3DXMATRIX mRender;
+	x2::ktdx::LerpMatrix( m_mAttachNormalPrevMatrix[i], m_mAttachNormalMatrix[i], t, mRender );
+	return mRender;
+}
+
 RENDER_HINT   CX2Eqip::OnFrameRender_Prepare()
 {
     if ( m_pItemTemplet == NULL )
@@ -1331,7 +1353,7 @@ void    CX2Eqip::OnFrameRender_Draw()
 						//{{ robobeg : 2008-10-08
 						//if ( SUCCEEDED( g_pKTDXApp->GetDGManager()->GetXRenderer()->BeginRender() ) )
 						//                  {
-						g_pKTDXApp->GetDGManager()->GetXRenderer()->OnFrameRender( m_AttatchNormalRenderParam, m_mAttachNormalMatrix[i],
+						g_pKTDXApp->GetDGManager()->GetXRenderer()->OnFrameRender( m_AttatchNormalRenderParam, GetAttachNormalRenderMatrix( i ),
 							*m_pNormalXMesh[i], m_pNormalTexChangeXET, NULL, m_pNormalAniData );
 						//g_pKTDXApp->GetDGManager()->GetXRenderer()->EndRender();
 						//}//if
@@ -1345,7 +1367,7 @@ void    CX2Eqip::OnFrameRender_Draw()
 						//{{ robobeg : 2008-10-08
 						//if ( SUCCEEDED( g_pKTDXApp->GetDGManager()->GetXRenderer()->BeginRender() ) )
 						//{
-						g_pKTDXApp->GetDGManager()->GetXRenderer()->OnFrameRender( m_AttatchNormalRenderParam, m_mAttachNormalMatrix[i],
+						g_pKTDXApp->GetDGManager()->GetXRenderer()->OnFrameRender( m_AttatchNormalRenderParam, GetAttachNormalRenderMatrix( i ),
 							*m_pHyperXMesh[i], m_pNormalTexChangeXET, NULL, m_pNormalAniData );
 						//g_pKTDXApp->GetDGManager()->GetXRenderer()->EndRender();
 						//              }//if

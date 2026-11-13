@@ -307,6 +307,11 @@ private:
 		//{{ dmlee 2008.11.29 이브 무기 2개 메시 다른거 붙일 수 있게 작업
 		D3DXMATRIX*					m_pUnitMatrix[ CX2Item::MAX_MODEL_COUNT_A_ITEM ];						// 부모 unit의 attach된 frame의 combine_matrix
 		D3DXMATRIX                  m_mAttachNormalMatrix[ CX2Item::MAX_MODEL_COUNT_A_ITEM ];
+		// Drawing between steps (T41): the attach matrices of the step before, and the steps they were set in.
+		D3DXMATRIX                  m_mAttachNormalPrevMatrix[ CX2Item::MAX_MODEL_COUNT_A_ITEM ];
+		int                         m_iAttachNormalTick = -1;
+		int                         m_iAttachNormalPrevTick = -1;
+		D3DXMATRIX                  GetAttachNormalRenderMatrix( int i ) const;
 
         // 내부적으로 관리하는 객체이므로 smart pointer를 사용하지 않는다.
         // - jintaeks on 2009-01-12, 16:19
