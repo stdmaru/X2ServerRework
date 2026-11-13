@@ -329,6 +329,11 @@ over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMa
 - **Dialogs** (`CKTDGUIDialog`): the position before and after each step is kept; while drawing, a dialog that moved by
   under 200 points in the step (quest balloons, names and HP bars that follow a unit) is drawn between the two and
   then given its position back. Dialogs moved outside the step (by input) are drawn where they are.
+- **Text and bars over units** (`client/name-interpolation`, 2026-11-13): names, guild and couple lines, the dev
+  overlay (`RenderName` of users, NPCs, village units and pets) and the small HP bar project the unit's position plus
+  `CKTDGObject::GetRenderOffset()` (the drawn position minus the step position, same note and cut rules as
+  `GetRenderMatrix`). Talk balloons (`CX2TalkBoxManagerImp`), placed on screen once per step, keep their last two step
+  positions and are drawn between them with their text, under 200 points apart like dialogs.
 - Not interpolated: slash traces and other vertex trails, which are rebuilt every step.
 
 **Diagnostics** (dev tools): `X2_INTERP_STATS=1` logs once a second how many skinned meshes were drawn interpolated and
