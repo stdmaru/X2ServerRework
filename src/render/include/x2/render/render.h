@@ -128,7 +128,9 @@ enum class MipmapMode : std::uint8_t { Nearest, Linear };
 enum class AddressMode : std::uint8_t { Repeat, MirroredRepeat, ClampToEdge };
 enum class IndexElementSize : std::uint8_t { U16, U32 };
 enum class LoadOp : std::uint8_t { Load, Clear, DontCare };
-enum class StoreOp : std::uint8_t { Store, DontCare };
+// Resolve: the multisampled contents are resolved into ColorTargetInfo::resolveTexture and then undefined;
+// ResolveAndStore also keeps them.
+enum class StoreOp : std::uint8_t { Store, DontCare, Resolve, ResolveAndStore };
 enum class PresentMode : std::uint8_t { Vsync, Immediate, Mailbox };
 
 template <typename E>
@@ -281,6 +283,7 @@ struct GraphicsPipelineDesc {
     PrimitiveType primitiveType = PrimitiveType::TriangleList;
     RasterizerState rasterizer = {};
     SampleCount sampleCount = SampleCount::X1;
+    bool alphaToCoverage = false;   // the fragment's alpha sets the covered samples (multisampled targets)
     DepthStencilState depthStencil = {};
     std::span<const ColorTargetDesc> colorTargets = {};
     TextureFormat depthStencilFormat = TextureFormat::Invalid;     // Invalid: no depth-stencil target
@@ -297,6 +300,7 @@ struct ColorTargetInfo {
     LoadOp loadOp = LoadOp::Load;
     StoreOp storeOp = StoreOp::Store;
     bool cycle = false;         // SDL_GPU cycling: write to a fresh copy if the texture is still in use
+    Texture resolveTexture = {};    // single-sampled; with StoreOp::Resolve or ResolveAndStore
 };
 
 struct DepthStencilTargetInfo {
@@ -469,6 +473,8 @@ public:
     virtual TextureFormat SwapchainTextureFormat(SDL_Window* window) = 0;
 
     virtual bool TextureSupportsFormat(TextureFormat format, TextureType type, TextureUsage usage) = 0;
+    // Whether a 2D texture of this format can have this many samples.
+    virtual bool TextureSupportsSampleCount(TextureFormat format, SampleCount count) = 0;
 
     virtual Buffer CreateBuffer(const BufferDesc& desc) = 0;
     virtual TransferBuffer CreateTransferBuffer(const TransferBufferDesc& desc) = 0;
