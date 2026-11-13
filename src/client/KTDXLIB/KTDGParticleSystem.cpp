@@ -2651,6 +2651,21 @@ void    CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_Draw()
 
 
 //#ifdef  X2OPTIMIZE_PARTICLE_SEQUENCE_DVB
+int CKTDGParticleSystem::CParticle::CurrentMoveTick()
+{
+	return g_pKTDXApp->GetFrameMoveCount();
+}
+
+float CKTDGParticleSystem::CParticle::GetRenderFraction() const
+{
+	if ( m_iMoveTick < 0 || m_iMoveTick != g_pKTDXApp->GetFrameMoveCount() - 1 )
+		return 1.f;
+	const D3DXVECTOR3 vMoved = m_vPos - m_vPosOld;
+	if ( D3DXVec3Dot( &vMoved, &vMoved ) > x2::ktdx::kSnapDistance * x2::ktdx::kSnapDistance )
+		return 1.f;
+	return g_pKTDXApp->GetTickInterpolation();
+}
+
 void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE()
 //#else   X2OPTIMIZE_PARTICLE_SEQUENCE_DVB
 //void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender( LPDIRECT3DVERTEXBUFFER9 pVB, int iVBSize )
@@ -2984,6 +2999,8 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 
 				if ( pPart == NULL )
 					continue;
+				const float fT = pPart->GetRenderFraction();   // between simulation steps (T41)
+				const D3DXVECTOR3 vRenderSize = pPart->GetRenderSize( fT );
 				// Render each particle a bunch of times to get a blurring effect
 				if( texID != pPart->m_TextureID )
 					continue;
@@ -3003,7 +3020,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 
 				KTDXPROFILE_BEGIN( "MATH_MATRIX" );
 
-				D3DXVECTOR3 partPos = pPart->GetPos() + pPart->GetCrash();
+				D3DXVECTOR3 partPos = pPart->GetRenderPos( fT ) + pPart->GetCrash();
 				pPart->SetCrash( D3DXVECTOR3( 0.0f, 0.0f, 0.0f ) );
 
 
@@ -3052,7 +3069,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 
 					if( true == m_bUseLookPoint )
 					{
-						vRotDegree = pPart->GetRotate() + pPart->GetRotateLocal();
+						vRotDegree = pPart->GetRenderRotate( fT ) + pPart->GetRenderRotateLocal( fT );
 					}
 					else
 					{
@@ -3066,33 +3083,33 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 								if ( true == m_bReverseY )
 									fYDegree = 180.f;
 
-                                vRotDegree = pPart->GetRotateLocal();
+                                vRotDegree = pPart->GetRenderRotateLocal( fT );
                                 vRotDegree.y += fYDegree;
 
 							} break;
 
 						case CKTDGMatrix::BT_X:
 							{
-                                vRotDegree = pPart->GetRotate() + pPart->GetRotateLocal();
-                                vRotDegree.x = pPart->GetRotateLocal().x;
+                                vRotDegree = pPart->GetRenderRotate( fT ) + pPart->GetRenderRotateLocal( fT );
+                                vRotDegree.x = pPart->GetRenderRotateLocal( fT ).x;
 							} break;
 
 						case CKTDGMatrix::BT_Y:
 							{
-                                vRotDegree = pPart->GetRotate() + pPart->GetRotateLocal();
-                                vRotDegree.y = pPart->GetRotateLocal().y;
+                                vRotDegree = pPart->GetRenderRotate( fT ) + pPart->GetRenderRotateLocal( fT );
+                                vRotDegree.y = pPart->GetRenderRotateLocal( fT ).y;
 							} break;
 
 						case CKTDGMatrix::BT_Z:
 							{
-                                vRotDegree = pPart->GetRotate() + pPart->GetRotateLocal();
-                                vRotDegree.z = pPart->GetRotateLocal().z;
+                                vRotDegree = pPart->GetRenderRotate( fT ) + pPart->GetRenderRotateLocal( fT );
+                                vRotDegree.z = pPart->GetRenderRotateLocal( fT ).z;
 							} break;
 
 
 						case CKTDGMatrix::BT_NONE:
 							{
-						        vRotDegree = pPart->GetRotate() + pPart->GetRotateLocal();
+						        vRotDegree = pPart->GetRenderRotate( fT ) + pPart->GetRenderRotateLocal( fT );
 							} break;
 						}
 					}
@@ -3139,8 +3156,8 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 //#endif  X2OPTIMIZE_PARTICLE_SEQUENCE_DVB
 
 				//1
-				pVertices->position.x = -0.5f * pPart->m_vSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
-				pVertices->position.y = 0.5f * pPart->m_vSize.y * m_ScaleFactor.y * vScaleByUnit.y;
+				pVertices->position.x = -0.5f * vRenderSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
+				pVertices->position.y = 0.5f * vRenderSize.y * m_ScaleFactor.y * vScaleByUnit.y;
 				pVertices->position.z = 0.0f;
 				D3DXVec3Transform( &v4temp, &pVertices->position, &finalMat );
 				pVertices->position.x = v4temp.x;
@@ -3152,8 +3169,8 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 				pVertices++;
 
 				//2
-				pVertices->position.x = -0.5f * pPart->m_vSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
-				pVertices->position.y = -0.5f * pPart->m_vSize.y * m_ScaleFactor.y * vScaleByUnit.y;
+				pVertices->position.x = -0.5f * vRenderSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
+				pVertices->position.y = -0.5f * vRenderSize.y * m_ScaleFactor.y * vScaleByUnit.y;
 				pVertices->position.z = 0.0f;
 				D3DXVec3Transform( &v4temp, &pVertices->position, &finalMat );
 				pVertices->position.x = v4temp.x;
@@ -3165,8 +3182,8 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 				pVertices++;
 
 				//3
-				pVertices->position.x = 0.5f * pPart->m_vSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
-				pVertices->position.y = 0.5f * pPart->m_vSize.y * m_ScaleFactor.y * vScaleByUnit.y;
+				pVertices->position.x = 0.5f * vRenderSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
+				pVertices->position.y = 0.5f * vRenderSize.y * m_ScaleFactor.y * vScaleByUnit.y;
 				pVertices->position.z = 0.0f;
 				D3DXVec3Transform( &v4temp, &pVertices->position, &finalMat );
 				pVertices->position.x = v4temp.x;
@@ -3186,8 +3203,8 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 				pVertices++;
 
 				//6
-				pVertices->position.x = 0.5f * pPart->m_vSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
-				pVertices->position.y = -0.5f * pPart->m_vSize.y * m_ScaleFactor.y * vScaleByUnit.y;
+				pVertices->position.x = 0.5f * vRenderSize.x * m_ScaleFactor.x * fStretchScale * vScaleByUnit.x;
+				pVertices->position.y = -0.5f * vRenderSize.y * m_ScaleFactor.y * vScaleByUnit.y;
 				pVertices->position.z = 0.0f;
 				D3DXVec3Transform( &v4temp, &pVertices->position, &finalMat );
 				pVertices->position.x = v4temp.x;
@@ -3644,6 +3661,8 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 
 				if ( pPart == NULL )
 					continue;
+				const float fT = pPart->GetRenderFraction();   // between simulation steps (T41)
+				const D3DXVECTOR3 vRenderSize = pPart->GetRenderSize( fT );
 
 				// Render each particle a bunch of times to get a blurring effect
 				if( texID != pPart->m_TextureID )
@@ -3662,10 +3681,10 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 				//
 				//2,5---6
 
-				D3DXVECTOR3 partPos = pPart->m_vPos + pPart->GetCrash();
+				D3DXVECTOR3 partPos = pPart->GetRenderPos( fT ) + pPart->GetCrash();
 				pPart->SetCrash( D3DXVECTOR3( 0.0f, 0.0f, 0.0f ) );
 
-				D3DXVECTOR3 partSize = pPart->m_vSize;
+				D3DXVECTOR3 partSize = vRenderSize;
 
 				KTDXPROFILE_BEGIN("MatrixMath");
 				//해상도 변경 정보를 보간하고 싶으면 계산한다
@@ -3681,7 +3700,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 				partSize.y = temp.y;
 
 //#ifdef LOCAL_ROTATE_EFFECT_P
-				D3DXVECTOR3 vRotDegree = pPart->GetRotate() + pPart->GetRotateLocal();
+				D3DXVECTOR3 vRotDegree = pPart->GetRenderRotate( fT ) + pPart->GetRenderRotateLocal( fT );
 //#else
 //				D3DXVECTOR3 vRot = D3DXVECTOR3( D3DXToRadian(pPart->m_vRotate.x), D3DXToRadian(pPart->m_vRotate.y), D3DXToRadian(pPart->m_vRotate.z) );
 //#endif
@@ -3882,12 +3901,14 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRenderMesh_Draw()
 
 		if ( pPart == NULL )
 			continue;
+		const float fT = pPart->GetRenderFraction();   // between simulation steps (T41)
+		const D3DXVECTOR3 vRenderSize = pPart->GetRenderSize( fT );
 		// Render each particle a bunch of times to get a blurring effect
-		pPart->SetPosCrash( pPart->GetPos() + pPart->GetCrash() );
+		pPart->SetPosCrash( pPart->GetRenderPos( fT ) + pPart->GetCrash() );
 		pPart->SetCrash( D3DXVECTOR3( 0.0f, 0.0f, 0.0f ) );
 
 //#ifdef LOCAL_ROTATE_EFFECT_P
-		D3DXVECTOR3 vRotDegree = pPart->GetRotate() + pPart->GetRotateLocal();
+		D3DXVECTOR3 vRotDegree = pPart->GetRenderRotate( fT ) + pPart->GetRenderRotateLocal( fT );
 //#else
 //		D3DXVECTOR3 vRot = D3DXVECTOR3( D3DXToRadian(pPart->m_vRotate.x), D3DXToRadian(pPart->m_vRotate.y), D3DXToRadian(pPart->m_vRotate.z) );
 //#endif
@@ -3895,9 +3916,9 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRenderMesh_Draw()
 		m_pMathMatrix->Move( pPart->m_vPosCrash.x, pPart->m_vPosCrash.y, pPart->m_vPosCrash.z );
 		m_pMathMatrix->RotateDegree( vRotDegree );
 
-		m_pMathMatrix->Scale( pPart->m_vSize.x * m_ScaleFactor.x * GetScaleByUnit().x,
-			pPart->m_vSize.y * m_ScaleFactor.y * GetScaleByUnit().y,
-			pPart->m_vSize.z * m_ScaleFactor.z * GetScaleByUnit().z );
+		m_pMathMatrix->Scale( vRenderSize.x * m_ScaleFactor.x * GetScaleByUnit().x,
+			vRenderSize.y * m_ScaleFactor.y * GetScaleByUnit().y,
+			vRenderSize.z * m_ScaleFactor.z * GetScaleByUnit().z );
 
 
 		renderParam.renderType			= m_MeshRenderType;

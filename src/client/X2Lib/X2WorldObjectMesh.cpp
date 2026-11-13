@@ -260,7 +260,7 @@ void    CX2WorldObjectMesh::OnFrameRender_Draw()
 	renderParam.color.b		= m_coColor.b * m_RenderParam.color.b;
 	renderParam.color.a		= m_fNowAlpha;
 
-    const D3DXMATRIX& worldMatrix = GetMatrix().GetMatrix( m_BillboardType );
+    const D3DXMATRIX worldMatrix = GetRenderMatrix( m_BillboardType );   // between simulation steps (T41)
 
 	renderParam.lightPos		= m_LightPos;
 

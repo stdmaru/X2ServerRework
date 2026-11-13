@@ -153,6 +153,11 @@ class CKTDGUIDialog
 		void		SetPos_LUA( float x, float y )	{ SetPos( D3DXVECTOR2(x,y) ); }
 
 		D3DXVECTOR2 GetPos() const              { return m_Pos; }
+
+		// Drawing between simulation steps (T41): the dialog manager notes the position when a step begins and ends;
+		// OnFrameRender draws at the position between the two, when nothing moved the dialog since (dragging does).
+		void		NoteTickBegin( int iTick )  { m_vTickPosBegin = m_Pos; m_iTickPos = iTick; }
+		void		NoteTickEnd()               { m_vTickPosEnd = m_Pos; }
 		D3DXCOLOR	GetColor() const            { return m_Color; }
 		void		SetColor( D3DXCOLOR color ) { m_Color = color; }
 
@@ -396,6 +401,9 @@ class CKTDGUIDialog
 		//string						m_Name_MB;
 
 		D3DXVECTOR2					m_Pos;
+		D3DXVECTOR2					m_vTickPosBegin{ 0.f, 0.f };	// m_Pos when step m_iTickPos began and ended
+		D3DXVECTOR2					m_vTickPosEnd{ 0.f, 0.f };
+		int							m_iTickPos = -1;
 		D3DXCOLOR					m_Color;
 		float						m_fAnimateTime;
 

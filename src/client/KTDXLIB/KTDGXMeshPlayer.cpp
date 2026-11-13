@@ -1854,7 +1854,7 @@ void    CKTDGXMeshPlayer::CXMeshInstance::OnFrameRender_Draw()
 
 //{{ robobeg : 2008-10-24
 		//renderParam.worldMatrix			= GetMatrix().GetMatrix( m_TempletData.billBoardType );
-        D3DXMATRIX  mWorld = GetMatrix().GetMatrix( m_TempletData.billBoardType );
+        D3DXMATRIX  mWorld = GetRenderMatrix( m_TempletData.billBoardType );   // between simulation steps (T41)
 //}} robobeg : 2008-10-24
 		renderParam.renderType			= m_TempletData.renderType;
 		renderParam.cartoonTexType		= m_TempletData.cartoonTexType;

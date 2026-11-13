@@ -410,7 +410,11 @@ HRESULT CKTDXApp::OnFrameMove( double /*dTime*/, float fElapsedTime )
 		{
 			// the last step of this loop: the one whose state is shown
 			m_bFinalFrame = fRealElapsedTime - m_fConstElapsedTime < m_fConstElapsedTime;
+			if ( m_pDGManager != NULL )
+				m_pDGManager->NoteTickMatrices( m_FrameMoveCount );   // what this step starts from, for drawing (T41)
 			FrameProcess();
+			if ( m_pDGManager != NULL )
+				m_pDGManager->NoteTickEnd();
 			m_bFirstFrame = false;
 		}
 

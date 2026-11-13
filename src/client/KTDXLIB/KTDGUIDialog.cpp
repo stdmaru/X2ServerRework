@@ -393,6 +393,25 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 {
 	KTDXPROFILE();
 
+	// Between simulation steps (T41): draw at the position between the last two steps, then give m_Pos back. A jump of
+	// over 200 points in one step (a dialog placed somewhere else) is drawn where it is.
+	struct TickPos
+	{
+		CKTDGUIDialog& m_kDialog;
+		D3DXVECTOR2 m_vPos;
+		explicit TickPos( CKTDGUIDialog& kDialog ) : m_kDialog( kDialog ), m_vPos( kDialog.m_Pos )
+		{
+			const float t = g_pKTDXApp->GetTickInterpolation();
+			const D3DXVECTOR2 vMoved = kDialog.m_vTickPosEnd - kDialog.m_vTickPosBegin;
+			if ( kDialog.m_iTickPos >= 0 && kDialog.m_iTickPos == g_pKTDXApp->GetFrameMoveCount() - 1 && t < 1.f
+				&& kDialog.m_Pos == kDialog.m_vTickPosEnd && D3DXVec2Dot( &vMoved, &vMoved ) < 200.f * 200.f )
+				kDialog.m_Pos = kDialog.m_vTickPosBegin + vMoved * t;
+		}
+		~TickPos() { m_kDialog.m_Pos = m_vPos; }
+		TickPos( const TickPos& ) = delete;
+		TickPos& operator=( const TickPos& ) = delete;
+	} kTickPos( *this );
+
 
 
 	if( m_bShow == false && bForceDraw == false )

@@ -98,7 +98,7 @@ void    CX2WorldObjectLightFlow::OnFrameRender_Draw()
 	renderParam.color.a		= m_coColor.a * m_RenderParam.color.a;
 //{{ robobeg : 2008-10-24
 	//renderParam.worldMatrix	= GetMatrix().GetMatrix( m_BillboardType );
-    D3DXMATRIX  worldMatrix = GetMatrix().GetMatrix( m_BillboardType );
+    D3DXMATRIX  worldMatrix = GetRenderMatrix( m_BillboardType );   // between simulation steps (T41)
 //}} robobeg : 2008-10-24
 	renderParam.lightPos		= m_LightPos;
 	renderParam.fLightFlowImpact	= m_fNowPoint;
@@ -171,7 +171,7 @@ HRESULT CX2WorldObjectLightFlow::OnFrameRender()
 	m_pRenderer->SetPoint( m_fNowPoint );
 	m_pRenderer->SetColor( m_pLightFlowObjectData->color );
 	m_pRenderer->SetWide( m_pLightFlowObjectData->fWide );
-	m_pRenderer->SetDXMatrix( GetMatrix().GetMatrix( m_pLightFlowObjectData->billboardType ) );
+	m_pRenderer->SetDXMatrix( GetRenderMatrix( m_pLightFlowObjectData->billboardType ) );   // between simulation steps (T41)
 
 	m_pRenderer->BeginRender();
 	m_pRenderer->OnFrameRender( m_pXMesh );

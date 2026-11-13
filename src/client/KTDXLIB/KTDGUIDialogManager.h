@@ -60,6 +60,8 @@ class CKTDGUIDialogManager : public CKTDXStage
 		// no longer hidden.
 		using CKTDXStage::OnFrameRender;
 		virtual	HRESULT OnFrameRender( bool bFront );
+		void NoteTickBegin( int iTick );   // CKTDGUIDialog::NoteTickBegin/End on every dialog (T41)
+		void NoteTickEnd();
 
 		virtual HRESULT OnFrameRenderTopModal();
 

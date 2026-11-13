@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "./KTDGObject.h"
+#include "./KTDXTickInterpolation.h"
 
 
 // constructor.
@@ -117,3 +118,34 @@ bool CKTDGObject::IsRecursivelyManagedByDGManager() const
 		( m_pManagerObject != NULL ? m_pManagerObject->IsRecursivelyManagedByDGManager() : false );
 }
 #endif // CONVERSION_VS
+
+
+void CKTDGObject::NoteTickMatrix( int iTick )
+{
+    if ( m_pManagerObject == NULL && m_pMatrix == NULL )
+        return;
+    CKTDGMatrix& kMatrix = GetMatrix();
+    m_vTickPos = kMatrix.GetPos();
+    m_vTickRotate = kMatrix.GetRotate();
+    m_vTickScale = kMatrix.GetScale();
+    m_iTickMatrix = iTick;
+}
+
+D3DXMATRIX CKTDGObject::GetRenderMatrix( CKTDGMatrix::BILLBOARD_TYPE billboardType )
+{
+    CKTDGMatrix& kMatrix = GetMatrix();
+    const float t = g_pKTDXApp->GetTickInterpolation();
+    if ( m_iTickMatrix < 0 || m_iTickMatrix != g_pKTDXApp->GetFrameMoveCount() - 1 || t >= 1.f )
+        return kMatrix.GetMatrix( billboardType );
+    const D3DXVECTOR3 vMoved = kMatrix.GetPos() - m_vTickPos;
+    const D3DXVECTOR3 vTurned = kMatrix.GetRotate() - m_vTickRotate;
+    constexpr float fSnapRadians = 0.5236f;   // 30 degrees in one step: a turn, not a motion
+    if ( D3DXVec3Dot( &vMoved, &vMoved ) > x2::ktdx::kSnapDistance * x2::ktdx::kSnapDistance
+        || fabsf( vTurned.x ) > fSnapRadians || fabsf( vTurned.y ) > fSnapRadians || fabsf( vTurned.z ) > fSnapRadians )
+        return kMatrix.GetMatrix( billboardType );
+    CKTDGMatrix kBetween( NULL );
+    kBetween.Move( m_vTickPos + vMoved * t );
+    kBetween.Rotate( m_vTickRotate + vTurned * t );
+    kBetween.Scale( m_vTickScale + ( kMatrix.GetScale() - m_vTickScale ) * t );
+    return kBetween.GetMatrix( billboardType );
+}

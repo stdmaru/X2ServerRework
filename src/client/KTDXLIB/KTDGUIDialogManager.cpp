@@ -849,6 +849,24 @@ HRESULT CKTDGUIDialogManager::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
+void CKTDGUIDialogManager::NoteTickBegin( int iTick )
+{
+	for( CKTDGUIDialogType pDialog : m_listDialog )
+	{
+		if ( pDialog != NULL )
+			pDialog->NoteTickBegin( iTick );
+	}
+}
+
+void CKTDGUIDialogManager::NoteTickEnd()
+{
+	for( CKTDGUIDialogType pDialog : m_listDialog )
+	{
+		if ( pDialog != NULL )
+			pDialog->NoteTickEnd();
+	}
+}
+
 HRESULT CKTDGUIDialogManager::OnFrameRender( bool bFront )
 {
 

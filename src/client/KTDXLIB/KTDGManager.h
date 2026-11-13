@@ -133,6 +133,8 @@ class CKTDGManager : public CKTDXStage
 		virtual HRESULT OnLostDevice();
 
 		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime );
+		void NoteTickMatrices( int iTick );   // CKTDGObject::NoteTickMatrix on the whole chain, when a step begins (T41)
+		void NoteTickEnd();                   // and the dialogs' positions when it ends
 		virtual HRESULT OnFrameRender();
 
 #ifdef CONVERSION_VS
