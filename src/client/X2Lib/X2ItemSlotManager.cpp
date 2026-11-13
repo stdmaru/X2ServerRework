@@ -276,7 +276,7 @@ void CX2ItemSlotManager::DrawSlotMouseOverImage()
 				//m_pDLGSelectedItem->SetPos( m_pNowOverItemSlot->GetPos() + GetPos() );
 				//m_pDLGSelectedItem->GetStatic_LUA( "SelectedItem" )->GetPicture(0)->SetSize( m_pNowOverItemSlot->GetSize() );
 
-				D3DXVECTOR2 vPosSelectedItem = m_pNowOverItemSlot->GetPos() + GetPos();
+				D3DXVECTOR2 vPosSelectedItem = m_pNowOverItemSlot->GetCanvasPos() + GetPos();
 //				vPosSelectedItem.x += 1.f;
 //				vPosSelectedItem.y -= 1.f;
 				m_pDLGSelectedItem->SetPos( vPosSelectedItem );
@@ -429,10 +429,10 @@ void CX2ItemSlotManager::DrawSlotDesc()
 		int itemDescPosX = 0;
 		int itemDescPosY = 0;
 
-		if ( m_pNowOverItemSlot->GetPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) >= g_pKTDXApp->GetUICanvasLeft() ) // enough room on the left
+		if ( m_pNowOverItemSlot->GetCanvasPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) >= g_pKTDXApp->GetUICanvasLeft() ) // enough room on the left
 		{
 			//{{ 화면 너비를 넘어갈 경우
-			if ( m_pNowOverItemSlot->GetPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) + itemDescWidth > g_pKTDXApp->GetUICanvasRight() )
+			if ( m_pNowOverItemSlot->GetCanvasPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) + itemDescWidth > g_pKTDXApp->GetUICanvasRight() )
 			{
 				itemDescPosX = (int)(g_pKTDXApp->GetUICanvasRight() - itemDescWidth);
 
@@ -441,7 +441,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 			}
 			else
 			{
-				itemDescPosX = (int)(m_pNowOverItemSlot->GetPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ));
+				itemDescPosX = (int)(m_pNowOverItemSlot->GetCanvasPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ));
 			}
 		}
 		else
@@ -449,15 +449,15 @@ void CX2ItemSlotManager::DrawSlotDesc()
 			itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasLeft() );
 		}
 
-		if ( m_pNowOverItemSlot->GetPos().y + GetPos().y - itemDescHeight >= 0 ) //슬롯위로 표시할 수 있는경우
+		if ( m_pNowOverItemSlot->GetCanvasPos().y + GetPos().y - itemDescHeight >= 0 ) //슬롯위로 표시할 수 있는경우
 		{
-			itemDescPosY = (int)(m_pNowOverItemSlot->GetPos().y + GetPos().y - itemDescHeight);
+			itemDescPosY = (int)(m_pNowOverItemSlot->GetCanvasPos().y + GetPos().y - itemDescHeight);
 		}
 		else
 		{
-			if( m_pNowOverItemSlot->GetPos().y + GetPos().y < MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT / 2 )
+			if( m_pNowOverItemSlot->GetCanvasPos().y + GetPos().y < MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT / 2 )
 			{
-				itemDescPosY = (int)(m_pNowOverItemSlot->GetPos().y + GetPos().y + m_pNowOverItemSlot->GetSize().y);
+				itemDescPosY = (int)(m_pNowOverItemSlot->GetCanvasPos().y + GetPos().y + m_pNowOverItemSlot->GetSize().y);
 				int overSize = static_cast<int>( MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT - (itemDescPosY + itemDescHeight) );
 
 				if ( overSize < 0 )

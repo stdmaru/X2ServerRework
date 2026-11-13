@@ -285,7 +285,7 @@ void CX2SlotManager::MouseMove( D3DXVECTOR2 mousePos )
 			pos = g_pKTDXApp->MouseConvertByResolution( pos );
 			pos.x -= (*m_pSlotBeforeDragging)->GetSize().x/2.0f;
 			pos.y -= (*m_pSlotBeforeDragging)->GetSize().y/2.0f;
-			pDialog->SetPos( pos );
+			pDialog->SetCanvasPos( pos );
 		}
 	}
 }
@@ -439,8 +439,21 @@ void CX2SlotManager::CX2Slot::SetPos( D3DXVECTOR2 pos )
 {
 	m_Pos = pos;
 	ResetPos();
-	if ( m_pDLGSlotFixBack != NULL )
-		m_pDLGSlotFixBack->SetPos( m_Pos + m_pSlotManager->GetPos() );
+	PlaceDialog( m_pDLGSlotFixBack );
+}
+
+D3DXVECTOR2 CX2SlotManager::CX2Slot::GetCanvasPos()
+{
+	return D3DXVECTOR2( m_Pos.x + m_pSlotManager->GetAnchorShift(), m_Pos.y );
+}
+
+void CX2SlotManager::CX2Slot::PlaceDialog( CKTDGUIDialogType pDialog )
+{
+	if ( pDialog != NULL )
+	{
+		pDialog->SetAnchor( m_pSlotManager->GetAnchor() );
+		pDialog->SetPos( m_Pos + m_pSlotManager->GetPos() );
+	}
 }
 
 void CX2SlotManager::CX2Slot::SetSlotData_LUA()
@@ -451,8 +464,7 @@ void CX2SlotManager::CX2Slot::SetSlotData_LUA()
 
     LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "POS", m_Pos, D3DXVECTOR2(0,0) );
 
-	if ( m_pDLGSlotFixBack != NULL )
-		m_pDLGSlotFixBack->SetPos( m_Pos + m_pSlotManager->GetPos() );
+	PlaceDialog( m_pDLGSlotFixBack );
 
     LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "SIZE", m_Size, D3DXVECTOR2(0,0) );
 
@@ -465,7 +477,7 @@ bool CX2SlotManager::CX2Slot::IsInMousePoint( D3DXVECTOR2 mousePos )
 	if ( m_bEnable == false )
 		return false;
 
-	D3DXVECTOR2 m_ConvertPos = g_pKTDXApp->ConvertByResolution( m_Pos + m_pSlotManager->GetPos() );
+	D3DXVECTOR2 m_ConvertPos = g_pKTDXApp->ConvertByResolution( GetCanvasPos() + m_pSlotManager->GetPos() );
 	D3DXVECTOR2 m_ConvertSize = g_pKTDXApp->ConvertSizeByResolution( m_Size );
 
 	if ( mousePos.x >= m_ConvertPos.x && mousePos.x <= m_ConvertPos.x + m_ConvertSize.x &&
@@ -495,10 +507,7 @@ void CX2SlotManager::CX2Slot::SetDialog( CKTDGUIDialogType pDLGSlot )
 
 void CX2SlotManager::CX2Slot::ResetPos()
 {
-	if ( m_pDLGSlot != NULL )
-	{
-		m_pDLGSlot->SetPos( m_Pos + m_pSlotManager->GetPos() );
-	}
+	PlaceDialog( m_pDLGSlot );
 }
 
 void CX2SlotManager::CX2Slot::LuaGetValue( KLuaManager& luaManager )

@@ -30,7 +30,7 @@ void CX2SlotItem::ResetPos()
 {
 	if ( m_pDLGSlot != NULL )
 	{
-		m_pDLGSlot->SetPos( m_Pos + m_pSlotManager->GetPos() );
+		PlaceDialog( m_pDLGSlot );
 
 		/*
 		if ( m_SlotType == CX2Slot::ST_INVENTORY )
