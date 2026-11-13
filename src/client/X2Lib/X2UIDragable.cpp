@@ -240,7 +240,7 @@ void CX2UIDragable::DrawSlotMouseOverImage()
 					if ( pItemSlot->GetSlotType() == CX2Slot::ST_EQUIPPED && pItemSlot->GetEquipPos() == equipPosition &&
 						( itemType == CX2Item::IT_ACCESSORY || pItemSlot->GetFashion() == kInventory.GetItem( *m_DraggingItemUID, true )->GetItemTemplet()->GetFashion() ))
 					{
-						m_pDLGSelectedItem->SetPos( pItemSlot->GetPos() );
+						m_pDLGSelectedItem->SetPos( pItemSlot->GetCanvasPos() );
 						m_pDLGSelectedItem->GetStatic_LUA( "SelectedItem" )->GetPicture(0)->SetSize( pItemSlot->GetSize() );
 
 						bCheck = true;
@@ -251,7 +251,7 @@ void CX2UIDragable::DrawSlotMouseOverImage()
 			{
 				if ( m_pNowOverItemSlot != NULL )
 				{
-					m_pDLGSelectedItem->SetPos( m_pNowOverItemSlot->GetPos() );
+					m_pDLGSelectedItem->SetPos( m_pNowOverItemSlot->GetCanvasPos() );
 					m_pDLGSelectedItem->GetStatic_LUA( "SelectedItem" )->GetPicture(0)->SetSize( m_pNowOverItemSlot->GetSize() );
 
 					bCheck = true;
@@ -262,7 +262,7 @@ void CX2UIDragable::DrawSlotMouseOverImage()
 		{
 			if ( m_pNowOverItemSlot != NULL )
 			{
-				m_pDLGSelectedItem->SetPos( m_pNowOverItemSlot->GetPos() );
+				m_pDLGSelectedItem->SetPos( m_pNowOverItemSlot->GetCanvasPos() );
 				m_pDLGSelectedItem->GetStatic_LUA( "SelectedItem" )->GetPicture(0)->SetSize( m_pNowOverItemSlot->GetSize() );
 
 				bCheck = true;
@@ -273,7 +273,7 @@ void CX2UIDragable::DrawSlotMouseOverImage()
 	{
 		if ( m_pNowOverItemSlot != NULL )
 		{
-			m_pDLGSelectedItem->SetPos( m_pNowOverItemSlot->GetPos() );
+			m_pDLGSelectedItem->SetPos( m_pNowOverItemSlot->GetCanvasPos() );
 			m_pDLGSelectedItem->GetStatic_LUA( "SelectedItem" )->GetPicture(0)->SetSize( m_pNowOverItemSlot->GetSize() );
 
 			bCheck = true;

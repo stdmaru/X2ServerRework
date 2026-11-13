@@ -212,6 +212,9 @@ Each use of the old X/Y scale is now a position, a size or a canvas edge:
 Anchors placed by the code (2026-11-13, `client/widescreen-migration`): the gauges of other players use one script on
 both sides of the screen, so `CX2PartyMemberGageUI::SetPosition` anchors the party list left, and
 `CX2PVPPlayerGageUI::SetPosition` anchors each PvP team to the side it is placed on (x 6 left, x 868 right). The
+item slots (`CX2SlotManager`) draw each item as a dialog of its own (`DLG_SlotManager.lua`, shared by every slot
+window) placed by the code, so a slot manager has an anchor its items take: `CX2UIQuickSlot` sets it to its own
+dialog's, and slot hit tests, dragging, tooltips and highlights go through `CX2Slot::GetCanvasPos`. The
 anchors of single-sided dialogs are in `UIAnchors.lua` ([client_data](../tools/client-data.md)).
 
 Known, left for the migration: screens whose texture does not match its rectangle's aspect stay as the original drew

@@ -24,6 +24,7 @@ m_bWaiting_EGS_USE_QUICK_SLOT_ACK( false )
 
 	m_pDLGQuickSlot = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_Quick_Slot.lua" );
 	g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGQuickSlot );
+	SetAnchor( m_pDLGQuickSlot->GetAnchor() );	// the item dialogs follow the slot frames (T44)
 	//{{ 오현빈 // 2012-04-12 // 퀵슬롯 쿨타임 숫자 표기 추가
 	//}} 오현빈 // 2012-04-12 // 퀵슬롯 쿨타임 숫자 표기 추가
 
@@ -1862,7 +1863,7 @@ void CX2UIQuickSlot::OnFrameMove_CoolTime( CX2Item* pItem_, CX2SlotItem* pSlotIt
 			if ( pPicture->GetShow() == true )
 			{
 				//퀵슬롯을 다시 쓸 수 있다는 표시
-				float fEffectPosX = g_pKTDXApp->ConvertXByResolution( pSlotItem_->GetDialog()->GetPos().x + ( pPicture->GetOriginalSize().x/2 ) );
+				float fEffectPosX = g_pKTDXApp->ConvertXByResolution( pSlotItem_->GetDialog()->GetCanvasPos().x + ( pPicture->GetOriginalSize().x/2 ) );
 				float fEffectPosY = g_pKTDXApp->ConvertYByResolution( pSlotItem_->GetDialog()->GetPos().y + ( pPicture->GetOriginalSize().y/2 ) );
 				CKTDGParticleSystem::CParticleEventSequence* pParticle = g_pData->GetUIMajorParticle()->CreateSequence( NULL, L"UI_ItemBox_enable_P01",
 					fEffectPosX, fEffectPosY, 0, 100, 100, true, 5, 10 );

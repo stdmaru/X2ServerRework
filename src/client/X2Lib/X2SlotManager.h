@@ -58,6 +58,9 @@ public:
 
 		D3DXVECTOR2 GetPos();
 		void SetPos( D3DXVECTOR2 pos );
+		// Where the slot is drawn in the centered column's units, with its manager's anchor shift (T44): for things
+		// placed next to it (tooltips, highlights).
+		D3DXVECTOR2 GetCanvasPos();
 		D3DXVECTOR2 GetSize() { return m_Size; }
 		void SetSize(D3DXVECTOR2 val) { m_Size = val; }
 
@@ -80,6 +83,9 @@ public:
 		//}}
 
 	protected:
+
+		// Puts a dialog of this slot at its position, with its manager's anchor.
+		void PlaceDialog( CKTDGUIDialogType pDialog );
 
 		virtual void LuaGetValue( KLuaManager& luaManager );
 		//virtual void LuaTinkerCall();
@@ -138,6 +144,12 @@ public:
 
 	virtual void SetPos( const D3DXVECTOR2& pos ) { m_Pos = pos; }
 	virtual D3DXVECTOR2 GetPos() { return m_Pos; }
+
+	// Horizontal anchor (T44) of the slots' dialogs: the owner sets its own dialog's, so the items move with their
+	// frames. Slot positions stay in layout units.
+	void SetAnchor( UIAnchor eAnchor ) { m_eAnchor = eAnchor; }
+	UIAnchor GetAnchor() const { return m_eAnchor; }
+	float GetAnchorShift() const { return g_pKTDXApp->GetUIAnchorShift( m_eAnchor ); }
 
 	virtual CX2Slot* GetSlot( int index );
 	virtual CX2Slot* GetSlot( CX2Slot::SLOT_TYPE slotType, int slotID );
@@ -208,6 +220,7 @@ protected:
 	vector< CX2Slot* >		m_SlotList;
 
 	D3DXVECTOR2				m_Pos;
+	UIAnchor				m_eAnchor = UIAnchor::Center;
 	//2008.11.13 김태완 : Global 통하도록 수정합니다
 	static CX2Slot**		m_pSlotBeforeDragging;
 	CX2SlotItem*			m_pNowOverItemSlot;
