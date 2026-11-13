@@ -137,6 +137,12 @@ class CKTDGObject
 			return ( m_pManagerObject != NULL ) ? m_pManagerObject->GetMatrix() : *m_pMatrix;
 		}
         void            SetManagerObject( CKTDGObject* pManagerObject_ );
+
+        // Drawing between simulation steps (T41). CKTDGManager calls NoteTickMatrix on every object of its chain when a
+        // step begins; GetRenderMatrix is then GetMatrix().GetMatrix( billboardType ) with position, rotation and scale
+        // interpolated from that note to now, or as it is when the last step did not note it or the object jumped.
+        void            NoteTickMatrix( int iTick );
+        D3DXMATRIX      GetRenderMatrix( CKTDGMatrix::BILLBOARD_TYPE billboardType = CKTDGMatrix::BT_NONE );
         CKTDGObject*    GetManagerObject() { return m_pManagerObject; }
 
 		void			SetAlphaObject( bool bAlpha ){ m_bAlphaObject = bAlpha; }
@@ -369,6 +375,10 @@ class CKTDGObject
 //{{ robobeg : 2008-10-17
         CKTDGObject*    m_pManagerObject;
         CKTDGMatrix*    m_pMatrix;
+        D3DXVECTOR3     m_vTickPos{ 0.f, 0.f, 0.f };      // GetMatrix() when step m_iTickMatrix began (NoteTickMatrix)
+        D3DXVECTOR3     m_vTickRotate{ 0.f, 0.f, 0.f };
+        D3DXVECTOR3     m_vTickScale{ 1.f, 1.f, 1.f };
+        int             m_iTickMatrix = -1;
 //}} robobeg : 2008-10-17
 
         bool            m_bAlphaObject;

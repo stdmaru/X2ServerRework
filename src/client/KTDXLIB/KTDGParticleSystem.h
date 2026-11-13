@@ -5,6 +5,7 @@
 
 
 #include    "indexed_list.h"
+#include    "KTDXTickInterpolation.h"
 
 struct  CKTDGParticleSystem_CParticleEventSequence_TAG {};
 struct  CKTDGParticleSystem_CParticle_TAG {};
@@ -177,6 +178,10 @@ class CKTDGParticleSystem
 
 
 					INIT_VECTOR3( m_vPosOld, 0.0f,0.0f,0.0f );
+					INIT_VECTOR3( m_vSizeOld, 1.0f, 1.0f, 1.0f );
+					INIT_VECTOR3( m_vRotateOld, 0.0f,0.0f,0.0f );
+					INIT_VECTOR3( m_vRotateLocalOld, 0.0f,0.0f,0.0f );
+					m_iMoveTick = -1;
 					m_fStretchScale = 1.f;
 					m_fStretchScaleFinal = 1.f;
 
@@ -273,6 +278,11 @@ class CKTDGParticleSystem
 					//m_vPos = m_vPosOrg;
 
 					m_vPosOld = m_vPos;
+					// What this step starts from, for drawing between steps (T41): see GetRenderFraction.
+					m_vSizeOld = m_vSize;
+					m_vRotateOld = m_vRotate;
+					m_vRotateLocalOld = m_vRotateLocal;
+					m_iMoveTick = CurrentMoveTick();
 
 					// if this particle's age is greater than it's lifetime, it dies.
 					if (m_fAge >= m_fLifetime)
@@ -460,6 +470,19 @@ class CKTDGParticleSystem
                 const D3DXVECTOR3&          GetSizeFinal() const                     { return m_vSizeFinal; }
                 void                        SetSizeFinal( const D3DXVECTOR3& vSizeFinal ) { m_vSizeFinal = vSizeFinal; }
                 const D3DXVECTOR3&          GetPos() const                      { return m_vPos; }
+
+                // Drawing between simulation steps (T41): the fraction of the way from the state this particle had when
+                // the last step began to the state it has now, or 1 (as it is) when the last step did not move it or it
+                // jumped. The simulation never reads these.
+                float GetRenderFraction() const;
+                static int CurrentMoveTick();   // CKTDXApp::GetFrameMoveCount (KTDXApp.h comes after this header)
+                D3DXVECTOR3 GetRenderPos( float t ) const       { return t >= 1.f ? m_vPos : m_vPosOld + ( m_vPos - m_vPosOld ) * t; }
+                D3DXVECTOR3 GetRenderSize( float t ) const      { return t >= 1.f ? m_vSize : m_vSizeOld + ( m_vSize - m_vSizeOld ) * t; }
+                D3DXVECTOR3 GetRenderRotate( float t ) const    { return t >= 1.f ? m_vRotate : m_vRotateOld + ( m_vRotate - m_vRotateOld ) * t; }
+                D3DXVECTOR3 GetRenderRotateLocal( float t ) const
+                {
+                    return t >= 1.f ? m_vRotateLocal : m_vRotateLocalOld + ( m_vRotateLocal - m_vRotateLocalOld ) * t;
+                }
                 void                        SetPos( const D3DXVECTOR3& vPos )   { m_vPos = vPos; }
                 const D3DXVECTOR3&          GetPosOrg() const                      { return m_vPosOrg; }
                 void                        SetPosOrg( const D3DXVECTOR3& vPos )   { m_vPosOrg = vPos; }
@@ -539,6 +562,10 @@ class CKTDGParticleSystem
 				float						m_fStretchScale;
 				float						m_fStretchScaleFinal;
 				D3DXVECTOR3					m_vPosOld;
+				D3DXVECTOR3					m_vSizeOld;			// m_vSize, m_vRotate and m_vRotateLocal when the last step began
+				D3DXVECTOR3					m_vRotateOld;
+				D3DXVECTOR3					m_vRotateLocalOld;
+				int							m_iMoveTick;		// CKTDXApp::GetFrameMoveCount of the last step that moved it
 				D3DXVECTOR3					m_vPos;				// current position of particle
 //{{ robobeg : 2008-10-28
                 // m_vCrash 가 반영된 m_vPos, OnFrameRenderMesh_Draw 및 OnFrameRenderSkinMesh_Draw 에서 사용됨

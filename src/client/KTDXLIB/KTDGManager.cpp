@@ -746,6 +746,23 @@ HRESULT CKTDGManager::OnLostDevice()
 	return S_OK;
 }
 
+void CKTDGManager::NoteTickMatrices( int iTick )
+{
+    for( CKTDGObject* pObject : m_RenderObjectChain )
+    {
+        if ( pObject != NULL )
+            pObject->NoteTickMatrix( iTick );
+    }
+    if ( m_pDialogManager != NULL )
+        m_pDialogManager->NoteTickBegin( iTick );
+}
+
+void CKTDGManager::NoteTickEnd()
+{
+    if ( m_pDialogManager != NULL )
+        m_pDialogManager->NoteTickEnd();
+}
+
 HRESULT CKTDGManager::OnFrameMove( double fTime, float fElapsedTime )
 {
 	m_pFontManager->OnFrameMove( (float)fTime, fElapsedTime );
