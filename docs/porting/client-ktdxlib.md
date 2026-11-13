@@ -393,6 +393,37 @@ steps (audited 2026-11-12):
 - The items start 3 units below the dropdown's top; the original left 10% of the dropdown's height, an empty row above
   long lists such as the resolutions.
 
+## Widescreen canvas (2026-11-13, `client/widescreen-scale`, [T44](../project/decisions.md))
+
+**Behavior change.** The original scaled the 1024×768 layout by separate X and Y factors (`m_ResolutionScale`), so the UI
+stretched at any aspect but 4:3. `CKTDXApp::UpdateUICanvas` (called by `SetViewport`) now takes one factor, screen height
+/ 768 (screen width / 1024 below 4:3), and puts layout (0,0) at `m_UIOrigin`, which centers a 1024×768 column on the screen.
+Conversions in `KTDXApp.h`:
+
+- positions: `ConvertByResolution`, `ConvertX/YByResolution` (origin + layout × scale) and `MouseConvertByResolution`
+  (back to layout units);
+- sizes and deltas: `ConvertSizeByResolution`, `MouseConvertSizeByResolution`, `GetResolutionScaleX/Y` (now equal);
+- the canvas, the whole screen in layout units: `GetUICanvasLeft/Right/Top/Bottom`, `GetUICanvasRect`, for what is bound
+  by the screen rather than the column (tooltip and popup clamps, the fade, the notice marquee).
+
+Every original use was sorted into one of these. A size converted as a position, or the reverse, is now off by the origin.
+Other changes:
+
+- Render targets: `CKTDXDeviceRenderTargetTexture::BeginRender` sets the origin to zero (restored by `EndRender`), since
+  what is drawn into a 1024×768 target is in its own coordinates.
+- The 2D orthographic projection (`CKTDGManager`) is as wide as the canvas, not a fixed 1024×768.
+- The clear color is black (was dark gray), so the bars beside the column read as bars.
+- `CKTDGFontManager` places text through the position conversions; text height scales with the one factor, as before.
+- IME edit box (`CKTDGUIIMEEditBox::DrawRect`): the selection and the caret kept their width and height unscaled. The
+  original did this on purpose (2013-12-06) so that a stretched width would not make the caret look thin. The result was
+  a highlight shorter than the text at any scale but 1, which the user also saw in the original. Both are now scaled, and
+  the caret is at least 1 pixel wide.
+- UI particles without `ResolutionConvert` stay in screen pixels.
+
+The dialogs and controls have no anchors yet. Everything is drawn in the centered column, the T44 default, and the
+anchors come with `client/widescreen-anchors` ([roadmap](../project/roadmap.md#phase-4--client-graphics)). X2Lib's side is
+on [X2Lib](client-x2lib.md#widescreen-canvas-2026-11-13-clientwidescreen-scale).
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

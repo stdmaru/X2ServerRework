@@ -306,18 +306,25 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it
         stretches; the 3D camera already uses the window's aspect ratio, the fonts scale by Y only. Open:
         [D9, D10](decisions.md#pending). Estimated at 7–10 PRs (2026-11-13). Steps:
-    - [ ] `client/widescreen-scale`: one uniform scale (screen height / 768) and a canvas as wide as the screen,
-          through one conversion in `KTDXApp` used by dialogs, mouse input, world-attached UI (`GetProj3DPos`: names,
-          HP bars, balloons), tooltip bounds, `WordWrap`, the 2D orthographic mode (fixed 1024×768) and 1024×768
-          render targets; the literal positions become canvas expressions. Everything is drawn in the centered column
-          (the default anchor), full-screen 4:3 images with bars at the sides; the default resolution becomes 16:9.
-          Also the dev tool capturing the main screens (below). Possibly two PRs.
+    - [x] `client/widescreen-scale` (2026-11-13, PR #66): one uniform scale (screen height / 768) on a canvas as wide
+          as the screen, through one set of conversions in `KTDXApp` (positions, sizes, canvas edges) used by dialogs,
+          mouse input, world-attached UI, tooltips, `WordWrap`, the 2D orthographic mode and render targets. Everything
+          is drawn in the centered column, with black bars at the sides, and the default resolution is 16:9
+          ([KTDXLIB](../porting/client-ktdxlib.md#widescreen-canvas-2026-11-13-clientwidescreen-scale),
+          [X2Lib](../porting/client-x2lib.md#widescreen-canvas-2026-11-13-clientwidescreen-scale)). Checked in game at
+          1920×1080 with the user: login, character select, village, inventory and tooltips.
+    - [ ] `tools/ui-capture`: the dev tool capturing the main screens (below). It was split from the step above
+          (2026-11-13) because it has to render at sizes other than the window's, and Hyprland does not resize
+          windowed clients.
     - [ ] `client/widescreen-anchors`: the anchor model in `KTDGUIDialog`/`KTDGUIControl` (an offset in drawing and
           hit testing) and the `UIAnchors.lua` loader.
     - [ ] `tools/ui-anchors`: inventory of the dialog scripts in use, the migration tool proposing anchors (static
           bounds plus a dev mode recording where each opened dialog sits).
     - [ ] `client/widescreen-migration`: `UIAnchors.lua` filled and reviewed, HUD first, then windows, then the rest;
           the C++ placement sites (about 224) sorted into layout and derived positions along the way. Two or three PRs.
+          This includes the content fixes for full-screen images whose texture does not match its rectangle (the
+          character select background: 512×512 drawn at 1024×768, also stretched in the original), found by comparing
+          `.tet` UVs with script rectangles.
     - [ ] `client/widescreen-stretch`: the pieces spanning the screen (bottom EXP/stamina bar, menu bar, boss bars),
           each built as long as the canvas from its end and middle pieces.
     - [ ] `client/widescreen-backgrounds`, art permitting: full-screen images (login, loading screens, cut-ins)
