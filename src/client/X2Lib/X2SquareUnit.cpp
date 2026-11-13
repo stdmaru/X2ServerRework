@@ -1539,6 +1539,7 @@ void CX2SquareUnit::RenderServer(int iFinalLeft, int iFinalTop)
 
 void CX2SquareUnit::RenderName()
 {
+	const D3DXVECTOR3 vRenderPos = GetPos() + GetRenderOffset();	// drawn between steps, like the unit (T41)
 	KTDXPROFILE();
 
 	if( m_bFirstGetPacket == false && m_bMyUnit == false )
@@ -1661,7 +1662,7 @@ void CX2SquareUnit::RenderName()
 //{{ ����� : [2009/9/25] //	��� �̸� ǥ��
 	if( m_pUnit->GetUnitData().m_wstrGuildName != L"" )
 	{
-		D3DXVECTOR3 vPos = GetPos();
+		D3DXVECTOR3 vPos = vRenderPos;
 		vPos.y -= 22.0f;
 
 		if( m_bTFieldUnit == true)
@@ -1685,7 +1686,7 @@ void CX2SquareUnit::RenderName()
 	{
 		if( m_pUnit->GetUnitData().m_bCouple == true && m_pUnit->GetUnitData().m_wstrRelationTargetUserNickname != L"" )
 		{
-			D3DXVECTOR3 vPos = GetPos();
+			D3DXVECTOR3 vPos = vRenderPos;
 
 			if( m_pUnit->GetUnitData().m_wstrGuildName != L"" )
 			{
