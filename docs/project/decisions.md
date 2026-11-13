@@ -52,4 +52,7 @@
 
 ## Pending
 
-None at this time.
+| # | Question | Options and recommendation |
+|---|---|---|
+| D7 | **Widescreen: full-screen backgrounds** (login, loading screens, cut-ins) drawn for 4:3, on wider screens | (a) *cover*: scaled uniformly to the screen's width, the top and bottom cropped; (b) pillarbox: 4:3 in the middle with bars at the sides. Recommended: (a), with (b) for the screens where the crop cuts something (decided per screen while porting). Raised 2026-11-12 ([roadmap](roadmap.md#phase-4--client-graphics)) |
+| D8 | **Widescreen: default anchor of a dialog** laid out for 1024×768 | (a) automatic, from where the dialog sits in the 1024-wide layout (left, middle or right third), with overrides per dialog name in the client_data; (b) every dialog listed by hand. Recommended: (a); the HUD and dialogs spanning the width get anchors per control. Raised 2026-11-12 |
