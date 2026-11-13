@@ -29,6 +29,7 @@ In layout units; "held to an edge" is within 24 units of it.
 
 | Recorded | Proposal |
 |---|---|
+| Dialog listed in `tools/ui-anchors/centered.txt`: floating windows and pieces of screens drawn by several dialogs, kept by review | Center |
 | Dialog moved by code after its script loaded (`SetPos` outside the script): the floating windows `CX2UIManager` opens to one side (shop, quests, inventory…), popups next to something | Center, not reviewed: the code's position, in the column (user, 2026-11-13) |
 | Dialog drawn at more than one position (dragged, or placed by code next to something) | Center; listed for review (a derived position) |
 | Whole screen: at least 600×450 with a control covering 40% of it (a background), or spanning the width with a background and taller than half the screen | Center; listed for review (its pieces may be anchored by hand) |
@@ -38,6 +39,10 @@ In layout units; "held to an edge" is within 24 units of it.
 | Full-screen picture (background), or anything in the middle | Center (the default: nothing written) |
 | Dialog in an outer third but not at the edge | Center; listed for review |
 | Unnamed control that would be anchored | Not written (anchors go by name); listed for review |
+
+Moved by code catches the windows `CX2UIManager` places at the top left (quests, character, skills…), but not the
+inventory (placed by its script) nor a window whose first opening comes before its dialog exists; `centered.txt` holds
+those, found by review.
 
 The proposal is reviewed with screen captures before it goes into the client_data's `UIAnchors.lua`
 (`client/widescreen-migration`).

@@ -1,0 +1,13 @@
+# Dialog scripts that stay centered whatever propose.py would say (one per line, any case; # comments).
+# Floating windows (T44, user, 2026-11-13): they open where they already do, to one side of the centered column.
+DLG_UI_Shop.lua
+DLG_UI_Inventory_Reform_Ver2.lua
+DLG_UI_New_Quest_Detail.lua
+DLG_Private_Bank_Reform.lua
+DLG_UI_Alchemy_List.lua
+DLG_UI_World_Map_Front_New.lua
+# Pieces of whole screens drawn by several dialogs: anchoring one piece would split the screen.
+DLG_PVP_Room_Character_Slot.lua
+DLG_PVP_Room_Front_ItemMode.lua
+DLG_Dungeon_Result_Front.lua
+DLG_Unit_Create_Front_New.lua

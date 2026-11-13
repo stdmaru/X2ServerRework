@@ -10,6 +10,7 @@ dialog was drawn at. This tool reads one or more of those files and proposes anc
 - a dialog spanning the width (a HUD) stays CENTER and its controls get their own anchors: held to the left or right
   edge, or lying in the left or right third, LEFT or RIGHT; held to both edges, STRETCH;
 - full-screen pictures (backgrounds) and everything in the middle stay CENTER (the default, so not written);
+- a dialog listed in centered.txt (floating windows, pieces of composed screens) stays CENTER;
 - a dialog moved by code after its script loaded (the floating windows CX2UIManager opens to one side, popups next
   to something) stays CENTER: its position is the code's;
 - a dialog drawn at more than one position (moved by the player or placed by code next to something else) stays
@@ -85,6 +86,7 @@ class Proposal:
     notes: list[str] = field(default_factory=list)
     review: str | None = None   # why a person should look at it
     floating: bool = False      # moved by code after its script loaded: left centered
+    kept: bool = False          # listed in centered.txt
 
 
 def read_records(paths: list[Path]) -> dict[str, dict[str, Control]]:
@@ -138,8 +140,21 @@ def control_anchor(box: Box) -> tuple[str, str]:
     return "CENTER", "in the middle"
 
 
-def propose(script: str, controls: dict[str, Control]) -> Proposal:
+def read_centered(path: Path) -> set[str]:
+    names = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.split("#", 1)[0].strip()
+        if line:
+            names.add(line.lower())
+    return names
+
+
+def propose(script: str, controls: dict[str, Control], centered: set[str] = frozenset()) -> Proposal:
     proposal = Proposal(script)
+    if script in centered:
+        proposal.notes.append("listed in centered.txt")
+        proposal.kept = True
+        return proposal
     if any(c.placed_by_code for c in controls.values()):
         # A floating window (CX2UIManager places it, opening it to one side) or one placed next to something: its
         # position is the code's, in the centered column (T44's derived positions).
@@ -226,10 +241,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("records", nargs="+", type=Path, help="UIAnchorsRecord.tsv files")
     parser.add_argument("-o", "--output", type=Path, help="write the proposal here (default: stdout)")
     parser.add_argument("--scripts", type=Path, help="client_data folder of the dialog scripts, for coverage")
+    parser.add_argument("--centered", type=Path, default=Path(__file__).with_name("centered.txt"),
+                        help="dialog scripts kept centered (default: centered.txt next to this tool)")
     args = parser.parse_args(argv)
 
     scripts = read_records(args.records)
-    proposals = [propose(script, controls) for script, controls in sorted(scripts.items())]
+    centered = read_centered(args.centered) if args.centered.exists() else set()
+    proposals = [propose(script, controls, centered) for script, controls in sorted(scripts.items())]
     text = write_lua(proposals)
     if args.output:
         args.output.write_text(text, encoding="utf-8")
@@ -239,8 +257,9 @@ def main(argv: list[str]) -> int:
     anchored = [p for p in proposals if p.dialog != "CENTER" or p.controls]
     review = [p for p in proposals if p.review]
     floating = [p for p in proposals if p.floating]
+    kept = [p for p in proposals if p.kept]
     print(f"{len(scripts)} dialog scripts recorded: {len(anchored)} anchored, {len(floating)} placed by code "
-          f"(centered), {len(review)} to review", file=sys.stderr)
+          f"(centered), {len(kept)} kept centered by {args.centered.name}, {len(review)} to review", file=sys.stderr)
     if floating:
         print("  placed by code: " + ", ".join(p.script for p in floating), file=sys.stderr)
     for p in review:

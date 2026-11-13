@@ -323,8 +323,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           origin moved while a dialog or control draws and takes the mouse) and the `UIAnchors.lua` loader; the file is
           in the client_data, empty ([KTDXLIB](../porting/client-ktdxlib.md#anchors-2026-11-13-clientwidescreen-anchors)).
           Packing new client_data files is still needed before a release build reads it.
-    - [ ] `tools/ui-anchors`: inventory of the dialog scripts in use, the migration tool proposing anchors (static
-          bounds plus a dev mode recording where each opened dialog sits).
+    - [x] `tools/ui-anchors` (2026-11-13, PR #68): the client records what each opened dialog draws
+          (`X2_RECORD_UI_ANCHORS=1`) and `propose.py` proposes `UIAnchors.lua` ([UI anchors](../tools/ui-anchors.md)).
+          Floating windows stay centered (user, 2026-11-13). Two play sessions of the user recorded 106 of 1,031 dialog
+          scripts: 14 anchored (the HUD), 44 centered as windows, 29 to review; more is recorded during the migration.
     - [ ] `client/widescreen-migration`: `UIAnchors.lua` filled and reviewed, HUD first, then windows, then the rest;
           the C++ placement sites (about 224) sorted into layout and derived positions along the way. Two or three PRs.
           This includes the content fixes for full-screen images whose texture does not match its rectangle (the
