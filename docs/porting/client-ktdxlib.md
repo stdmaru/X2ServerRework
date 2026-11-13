@@ -317,7 +317,26 @@ over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMa
   `CopyModelFrameStructure`, which copies the pose into the meshes right before drawing, copies matrices interpolated
   element-wise. The clone frames the game reads (bone positions, hit boxes, weapon traces) keep the step's pose. Drawn as
   they are: objects not updated in both steps, poses copied from elsewhere (after-images), jumps and turns over 30°.
-- Not interpolated yet: mesh players, particles and slash traces, which move at the step rate.
+- **Objects between updates** (`UpdateFraction`): a mesh updated only every few steps (field and dungeon monsters
+  under `CX2GUNPC`'s heuristic simulation update every 2 to 7 steps) is interpolated across the steps between its last
+  two updates, not only the last step; a gap over 8 steps is drawn as it is.
+- **Particles** (`CKTDGParticleSystem`, `client/interpolation-2`): each particle keeps its position, size and rotations
+  before its last move and the step it moved in; billboard, screen-space and mesh particles are drawn between them.
+  Particles that moved over 400 units in one step are drawn where they are.
+- **Mesh players, world objects** (`CKTDGObject::GetRenderMatrix`): `CKTDGManager::NoteTickMatrices` keeps every render
+  object's position, rotation and scale before each step; `CKTDXDeviceXMeshPlayer`, `CX2WorldObjectMesh` and
+  `CX2WorldObjectLightFlow` draw with the matrix between it and the current one (same cut thresholds as the camera).
+- **Dialogs** (`CKTDGUIDialog`): the position before and after each step is kept; while drawing, a dialog that moved by
+  under 200 points in the step (quest balloons, names and HP bars that follow a unit) is drawn between the two and
+  then given its position back. Dialogs moved outside the step (by input) are drawn where they are.
+- Not interpolated: slash traces and other vertex trails, which are rebuilt every step.
+
+**Diagnostics** (dev tools): `X2_INTERP_STATS=1` logs once a second how many skinned meshes were drawn interpolated and
+why the others were not (no previous pose, frame count changed, update overdue, jump); `X2_INTERP_TRACE=<text>` logs
+every draw of the skinned meshes whose name contains `<text>` with the time, step, fraction and root position. On
+2026-11-12 a frame-by-frame trace of 10 field monsters (`TREE_KNIGHT`, 144 Hz) showed them moving every frame, including
+the ones updated every 2 or 3 steps; what still looked uneven were frame-time spikes (debug build: p50 7 ms, p99 14 ms),
+left for `client/render-perf`.
 
 Measured on 2026-11-12 (optimized build, 144 Hz display, vsync off): character select ~1,200 fps, village ~600, field
 ~350; with vsync, 144.
