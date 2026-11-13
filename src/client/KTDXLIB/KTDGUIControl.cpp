@@ -426,6 +426,25 @@ void CKTDGUIControl::UpdateVertex( VERTEX_UI& vertexLT, VERTEX_UI& vertexRT, VER
 
 
 
+#if X2_DEV_TOOLS
+	if ( tempColor.a > 0.f && CKTDGUIAnchorRecorder::IsOn() )
+	{
+		for ( const D3DXVECTOR2& vCorner : { pointData.leftTopPoint, pointData.rightTopPoint, pointData.leftBottomPoint, pointData.rightBottomPoint } )
+		{
+			const D3DXVECTOR2 v = vCorner + m_OffsetPos;
+			if ( m_bDrawn == false )
+			{
+				m_vDrawnMin = m_vDrawnMax = v;
+				m_bDrawn = true;
+			}
+			m_vDrawnMin.x = std::min( m_vDrawnMin.x, v.x );
+			m_vDrawnMin.y = std::min( m_vDrawnMin.y, v.y );
+			m_vDrawnMax.x = std::max( m_vDrawnMax.x, v.x );
+			m_vDrawnMax.y = std::max( m_vDrawnMax.y, v.y );
+		}
+	}
+#endif
+
 	//0---1
 	//2---3
 	//Set up the 4 corners of a small square

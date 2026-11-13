@@ -453,6 +453,15 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 
         CKTDGStateManager::PushStates( g_pKTDXApp->GetDGManager()->GetRSICKTDGUIDialog() );
 
+#if X2_DEV_TOOLS
+		const bool bRecord = CKTDGUIAnchorRecorder::IsOn();
+		if ( bRecord )
+		{
+			for ( CKTDGUIControl* pControl : m_ControlsList )
+				if ( pControl != NULL )
+					pControl->ResetDrawnBounds();
+		}
+#endif
 	    for ( int i = 0; i < (int)m_ControlsList.size(); i++ )
 	    {
 		    CKTDGUIControl* pControl = m_ControlsList[i];
@@ -482,6 +491,10 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 					pControl->OnFrameRenderEnd();
 			}
 	    }
+#if X2_DEV_TOOLS
+		if ( bRecord )
+			CKTDGUIAnchorRecorder::Note( *this );
+#endif
     KD3DEND()
 
 	KD3DBEGIN()

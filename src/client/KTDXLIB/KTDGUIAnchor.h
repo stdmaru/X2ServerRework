@@ -40,3 +40,15 @@ private:
 	static const std::unordered_map<std::wstring, Entry>& Get();
 	static std::unordered_map<std::wstring, Entry> Load();
 };
+
+#if X2_DEV_TOOLS
+// Dev tool for the anchor migration (tools/ui-anchors): with X2_RECORD_UI_ANCHORS=1, every dialog drawn from a script
+// notes what each of its controls drew (in layout units, relative to the dialog) and where the dialog was, into
+// UIAnchorsRecord.tsv in the game folder, merged with what earlier runs recorded.
+class CKTDGUIAnchorRecorder
+{
+public:
+	static bool IsOn();
+	static void Note( CKTDGUIDialog& kDialog );
+};
+#endif
