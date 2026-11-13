@@ -2682,7 +2682,18 @@ HRESULT CKTDGUIIMEEditBox::OnFrameRender()
 
 			m_NowFontColor = m_SelTextColor;
 
-			if(GetGroupID() < 0)
+			const bool bLeftAligned = m_DefTextAlign == (DWORD)-1 || CheckTextOversize() == true
+				|| ( m_DefTextAlign & ( DT_CENTER | DT_RIGHT ) ) == 0;
+			if( GetGroupID() < 0 && bLeftAligned )
+			{
+				// Drawn over the text above, so it must land on the same pixels: from the text's own rectangle, moved by
+				// the pixel width of what comes before the selection. The original placed it at the selection's left in
+				// layout units, truncated, which put it up to one unit (more than a pixel above 1024x768) off the glyphs
+				// below; the doubled glyphs looked bolder, changing with every character selected.
+				const int iPixelOffsetX = m_Buffer.CPtoPixelX( nFirstToRender ) - m_Buffer.CPtoPixelX( m_nFirstVisible );
+				DrawText( m_Buffer.GetBuffer() + nFirstToRender, &rcTempText, nNumChatToRender, DT_LEFT | DT_VCENTER, iPixelOffsetX );
+			}
+			else if(GetGroupID() < 0)
 				DrawText( m_Buffer.GetBuffer() + nFirstToRender, &rcTempSelection, nNumChatToRender );
 			else
 				DrawText( m_Buffer.GetBuffer() + nFirstToRender, &rcTempSelection, nNumChatToRender, DT_LEFT );
@@ -2923,7 +2934,7 @@ void CKTDGUIIMEEditBox::Uninitialize()
 }
 
 //--------------------------------------------------------------------------------------
-HRESULT CKTDGUIIMEEditBox::DrawText( LPCWSTR strText, RECT* prcDest, int nCount /* = -1 */, DWORD format /* = DT_LEFT | DT_VCENTER  */)
+HRESULT CKTDGUIIMEEditBox::DrawText( LPCWSTR strText, RECT* prcDest, int nCount /* = -1 */, DWORD format /* = DT_LEFT | DT_VCENTER  */, int iPixelOffsetX /* = 0 */)
 {
 	if ( m_DefTextAlign != (DWORD)-1 && CheckTextOversize() == false )
 		format = m_DefTextAlign;
@@ -2936,11 +2947,11 @@ HRESULT CKTDGUIIMEEditBox::DrawText( LPCWSTR strText, RECT* prcDest, int nCount 
 
 	if( m_bOutlineCheck == true )
 	{
-		m_pFont->DrawTextFont( strText, &rcScreen, nCount, m_NowFontColor, true, m_OutlineColor, format );
+		m_pFont->DrawTextFont( strText, &rcScreen, nCount, m_NowFontColor, true, m_OutlineColor, format, iPixelOffsetX );
 	}
 	else
 	{
-		m_pFont->DrawTextFont( strText, &rcScreen, nCount, m_NowFontColor, false, m_OutlineColor, format );
+		m_pFont->DrawTextFont( strText, &rcScreen, nCount, m_NowFontColor, false, m_OutlineColor, format, iPixelOffsetX );
 	}
 
 	return S_OK;

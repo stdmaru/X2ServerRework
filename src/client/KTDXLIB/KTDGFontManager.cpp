@@ -393,7 +393,7 @@ void CKTDGFontManager::CUKFont::OutTextMultiline( const int& iLeft, const int& i
 //#endif
 }
 
-void CKTDGFontManager::CUKFont::DrawTextFont( const WCHAR* strMsg, RECT* pos, int nCount, D3DXCOLOR color, bool bOutline, D3DXCOLOR outlineColor, DWORD sortFlag )
+void CKTDGFontManager::CUKFont::DrawTextFont( const WCHAR* strMsg, RECT* pos, int nCount, D3DXCOLOR color, bool bOutline, D3DXCOLOR outlineColor, DWORD sortFlag, int iPixelOffsetX )
 {
 	if ( pos == NULL )
 		return;
@@ -402,9 +402,9 @@ void CKTDGFontManager::CUKFont::DrawTextFont( const WCHAR* strMsg, RECT* pos, in
 		return;
 
 	if ( bOutline == true )
-		DrawFont( strMsg, *pos, sortFlag, color, outlineColor, FS_SHELL, nCount );
+		DrawFont( strMsg, *pos, sortFlag, color, outlineColor, FS_SHELL, nCount, iPixelOffsetX );
 	else
-		DrawFont( strMsg, *pos, sortFlag, color, 0xff000000, FS_NONE, nCount );
+		DrawFont( strMsg, *pos, sortFlag, color, 0xff000000, FS_NONE, nCount, iPixelOffsetX );
 }
 
 void CKTDGFontManager::CUKFont::CalcTextRect( const WCHAR* strMsg, RECT* pos, int nCount, DWORD format )
@@ -430,7 +430,7 @@ void CKTDGFontManager::CUKFont::CalcTextRect( const WCHAR* strMsg, RECT* pos, in
 	}//if.. else..
 }
 
-void CKTDGFontManager::CUKFont::DrawFont( const WCHAR* strMsg, RECT rt, DWORD sortFlag, D3DXCOLOR color, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount /* = -1  */)
+void CKTDGFontManager::CUKFont::DrawFont( const WCHAR* strMsg, RECT rt, DWORD sortFlag, D3DXCOLOR color, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount /* = -1  */, int iPixelOffsetX /* = 0 */)
 {
 	KTDXPROFILE();
 
@@ -481,14 +481,14 @@ void CKTDGFontManager::CUKFont::DrawFont( const WCHAR* strMsg, RECT rt, DWORD so
 	}
 
     RECT    rtScale;
-    rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rt.left ) ) );
+    rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rt.left ) ) ) + iPixelOffsetX;
     rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rt.top ) ) );
-    rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rt.right ) ) );
+    rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rt.right ) ) ) + iPixelOffsetX;
     rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rt.bottom ) ) );
 
     if ( fontStyle != FS_NONE )
     {
-        DrawFontStyle( strMsg, rt, DT_LEFT | DT_NOCLIP, outlineColor, fontStyle, nCount );
+        DrawFontStyle( strMsg, rt, DT_LEFT | DT_NOCLIP, outlineColor, fontStyle, nCount, iPixelOffsetX );
         m_pUKFont->OutTextMultiline( rtScale.left
             , rtScale.top
             , strMsg, color, 0xff000000, 1.0f, &rtScale, sortFlag, nCount
@@ -503,7 +503,7 @@ void CKTDGFontManager::CUKFont::DrawFont( const WCHAR* strMsg, RECT rt, DWORD so
     }//if.. else..
 }
 
-void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWORD /*sortFlag*/, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount /* = -1  */)
+void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWORD /*sortFlag*/, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount /* = -1  */, int iPixelOffsetX /* = 0 */)
 {
 	KTDXPROFILE();
 
@@ -523,9 +523,9 @@ void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWOR
 		rect.top	+= gap;
 		rect.right	+= gap;
 		rect.bottom	+= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
@@ -534,36 +534,36 @@ void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWOR
 		rect		= rt;
 		rect.left	-= gap;
 		rect.right	-= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
 		rect		= rt;
 		rect.left	+= gap;
 		rect.right	+= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
 		rect		= rt;
 		rect.top	-= gap;
 		rect.bottom	-= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
 		rect		= rt;
 		rect.top	+= gap;
 		rect.bottom	+= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
@@ -573,9 +573,9 @@ void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWOR
 		rect.top	-= gap;
 		rect.right	-= gap;
 		rect.bottom	-= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
@@ -584,9 +584,9 @@ void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWOR
 		rect.top	+= gap;
 		rect.right	-= gap;
 		rect.bottom	+= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
@@ -595,9 +595,9 @@ void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWOR
 		rect.top	-= gap;
 		rect.right	+= gap;
 		rect.bottom	-= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);
@@ -606,9 +606,9 @@ void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWOR
 		rect.top	+= gap;
 		rect.right	+= gap;
 		rect.bottom	+= gap;
-		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) );
+		rtScale.left = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.left ) ) ) + iPixelOffsetX;
 		rtScale.top  = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.top ) ) );
-		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) );
+		rtScale.right = (int) ( g_pKTDXApp->ConvertXByResolution( static_cast<float>( rect.right ) ) ) + iPixelOffsetX;
 		rtScale.bottom = (int) ( g_pKTDXApp->ConvertYByResolution( static_cast<float>( rect.bottom ) ) );
 		m_pUKFont->OutTextMultiline( rtScale.left, rtScale.top, strMsg, outlineColor, 0xff000000, 1.0f, &rtScale, DT_LEFT|DT_TOP, nCount
 			);

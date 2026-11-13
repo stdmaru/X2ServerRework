@@ -140,7 +140,7 @@ protected:
 				void	CopyToClipboard();
 				void	PasteFromClipboard();
 
-				HRESULT	DrawText( LPCWSTR strText, RECT* prcDest, int nCount = -1, DWORD format = DT_LEFT | DT_VCENTER );
+				HRESULT	DrawText( LPCWSTR strText, RECT* prcDest, int nCount = -1, DWORD format = DT_LEFT | DT_VCENTER, int iPixelOffsetX = 0 );
 				HRESULT CalcTextRect( LPCWSTR strText, RECT* prcDest, int nCount = -1, DWORD format = (DT_VCENTER | DT_CALCRECT) );
 				void UpdateTextAlignOffset();
 

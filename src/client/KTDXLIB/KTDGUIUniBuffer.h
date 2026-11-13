@@ -36,6 +36,7 @@ class CKTDGUIUniBuffer
 				// Uniscribe
                 HRESULT     CPtoY( int nCP, BOOL bTrail, int *pY );
 				HRESULT		CPtoX( int nCP, BOOL bTrail, int *pX );
+				int			CPtoPixelX( int nCP );
                 HRESULT		XtoCP( int nX, int *pCP, int *pnTrail );
                 HRESULT     XYtoCP( int nX, int nY, int *pCP, int *pnTrail );
 				void		GetPriorItemPos( int nCP, int *pPrior );

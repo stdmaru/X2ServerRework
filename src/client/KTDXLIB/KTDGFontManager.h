@@ -130,11 +130,11 @@ class CKTDGFontManager
 				void			Clear2DFont();
 
 				// Text
-				void			DrawTextFont( const WCHAR* strMsg, RECT* pos, int nCount, D3DXCOLOR color, bool bOutline, D3DXCOLOR outlineColor, DWORD sortFlag = (DT_LEFT | DT_VCENTER) );
+				void			DrawTextFont( const WCHAR* strMsg, RECT* pos, int nCount, D3DXCOLOR color, bool bOutline, D3DXCOLOR outlineColor, DWORD sortFlag = (DT_LEFT | DT_VCENTER), int iPixelOffsetX = 0 );
 				void			CalcTextRect( const WCHAR* strMsg, RECT* pos, int nCount, DWORD format = (DT_VCENTER | DT_CALCRECT) );
 
-				void			DrawFont( const WCHAR* strMsg, RECT rt, DWORD sortFlag, D3DXCOLOR color, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount = -1 );
-				void			DrawFontStyle( const WCHAR* strMsg, RECT rt, DWORD sortFlag, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount = -1 );
+				void			DrawFont( const WCHAR* strMsg, RECT rt, DWORD sortFlag, D3DXCOLOR color, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount = -1, int iPixelOffsetX = 0 );
+				void			DrawFontStyle( const WCHAR* strMsg, RECT rt, DWORD sortFlag, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount = -1, int iPixelOffsetX = 0 );
 
 			private:
 				CKTDGFreeTypeFont*		m_pUKFont;
