@@ -646,6 +646,24 @@ HRESULT CKTDGUIUniBuffer::CPtoX( int nCP, BOOL /*bTrail*/, int *pX )
 	return hr;
 }
 
+// The width in screen pixels of the line's text before nCP, unrounded to layout units: what the font advances by.
+int CKTDGUIUniBuffer::CPtoPixelX( int nCP )
+{
+	if ( m_pFontNode == NULL )
+		return 0;
+
+	wstring textMsg = m_pwszBuffer;
+	if ( m_bUseHideChar == true )
+		fill( textMsg.begin(), textMsg.end(), m_cHideChar );
+
+	textMsg = textMsg.substr( 0, nCP );
+	const size_t nNewLine = textMsg.rfind( L'\n' );
+	if ( nNewLine != wstring::npos )
+		textMsg = textMsg.substr( nNewLine + 1 );
+
+	return m_pFontNode->GetWidth( textMsg.c_str() );
+}
+
 HRESULT CKTDGUIUniBuffer::XYtoCP( int nX, int nY, int *pCP, int *pnTrail )
 {
     assert( pCP && pnTrail );

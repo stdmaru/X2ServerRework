@@ -418,6 +418,11 @@ Other changes:
   original did this on purpose (2013-12-06) so that a stretched width would not make the caret look thin. The result was
   a highlight shorter than the text at any scale but 1, which the user also saw in the original. Both are now scaled, and
   the caret is at least 1 pixel wide.
+  The selected text, drawn again over the text in the selection color, was placed at the selection's left in truncated
+  layout units, up to one unit (1.4 pixels at 1080p) off the glyphs below. The doubled glyphs looked bolder, changing
+  with each character selected. It is now drawn from the text's own rectangle, moved by the pixel width of what comes
+  before the selection (`CKTDGUIUniBuffer::CPtoPixelX`, and a pixel offset on `CUKFont::DrawTextFont`), for single-line,
+  left-aligned boxes. Others keep the original's placement.
 - UI particles without `ResolutionConvert` stay in screen pixels.
 
 The dialogs and controls have no anchors yet. Everything is drawn in the centered column, the T44 default, and the
