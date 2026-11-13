@@ -150,6 +150,13 @@ class CX2TalkBoxManagerImp
 
 			void Update( CKTDGFontManager::CUKFont* pKTDGFont, const float fMarginLeft, const float fMarginTop, const D3DXVECTOR2 vOffset );
 			void ResetFontPos(  CKTDGFontManager::CUKFont* pKTDGFont, const float fMarginLeft, const float fMarginTop );
+			// Drawing between steps (T41): a box that follows a unit is placed by Update once per step; while drawing it is
+			// placed between its last two step positions (not over 200 points apart) and its text moved with it.
+			void PlaceBetweenSteps( CKTDGFontManager::CUKFont* pKTDGFont, const float fMarginLeft, const float fMarginTop );
+			D3DXVECTOR2							m_vTickPosPrevious{ 0.f, 0.f };	// m_vPos placed by Update in the last two steps
+			D3DXVECTOR2							m_vTickPosLast{ 0.f, 0.f };
+			int									m_iTickPos = -1;				// the step of m_vTickPosLast
+			bool								m_bTickPosPrevious = false;		// m_vTickPosPrevious is from the step before
 
 			void GetTalkBoxPosByUnitUID( IN UidType uiOwnerUnitUID_, OUT D3DXVECTOR3& vPos_ );
 			void GetTalkBoxPosByCostomPos( OUT D3DXVECTOR3& vPos_ ) const;
@@ -164,6 +171,7 @@ class CX2TalkBoxManagerImp
 
 		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime );
 		virtual HRESULT OnFrameRender();
+		void			PlaceTalkBoxesBetweenSteps();
 
 		//void Push(TalkBox* talkBox) { Push( *talkBox ); }
 		void Push( TalkBox& talkBox );

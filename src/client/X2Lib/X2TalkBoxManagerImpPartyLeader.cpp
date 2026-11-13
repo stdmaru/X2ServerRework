@@ -35,6 +35,8 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 	{
 		KTDXPROFILE();
 
+		PlaceTalkBoxesBetweenSteps();
+
 		//float boxWidth = 186;
 		//float boxCenterHeight = 53;
 
