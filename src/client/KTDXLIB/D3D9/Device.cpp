@@ -411,6 +411,7 @@ Device::~Device()
     m_render.ReleaseTexture(m_white);
     m_render.ReleaseTexture(m_depth);
     m_render.ReleaseTexture(m_msaaColor);
+    m_render.ReleaseTexture(m_ssaaColor);
     m_render.ReleaseTexture(m_textureDepth);
     m_render.ReleaseBuffer(m_fanIndices);
     m_render.ReleaseBuffer(m_dynamicVertices);
@@ -707,7 +708,8 @@ Device::Target Device::CurrentTarget() const
         t.colorFormat = m_target->m_renderFormat;
         t.width = m_target->m_width;
         t.height = m_target->m_height;
-        t.depth = m_msaaSamples > 1 ? m_textureDepth : m_depth;     // single-sampled, like the texture
+        // Single-sampled and of the game's size, like the texture.
+        t.depth = m_msaaSamples > 1 || m_ssaa > 1 ? m_textureDepth : m_depth;
     } else {
         t.color = m_backBuffer.texture;
         t.colorFormat = m_backBufferFormat;
@@ -716,7 +718,10 @@ Device::Target Device::CurrentTarget() const
         if (t.color && m_msaaSamples > 1) {
             t.color = m_msaaColor;
             t.samples = m_msaaSamples;
+        } else if (t.color && m_ssaa > 1) {
+            t.color = m_ssaaColor;
         }
+        t.scale = m_ssaa;
         t.depth = m_depth;
     }
     // The depth buffer is attached only to targets of the back buffer's size.
@@ -745,6 +750,11 @@ void Device::SetMultisample(UINT samples)
     m_samples = samples >= 8 ? 8 : samples >= 4 ? 4 : samples >= 2 ? 2 : 1;
 }
 
+void Device::SetSupersample(UINT factor)
+{
+    m_supersample = factor >= 2 ? 2 : 1;
+}
+
 void Device::SetAnisotropy(UINT level)
 {
     m_anisotropy = std::clamp<UINT>(level, 1, 16);
@@ -768,65 +778,90 @@ bool Device::EnsureBackBufferTextures()
                             m_render.TextureSupportsSampleCount(depthFormat, SampleCountOf(samples)))) {
         samples /= 2;
     }
+    UINT scale = m_supersample;
     if (m_depth && width == m_depthWidth && height == m_depthHeight && samples == m_msaaSamples &&
-        (samples == 1 || m_msaaFormat == m_backBufferFormat)) {
+        scale == m_ssaa && ((samples == 1 && scale == 1) || m_msaaFormat == m_backBufferFormat)) {
         return true;
     }
     m_render.ReleaseTexture(m_depth);
     m_render.ReleaseTexture(m_msaaColor);
+    m_render.ReleaseTexture(m_ssaaColor);
     m_render.ReleaseTexture(m_textureDepth);
-    m_depth = m_msaaColor = m_textureDepth = {};
+    m_depth = m_msaaColor = m_ssaaColor = m_textureDepth = {};
     m_msaaFormat = render::TextureFormat::Invalid;
-    if (samples > 1) {
-        m_msaaColor = m_render.CreateTexture({.format = m_backBufferFormat,
-                                              .usage = render::TextureUsage::ColorTarget,
-                                              .width = width,
-                                              .height = height,
-                                              .sampleCount = SampleCountOf(samples),
-                                              .name = "d3d9 multisampled back buffer"});
+    if (samples > 1 || scale > 1) {
         m_textureDepth = m_render.CreateTexture({.format = depthFormat,
                                                  .usage = render::TextureUsage::DepthStencilTarget,
                                                  .width = width,
                                                  .height = height,
                                                  .name = "d3d9 render target depth-stencil"});
-        if (!m_msaaColor || !m_textureDepth) {
-            Fail("multisampled back buffer: " + m_render.LastError());
-            m_render.ReleaseTexture(m_msaaColor);
-            m_render.ReleaseTexture(m_textureDepth);
-            m_msaaColor = m_textureDepth = {};
-            samples = 1;
-        } else {
-            m_msaaFormat = m_backBufferFormat;
+        if (scale > 1) {
+            m_ssaaColor = m_render.CreateTexture({.format = m_backBufferFormat,
+                                                  .usage = render::TextureUsage::ColorTarget |
+                                                           render::TextureUsage::Sampler,
+                                                  .width = width * scale,
+                                                  .height = height * scale,
+                                                  .name = "d3d9 supersampled back buffer"});
+            if (!m_ssaaColor) {
+                Fail("supersampled back buffer: " + m_render.LastError());
+                scale = 1;
+            }
         }
+        if (samples > 1) {
+            m_msaaColor = m_render.CreateTexture({.format = m_backBufferFormat,
+                                                  .usage = render::TextureUsage::ColorTarget,
+                                                  .width = width * scale,
+                                                  .height = height * scale,
+                                                  .sampleCount = SampleCountOf(samples),
+                                                  .name = "d3d9 multisampled back buffer"});
+            if (!m_msaaColor) {
+                Fail("multisampled back buffer: " + m_render.LastError());
+                samples = 1;
+            }
+        }
+        if (!m_textureDepth) {
+            Fail("render target depth-stencil: " + m_render.LastError());
+        }
+        m_msaaFormat = m_backBufferFormat;
     }
     m_msaaSamples = samples;
+    m_ssaa = scale;
     m_depth = m_render.CreateTexture({.format = depthFormat,
                                       .usage = render::TextureUsage::DepthStencilTarget,
-                                      .width = width,
-                                      .height = height,
+                                      .width = width * scale,
+                                      .height = height * scale,
                                       .sampleCount = SampleCountOf(samples),
                                       .name = "d3d9 depth-stencil"});
     m_depthFormat = m_depth ? depthFormat : render::TextureFormat::Invalid;
     m_depthWidth = m_depth ? width : 0;
     m_depthHeight = m_depth ? height : 0;
-    if (m_samples > 1 || samples > 1) {
-        SDL_LogInfo(SDL_LOG_CATEGORY_RENDER, "d3d9: back buffer %ux%u, %u samples (%u asked)", width, height, samples,
-                    m_samples);
+    if (m_samples > 1 || samples > 1 || scale > 1) {
+        SDL_LogInfo(SDL_LOG_CATEGORY_RENDER, "d3d9: back buffer %ux%u drawn at %ux%u, %u samples (%u asked)", width,
+                    height, width * scale, height * scale, samples, m_samples);
     }
     return static_cast<bool>(m_depth);
 }
 
+// Anti-aliasing at Present: the multisampled back buffer is resolved (into the supersampled one, or the swapchain
+// texture), and the supersampled one scaled down into the swapchain texture (a linear blit at 2:1 averages 2x2).
 bool Device::ResolveBackBuffer()
 {
-    const render::ColorTargetInfo color{.texture = m_msaaColor,
-                                        .loadOp = render::LoadOp::Load,
-                                        .storeOp = render::StoreOp::Resolve,
-                                        .resolveTexture = m_backBuffer.texture};
-    render::RenderPass* pass = m_frame->BeginRenderPass({&color, 1}, nullptr);
-    if (!pass) {
-        return Fail("resolve: " + m_render.LastError());
+    if (m_msaaSamples > 1) {
+        const render::ColorTargetInfo color{.texture = m_msaaColor,
+                                            .loadOp = render::LoadOp::Load,
+                                            .storeOp = render::StoreOp::Resolve,
+                                            .resolveTexture = m_ssaa > 1 ? m_ssaaColor : m_backBuffer.texture};
+        render::RenderPass* pass = m_frame->BeginRenderPass({&color, 1}, nullptr);
+        if (!pass) {
+            return Fail("resolve: " + m_render.LastError());
+        }
+        pass->End();
     }
-    pass->End();
+    if (m_ssaa > 1) {
+        m_frame->BlitTexture({.texture = m_ssaaColor, .w = m_backBuffer.width * m_ssaa, .h = m_backBuffer.height * m_ssaa},
+                             {.texture = m_backBuffer.texture, .w = m_backBuffer.width, .h = m_backBuffer.height},
+                             render::Filter::Linear);
+    }
     return true;
 }
 
@@ -957,7 +992,7 @@ bool Device::SubmitFrame()
 {
     const std::scoped_lock gpuLock(m_gpuMutex);
     EndPass();
-    if (m_msaaSamples > 1 && m_msaaColor && m_backBuffer.texture) {
+    if ((m_msaaSamples > 1 || m_ssaa > 1) && m_backBuffer.texture) {
         ResolveBackBuffer();
     }
     const bool uploaded = FlushUploads();       // before the frame, whose draws read them
@@ -1409,9 +1444,11 @@ bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buf
     }
     PushUniforms(fvf);
     pass->BindGraphicsPipeline(pipeline);
-    pass->SetViewport({static_cast<float>(m_viewport.X), static_cast<float>(m_viewport.Y),
-                       static_cast<float>(m_viewport.Width), static_cast<float>(m_viewport.Height), m_viewport.MinZ,
-                       m_viewport.MaxZ});
+    // Supersampling: the game's pixels cover m_ssaa drawn pixels on each axis of the back buffer.
+    const float scale = m_target ? 1.0f : static_cast<float>(m_ssaa);
+    pass->SetViewport({static_cast<float>(m_viewport.X) * scale, static_cast<float>(m_viewport.Y) * scale,
+                       static_cast<float>(m_viewport.Width) * scale, static_cast<float>(m_viewport.Height) * scale,
+                       m_viewport.MinZ, m_viewport.MaxZ});
     pass->SetStencilReference(static_cast<std::uint8_t>(m_renderStates[D3DRS_STENCILREF]));
     pass->SetBlendConstants(ColorFromD3D(m_renderStates[D3DRS_BLENDFACTOR]));
     const render::BufferBinding vertices{buffer, offset};

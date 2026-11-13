@@ -274,6 +274,45 @@ TEST_CASE("d3d9: anti-aliasing draws the back buffer multisampled and resolves i
     SDL_Quit();
 }
 
+TEST_CASE("d3d9: supersampling draws the back buffer larger and scales it down")
+{
+    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO));
+    SDL_Window* window = SDL_CreateWindow("d3d9", 64, 32, 0);
+    REQUIRE(window);
+    auto render = NullRender();
+    REQUIRE(render->ClaimWindow(window));
+    {
+        x2::d3d9::Device device(*render, window);
+        REQUIRE(device.Ok());
+        device.SetSupersample(2);
+        for (UINT samples : {1u, 4u}) {
+            device.SetMultisample(samples);
+            x2::render::null::ClearCommands(*render);
+            REQUIRE(device.BeginScene());
+            CHECK(device.Clear(0, nullptr, D3DCLEAR_TARGET, 0xFF0000FF, 1.0f, 0));
+            // The game still sees the window's size.
+            D3DVIEWPORT9 viewport;
+            device.GetViewport(&viewport);
+            CHECK(viewport.Width == 64);
+            CHECK(device.BackBufferWidth() == 64);
+            ScreenVertex quad[4];
+            Quad(quad, 0, 0, 8, 8, 0xFFFFFFFF);
+            device.SetFVF(kScreenFvf);
+            CHECK(device.DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(ScreenVertex)));
+            CHECK(device.EndScene());
+            CHECK(device.Present());
+            CHECK(Has(*render, "SetViewport 0,0 128x64"));
+            CHECK(Has(*render, "128x64 -> "));                      // the blit into the swapchain
+            CHECK(Has(*render, "store=resolve->") == (samples > 1));
+        }
+    }
+    render->ReleaseWindow(window);
+    render.reset();
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
 TEST_CASE("d3d9: texture locks upload in the device's format")
 {
     auto render = NullRender();
