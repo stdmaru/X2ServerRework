@@ -36,7 +36,8 @@ struct InterpDiagnostics
             strTrace = pTrace;
     }
 
-    void Record( const std::wstring& wstrMesh, PoseDraw eDraw, int iPrev, int iLast, float fFraction, const D3DXMATRIX& root )
+    void Record( const std::wstring& wstrMesh, PoseDraw eDraw, int iPrev, int iLast, float fFraction, const D3DXMATRIX& root,
+        const D3DXMATRIX& prevWorld, const D3DXMATRIX& lastWorld )
     {
         if ( !bStats && strTrace.empty() )
             return;
@@ -44,10 +45,22 @@ struct InterpDiagnostics
         const auto tNow = std::chrono::steady_clock::now();
         if ( !strTrace.empty() && strMesh.find( strTrace ) != std::string::npos )
         {
-            std::fprintf( stderr, "interp-trace %s us=%lld steps=%d t=%.3f prev=%d last=%d f=%.3f %s pos=%.2f,%.2f,%.2f\n",
+            // World matrix of the last two updates: position moved and the cosine between each pair of axes.
+            float afCos[3];
+            for ( int row = 0; row < 3; row++ )
+            {
+                const D3DXVECTOR3 a( prevWorld.m[row][0], prevWorld.m[row][1], prevWorld.m[row][2] );
+                const D3DXVECTOR3 b( lastWorld.m[row][0], lastWorld.m[row][1], lastWorld.m[row][2] );
+                const float fLengths = D3DXVec3Length( &a ) * D3DXVec3Length( &b );
+                afCos[row] = fLengths > 0.f ? D3DXVec3Dot( &a, &b ) / fLengths : 1.f;
+            }
+            std::fprintf( stderr, "interp-trace %s us=%lld steps=%d t=%.3f prev=%d last=%d f=%.3f %s pos=%.2f,%.2f,%.2f "
+                "world=%.2f,%.2f,%.2f moved=%.2f,%.2f,%.2f cos=%.3f,%.3f,%.3f\n",
                 strMesh.c_str(), (long long)std::chrono::duration_cast<std::chrono::microseconds>( tNow.time_since_epoch() ).count(),
                 g_pKTDXApp->GetFrameMoveCount(), g_pKTDXApp->GetTickInterpolation(), iPrev, iLast, fFraction,
-                kPoseDrawNames[eDraw], root._41, root._42, root._43 );
+                kPoseDrawNames[eDraw], root._41, root._42, root._43, lastWorld._41, lastWorld._42, lastWorld._43,
+                lastWorld._41 - prevWorld._41, lastWorld._42 - prevWorld._42, lastWorld._43 - prevWorld._43,
+                afCos[0], afCos[1], afCos[2] );
         }
         if ( !bStats )
             return;
@@ -83,7 +96,7 @@ InterpDiagnostics& Diagnostics()
 }  // namespace
 #define X2_INTERP_RECORD( eDraw, fFraction, root ) \
     Diagnostics().Record( m_pAnimXSkinMesh != NULL ? m_pAnimXSkinMesh->GetDeviceID() : std::wstring(), eDraw, m_iPrevPoseTick, \
-        m_iPoseTick, fFraction, root )
+        m_iPoseTick, fFraction, root, m_PrevTickWorld, m_TickWorld )
 #else
 #define X2_INTERP_RECORD( eDraw, fFraction, root ) ((void)0)
 #endif

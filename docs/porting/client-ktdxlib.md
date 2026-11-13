@@ -333,10 +333,20 @@ over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMa
 
 **Diagnostics** (dev tools): `X2_INTERP_STATS=1` logs once a second how many skinned meshes were drawn interpolated and
 why the others were not (no previous pose, frame count changed, update overdue, jump); `X2_INTERP_TRACE=<text>` logs
-every draw of the skinned meshes whose name contains `<text>` with the time, step, fraction and root position. On
+every draw of the skinned meshes whose name contains `<text>` with the time, step, fraction, root position and the
+world matrix of the last two updates (move and axis cosines), and also, every frame, the camera's drawn and tick eyes
+(`interp-view`) and, every step, `CKTDGCamera`'s eye, look-at and tracking (`interp-cam`). On
 2026-11-12 a frame-by-frame trace of 10 field monsters (`TREE_KNIGHT`, 144 Hz) showed them moving every frame, including
 the ones updated every 2 or 3 steps; what still looked uneven were frame-time spikes (debug build: p50 7 ms, p99 14 ms),
 left for `client/render-perf`.
+
+**Camera updated twice per step** (fixed 2026-11-12, `client/msaa`): in a game, `CX2State::OnFrameMove` also called
+`UpdateCamera` on the shared `CKTDGCamera` before `CX2Game` set the step's target and updated it, so the camera moved
+twice as far per step, half toward the previous target, and turned unevenly on curved line maps. The original had the
+fix (`if( NULL == g_pX2Game )`, `FIX_CAMERA_CRASH_BY_EFFECT_SET`, its comment describing this bug) but never defined the
+flag; the port applies it. The camera now follows at the speed the scripts give. A vibration on the curve of a field near
+(36550, −4744) remains (user, 2026-11-12): the traces show smooth drawn positions and views, a window capture showed
+the whole scene moving in 4-pixel jumps every ~40 ms; still open, with frame presentation as the lead.
 
 Measured on 2026-11-12 (optimized build, 144 Hz display, vsync off): character select ~1,200 fps, village ~600, field
 ~350; with vsync, 144.
