@@ -101,6 +101,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 		{
 			CopyFrame( m_pCloneFrameRoot, pSrcCloneFrame );
 			m_iPoseTick = -1;	// T41: a pose copied from elsewhere (after-images) is drawn as it is
+			m_iPrevPoseTick = -1;
 			m_bPrevPoseValid = false;
 		}
 
@@ -734,6 +735,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 		D3DXMATRIX									m_TickWorld;
 		D3DXMATRIX									m_PrevTickWorld;
 		int											m_iPoseTick = -1;
+		int											m_iPrevPoseTick = -1;	// the update before m_iPoseTick
 		bool										m_bPrevPoseValid = false;
 		bool										m_bRenderPoseInterpolated = false;
 

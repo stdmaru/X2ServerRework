@@ -186,17 +186,20 @@ void CKTDGXSkinAnim::BuildCloneFrameStructure( CKTDXDeviceXSkinMesh* pAnimXSkinM
 	m_FrameNum = 0;
 	BuildCloneFrameList( m_pCloneFrameRoot );
 	m_iPoseTick = -1;	// new frames: nothing to interpolate from
+	m_iPrevPoseTick = -1;
 	m_bPrevPoseValid = false;
 }
 
 void CKTDGXSkinAnim::BeginTickPose()
 {
-	// The first pose update of a tick: the frames still hold the pose of the tick before, which rendering
-	// interpolates from. An object not updated in that tick has nothing to interpolate from.
+	// The first pose update of a tick: the frames still hold the pose of the last update, which rendering
+	// interpolates from. Units that simulate every few ticks (CX2GUNPC's heuristic simulation) are interpolated across
+	// the ticks between their updates; too long ago, there is nothing to interpolate from.
 	const int iTick = g_pKTDXApp->GetFrameMoveCount();
 	if( iTick == m_iPoseTick )
 		return;
-	m_bPrevPoseValid = m_iPoseTick >= 0 && m_iPoseTick == iTick - 1;
+	m_bPrevPoseValid = m_iPoseTick >= 0 && iTick - m_iPoseTick <= x2::ktdx::kMaxUpdateGap;
+	m_iPrevPoseTick = m_iPoseTick;
 	m_iPoseTick = iTick;
 	if( m_bPrevPoseValid )
 	{
@@ -209,12 +212,13 @@ void CKTDGXSkinAnim::BeginTickPose()
 
 void CKTDGXSkinAnim::PrepareRenderPose()
 {
-	// Updated in the last tick (the tick count is past it while rendering), from a pose of the tick before, and
-	// without a jump or an instant turn: draw in between.
+	// Between the last two pose updates (usually the last two ticks), without a jump or an instant turn.
 	m_bRenderPoseInterpolated = false;
-	const float t = g_pKTDXApp->GetTickInterpolation();
-	if( !m_bPrevPoseValid || m_iPoseTick != g_pKTDXApp->GetFrameMoveCount() - 1 || t >= 1.f
-		|| (int)m_PrevTickFrames.size() != m_FrameNum || x2::ktdx::IsWorldJump( m_PrevTickWorld, m_TickWorld ) )
+	if( !m_bPrevPoseValid || (int)m_PrevTickFrames.size() != m_FrameNum )
+		return;
+	const float t = x2::ktdx::UpdateFraction( m_iPrevPoseTick, m_iPoseTick, g_pKTDXApp->GetFrameMoveCount(),
+		g_pKTDXApp->GetTickInterpolation() );
+	if( t >= 1.f || x2::ktdx::IsWorldJump( m_PrevTickWorld, m_TickWorld ) )
 		return;
 	m_RenderFrames.resize( m_FrameNum );
 	for( int j = 0; j < m_FrameNum; j++ )
