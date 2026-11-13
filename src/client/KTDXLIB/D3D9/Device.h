@@ -348,8 +348,14 @@ private:
 
     // Draws
     // indices: null for a draw of firstVertex on; else indices from startIndex, each plus firstVertex.
+    // cpuVertices: the same vertices in memory, from the buffer's offset on (may be empty).
     bool Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buffer, UINT offset, UINT stride,
-              INT firstVertex, DWORD fvf, const IndexBuffer* indices = nullptr, UINT startIndex = 0);
+              INT firstVertex, DWORD fvf, std::span<const std::byte> cpuVertices, const IndexBuffer* indices = nullptr,
+              UINT startIndex = 0);
+    std::span<const std::byte> StreamBytes() const;  // stream 0's vertices in memory, from its offset on
+    // Drawn pixels (game units) per texel of stage 0's texture over the draw's first triangle; 0 when unknown.
+    float TexelScale(D3DPRIMITIVETYPE type, std::span<const std::byte> vertices, UINT stride, INT firstVertex,
+                     DWORD fvf, const IndexBuffer* indices, UINT startIndex) const;
     render::GraphicsPipeline Pipeline(const PipelineKey& key, DWORD fvf, UINT stride);
     // pointMagnify: magnify with nearest texels whatever the stage asks (pre-transformed draws when supersampling).
     render::Sampler SamplerFor(DWORD stage, bool pointMagnify = false);
