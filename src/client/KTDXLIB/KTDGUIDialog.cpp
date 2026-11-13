@@ -185,6 +185,7 @@ CKTDGUIDialog::~CKTDGUIDialog(void)
 HRESULT	CKTDGUIDialog::OnFrameMove( double fTime, float fElapsedTime )
 {
 	KTDXPROFILE();
+	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
 
 	if ( m_pStaticGuideDesc != NULL )
 		m_pStaticGuideDesc->SetShow( false );
@@ -411,6 +412,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 		TickPos( const TickPos& ) = delete;
 		TickPos& operator=( const TickPos& ) = delete;
 	} kTickPos( *this );
+	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
 
 
 
@@ -455,14 +457,30 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 	    {
 		    CKTDGUIControl* pControl = m_ControlsList[i];
 			if( pControl != NULL && pControl->GetOutOfControlList() == false )
-				pControl->OnFrameRender();
+			{
+				if ( pControl->HasAnchor() )
+				{
+					const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor() );
+					pControl->OnFrameRender();
+				}
+				else
+					pControl->OnFrameRender();
+			}
 	    }
 
 	    for ( int i = 0; i < (int)m_ControlsList.size(); i++ )
 	    {
 		    CKTDGUIControl* pControl = m_ControlsList[i];
-			if(pControl->GetOutOfControlList() == false)
-				pControl->OnFrameRenderEnd();
+			if( pControl->GetOutOfControlList() == false )
+			{
+				if ( pControl->HasAnchor() )
+				{
+					const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor() );
+					pControl->OnFrameRenderEnd();
+				}
+				else
+					pControl->OnFrameRenderEnd();
+			}
 	    }
     KD3DEND()
 
@@ -613,6 +631,7 @@ HRESULT	CKTDGUIDialog::OnLostDevice()
 bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	KTDXPROFILE();
+	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
 
 	//m_bIsOverControl = false;
 
@@ -778,7 +797,7 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					{
 
 						D3DXVECTOR2 offsetPos;
-						offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
+						offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
 
 						POINT mousePointFinal = mousePoint;
 						mousePointFinal.x -= (LONG)offsetPos.x;
@@ -1480,7 +1499,7 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 		)
 	{
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( s_pControlFocus->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( s_pControlFocus->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( s_pControlFocus ), 0.f ) );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
@@ -1491,7 +1510,15 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 		mousePointFinal.y = (LONG)mousePos.y;
 
 		// 자식 컨트롤의 메세지 핸들링
-		if( s_pControlFocus->HandleMouse( uMsg, mousePointFinal, wParam, lParam ) == true )
+		bool bHandled = false;
+		if ( s_pControlFocus->HasAnchor() )
+		{
+			const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, s_pControlFocus->GetAnchor() );
+			bHandled = s_pControlFocus->HandleMouse( uMsg, mousePointFinal, wParam, lParam );
+		}
+		else
+			bHandled = s_pControlFocus->HandleMouse( uMsg, mousePointFinal, wParam, lParam );
+		if( bHandled == true )
 		{
 			return true;
 		}
@@ -1509,7 +1536,7 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
@@ -1534,7 +1561,15 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 			OnMouseMove( pt );
 
 			// 자식 컨트롤의 메세지 핸들링
-			if ( pControl->HandleMouse( uMsg, mousePointFinal, wParam, lParam ) == true )
+			bool bHandled = false;
+			if ( pControl->HasAnchor() )
+			{
+				const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor() );
+				bHandled = pControl->HandleMouse( uMsg, mousePointFinal, wParam, lParam );
+			}
+			else
+				bHandled = pControl->HandleMouse( uMsg, mousePointFinal, wParam, lParam );
+			if ( bHandled == true )
 			{
 				return true;
 			}
@@ -1788,7 +1823,7 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPoint( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
@@ -1824,7 +1859,7 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPointForStatic( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
@@ -1863,7 +1898,7 @@ CKTDGUIControl*	CKTDGUIDialog::GetControlAtPointExceptStatic( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
@@ -1901,7 +1936,7 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPointAbsolute( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
@@ -1955,6 +1990,7 @@ void CKTDGUIDialog::SetShow( bool bShow )
 		//////////////////////////////////
 		if( bShow == true)
 		{
+			const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
 			POINT mousePoint = { static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos() ), static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() ) };
 			D3DXVECTOR2 resolPos;
 			resolPos = g_pKTDXApp->ConvertByResolution( m_Pos );
@@ -1987,6 +2023,27 @@ void CKTDGUIDialog::SetShow( bool bShow )
 	// 도킹 다이얼로그 처리
 	//UpdateDockPos();
 //}} robobeg : 2009-01-07
+}
+
+bool CKTDGUIDialog::SetAnchor_LUA( const char* pszAnchor )
+{
+	UIAnchor eAnchor = UIAnchor::Center;
+	if ( ParseUIAnchor( pszAnchor, eAnchor ) == false )
+		return false;
+	SetAnchor( eAnchor );
+	return true;
+}
+
+float CKTDGUIDialog::GetAnchorShift() const
+{
+	return g_pKTDXApp->GetUIAnchorShift( m_eAnchor );
+}
+
+float CKTDGUIDialog::GetControlAnchorShift( const CKTDGUIControl* pControl ) const
+{
+	if ( pControl == NULL || pControl->HasAnchor() == false )
+		return 0.f;
+	return g_pKTDXApp->GetUIAnchorShift( pControl->GetAnchor() ) - GetAnchorShift();
 }
 
 void CKTDGUIDialog::SetPos( const D3DXVECTOR2& pos )
@@ -2234,6 +2291,8 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 
 
 	bool bResult = g_pKTDXApp->LoadLuaTinker( pFilename );
+	if ( bResult == true )
+		CKTDGUIAnchors::Apply( *this, pFilename );
 
 
 

@@ -154,6 +154,19 @@ class CKTDGUIDialog
 
 		D3DXVECTOR2 GetPos() const              { return m_Pos; }
 
+		// Horizontal anchor (T44): from UIAnchors.lua, or the script's own SetAnchor, which wins. GetPos/SetPos are
+		// in layout units under the anchor (layout positions); GetCanvasPos/SetCanvasPos are where the dialog is drawn
+		// (positions derived from other windows or the mouse).
+		void			SetAnchor( UIAnchor eAnchor )	{ m_eAnchor = eAnchor; m_bAnchorDeclared = true; }
+		bool			SetAnchor_LUA( const char* pszAnchor );
+		UIAnchor		GetAnchor() const				{ return m_eAnchor; }
+		bool			IsAnchorDeclared() const		{ return m_bAnchorDeclared; }
+		float			GetAnchorShift() const;
+		D3DXVECTOR2		GetCanvasPos() const			{ return D3DXVECTOR2( m_Pos.x + GetAnchorShift(), m_Pos.y ); }
+		void			SetCanvasPos( const D3DXVECTOR2& pos ) { SetPos( D3DXVECTOR2( pos.x - GetAnchorShift(), pos.y ) ); }
+		// How far a control with its own anchor is drawn from where the dialog's anchor would put it, in layout units.
+		float			GetControlAnchorShift( const CKTDGUIControl* pControl ) const;
+
 		// Drawing between simulation steps (T41): the dialog manager notes the position when a step begins and ends;
 		// OnFrameRender draws at the position between the two, when nothing moved the dialog since (dragging does).
 		void		NoteTickBegin( int iTick )  { m_vTickPosBegin = m_Pos; m_iTickPos = iTick; }
@@ -525,6 +538,9 @@ private:
 		float						m_fTimeForSelfDelete;
 		wstring		m_wstrCustomButtonMouseOverSndFileName;
 		wstring		m_wstrCustomButtonMouseUpSndFileName;
+
+		UIAnchor	m_eAnchor = UIAnchor::Center;
+		bool		m_bAnchorDeclared = false;
 
 #if X2_DEV_TOOLS
 		wstring		m_strScriptFileName;

@@ -128,6 +128,15 @@ bool CKTDGUIControl::SendInternelEvent( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	return true;
 }
 
+bool CKTDGUIControl::SetAnchor_LUA( const char* pszAnchor )
+{
+	UIAnchor eAnchor = UIAnchor::Center;
+	if ( ParseUIAnchor( pszAnchor, eAnchor ) == false )
+		return false;
+	SetAnchor( eAnchor );
+	return true;
+}
+
 void CKTDGUIControl::SetName_LUA( const char* pName )
 {
 	wstring WName;

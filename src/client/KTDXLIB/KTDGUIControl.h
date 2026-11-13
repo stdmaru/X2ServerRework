@@ -14,6 +14,8 @@
 #endif
 
 
+#include "KTDGUIAnchor.h"
+
 class CKTDGUIDialog;
 //typedef CKTDGUIDialogHandle     CKTDGUIDialogType;
 
@@ -749,6 +751,13 @@ class CKTDGUIControl : private x2::NonCopyable
 		const WCHAR*	GetPrevTabControlName(){ return m_PrevTabControlName.c_str(); }
 
 		void			SetOffsetPos_LUA( float x, float y )	{ SetOffsetPos( D3DXVECTOR2( x, y ) ); }
+
+		// Horizontal anchor (T44), when declared (UIAnchors.lua, or the script's SetAnchor, which wins): the control
+		// is drawn and hit at it, on the screen, instead of with its dialog.
+		void			SetAnchor( UIAnchor eAnchor )			{ m_eAnchor = eAnchor; m_bAnchorDeclared = true; }
+		bool			SetAnchor_LUA( const char* pszAnchor );
+		bool			HasAnchor() const						{ return m_bAnchorDeclared; }
+		UIAnchor		GetAnchor() const						{ return m_eAnchor; }
 		virtual void	SetOffsetPos( D3DXVECTOR2 pos )		{ m_OffsetPos = pos; }
 
 		void			SetSize_LUA( float x, float y ) { SetSize( D3DXVECTOR2(x,y) ); }
@@ -910,6 +919,8 @@ class CKTDGUIControl : private x2::NonCopyable
 		wstring				m_PrevTabControlName;
 		wstring				m_TabControlName;
 		D3DXVECTOR2			m_OffsetPos;
+		UIAnchor			m_eAnchor = UIAnchor::Center;
+		bool				m_bAnchorDeclared = false;
 		D3DXVECTOR2			m_Size;
 		D3DXCOLOR			m_Color;
 

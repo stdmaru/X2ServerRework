@@ -73,7 +73,7 @@ add_library(x2_client_ktdxlib STATIC
     KTDXLIB/KTDGLensFlare.cpp KTDXLIB/KTDGLineMap.cpp KTDXLIB/KTDGManager.cpp
     KTDXLIB/KTDGMatrix.cpp KTDXLIB/KTDGMotionBlur.cpp KTDXLIB/KTDGObject.cpp KTDXLIB/KTDGParticleSystem.cpp
     KTDXLIB/KTDGPicChar.cpp KTDXLIB/KTDGPlanShadow.cpp KTDXLIB/KTDGSkyDome.cpp
-    KTDXLIB/KTDGSlashTrace.cpp KTDXLIB/KTDGStateManager.cpp KTDXLIB/KTDGTargetArrow.cpp KTDXLIB/KTDGUIButton.cpp
+    KTDXLIB/KTDGSlashTrace.cpp KTDXLIB/KTDGStateManager.cpp KTDXLIB/KTDGTargetArrow.cpp KTDXLIB/KTDGUIAnchor.cpp KTDXLIB/KTDGUIButton.cpp
     KTDXLIB/KTDGUICheckBox.cpp KTDXLIB/KTDGUIComboBox.cpp KTDXLIB/KTDGUIControl.cpp KTDXLIB/KTDGUIControlList.cpp
     KTDXLIB/KTDGUIDialog.cpp KTDXLIB/KTDGUIDialogHandle.cpp KTDXLIB/KTDGUIDialogManager.cpp
     KTDXLIB/KTDGUIEditBox.cpp KTDXLIB/KTDGUIIMEEditBox.cpp KTDXLIB/KTDGUIItem.cpp KTDXLIB/KTDGUIListBox.cpp
