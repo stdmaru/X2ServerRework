@@ -110,7 +110,13 @@ const char* LoadName(LoadOp op)
 
 const char* StoreName(StoreOp op)
 {
-    return op == StoreOp::Store ? "store" : "dontcare";
+    switch (op) {
+    case StoreOp::Store: return "store";
+    case StoreOp::DontCare: return "dontcare";
+    case StoreOp::Resolve: return "resolve";
+    case StoreOp::ResolveAndStore: return "resolve+store";
+    }
+    return "?";
 }
 
 // --- Texel encoding for clears ----------------------------------------------------------------------------------------
@@ -311,6 +317,7 @@ public:
     bool SetSwapchainParameters(SDL_Window* window, PresentMode mode) override;
     TextureFormat SwapchainTextureFormat(SDL_Window* window) override;
     bool TextureSupportsFormat(TextureFormat format, TextureType type, TextureUsage usage) override;
+    bool TextureSupportsSampleCount(TextureFormat format, SampleCount count) override;
 
     Buffer CreateBuffer(const BufferDesc& desc) override;
     TransferBuffer CreateTransferBuffer(const TransferBufferDesc& desc) override;
@@ -748,6 +755,12 @@ RenderPass* NullCommandBuffer::BeginRenderPass(std::span<const ColorTargetInfo> 
         line += " color[" + std::to_string(i) + "]=" + Id(Kind::Texture, target.texture.value) + " load=" +
                 LoadName(target.loadOp) + (target.loadOp == LoadOp::Clear ? ColorText(target.clearColor) : "") +
                 " store=" + StoreName(target.storeOp);
+        if (target.storeOp == StoreOp::Resolve || target.storeOp == StoreOp::ResolveAndStore) {
+            if (!Check(Kind::Texture, target.resolveTexture.value, "BeginRenderPass resolve")) {
+                return nullptr;
+            }
+            line += "->" + Id(Kind::Texture, target.resolveTexture.value);
+        }
     }
     if (depthStencilTarget) {
         if (!Check(Kind::Texture, depthStencilTarget->texture.value, "BeginRenderPass")) {
@@ -764,8 +777,22 @@ RenderPass* NullCommandBuffer::BeginRenderPass(std::span<const ColorTargetInfo> 
         depth = *depthStencilTarget;
     }
     Record(line, [colors = std::move(colors), depth](NullDevice& device) {
+        // Draws are only recorded, so a resolve gives the target's contents after its load operation.
+        const auto resolve = [&device](const ColorTargetInfo& target) {
+            if (target.storeOp != StoreOp::Resolve && target.storeOp != StoreOp::ResolveAndStore) {
+                return;
+            }
+            Resource* from = device.FindLocked(Kind::Texture, target.texture.value);
+            Resource* to = device.FindLocked(Kind::Texture, target.resolveTexture.value);
+            std::vector<std::byte>* source = from ? from->Subresource(target.mipLevel, target.layerOrDepthPlane) : nullptr;
+            std::vector<std::byte>* destination = to ? to->Subresource(0, 0) : nullptr;
+            if (source && destination && source->size() == destination->size()) {
+                *destination = *source;
+            }
+        };
         for (const ColorTargetInfo& target : colors) {
             if (target.loadOp != LoadOp::Clear) {
+                resolve(target);
                 continue;
             }
             Resource* texture = device.FindLocked(Kind::Texture, target.texture.value);
@@ -787,6 +814,7 @@ RenderPass* NullCommandBuffer::BeginRenderPass(std::span<const ColorTargetInfo> 
             } else {
                 Fill(*sub, texel);
             }
+            resolve(target);
         }
         if (depth && (depth->loadOp == LoadOp::Clear || depth->stencilLoadOp == LoadOp::Clear)) {
             Resource* texture = device.FindLocked(Kind::Texture, depth->texture.value);
@@ -898,6 +926,11 @@ TextureFormat NullDevice::SwapchainTextureFormat(SDL_Window* window)
 {
     std::lock_guard lock(m_mutex);
     return m_windows.contains(window) ? TextureFormat::B8G8R8A8Unorm : TextureFormat::Invalid;
+}
+
+bool NullDevice::TextureSupportsSampleCount(TextureFormat format, SampleCount count)
+{
+    return format != TextureFormat::Invalid && (count == SampleCount::X1 || !IsBlockCompressed(format));
 }
 
 bool NullDevice::TextureSupportsFormat(TextureFormat format, TextureType type, TextureUsage usage)

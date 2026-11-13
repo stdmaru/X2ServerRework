@@ -194,6 +194,34 @@ TEST_CASE("render: null swapchain is cleared and recorded")
     device->ReleaseWindow(w.window);
 }
 
+TEST_CASE("render: null multisampled target resolves into a single-sampled one")
+{
+    auto device = NullDevice();
+    CHECK(device->TextureSupportsSampleCount(TextureFormat::B8G8R8A8Unorm, SampleCount::X4));
+    CHECK_FALSE(device->TextureSupportsSampleCount(TextureFormat::Bc1Unorm, SampleCount::X4));
+    Texture msaa = device->CreateTexture({.format = TextureFormat::B8G8R8A8Unorm, .usage = TextureUsage::ColorTarget,
+                                          .width = 4, .height = 2, .sampleCount = SampleCount::X4});
+    Texture resolved = device->CreateTexture({.format = TextureFormat::B8G8R8A8Unorm,
+                                              .usage = TextureUsage::ColorTarget | TextureUsage::Sampler,
+                                              .width = 4, .height = 2});
+    REQUIRE(msaa);
+    REQUIRE(resolved);
+    CommandBuffer* commands = device->AcquireCommandBuffer();
+    const ColorTargetInfo target{.texture = msaa, .clearColor = {0.0f, 0.0f, 1.0f, 1.0f}, .loadOp = LoadOp::Clear,
+                                 .storeOp = StoreOp::Resolve, .resolveTexture = resolved};
+    RenderPass* pass = commands->BeginRenderPass({&target, 1}, nullptr);
+    REQUIRE(pass);
+    pass->End();
+    CHECK(commands->Submit());
+    CHECK(Contains(null::Commands(*device), "store=resolve->"));
+    const auto bytes = null::TextureBytes(*device, resolved);
+    REQUIRE(bytes.size() == 4 * 2 * 4);
+    CHECK(bytes[0] == std::byte{255});    // B
+    CHECK(bytes[2] == std::byte{0});      // R
+    device->ReleaseTexture(msaa);
+    device->ReleaseTexture(resolved);
+}
+
 TEST_CASE("render: null texture upload and readback round trip")
 {
     auto device = NullDevice();

@@ -283,7 +283,16 @@ SDL_GPULoadOp ToSdl(LoadOp op)
     return SDL_GPU_LOADOP_LOAD;
 }
 
-SDL_GPUStoreOp ToSdl(StoreOp op) { return op == StoreOp::Store ? SDL_GPU_STOREOP_STORE : SDL_GPU_STOREOP_DONT_CARE; }
+SDL_GPUStoreOp ToSdl(StoreOp op)
+{
+    switch (op) {
+    case StoreOp::Store: return SDL_GPU_STOREOP_STORE;
+    case StoreOp::DontCare: return SDL_GPU_STOREOP_DONT_CARE;
+    case StoreOp::Resolve: return SDL_GPU_STOREOP_RESOLVE;
+    case StoreOp::ResolveAndStore: return SDL_GPU_STOREOP_RESOLVE_AND_STORE;
+    }
+    return SDL_GPU_STOREOP_STORE;
+}
 
 SDL_GPUPresentMode ToSdl(PresentMode m)
 {
@@ -352,6 +361,11 @@ public:
     {
         return format != TextureFormat::Invalid &&
                SDL_GPUTextureSupportsFormat(m_device, ToSdl(format), ToSdl(type), ToSdl(usage));
+    }
+
+    bool TextureSupportsSampleCount(TextureFormat format, SampleCount count) override
+    {
+        return format != TextureFormat::Invalid && SDL_GPUTextureSupportsSampleCount(m_device, ToSdl(format), ToSdl(count));
     }
 
     Buffer CreateBuffer(const BufferDesc& desc) override
@@ -498,6 +512,7 @@ public:
         info.rasterizer_state.depth_bias_slope_factor = r.depthBiasSlopeFactor;
         info.rasterizer_state.enable_depth_clip = r.enableDepthClip;
         info.multisample_state.sample_count = ToSdl(desc.sampleCount);
+        info.multisample_state.enable_alpha_to_coverage = desc.alphaToCoverage;
         const DepthStencilState& d = desc.depthStencil;
         info.depth_stencil_state.enable_depth_test = d.enableDepthTest;
         info.depth_stencil_state.enable_depth_write = d.enableDepthWrite;
@@ -601,6 +616,7 @@ public:
             info.load_op = ToSdl(t.loadOp);
             info.store_op = ToSdl(t.storeOp);
             info.cycle = t.cycle;
+            info.resolve_texture = Sdl(t.resolveTexture);
             colors.push_back(info);
         }
         SDL_GPUDepthStencilTargetInfo depth{};
