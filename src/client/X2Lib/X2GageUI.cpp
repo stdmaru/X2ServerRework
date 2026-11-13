@@ -2802,6 +2802,8 @@ void CX2PartyMemberGageUI::UpdateBuffIcon()
 		m_pDlgBuffIcon = new CKTDGUIDialog( NULL, L"DLG_BuffManager.lua" );
 		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDlgBuffIcon );
 		m_pDlgBuffIcon->SetShow(true);
+		// Beside the gauges listed down the left edge; the player's own buffs keep the script's anchor (T44).
+		m_pDlgBuffIcon->SetAnchor( UIAnchor::Left );
 
 		D3DXVECTOR2 vPos(150.f, 125.f+ (m_uiPositionIndex * 44));
 		if( NULL != g_pMain )
@@ -3169,6 +3171,8 @@ void CX2PVPPlayerGageUI::UpdateBuffIcon()
 		m_pDlgBuffIcon = new CKTDGUIDialog( NULL, L"DLG_BuffManager.lua" );
 		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDlgBuffIcon );
 		m_pDlgBuffIcon->SetShow(true);
+		// Beside the gauges listed down the left edge; the player's own buffs keep the script's anchor (T44).
+		m_pDlgBuffIcon->SetAnchor( UIAnchor::Left );
 
 		D3DXVECTOR2 vPos(150.f, 125.f+ (m_uiPositionIndex * 44));
 		{
