@@ -246,7 +246,7 @@ CKTDGManager::CKTDGManager( HWND hWnd, LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 
 	m_ClearScreen		= 0;
 	m_ClearScreenColor	= 0x00ffffff;
-	m_ClearColor		= 0x32323232;
+	m_ClearColor		= 0x32000000;	// black (T44: the bars beside 4:3 screens; the original was dark gray, never seen at 4:3)
 	m_Near				= 1.0f;
 	m_Far				= 10000.0f;
 	m_bPerspective		= true;

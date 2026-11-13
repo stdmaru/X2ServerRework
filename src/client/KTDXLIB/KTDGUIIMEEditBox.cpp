@@ -2978,15 +2978,17 @@ HRESULT CKTDGUIIMEEditBox::DrawRect( RECT* prcDest, D3DCOLOR color )
 	rcScreen.top		+= m_ptTextAlignOffset.y;
 	rcScreen.bottom		+= m_ptTextAlignOffset.y;
 
-// 오현빈 // 2013-12-06 // 좌/우 해상도 늘어났을 때, 커서 텍스쳐때문에 반각 처럼 보이는 문제 수정
-	long lScreenRight = static_cast<long>((rcScreen.right + m_pDialog->GetPos().x) - (rcScreen.left + m_pDialog->GetPos().x));
-	long lScreenBottom = static_cast<long>((rcScreen.bottom + m_pDialog->GetPos().y) - (rcScreen.top + m_pDialog->GetPos().y));
-
+	// The rectangle is in layout units: its corners go to the screen like any position (T44). The original kept the width
+	// and height unscaled (2013-12-06, so that the caret did not look half as wide when the width alone was stretched),
+	// which left the selection shorter than the text it covers at any scale but 1; with one scale on both axes the size
+	// scales too, the caret kept at least one pixel wide.
 	const D3DXVECTOR2 vLeftTop = g_pKTDXApp->ConvertByResolution( rcScreen.left + m_pDialog->GetPos().x, rcScreen.top + m_pDialog->GetPos().y );
+	const D3DXVECTOR2 vSize = g_pKTDXApp->ConvertSizeByResolution( static_cast<float>( rcScreen.right - rcScreen.left ),
+		static_cast<float>( rcScreen.bottom - rcScreen.top ) );
 	rcScreen.left		= (LONG)vLeftTop.x;
 	rcScreen.top		= (LONG)vLeftTop.y;
-	rcScreen.right		= rcScreen.left + lScreenRight;
-	rcScreen.bottom		= rcScreen.top + lScreenBottom;
+	rcScreen.right		= rcScreen.left + std::max<LONG>( 1, static_cast<LONG>( vSize.x + 0.5f ) );
+	rcScreen.bottom		= rcScreen.top + static_cast<LONG>( vSize.y + 0.5f );
 
 
 	CKTDGUIControl::VERTEX_UI vertices[4] =
