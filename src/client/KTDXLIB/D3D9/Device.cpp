@@ -7,11 +7,13 @@
 
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_video.h>
 
 #include <algorithm>
 #include <bit>
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <limits>
@@ -260,6 +262,7 @@ Device::Device(render::Device& render, SDL_Window* window) : m_render(render), m
     rs[D3DRS_ZFUNC] = D3DCMP_LESSEQUAL;
     rs[D3DRS_ALPHAFUNC] = D3DCMP_ALWAYS;
     rs[D3DRS_FOGEND] = FloatBits(1.0f);
+    m_presentTrace = SDL_getenv("X2_PRESENT_TRACE") != nullptr;
     rs[D3DRS_FOGDENSITY] = FloatBits(1.0f);
     rs[D3DRS_STENCILFAIL] = rs[D3DRS_STENCILZFAIL] = rs[D3DRS_STENCILPASS] = D3DSTENCILOP_KEEP;
     rs[D3DRS_STENCILFUNC] = D3DCMP_ALWAYS;
@@ -888,7 +891,10 @@ bool Device::EnsureFrame()
     const UINT oldWidth = m_backBuffer.width, oldHeight = m_backBuffer.height;
     m_backBuffer = {};
     if (m_window) {
-        if (!m_frame->WaitAndAcquireSwapchainTexture(m_window, m_backBuffer)) {
+        m_acquireStartNs = m_presentTrace ? SDL_GetTicksNS() : 0;
+        const bool acquired = m_frame->WaitAndAcquireSwapchainTexture(m_window, m_backBuffer);
+        m_acquireWaitNs = m_presentTrace ? SDL_GetTicksNS() - m_acquireStartNs : 0;
+        if (!acquired) {
             m_frame->Cancel();
             m_frame = nullptr;
             return Fail("swapchain: " + m_render.LastError());
@@ -999,7 +1005,19 @@ bool Device::SubmitFrame()
         ResolveBackBuffer();
     }
     const bool uploaded = FlushUploads();       // before the frame, whose draws read them
+    const bool hadTexture = static_cast<bool>(m_backBuffer.texture);
+    const std::uint64_t submitStart = m_presentTrace ? SDL_GetTicksNS() : 0;
     const bool submitted = m_frame->Submit();
+    if (m_presentTrace) {
+        const std::uint64_t now = SDL_GetTicksNS();
+        SDL_Log("present trace: frame %ld acquire %.3f wait %.3f %s submit %.3f took %.3f since last %.3f views%s",
+                m_frameNumber, m_acquireStartNs / 1e6, m_acquireWaitNs / 1e6, hadTexture ? "texture" : "NONE",
+                submitStart / 1e6, (now - submitStart) / 1e6,
+                m_lastSubmitNs ? (submitStart - m_lastSubmitNs) / 1e6 : 0.0, m_presentViews.c_str());
+        m_presentViews.clear();
+        m_presentLastView = {};
+        m_lastSubmitNs = submitStart;
+    }
     m_frame = nullptr;
     m_backBuffer.texture = {};
     if (!submitted) {
@@ -1384,6 +1402,12 @@ void Device::PushFixedFunctionVertexUniforms(float width, float height)
     VertexUniforms v{};
     D3DXMATRIX worldView, worldViewProjection;
     const D3DXMATRIX world(m_world), view(m_view), projection(m_projection);
+    if (m_presentTrace && std::memcmp(&m_presentLastView, &m_view, sizeof(m_view)) != 0) {
+        m_presentLastView = m_view;
+        char text[96];
+        std::snprintf(text, sizeof(text), " [%.5f,%.5f %.2f,%.2f]", m_view._11, m_view._13, m_view._41, m_view._43);
+        m_presentViews += text;
+    }
     D3DXMatrixMultiply(&worldView, &world, &view);
     D3DXMatrixMultiply(&worldViewProjection, &worldView, &projection);
     std::memcpy(v.worldViewProjection, &worldViewProjection, sizeof(v.worldViewProjection));
