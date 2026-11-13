@@ -334,6 +334,9 @@ over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMa
   `CKTDGObject::GetRenderOffset()` (the drawn position minus the step position, same note and cut rules as
   `GetRenderMatrix`). Talk balloons (`CX2TalkBoxManagerImp`), placed on screen once per step, keep their last two step
   positions and are drawn between them with their text, under 200 points apart like dialogs.
+- **Attached equipment** (`CX2Eqip`, `UT_ATTACH_NORMAL`: backpacks, accessories): the attach matrix of the step
+  before is kept and the mesh is drawn between the two with the body's fraction and jump test. Items with their own
+  animation (`UT_ATTACH_ANIM`) and skinned items already go through `CKTDGXSkinAnim`.
 - Not interpolated: slash traces and other vertex trails, which are rebuilt every step.
 
 **Diagnostics** (dev tools): `X2_INTERP_STATS=1` logs once a second how many skinned meshes were drawn interpolated and
