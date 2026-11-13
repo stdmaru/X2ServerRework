@@ -921,6 +921,15 @@ class CKTDGUIControl : private x2::NonCopyable
 		D3DXVECTOR2			m_OffsetPos;
 		UIAnchor			m_eAnchor = UIAnchor::Center;
 		bool				m_bAnchorDeclared = false;
+#if X2_DEV_TOOLS
+	public:
+		// What the control drew this frame, in layout units relative to its dialog (CKTDGUIAnchorRecorder).
+		void				ResetDrawnBounds()					{ m_bDrawn = false; }
+		bool				GetDrawnBounds( D3DXVECTOR2& vMin, D3DXVECTOR2& vMax ) const { vMin = m_vDrawnMin; vMax = m_vDrawnMax; return m_bDrawn; }
+	protected:
+		D3DXVECTOR2			m_vDrawnMin, m_vDrawnMax;
+		bool				m_bDrawn = false;
+#endif
 		D3DXVECTOR2			m_Size;
 		D3DXCOLOR			m_Color;
 

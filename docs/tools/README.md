@@ -14,5 +14,6 @@
 | [Shaders](shaders.md) | `tools/shaders/compile.py`: HLSL compiled offline by SDL_shadercross into SPIR-V, DXIL and MSL with reflection, committed as generated sources (T39) |
 | [Client folder](client-folder.md) | `tools/client/install.sh`: the folder the ported client runs from (executable, `.kom`, loose `movie/`/`music/`, client_data for dev builds) |
 | [client_data](client-data.md) | `src/tools/AssetTool` (`x2_assets`): imports the client's `.kom` into an organized folder + manifest and packs it back byte for byte (T35); layout rules in `tools/assets/layout.txt` |
+| [UI anchors](ui-anchors.md) | `tools/ui-anchors`: the client's anchor recording (`X2_RECORD_UI_ANCHORS=1`) and `propose.py`, which proposes `UIAnchors.lua` entries (T44) |
 | [ServerManager](servermanager.md) | `src/tools/ServerManager`: SDL3 + ImGui tool that starts and monitors the servers, locally and over SSH (T30); protocol client, orchestration, SSH and window |
 | [Flags and verification](flags.md) | `gen_flags.py` (which flags original build defines), `check_equivalence.py` (proves resolver leaves code unchanged) and `compare_flags.py` (server x client in shared code) |
