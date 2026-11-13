@@ -342,8 +342,8 @@ HRESULT CX2TalkBoxManagerImp::OnFrameRender()
 		if ( talkBox.m_TalkBoxType == TBT_TALKBOX_EFFECT )
 		{
 			DrawTalkBoxEffect( talkBox.m_TalkBoxType,
-				talkBox.m_vPos.x * g_pKTDXApp->GetResolutionScaleX(),
-				talkBox.m_vPos.y * g_pKTDXApp->GetResolutionScaleY(),
+				g_pKTDXApp->ConvertXByResolution( talkBox.m_vPos.x ),
+				g_pKTDXApp->ConvertYByResolution( talkBox.m_vPos.y ),
 				talkBox.m_fBacklayerTextureWidth  * g_pKTDXApp->GetResolutionScaleX(),
 				talkBox.m_fBacklayerTextureHeight * g_pKTDXApp->GetResolutionScaleY(),
 				talkBox.m_vTalkBoxSizeScale.x, talkBox.m_vTalkBoxSizeScale.y, 0.1f, talkBox.m_BackTexColor,
@@ -353,8 +353,8 @@ HRESULT CX2TalkBoxManagerImp::OnFrameRender()
 		{
 
 			DrawBalloon( talkBox.m_TalkBoxType,
-			talkBox.m_vPos.x * g_pKTDXApp->GetResolutionScaleX(),
-			talkBox.m_vPos.y * g_pKTDXApp->GetResolutionScaleY(),
+			g_pKTDXApp->ConvertXByResolution( talkBox.m_vPos.x ),
+			g_pKTDXApp->ConvertYByResolution( talkBox.m_vPos.y ),
 			(talkBox.m_vTalkBoxSize.x - m_fTalkBoxCornerWidth * 2.f) * g_pKTDXApp->GetResolutionScaleX(),
 			(talkBox.m_vTalkBoxSize.y - m_fTalkBoxCornerHeight * 2.f) * g_pKTDXApp->GetResolutionScaleY(),
 			talkBox.m_vTalkBoxSizeScale.x, talkBox.m_vTalkBoxSizeScale.y, talkBox.m_fTalkBoxTipLerpCoef, talkBox.m_BackTexColor
@@ -399,7 +399,7 @@ void CX2TalkBoxManagerImp::Push( TalkBox& talkBox )
 	KTDXPROFILE();
 
 	//해외팀 라인브레이커
-	D3DXVECTOR2 vMaxTalkBoxSize = g_pKTDXApp->ConvertByResolution( m_Size );
+	D3DXVECTOR2 vMaxTalkBoxSize = g_pKTDXApp->ConvertSizeByResolution( m_Size );
 	m_ResSize = vMaxTalkBoxSize;
 
 	if( vMaxTalkBoxSize.x > m_Size.x )
@@ -563,7 +563,7 @@ bool CX2TalkBoxManagerImp::CheckMousePointInTalkbox( D3DXVECTOR2 mousePos, UidTy
 		float fTipLerpCoeff = talkBox.m_fTalkBoxTipLerpCoef;
 
 		_pos = g_pKTDXApp->ConvertByResolution( _pos );
-		_size = g_pKTDXApp->ConvertByResolution( _size );
+		_size = g_pKTDXApp->ConvertSizeByResolution( _size );
 
 		const float fCornerWidthScaled  = m_fTalkBoxCornerWidth * talkBox.m_vTalkBoxSizeScale.x;
 		const float fCornerHeightScaled = m_fTalkBoxCornerHeight * talkBox.m_vTalkBoxSizeScale.y;
@@ -1721,8 +1721,7 @@ void CX2TalkBoxManagerImp::TalkBox::Update( CKTDGFontManager::CUKFont* pKTDGFont
 		{
 			m_vPos.x += 30.f; // MAGIC
 		}
-		m_vPos.x /= g_pKTDXApp->GetResolutionScaleX();
- 		m_vPos.y /= g_pKTDXApp->GetResolutionScaleY();
+		m_vPos = g_pKTDXApp->MouseConvertByResolution( m_vPos );
 
 		m_vPos += vOffset;
 

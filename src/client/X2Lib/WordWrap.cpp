@@ -730,7 +730,7 @@ void CWordLineHandler::LineBreakInTalkBoxManagerImp( CKTDGFontManager::CUKFont* 
 	//
 
 
-	D3DXVECTOR2 vMaxTalkBoxSize = g_pKTDXApp->ConvertByResolution( m_Size );
+	D3DXVECTOR2 vMaxTalkBoxSize = g_pKTDXApp->ConvertSizeByResolution( m_Size );
 
 	if( vMaxTalkBoxSize.x > m_Size.x )
 		vMaxTalkBoxSize.x = m_Size.x;
@@ -861,17 +861,8 @@ void CWordLineHandler::LineBreakInTalkBoxManagerImp( CKTDGFontManager::CUKFont* 
 				  제대로 나오지 않는다. 이를 수정하기 위해 말풍선의 크기를 해상도에 맞는 비율로
 				  다시 계산해 주었으며, 한계값을 정해서 보기 좋은 크기가 나오도록 하였다.
 	*/
-	float resRate = 0.f;
-	if (true == g_pMain->GetGameOption().GetOptionList().m_bFullScreen)
-	{
-		int	iScreenX = GetSystemMetrics( SM_CXSCREEN );
-		resRate = 1024.f / (float)iScreenX;
-	}
-	else
-	{
-		D3DXVECTOR2 vOriginalResolution = g_pMain->GetGameOption().GetOptionList().m_vResolution;
-		resRate = 1024.f / vOriginalResolution.x;
-	}
+	// The original divided by the screen width over 1024, its horizontal UI scale; T44 has one scale.
+	float resRate = 1.f / g_pKTDXApp->GetResolutionScaleX();
 
 	// 비율 값이 0.8 이하를 가질 때 말풍선에 글자가 넘치는 현상 발생
 	if (resRate < 0.8f)
@@ -1672,7 +1663,7 @@ void CWordLineHandler::ProcessQuestDescInUIQuestNew( const wstring& wstrDesc, co
 
 // 함수 호출하는 부분으로 이동
 // 	m_vQuestDescSize = D3DXVECTOR2( (float) m_pDlgMessage->GetDummyInt( 0 ), (float) m_pDlgMessage->GetDummyInt( 1 ) );
-// 	m_vQuestDescSize = g_pKTDXApp->ConvertByResolution( m_vQuestDescSize );
+// 	m_vQuestDescSize = g_pKTDXApp->ConvertSizeByResolution( m_vQuestDescSize );
 
 // 	CKTDGUIStatic* pStatic_QuestDesc = (CKTDGUIStatic*) m_pDlgMessage->GetControl( L"npcMessage" );
 // 	if( NULL == pStatic_QuestDesc )

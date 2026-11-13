@@ -3553,10 +3553,8 @@ void CX2PartyUI::OpenRewardItemInfoPopup ( bool bOpen, D3DXVECTOR2 vPos, int iIt
 
 	bool bItemDescAdd = false;			// 선택된 아이템의 설명 나누기
 
-	const int iWidth = DXUTGetBackBufferSurfaceDesc()->Width;
-	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
 
-	int itemDescWidth = static_cast<int>( iWidth / 3 / g_pKTDXApp->GetResolutionScaleX() );
+	int itemDescWidth = static_cast<int>( CKTDXApp::kUILayoutWidth / 3 );
 	int itemDescHeight = 0;
 	int itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 15 : 16;	// XUF_DODUM_13_SEMIBOLD의 크기
 	wstring wstrItemDescTemp = wstrItemDesc;
@@ -3594,7 +3592,7 @@ void CX2PartyUI::OpenRewardItemInfoPopup ( bool bOpen, D3DXVECTOR2 vPos, int iIt
 		if( NULL != pItemDesc &&
 			NULL != pItemDesc->GetString(0) )
 		{
-			const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int>( iHeight / g_pKTDXApp->GetResolutionScaleY() );
+			const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() );
 			if ( NULL != pRewardItemInfoDlgStatic )
 			{
 				CKTDGUIControl::UIStringData* pGUIString = pRewardItemInfoDlgStatic->GetString(0);
@@ -3625,12 +3623,12 @@ void CX2PartyUI::OpenRewardItemInfoPopup ( bool bOpen, D3DXVECTOR2 vPos, int iIt
 	try
 	{
 
-		const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int> ( iHeight / g_pKTDXApp->GetResolutionScaleY() );
+		const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int> ( g_pKTDXApp->GetUICanvasBottom() );
 		if ( itemDescHeight > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 		{
 			bItemDescAdd = true;
-			itemDescWidth = static_cast<int>( iWidth / 4 / g_pKTDXApp->GetResolutionScaleX() );
-			itemDescHeight = static_cast<int>( iHeight / g_pKTDXApp->GetResolutionScaleY() );
+			itemDescWidth = static_cast<int>( CKTDXApp::kUILayoutWidth / 4 );
+			itemDescHeight = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() );
 
 			wstrItemDesc = g_pMain->GetStrByLineBreakColor(wstrItemDescTemp.c_str(), itemDescWidth - ITEM_DESC_ADD_SIZE_X, SLOT_MANAGER_FONT_INDEX_SMALL);
 			SplitDescHeight( &wstrItemDesc, &wstrItemDescTemp, itemDescHeight, itemDescFontHeight, SLOT_MANAGER_FONT_INDEX_SMALL, false );
@@ -3677,7 +3675,7 @@ void CX2PartyUI::OpenRewardItemInfoPopup ( bool bOpen, D3DXVECTOR2 vPos, int iIt
 					SplitDescHeight( &wstrItemDescTemp, &wstrItemDescTemp, itemDescHeight, itemDescFontHeight, SLOT_MANAGER_FONT_INDEX_SMALL, false);
 
 					D3DXVECTOR2 vAddRewardItemDlgSize = D3DXVECTOR2 ( static_cast<float> ( itemDescWidth ), static_cast<float> ( itemDescHeight ) );
-					D3DXVECTOR2 vAddRewardItemDlgPos = D3DXVECTOR2 ( ( static_cast<float> ( iWidth ) / g_pKTDXApp->GetResolutionScaleX() ) - itemDescWidth, 0.f );
+					D3DXVECTOR2 vAddRewardItemDlgPos = D3DXVECTOR2 ( g_pKTDXApp->GetUICanvasRight() - itemDescWidth, 0.f );
 					D3DXVECTOR2 vRewardItemDlgPos	 = vAddRewardItemDlgPos;
 					vRewardItemDlgPos.x -= ( vAddRewardItemDlgSize.x );
 

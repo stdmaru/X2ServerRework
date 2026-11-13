@@ -416,7 +416,7 @@ void CKTDXDeviceTexture::Draw( int nX, int nY, int nWidth, int nHeight, D3DCOLOR
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
 
 	D3DXVECTOR2 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
-	D3DXVECTOR2 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
+	D3DXVECTOR2 size	= g_pKTDXApp->ConvertSizeByResolution( (float)nWidth, (float)nHeight );
 
 
 
@@ -514,7 +514,7 @@ void CKTDXDeviceTexture::Draw( int nX, int nY, int nWidth, int nHeight, const TE
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
 
 	D3DXVECTOR2 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
-	D3DXVECTOR2 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
+	D3DXVECTOR2 size	= g_pKTDXApp->ConvertSizeByResolution( (float)nWidth, (float)nHeight );
 
 
 
@@ -581,7 +581,7 @@ void CKTDXDeviceTexture::Draw( float fX, float fY, float fWidth, float fHeight, 
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
 
 	D3DXVECTOR2 pos		= g_pKTDXApp->ConvertByResolution( fX, fY );
-	D3DXVECTOR2 size	= g_pKTDXApp->ConvertByResolution( fWidth, fHeight );
+	D3DXVECTOR2 size	= g_pKTDXApp->ConvertSizeByResolution( fWidth, fHeight );
 
 
 

@@ -466,7 +466,7 @@ bool CX2SlotManager::CX2Slot::IsInMousePoint( D3DXVECTOR2 mousePos )
 		return false;
 
 	D3DXVECTOR2 m_ConvertPos = g_pKTDXApp->ConvertByResolution( m_Pos + m_pSlotManager->GetPos() );
-	D3DXVECTOR2 m_ConvertSize = g_pKTDXApp->ConvertByResolution( m_Size );
+	D3DXVECTOR2 m_ConvertSize = g_pKTDXApp->ConvertSizeByResolution( m_Size );
 
 	if ( mousePos.x >= m_ConvertPos.x && mousePos.x <= m_ConvertPos.x + m_ConvertSize.x &&
 		mousePos.y >= m_ConvertPos.y && mousePos.y <= m_ConvertPos.y + m_ConvertSize.y )

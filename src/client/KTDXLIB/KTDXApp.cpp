@@ -1869,6 +1869,19 @@ void CKTDXApp::InitEnumToString()
 
 }
 
+void CKTDXApp::UpdateUICanvas()
+{
+	const float fWidth = static_cast<float>( m_ViewPort.Width );
+	const float fHeight = static_cast<float>( m_ViewPort.Height );
+	float fScale = fHeight / kUILayoutHeight;
+	if( fWidth < kUILayoutWidth * fScale )
+		fScale = fWidth / kUILayoutWidth;	// narrower than 4:3: the layout fits the width (D9)
+	if( fScale <= 0.f )
+		fScale = 1.f;
+	m_ResolutionScale = D3DXVECTOR2( fScale, fScale );
+	m_UIOrigin = D3DXVECTOR2( ( fWidth - kUILayoutWidth * fScale ) * 0.5f, ( fHeight - kUILayoutHeight * fScale ) * 0.5f );
+}
+
 D3DXVECTOR2 CKTDXApp::GetProj3DPos( const D3DXVECTOR3& pos )
 {
 	D3DXVECTOR3 vOut;

@@ -186,9 +186,7 @@ class CKTDXApp
 		void SetViewport( D3DVIEWPORT9* viewport )
 		{
 			m_ViewPort = *viewport;
-
-			m_ResolutionScale.x = (float)m_ViewPort.Width/1024.0f;
-			m_ResolutionScale.y = (float)m_ViewPort.Height/768.0f;
+			UpdateUICanvas();
 		}
 		void SetViewport( int x, int y, int width, int height, float MinZ, float MaxZ )
 		{
@@ -198,42 +196,67 @@ class CKTDXApp
 			m_ViewPort.Height	= height;
 			m_ViewPort.MinZ		= MinZ;
 			m_ViewPort.MaxZ		= MaxZ;
-
-			m_ResolutionScale.x = (float)m_ViewPort.Width/1024.0f;
-			m_ResolutionScale.y = (float)m_ViewPort.Height/768.0f;
+			UpdateUICanvas();
 		}
 
-		D3DXVECTOR2 ConvertByResolution( float fX, float fY )
+		// The UI (T44) is laid out in reference units of 1024x768 and drawn at one scale on both axes, so nothing
+		// stretches: screen height / 768, or screen width / 1024 on a screen narrower than 4:3. The 1024x768 layout is
+		// a column centered on the screen; the canvas is the whole screen in reference units (1365 wide at 16:9).
+		// Positions go through ConvertByResolution / MouseConvertByResolution; sizes through ConvertSizeByResolution
+		// or GetResolutionScaleX/Y (equal).
+		static constexpr float kUILayoutWidth = 1024.f;
+		static constexpr float kUILayoutHeight = 768.f;
+
+		D3DXVECTOR2 ConvertByResolution( float fX, float fY ) const
 		{
-			D3DXVECTOR2 retval( fX, fY );
-			retval.x *= m_ResolutionScale.x;
-			retval.y *= m_ResolutionScale.y;
-			return retval;
+			return D3DXVECTOR2( m_UIOrigin.x + fX * m_ResolutionScale.x, m_UIOrigin.y + fY * m_ResolutionScale.y );
 		}
-		D3DXVECTOR2 ConvertByResolution( const D3DXVECTOR2& fSrc )
+		D3DXVECTOR2 ConvertByResolution( const D3DXVECTOR2& fSrc ) const { return ConvertByResolution( fSrc.x, fSrc.y ); }
+		float ConvertXByResolution( float fX ) const { return m_UIOrigin.x + fX * m_ResolutionScale.x; }
+		float ConvertYByResolution( float fY ) const { return m_UIOrigin.y + fY * m_ResolutionScale.y; }
+		D3DXVECTOR2 ConvertSizeByResolution( float fWidth, float fHeight ) const
 		{
-			D3DXVECTOR2 retval = fSrc;
-			retval.x *= m_ResolutionScale.x;
-			retval.y *= m_ResolutionScale.y;
-			return retval;
+			return D3DXVECTOR2( fWidth * m_ResolutionScale.x, fHeight * m_ResolutionScale.y );
+		}
+		D3DXVECTOR2 ConvertSizeByResolution( const D3DXVECTOR2& vSize ) const { return ConvertSizeByResolution( vSize.x, vSize.y ); }
+		// A distance on the screen (a mouse position relative to a dialog) in layout units.
+		D3DXVECTOR2 MouseConvertSizeByResolution( float fX, float fY ) const
+		{
+			return D3DXVECTOR2( fX / m_ResolutionScale.x, fY / m_ResolutionScale.y );
 		}
 		const float& GetResolutionScaleX() const { return m_ResolutionScale.x; }
 		const float& GetResolutionScaleY() const { return m_ResolutionScale.y; }
-		D3DXVECTOR2 MouseConvertByResolution( float fX, float fY )
+		D3DXVECTOR2 MouseConvertByResolution( float fX, float fY ) const
 		{
-			D3DXVECTOR2 retval( fX, fY );
-			retval.x /= m_ResolutionScale.x;
-			retval.y /= m_ResolutionScale.y;
-			return retval;
+			return D3DXVECTOR2( ( fX - m_UIOrigin.x ) / m_ResolutionScale.x, ( fY - m_UIOrigin.y ) / m_ResolutionScale.y );
 		}
-		D3DXVECTOR2 MouseConvertByResolution( D3DXVECTOR2& fSrc )
+		D3DXVECTOR2 MouseConvertByResolution( const D3DXVECTOR2& fSrc ) const { return MouseConvertByResolution( fSrc.x, fSrc.y ); }
+		// Screen position of the layout's origin (the centered column's top left), in pixels.
+		const D3DXVECTOR2& GetUIOrigin() const { return m_UIOrigin; }
+		// Drawing into a render target: its layout starts at its own top left (CKTDXDeviceRenderTargetTexture).
+		void SetUIOrigin( const D3DXVECTOR2& vOrigin ) { m_UIOrigin = vOrigin; }
+		// The whole screen in reference units: its left/top edge (<= 0) and its size (>= 1024x768).
+		D3DXVECTOR2 GetUICanvasMin() const { return MouseConvertByResolution( 0.f, 0.f ); }
+		D3DXVECTOR2 GetUICanvasSize() const
 		{
-			D3DXVECTOR2 retval = fSrc;
-			retval.x /= m_ResolutionScale.x;
-			retval.y /= m_ResolutionScale.y;
-			return retval;
+			return D3DXVECTOR2( m_ViewPort.Width / m_ResolutionScale.x, m_ViewPort.Height / m_ResolutionScale.y );
 		}
+		// Edges of the screen in layout units (0 and 1024, 0 and 768 at 4:3), for what is kept on screen.
+		// The whole screen as a layout rectangle in whole units (covering it), for full-screen fades and fills.
+		void GetUICanvasRect( int& iX, int& iY, int& iWidth, int& iHeight ) const
+		{
+			const D3DXVECTOR2 vMin = GetUICanvasMin(), vSize = GetUICanvasSize();
+			iX = static_cast<int>( floorf( vMin.x ) );
+			iY = static_cast<int>( floorf( vMin.y ) );
+			iWidth = static_cast<int>( ceilf( vMin.x + vSize.x ) ) - iX;
+			iHeight = static_cast<int>( ceilf( vMin.y + vSize.y ) ) - iY;
+		}
+		float GetUICanvasLeft() const { return GetUICanvasMin().x; }
+		float GetUICanvasRight() const { return GetUICanvasMin().x + GetUICanvasSize().x; }
+		float GetUICanvasTop() const { return GetUICanvasMin().y; }
+		float GetUICanvasBottom() const { return GetUICanvasMin().y + GetUICanvasSize().y; }
 		D3DXVECTOR2 GetProj3DPos( const D3DXVECTOR3& pos );
+		void UpdateUICanvas();	// scale and origin from the viewport
 		//{{ seojt // 2008-11-1, 12:43
 
 		KLuabinder*	GetLuaBinder()
@@ -436,7 +459,8 @@ class CKTDXApp
 		bool					m_bTickViewValid;
 		D3DVIEWPORT9			m_ViewPort;
 		int						m_ViewMatChangeCount;
-		D3DXVECTOR2				m_ResolutionScale;
+		D3DXVECTOR2				m_ResolutionScale;	// T44: screen pixels per layout unit, equal on both axes
+		D3DXVECTOR2				m_UIOrigin{ 0.f, 0.f };	// screen position of the layout's (0, 0)
 		//KLuabinder				m_LuaBinder;
 
 		CKTDXCollision*			m_pCollision;

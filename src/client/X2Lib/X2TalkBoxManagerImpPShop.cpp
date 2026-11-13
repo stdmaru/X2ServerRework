@@ -86,7 +86,8 @@ void CX2TalkBoxManagerImpPShop::DrawBalloon( int iType, float fX, float fY, floa
 
 	_fY = fY-fCornerHeightScaled-fCenterHeightScaled;
 
-	DrawPersonalShopIcon( (int)( _fX / g_pKTDXApp->GetResolutionScaleX() ) - 25, (int)( _fY / g_pKTDXApp->GetResolutionScaleY() ) -76+34  );
+	const D3DXVECTOR2 vIconPos = g_pKTDXApp->MouseConvertByResolution( _fX, _fY );
+	DrawPersonalShopIcon( (int)( vIconPos.x ) - 25, (int)( vIconPos.y ) -76+34  );
 }
 
 

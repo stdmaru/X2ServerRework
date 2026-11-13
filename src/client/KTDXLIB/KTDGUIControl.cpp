@@ -420,29 +420,33 @@ void CKTDGUIControl::UpdateVertex( VERTEX_UI& vertexLT, VERTEX_UI& vertexRT, VER
 	//0---1
 	//2---3
 	//Set up the 4 corners of a small square
- 	vertexLT.x		= (pointData.leftTopPoint.x + pDialog->GetPos().x + m_OffsetPos.x) * g_pKTDXApp->GetResolutionScaleX();
- 	vertexLT.y		= (pointData.leftTopPoint.y + pDialog->GetPos().y + m_OffsetPos.y) * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenLT = g_pKTDXApp->ConvertByResolution( pointData.leftTopPoint + pDialog->GetPos() + m_OffsetPos );
+	vertexLT.x		= vScreenLT.x;
+	vertexLT.y		= vScreenLT.y;
 	vertexLT.z		= 1.0f;
 	vertexLT.rhw	= 1.0f;
 	vertexLT.color	= tempColor;
 
 
- 	vertexRT.x		= (pointData.rightTopPoint.x + pDialog->GetPos().x + m_OffsetPos.x) * g_pKTDXApp->GetResolutionScaleX();
- 	vertexRT.y		= (pointData.rightTopPoint.y + pDialog->GetPos().y + m_OffsetPos.y) * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenRT = g_pKTDXApp->ConvertByResolution( pointData.rightTopPoint + pDialog->GetPos() + m_OffsetPos );
+	vertexRT.x		= vScreenRT.x;
+	vertexRT.y		= vScreenRT.y;
 	vertexRT.z		= 1.0f;
 	vertexRT.rhw	= 1.0f;
 	vertexRT.color	= tempColor;
 
 
- 	vertexLB.x		= (pointData.leftBottomPoint.x + pDialog->GetPos().x + m_OffsetPos.x) * g_pKTDXApp->GetResolutionScaleX();
- 	vertexLB.y		= (pointData.leftBottomPoint.y + pDialog->GetPos().y + m_OffsetPos.y) * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenLB = g_pKTDXApp->ConvertByResolution( pointData.leftBottomPoint + pDialog->GetPos() + m_OffsetPos );
+	vertexLB.x		= vScreenLB.x;
+	vertexLB.y		= vScreenLB.y;
 	vertexLB.z		= 1.0f;
 	vertexLB.rhw	= 1.0f;
 	vertexLB.color	= tempColor;
 
 
- 	vertexRB.x		= (pointData.rightBottomPoint.x + pDialog->GetPos().x + m_OffsetPos.x) * g_pKTDXApp->GetResolutionScaleX();
- 	vertexRB.y		= (pointData.rightBottomPoint.y + pDialog->GetPos().y + m_OffsetPos.y) * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenRB = g_pKTDXApp->ConvertByResolution( pointData.rightBottomPoint + pDialog->GetPos() + m_OffsetPos );
+	vertexRB.x		= vScreenRB.x;
+	vertexRB.y		= vScreenRB.y;
 	vertexRB.z		= 1.0f;
 	vertexRB.rhw	= 1.0f;
 	vertexRB.color	= tempColor;
@@ -1858,8 +1862,8 @@ void CKTDGUIControl::CMovieData::OnFrameRender()
 
 	// When the resolution changes (base 1024 by 768) the position follows the real screen coordinates and the size the
 	// base values.
-	m_pRenderTargetTexture->Draw( static_cast<int> (m_vPos.x / g_pKTDXApp->GetResolutionScaleX() ),
-		static_cast<int>(m_vPos.y / g_pKTDXApp->GetResolutionScaleY() ),
+	const D3DXVECTOR2 vLayoutPos = g_pKTDXApp->MouseConvertByResolution( m_vPos );
+	m_pRenderTargetTexture->Draw( static_cast<int>( vLayoutPos.x ), static_cast<int>( vLayoutPos.y ),
 		static_cast<DWORD>( m_vSize.x ),
 		static_cast<DWORD>( m_vSize.y ) );
 }

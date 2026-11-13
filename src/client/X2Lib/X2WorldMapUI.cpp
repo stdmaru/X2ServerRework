@@ -1315,13 +1315,13 @@ void CX2WorldMapUI::OpenNPCToolTip( bool bOpen, int iNPCID /*= -1*/, D3DXVECTOR2
 		m_pDLGNPCToolTip->SetShowEnable( bOpen, bOpen );
 
 		vPos = vPos + D3DXVECTOR2( 25,25 );
-		if(vPos.x + DescWidth > 1024 )
+		if(vPos.x + DescWidth > g_pKTDXApp->GetUICanvasRight() )
 		{
-			vPos.x = (float)(1024 - DescWidth);
+			vPos.x = (float)(g_pKTDXApp->GetUICanvasRight() - DescWidth);
 		}
-		if(vPos.y + DescHeight > 768 )
+		if(vPos.y + DescHeight > g_pKTDXApp->GetUICanvasBottom() )
 		{
-			vPos.y = (float)(768 - DescHeight);
+			vPos.y = (float)(g_pKTDXApp->GetUICanvasBottom() - DescHeight);
 		}
 		m_pDLGNPCToolTip->SetPos( vPos );
 
@@ -1637,13 +1637,13 @@ void CX2WorldMapUI::OpenMiscToolTip(bool bOpen, D3DXVECTOR2 vPos, WORLD_MAP_UI_C
 		//}}
 
 		// Position ��ġ ����ó�� �� �ش�.
-		if(vPos.x + DescWidth > 1024.f)
+		if(vPos.x + DescWidth > g_pKTDXApp->GetUICanvasRight())
 		{
-			vPos.x = 1024.f - DescWidth - 30.f;
+			vPos.x = g_pKTDXApp->GetUICanvasRight() - DescWidth - 30.f;
 		}
-		if(vPos.y + DescHeight > 768.f)
+		if(vPos.y + DescHeight > g_pKTDXApp->GetUICanvasBottom())
 		{
-			vPos.y = 768.f - DescWidth - 30.f;
+			vPos.y = g_pKTDXApp->GetUICanvasBottom() - DescWidth - 30.f;
 		}
 
 		// ��ġ ���ϰ�, ���� update

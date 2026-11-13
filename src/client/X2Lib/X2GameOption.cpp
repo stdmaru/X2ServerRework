@@ -608,6 +608,24 @@ void CX2GameOption::SetSoundVolume( float fSoundVolume )
 	g_pKTDXApp->GetDSManager()->SetSoundVolume( fSoundVolume );
 }
 
+namespace
+{
+	// T44: with no saved resolution, the largest standard 16:9 size that fits the desktop (at least 1280x720); 4:3
+	// sizes only when the user picks one.
+	D3DXVECTOR2 DefaultResolution()
+	{
+		static constexpr int kSizes[][2] = { { 3840, 2160 }, { 2560, 1440 }, { 1920, 1080 }, { 1600, 900 }, { 1280, 720 } };
+		const int iDesktopWidth = GetSystemMetrics( SM_CXSCREEN );
+		const int iDesktopHeight = GetSystemMetrics( SM_CYSCREEN );
+		for( const auto& size : kSizes )
+		{
+			if( size[0] <= iDesktopWidth && size[1] <= iDesktopHeight )
+				return D3DXVECTOR2( static_cast<float>( size[0] ), static_cast<float>( size[1] ) );
+		}
+		return D3DXVECTOR2( 1280.f, 720.f );
+	}
+}
+
 void CX2GameOption::SetResolution( DWORD dwWidth, DWORD dwHeight, int iColorBit /*=32*/ )
 {
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
@@ -647,7 +665,7 @@ void CX2GameOption::SetResolution( DWORD dwWidth, DWORD dwHeight, int iColorBit 
 	else
 	{
 		// 해상도 변경에 실패하면 게임옵션파일에 default 값으로 저장한다
-		m_OptionList.m_vResolution = D3DXVECTOR2( 1024, 768 );
+		m_OptionList.m_vResolution = D3DXVECTOR2( 1280, 720 );	// T44: 16:9
 		SaveScriptFile();
 	}
 	//{{ JHKang // 2010.8.30 // 창 모드 전체 화면 구현
@@ -701,10 +719,11 @@ bool CX2GameOption::OpenScriptFile()
 			m_OptionList.m_eEffect = ( bEffect ) ? CX2GameOption::OL_HIGH : CX2GameOption::OL_LOW;
 		else
 			LUA_GET_VALUE_ENUM( luaManager, "GRAPHIC_EFFECT_VER2",	m_OptionList.m_eEffect,		OptionLevel,		OL_HIGH	);
-		LUA_GET_VALUE( luaManager, "RESOLUTION_X",					m_OptionList.m_vResolution.x,		1024 );
-		LUA_GET_VALUE( luaManager, "RESOLUTION_Y",					m_OptionList.m_vResolution.y,		768 );
+		const D3DXVECTOR2 vDefaultResolution = DefaultResolution();
+		LUA_GET_VALUE( luaManager, "RESOLUTION_X",					m_OptionList.m_vResolution.x,		vDefaultResolution.x );
+		LUA_GET_VALUE( luaManager, "RESOLUTION_Y",					m_OptionList.m_vResolution.y,		vDefaultResolution.y );
 		if( false == bDoneParsingUserGameOptionFile )
-			m_OptionList.m_vResolution = D3DXVECTOR2( GetSystemMetrics( SM_CXSCREEN ), GetSystemMetrics( SM_CYSCREEN ) );
+			m_OptionList.m_vResolution = vDefaultResolution;
 
 		LUA_GET_VALUE( luaManager, "ENABLE_3D_SOUND",				m_OptionList.m_bEnable3DSound,		true );
 		LUA_GET_VALUE( luaManager, "SOUND",						m_OptionList.m_bSound,				true );
@@ -1590,8 +1609,9 @@ void CX2GameOption::_CalcBestGraphicOption( int iCpuTotalScore, int iGpuTotalSco
 		{
 			if( _CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore ) == false )
 			{
-				m_OptionList.m_vResolution.x = 800;
-				m_OptionList.m_vResolution.y = 600;
+				// the smallest default size (T44: 16:9; the original went down to 800x600)
+				m_OptionList.m_vResolution.x = 1280;
+				m_OptionList.m_vResolution.y = 720;
 			}
 		}
 		else if ( name == "ShowLevel" )

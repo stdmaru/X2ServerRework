@@ -440,7 +440,7 @@ void CX2TrainingGameUI::AddText( const WCHAR* wszMsg, wstring wstrColor /*= L""*
 
 	ClearText();
 
-	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 750, 750 );
+	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 750, 750 );
 	const int CHAT_LINE_WIDTH = (int)vTemp.x;
 
 	wstring nextLineString = L"\n";

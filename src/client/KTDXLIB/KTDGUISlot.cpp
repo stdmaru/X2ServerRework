@@ -937,29 +937,33 @@ void CKTDGUISlot::UpdateDraggingVertex( VERTEX_UI& vertexLT, VERTEX_UI& vertexRT
 	//0---1
 	//2---3
 	//Set up the 4 corners of a small square
-	vertexLT.x		= pointData.leftTopPoint.x * g_pKTDXApp->GetResolutionScaleX();
-	vertexLT.y		= pointData.leftTopPoint.y * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenLT = g_pKTDXApp->ConvertByResolution( pointData.leftTopPoint );
+	vertexLT.x		= vScreenLT.x;
+	vertexLT.y		= vScreenLT.y;
 	vertexLT.z		= 1.0f;
 	vertexLT.rhw	= 1.0f;
 	vertexLT.color	= pointData.color;
 
 
-	vertexRT.x		= pointData.rightTopPoint.x * g_pKTDXApp->GetResolutionScaleX();
-	vertexRT.y		= pointData.rightTopPoint.y * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenRT = g_pKTDXApp->ConvertByResolution( pointData.rightTopPoint );
+	vertexRT.x		= vScreenRT.x;
+	vertexRT.y		= vScreenRT.y;
 	vertexRT.z		= 1.0f;
 	vertexRT.rhw	= 1.0f;
 	vertexRT.color	= pointData.color;
 
 
-	vertexLB.x		= pointData.leftBottomPoint.x * g_pKTDXApp->GetResolutionScaleX();
-	vertexLB.y		= pointData.leftBottomPoint.y * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenLB = g_pKTDXApp->ConvertByResolution( pointData.leftBottomPoint );
+	vertexLB.x		= vScreenLB.x;
+	vertexLB.y		= vScreenLB.y;
 	vertexLB.z		= 1.0f;
 	vertexLB.rhw	= 1.0f;
 	vertexLB.color	= pointData.color;
 
 
-	vertexRB.x		= pointData.rightBottomPoint.x * g_pKTDXApp->GetResolutionScaleX();
-	vertexRB.y		= pointData.rightBottomPoint.y * g_pKTDXApp->GetResolutionScaleY();
+	const D3DXVECTOR2 vScreenRB = g_pKTDXApp->ConvertByResolution( pointData.rightBottomPoint );
+	vertexRB.x		= vScreenRB.x;
+	vertexRB.y		= vScreenRB.y;
 	vertexRB.z		= 1.0f;
 	vertexRB.rhw	= 1.0f;
 	vertexRB.color	= pointData.color;

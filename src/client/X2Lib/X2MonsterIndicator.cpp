@@ -219,11 +219,16 @@ void CX2MonsterIndicator::OnFrameMove()
 		//D3DXVECTOR3 vScreenRightBottom( 1024, 768, 0 );
 
 		// 던전내 메인메뉴바가 존재할경우 메뉴바를 제외한 스크린영역을 설정한다.
-		D3DXVECTOR3 vScreenCenter( 512, 384-25, 0 );
+		// The arrow is a particle placed in screen pixels: the box is the screen (the original used 1024x768, right only
+		// at that resolution), its margins in layout units scaled (T44).
+		const float fRight = static_cast<float>( g_pKTDXApp->GetViewport().Width );
+		const float fBottom = static_cast<float>( g_pKTDXApp->GetViewport().Height );
+		const float fMenuBar = 50.f * g_pKTDXApp->GetResolutionScaleY();
+		D3DXVECTOR3 vScreenCenter( fRight * 0.5f, fBottom * 0.5f - fMenuBar * 0.5f, 0 );
 		D3DXVECTOR3 vScreenLeftTop( 0, 0, 0 );
-		D3DXVECTOR3 vScreenRightTop( 1024, 0, 0 );
-		D3DXVECTOR3 vScreenLeftBottom( 0, 768-50, 0 );
-		D3DXVECTOR3 vScreenRightBottom( 1024, 768-50, 0 );
+		D3DXVECTOR3 vScreenRightTop( fRight, 0, 0 );
+		D3DXVECTOR3 vScreenLeftBottom( 0, fBottom - fMenuBar, 0 );
+		D3DXVECTOR3 vScreenRightBottom( fRight, fBottom - fMenuBar, 0 );
 
 
 		D3DXVECTOR3 vTargetPosVec = vNPCProjPos - vScreenCenter;

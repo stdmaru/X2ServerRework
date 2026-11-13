@@ -2188,11 +2188,11 @@ void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSki
 		int iDescWidthWithPicture = true == pUseSkillPictureData->GetShow() ?
 			static_cast<int>( itemDescWidth + ( 10.f * g_pKTDXApp->GetResolutionScaleX() ) + pUseSkillPictureData->GetSize().x ) : itemDescWidth;
 
-		if ( pos.x + ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) >= 0 ) /// 왼쪽에 공간이 충분한 경우
+		if ( pos.x + ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) >= g_pKTDXApp->GetUICanvasLeft() ) /// 왼쪽에 공간이 충분한 경우
 		{
-			if ( pos.x+ ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) + iDescWidthWithPicture > 1024 )
+			if ( pos.x+ ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) + iDescWidthWithPicture > g_pKTDXApp->GetUICanvasRight() )
 			{
-				itemDescPosX = static_cast<int>( 1024 - iDescWidthWithPicture );
+				itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasRight() - iDescWidthWithPicture );
 			}
 			else
 			{
@@ -2201,7 +2201,7 @@ void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSki
 		}
 		else
 		{
-			itemDescPosX = 0;
+			itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasLeft() );
 		}
 
 		/// 가리키고 있는 스킬 슬롯 위쪽으로 툴팁을 표시할 수 있는경우
@@ -2214,7 +2214,7 @@ void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSki
 		{
 			itemDescPosY = static_cast<int>( pos.y + size.y );		/// 스킬 슬롯의 Bottom 위치
 
-			int iBottomOverSize = 768 - (itemDescPosY + itemDescHeight );	/// 화면을 넘어가는 크기를 계산하여, 스킬 슬롯의 Bottom 위치에 증가 시켜 준다.
+			int iBottomOverSize = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() ) - (itemDescPosY + itemDescHeight );	/// 화면을 넘어가는 크기를 계산하여, 스킬 슬롯의 Bottom 위치에 증가 시켜 준다.
 
 			if ( iBottomOverSize < 0 )
 				itemDescPosY += iBottomOverSize;

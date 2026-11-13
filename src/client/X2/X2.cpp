@@ -141,7 +141,7 @@ int main( int argc, char* argv[] )
 
 	// The window takes the executable's icon (x2_windows_icon).
 	if( SUCCEEDED( DXUTCreateWindow( L"X2" ) ) &&
-		SUCCEEDED( DXUTCreateDevice( D3DADAPTER_DEFAULT, true, 1024, 768 ) ) )
+		SUCCEEDED( DXUTCreateDevice( D3DADAPTER_DEFAULT, true, 1280, 720 ) ) )
 	{
 		// Pass control to DXUT for handling the message pump and
 		// dispatching render calls. DXUT will call your FrameMove

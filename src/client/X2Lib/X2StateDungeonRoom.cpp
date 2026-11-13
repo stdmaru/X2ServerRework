@@ -329,7 +329,7 @@ bool CX2StateDungeonRoom::IsInUnitReact( int iIdx, D3DXVECTOR2 mousePos )
 	D3DXVECTOR2 kSlotSize( 130.f, 180.f );
 
 	D3DXVECTOR2 kConvertPos = g_pKTDXApp->ConvertByResolution( kSlotPos );
-	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertByResolution( kSlotSize );
+	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertSizeByResolution( kSlotSize );
 
 	if ( mousePos.x >= kConvertPos.x  && mousePos.x <= kConvertPos.x + kConvertSize.x &&
 		mousePos.y >= kConvertPos.y && mousePos.y <= kConvertPos.y + kConvertSize.y )

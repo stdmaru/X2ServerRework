@@ -3538,7 +3538,7 @@ void CX2ChatBox::AddChatLogObtain( const WCHAR* wszMsg, CHAT_OBTAIN_TYPE eObtain
 	if( NULL == m_pDLGChatWindow )
 		return;
 
-	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 330, 330 );
+	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 330, 330 );
 	const int CHAT_LINE_WIDTH = (int)vTemp.x;
 
 	// CKTDGUIListBox::HandleMouse에 있는 MAGIC_SHOW_TIME도 동일하게 수정해야
@@ -3666,7 +3666,7 @@ void CX2ChatBox::AddChatLog( const WCHAR* wszMsg, KEGS_CHAT_REQ::CHAT_PACKET_TYP
 
 	if( NULL == m_pDLGChatWindow )
 		return;
-	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 330, 330 );
+	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 330, 330 );
 	const int CHAT_LINE_WIDTH = (int)vTemp.x;
 
 

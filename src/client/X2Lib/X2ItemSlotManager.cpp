@@ -327,9 +327,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 	bool bItemDescAdd = false;			// 선택된 아이템의 설명 나누기
 	bool bItemDescAddComp = false;		// 비교될 아이템의 설명 나누기
 
-	const int iWidth = DXUTGetBackBufferSurfaceDesc()->Width;
-	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
-	const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int>( iHeight / g_pKTDXApp->GetResolutionScaleY() );
+	const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() );
 	const int SIZE_Y = 40;
 
 	if ( *m_pSlotBeforeDragging == NULL &&
@@ -371,7 +369,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 		//{{ JHKang / 강정훈 / 2010.9.17 / 툴팁 생성 줄바꿈 관련 개선
 		// 툴팁 수정에 따른 가로 크기 변경 (현재 가로 해상도 크기 / 4), 가로 세로 크기 조절
 		// 수정 전 : 문자열 크기 / 해상도 비율 + 상수
-		int itemDescWidth = static_cast<int>( iWidth / 3 / g_pKTDXApp->GetResolutionScaleX() );
+		int itemDescWidth = static_cast<int>( CKTDXApp::kUILayoutWidth / 3 );
 		int itemDescHeight = 0;
 		int itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 15 : 16;	// XUF_DODUM_13_SEMIBOLD의 크기
 
@@ -414,7 +412,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 		int itemDescAddHeight = 0;
 		if ( itemDescHeight > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 		{
-			itemDescWidth = static_cast<int>( iWidth / 4 / g_pKTDXApp->GetResolutionScaleX() );
+			itemDescWidth = static_cast<int>( CKTDXApp::kUILayoutWidth / 4 );
 
 			wstrItemDesc = CWordLineHandler::GetStrByLineBreakColorInX2Main(wstrItemDescTemp.c_str(), itemDescWidth - ITEM_DESC_ADD_SIZE_X, SLOT_MANAGER_FONT_INDEX_SMALL);
 
@@ -431,15 +429,15 @@ void CX2ItemSlotManager::DrawSlotDesc()
 		int itemDescPosX = 0;
 		int itemDescPosY = 0;
 
-		if ( m_pNowOverItemSlot->GetPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) >= 0 ) //왼쪽에 공간이 충분한 경우
+		if ( m_pNowOverItemSlot->GetPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) >= g_pKTDXApp->GetUICanvasLeft() ) // enough room on the left
 		{
 			//{{ 화면 너비를 넘어갈 경우
-			if ( m_pNowOverItemSlot->GetPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) + itemDescWidth > iWidth / g_pKTDXApp->GetResolutionScaleX() )
+			if ( m_pNowOverItemSlot->GetPos().x + GetPos().x + ( m_pNowOverItemSlot->GetSize().x / 2 ) - ( itemDescWidth / 2 ) + itemDescWidth > g_pKTDXApp->GetUICanvasRight() )
 			{
-				itemDescPosX = (int)(iWidth / g_pKTDXApp->GetResolutionScaleX() - itemDescWidth);
+				itemDescPosX = (int)(g_pKTDXApp->GetUICanvasRight() - itemDescWidth);
 
 				if (true == bItemDescAdd)
-					itemDescPosX = (int)(iWidth / g_pKTDXApp->GetResolutionScaleX() - itemDescWidth * 2);
+					itemDescPosX = (int)(g_pKTDXApp->GetUICanvasRight() - itemDescWidth * 2);
 			}
 			else
 			{
@@ -448,7 +446,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 		}
 		else
 		{
-			itemDescPosX = 0;
+			itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasLeft() );
 		}
 
 		if ( m_pNowOverItemSlot->GetPos().y + GetPos().y - itemDescHeight >= 0 ) //슬롯위로 표시할 수 있는경우
@@ -524,7 +522,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 				int itemDescWidthCompare = 0;
 				int itemDescHeightCompare = 0;
 
-				itemDescWidthCompare = static_cast<int>( iWidth / 3 / g_pKTDXApp->GetResolutionScaleX() );
+				itemDescWidthCompare = static_cast<int>( CKTDXApp::kUILayoutWidth / 3 );
 
 				itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 15 : 16;
 				itemDescFontHeight += m_iDescFontHeightOffset;
@@ -562,7 +560,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 				int itemDescAddHeightComp = 0;
 				if ( itemDescHeightCompare > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 				{
-					itemDescWidthCompare = static_cast<int>( iWidth / 4 / g_pKTDXApp->GetResolutionScaleX() );
+					itemDescWidthCompare = static_cast<int>( CKTDXApp::kUILayoutWidth / 4 );
 
 					itemDescCompare = CWordLineHandler::GetStrByLineBreakColorInX2Main(wstrItemDescCompTemp.c_str(), itemDescWidthCompare - ITEM_DESC_ADD_SIZE_X, SLOT_MANAGER_FONT_INDEX_SMALL);
 
@@ -578,7 +576,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 
 
 				//{{ 위치 조정
-				int itemDescPosXCompare = static_cast<int>( iWidth / g_pKTDXApp->GetResolutionScaleX() - itemDescWidthCompare );
+				int itemDescPosXCompare = static_cast<int>( g_pKTDXApp->GetUICanvasRight() - itemDescWidthCompare );
 				int itemDescPosYCompare = itemDescPosY;
 
 				// 아이템의 위치가 아래를 파고들면 올려주자
@@ -596,10 +594,10 @@ void CX2ItemSlotManager::DrawSlotDesc()
 				if ( true == bItemDescAddComp )
 				{
 					itemDescPosY = itemDescPosYCompare = 0;
-					itemDescPosXCompare = static_cast<int>( iWidth / g_pKTDXApp->GetResolutionScaleX() - itemDescWidthCompare * 2 + 2 );
+					itemDescPosXCompare = static_cast<int>( g_pKTDXApp->GetUICanvasRight() - itemDescWidthCompare * 2 + 2 );
 
 					/// 비교 아이템 분할된 정보 표시
-					m_pDLGItemDescCompareAdd->SetPos( D3DXVECTOR2( static_cast<float>(iWidth / g_pKTDXApp->GetResolutionScaleX() - itemDescWidthCompare), 0.f ) );
+					m_pDLGItemDescCompareAdd->SetPos( D3DXVECTOR2( static_cast<float>(g_pKTDXApp->GetUICanvasRight() - itemDescWidthCompare), 0.f ) );
 					m_pDLGItemDescCompareAdd->GetStatic_LUA( "ItemDesc" )->GetPicture(0)->SetSize( D3DXVECTOR2( (float)itemDescWidthCompare, (float)(itemDescAddHeightComp + SIZE_Y / g_pKTDXApp->GetResolutionScaleY()) ) );
 					m_pDLGItemDescCompareAdd->GetStatic_LUA( "ItemDesc" )->GetPicture(0)->pPoint->color = D3DXCOLOR( 1,1,1,0.7f );
 					m_pDLGItemDescCompareAdd->GetStatic_LUA( "ItemDesc" )->GetString(0)->msg = wstrItemDescCompTemp.c_str();
@@ -613,7 +611,7 @@ void CX2ItemSlotManager::DrawSlotDesc()
 				//{{ 비교 아이템이 분할되지 않았을 때
 				else
 				{
-					itemDescPosXCompare = static_cast<int>( iWidth / g_pKTDXApp->GetResolutionScaleX() - itemDescWidthCompare );
+					itemDescPosXCompare = static_cast<int>( g_pKTDXApp->GetUICanvasRight() - itemDescWidthCompare );
 
 					m_pDLGItemDescCompareAdd->SetShow( false );
 
@@ -644,8 +642,8 @@ void CX2ItemSlotManager::DrawSlotDesc()
 
 			if ( true == bItemDescAdd )
 			{
-				if (itemDescPosX > iWidth / g_pKTDXApp->GetResolutionScaleX() / 2)
-					itemDescPosX = static_cast<int>( iWidth / g_pKTDXApp->GetResolutionScaleX() - itemDescWidth * 2 + 2 );
+				if (itemDescPosX > ( g_pKTDXApp->GetUICanvasLeft() + g_pKTDXApp->GetUICanvasRight() ) / 2)
+					itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasRight() - itemDescWidth * 2 + 2 );
 				itemDescPosY = 0;
 				m_pDLGItemDescAdd->SetPos(  D3DXVECTOR2( static_cast<float>(itemDescPosX + itemDescWidth) - 2, 0.f ) );
 				m_pDLGItemDescAdd->GetStatic_LUA( "ItemDesc" )->GetPicture(0)->SetSize( D3DXVECTOR2( (float)itemDescWidth, (float)(itemDescAddHeight + SIZE_Y / g_pKTDXApp->GetResolutionScaleY()) ));
@@ -3017,7 +3015,6 @@ bool CX2ItemSlotManager::GetIsShowCompareItemDescBySlotType( CX2Slot::SLOT_TYPE 
 
 void CX2ItemSlotManager::SplitDescHeight( wstring* pOrgStr, wstring* pTempStr, int &pHeight, int &pFontHeight, int /*fontIndex*/, bool bSplit )
 {
-	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
 	const int SIZE_Y = 40;
 
 	int offsetSize = 0;
@@ -3034,7 +3031,7 @@ void CX2ItemSlotManager::SplitDescHeight( wstring* pOrgStr, wstring* pTempStr, i
 			//{{2011.09.15 이준호 substr error check
 			//}}
 
-			if ( lineNum * pFontHeight + pFontHeight * 2 + SIZE_Y / g_pKTDXApp->GetResolutionScaleY() > iHeight / g_pKTDXApp->GetResolutionScaleY() )
+			if ( lineNum * pFontHeight + pFontHeight * 2 + SIZE_Y / g_pKTDXApp->GetResolutionScaleY() > g_pKTDXApp->GetUICanvasBottom() )
 			{
 				wstring wstrDesc = pOrgStr->substr(0, offsetSize);
 				wstring wstrDescTemp = pOrgStr->substr(offsetSize, pOrgStr->length());

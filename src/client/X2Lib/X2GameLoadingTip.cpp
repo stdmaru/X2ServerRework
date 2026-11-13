@@ -257,7 +257,7 @@ void CX2GameLoadingTip::SetOneLineTipString( int iStrID_)
 		return;
 
 	float WindowLength = (float)(pStaticLoadingTip->GetDummyInt(0));
-	WindowLength = g_pKTDXApp->ConvertByResolution( D3DXVECTOR2(WindowLength, 0) ).x;
+	WindowLength = g_pKTDXApp->ConvertSizeByResolution( WindowLength, 0.f ).x;
 
 	const int MAGIC_MAX_WIDTH = (int) WindowLength;
 	CWordLineHandler::LineBreakInX2Main( OneLineTip, pFont, MAGIC_MAX_WIDTH, L"", true  );

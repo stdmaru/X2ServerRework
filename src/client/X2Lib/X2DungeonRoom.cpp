@@ -44,9 +44,8 @@ CX2DungeonRoom::~CX2DungeonRoom(void)
 int	CX2DungeonRoom::GetClickSlot( int x, int y )
 {
 	D3DXVECTOR2 kConvertPos;
-	kConvertPos.x = (float)x / g_pKTDXApp->GetResolutionScaleX();
-	kConvertPos.y = (float)y / g_pKTDXApp->GetResolutionScaleY();
-	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertByResolution( 50.0f, 50.0f );
+	kConvertPos = g_pKTDXApp->MouseConvertByResolution( (float)x, (float)y );
+	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertSizeByResolution( 50.0f, 50.0f );
 
 	if( GetDistance2( kConvertPos.x, kConvertPos.y, 141.0f, 467.0f ) < kConvertSize.x )
 	{

@@ -21472,12 +21472,13 @@ void CX2GUNPC::RenderPvpNpcServerTexture()
 
 	float fFinalLeft, fFinalTop, fScaleX, fScaleY, fOffsetX, fOffsetY;
 
-	fOffsetX	= 2.f / g_pKTDXApp->GetResolutionScaleX();
-	fOffsetY	= -3.f / g_pKTDXApp->GetResolutionScaleY();
-	fScaleX		= 21.f ;// g_pKTDXApp->GetResolutionScaleX();
-	fScaleY		= 23.f ;// g_pKTDXApp->GetResolutionScaleY();
-	fFinalLeft	= (iFinalLeft) / g_pKTDXApp->GetResolutionScaleX();
-	fFinalTop	= (iFinalTop) / g_pKTDXApp->GetResolutionScaleY();
+	fOffsetX	= 2.f;
+	fOffsetY	= -3.f;
+	fScaleX		= 21.f;
+	fScaleY		= 23.f;
+	const D3DXVECTOR2 vFinal = g_pKTDXApp->MouseConvertByResolution( static_cast<float>( iFinalLeft ), static_cast<float>( iFinalTop ) );
+	fFinalLeft	= vFinal.x;
+	fFinalTop	= vFinal.y;
 
 	fFinalLeft += fOffsetX;
 	fFinalTop += fOffsetY;

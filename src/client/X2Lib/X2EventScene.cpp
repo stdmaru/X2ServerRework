@@ -247,7 +247,7 @@ void CX2EventScene::AddText( bool bTagLeft, int NameID, const WCHAR* wszMsg,
 	if( NULL == m_pDLGSlideShot )
 		return;
 
-	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 750, 512 );
+	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 750, 512 );
 	const int CHAT_LINE_WIDTH = (int)vTemp.x;
 
 	wstring nextLineString = L"\n";

@@ -174,7 +174,7 @@ void CX2UIPetInfo::SetPosition( D3DXVECTOR2 vec )
 bool CX2UIPetInfo::IsInUnitClickReact( D3DXVECTOR2 mousePos )
 {
 	D3DXVECTOR2 m_ConvertPos	= g_pKTDXApp->ConvertByResolution( m_UnitClickPos + m_MovedPosition );
-	D3DXVECTOR2 m_ConvertSize	= g_pKTDXApp->ConvertByResolution( m_UnitClickSize );
+	D3DXVECTOR2 m_ConvertSize	= g_pKTDXApp->ConvertSizeByResolution( m_UnitClickSize );
 
 	if ( mousePos.x >= m_ConvertPos.x   && mousePos.x <= m_ConvertPos.x + m_ConvertSize.x &&
 		mousePos.y >= m_ConvertPos.y && mousePos.y <= m_ConvertPos.y + m_ConvertSize.y )

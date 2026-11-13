@@ -78,6 +78,9 @@ void CKTDXDeviceRenderTargetTexture::BeginRender( bool bClear )
 
 	m_pBackupTarget = g_pKTDXApp->GetDevice()->GetRenderTarget();
 	CKTDGStateManager::SetRenderTarget( m_pRenderTargetTexture );
+	// T44: what is drawn in layout units into the target starts at its top left, not at the screen's centered column.
+	m_vBackupUIOrigin = g_pKTDXApp->GetUIOrigin();
+	g_pKTDXApp->SetUIOrigin( D3DXVECTOR2( 0.f, 0.f ) );
 
 	if( bClear == true )
 	{
@@ -91,6 +94,7 @@ void CKTDXDeviceRenderTargetTexture::EndRender()
 	// back to the target in use before BeginRender (the back buffer in the original, which saved it at creation)
 	CKTDGStateManager::SetRenderTarget( m_pBackupTarget );
 	m_pBackupTarget = NULL;
+	g_pKTDXApp->SetUIOrigin( m_vBackupUIOrigin );
 }
 
 void CKTDXDeviceRenderTargetTexture::Clear( D3DCOLOR color )
@@ -107,7 +111,7 @@ void CKTDXDeviceRenderTargetTexture::Draw( int nX, int nY, int nWidth, int nHeig
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
 
 	D3DXVECTOR2 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
-	D3DXVECTOR2 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
+	D3DXVECTOR2 size	= g_pKTDXApp->ConvertSizeByResolution( (float)nWidth, (float)nHeight );
 
 
 

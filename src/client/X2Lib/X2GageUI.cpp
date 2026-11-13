@@ -643,10 +643,8 @@ void CX2MySmallGageUI::UpdateAirGage()
 	const D3DXVECTOR3& vUserPos = m_optrGameUnit->GetPos();
 	D3DXVECTOR2 vAirGagePos = g_pKTDXApp->GetProj3DPos( D3DXVECTOR3( vUserPos.x, vUserPos.y + 400.0f, vUserPos.z ) );
 
-	vAirGagePos.x /= g_pKTDXApp->GetResolutionScaleX();
+	vAirGagePos = g_pKTDXApp->MouseConvertByResolution( vAirGagePos );
 	vAirGagePos.x -= 25.f;
-
-	vAirGagePos.y /= g_pKTDXApp->GetResolutionScaleY();
 
 	m_pDlgAirGage->SetPos(vAirGagePos);
 	SetShow( true );
@@ -1111,8 +1109,7 @@ CX2MyGageUI::CX2MyGageUI( CX2GageData* pGageData_, const CX2Unit::UNIT_CLASS eOw
 				{
 					D3DXVECTOR2 vResoultion( g_pKTDXApp->GetResolutionScaleX(), g_pKTDXApp->GetResolutionScaleY() );
 					D3DXVECTOR2 leftTop = m_pDLGMyUnit->GetPos();
-					leftTop.x *= vResoultion.x;
-					leftTop.y *= vResoultion.y;
+					leftTop = g_pKTDXApp->ConvertByResolution( leftTop );
 					D3DXVECTOR2 RigthBottom( leftTop.x + m_pDLGMyUnit->GetSize().x * vResoultion.x, leftTop.y + m_pDLGMyUnit->GetSize().y * vResoultion.y );
 					D3DXVECTOR2 mousePoint( (float)g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos(), (float)g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() );
 
@@ -2441,7 +2438,7 @@ void CX2RavenMyGageUI::UpdateHyperOrb()
 
 		if( INVALID_PARTICLE_SEQUENCE_HANDLE == m_hSeqHyperBall)
 		{
-			D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3( 100.f * g_pKTDXApp->GetResolutionScaleX(), 120.f *g_pKTDXApp->GetResolutionScaleY(), 0.f );
+			D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3( g_pKTDXApp->ConvertXByResolution( 100.f ), g_pKTDXApp->ConvertYByResolution( 120.f ), 0.f );
 			m_hSeqHyperBall = pUIMajorParticleSystem->CreateSequenceHandle( (CKTDGObject*) this,  L"raven_powrUp_UI_01", vHyperBallPos );
 			if( pUIMajorParticleSystem->GetInstanceSequence(m_hSeqHyperBall ) != NULL )
 			{
@@ -2454,7 +2451,7 @@ void CX2RavenMyGageUI::UpdateHyperOrb()
 			pSeq = pUIMajorParticleSystem->GetInstanceSequence(m_hSeqHyperBall);
 			if( pSeq != NULL )
 			{
-				D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3(100.f * g_pKTDXApp->GetResolutionScaleX(), 120.f *g_pKTDXApp->GetResolutionScaleY(), 0.f);
+				D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3( g_pKTDXApp->ConvertXByResolution( 100.f ), g_pKTDXApp->ConvertYByResolution( 120.f ), 0.f );
 				pSeq->SetPosition( vHyperBallPos );
 			}
 		}
@@ -2662,8 +2659,7 @@ void CX2PartyMemberGageUI::SetPosition( const UINT uiPositionIndex_ )
 					{
 						D3DXVECTOR2 vResoultion( g_pKTDXApp->GetResolutionScaleX(), g_pKTDXApp->GetResolutionScaleY() );
 						D3DXVECTOR2 leftTop = m_pDLGOtherUnit->GetPos();
-						leftTop.x *= vResoultion.x;
-						leftTop.y *= vResoultion.y;
+						leftTop = g_pKTDXApp->ConvertByResolution( leftTop );
 						D3DXVECTOR2 RigthBottom( leftTop.x + m_pDLGOtherUnit->GetSize().x * vResoultion.x, leftTop.y + m_pDLGOtherUnit->GetSize().y * vResoultion.y );
 						D3DXVECTOR2 mousePoint( (float)g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos(), (float)g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() );
 

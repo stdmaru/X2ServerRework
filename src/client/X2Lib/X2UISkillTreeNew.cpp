@@ -3505,11 +3505,11 @@ void CX2UISkillTreeNew::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkill
 			static_cast<int>( itemDescWidth + ( 10.f * g_pKTDXApp->GetResolutionScaleX() ) + pUseSkillPictureData->GetSize().x ) : itemDescWidth );
 
 
-		if ( pos.x + ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) >= 0 ) /// ���ʿ� ������ ����� ���
+		if ( pos.x + ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) >= g_pKTDXApp->GetUICanvasLeft() ) /// ���ʿ� ������ ����� ���
 		{
-			if ( pos.x+ ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) + iDescWidthWithPicture > 1024 )
+			if ( pos.x+ ( size.x / 2 ) - ( iDescWidthWithPicture / 2 ) + iDescWidthWithPicture > g_pKTDXApp->GetUICanvasRight() )
 			{
-				itemDescPosX = static_cast<int>( 1024 - iDescWidthWithPicture );
+				itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasRight() - iDescWidthWithPicture );
 			}
 			else
 			{
@@ -3518,7 +3518,7 @@ void CX2UISkillTreeNew::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkill
 		}
 		else
 		{
-			itemDescPosX = 0;
+			itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasLeft() );
 		}
 
 		/// ����Ű�� �ִ� ��ų ���� �������� ������ ǥ���� �� �ִ°��
@@ -3531,7 +3531,7 @@ void CX2UISkillTreeNew::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkill
 		{
 			itemDescPosY = static_cast<int>( pos.y + size.y );		/// ��ų ������ Bottom ��ġ
 
-			int iBottomOverSize = 768 - (itemDescPosY + itemDescHeight );	/// ȭ���� �Ѿ�� ũ�⸦ ����Ͽ�, ��ų ������ Bottom ��ġ�� ���� ���� �ش�.
+			int iBottomOverSize = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() ) - (itemDescPosY + itemDescHeight );	/// ȭ���� �Ѿ�� ũ�⸦ ����Ͽ�, ��ų ������ Bottom ��ġ�� ���� ���� �ش�.
 
 			if ( iBottomOverSize < 0 )
 				itemDescPosY += iBottomOverSize;
