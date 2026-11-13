@@ -742,6 +742,7 @@ bool CX2GameOption::OpenScriptFile()
 		LUA_GET_VALUE( luaManager, "FRAME_LIMIT",					m_OptionList.m_iFrameLimit,			0 );
 		LUA_GET_VALUE( luaManager, "MULTISAMPLE",					m_OptionList.m_iMultisample,		1 );
 		LUA_GET_VALUE( luaManager, "ANISOTROPY",					m_OptionList.m_iAnisotropy,			1 );
+		LUA_GET_VALUE( luaManager, "SUPERSAMPLE",					m_OptionList.m_iSupersample,		1 );
 		LUA_GET_VALUE_ENUM( luaManager, "SKILL_CUTIN_SHOW", 		m_OptionList.m_eSkillCutinShowState,	SKILL_CUTIN_SHOW_STATE,		SCSS_ONESELF );
 
 		LUA_GET_VALUE( luaManager, "SKILL_SLOT_UI_TYPE_A",			m_OptionList.m_bIsSkillUITypeA,		true );
@@ -1027,6 +1028,7 @@ bool CX2GameOption::SaveScriptFile()
 	FilePrintf( file, L"\tFRAME_LIMIT			= %d, \n", m_OptionList.m_iFrameLimit );
 	FilePrintf( file, L"\tMULTISAMPLE			= %d, \n", m_OptionList.m_iMultisample );
 	FilePrintf( file, L"\tANISOTROPY			= %d, \n", m_OptionList.m_iAnisotropy );
+	FilePrintf( file, L"\tSUPERSAMPLE			= %d, \n", m_OptionList.m_iSupersample );
 
 
 	switch( m_OptionList.m_eSkillCutinShowState )
@@ -1101,6 +1103,7 @@ void CX2GameOption::ApplyAllOption( bool bForce /*= false*/ )
 	SetFrameLimit( m_OptionList.m_iFrameLimit );
 	SetMultisample( m_OptionList.m_iMultisample );
 	SetAnisotropy( m_OptionList.m_iAnisotropy );
+	SetSupersample( m_OptionList.m_iSupersample );
 
 	// GRAPHIC
 	SetUnitDetail( m_OptionList.m_UnitDetail, bForce );
@@ -1334,13 +1337,20 @@ void CX2GameOption::SetFrameLimit( IN int iFps_ )
 	DXUTSetFrameLimit( static_cast<float>( m_OptionList.m_iFrameLimit ) );
 }
 
-// Anti-aliasing and anisotropic filtering (2026-11-12, client/msaa): new options, applied by the D3D9 device from
+// Anti-aliasing, supersampling and anisotropic filtering (2026-11-12, client/msaa): new options, applied by the D3D9 device from
 // the next frame.
 void CX2GameOption::SetMultisample( IN int iSamples_ )
 {
 	m_OptionList.m_iMultisample = iSamples_ >= 8 ? 8 : iSamples_ >= 4 ? 4 : iSamples_ >= 2 ? 2 : 1;
 	if( IDirect3DDevice9* pDevice = DXUTGetD3DDevice() )
 		pDevice->SetMultisample( static_cast<UINT>( m_OptionList.m_iMultisample ) );
+}
+
+void CX2GameOption::SetSupersample( IN int iFactor_ )
+{
+	m_OptionList.m_iSupersample = iFactor_ >= 2 ? 2 : 1;
+	if( IDirect3DDevice9* pDevice = DXUTGetD3DDevice() )
+		pDevice->SetSupersample( static_cast<UINT>( m_OptionList.m_iSupersample ) );
 }
 
 void CX2GameOption::SetAnisotropy( IN int iLevel_ )

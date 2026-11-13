@@ -351,7 +351,8 @@ private:
     bool Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buffer, UINT offset, UINT stride,
               INT firstVertex, DWORD fvf, const IndexBuffer* indices = nullptr, UINT startIndex = 0);
     render::GraphicsPipeline Pipeline(const PipelineKey& key, DWORD fvf, UINT stride);
-    render::Sampler SamplerFor(DWORD stage);
+    // pointMagnify: magnify with nearest texels whatever the stage asks (pre-transformed draws when supersampling).
+    render::Sampler SamplerFor(DWORD stage, bool pointMagnify = false);
     void PushUniforms(DWORD fvf);
     void PushFixedFunctionVertexUniforms(float width, float height);
     bool ClearRects(DWORD count, const D3DRECT* rects, DWORD flags, D3DCOLOR color, float z, DWORD stencil);
