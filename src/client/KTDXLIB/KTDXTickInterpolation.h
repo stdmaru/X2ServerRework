@@ -65,6 +65,23 @@ inline bool IsWorldJump(const D3DXMATRIX& previous, const D3DXMATRIX& last)
     return false;
 }
 
+// Something updated at steps `previous` and `last` (and not since) is drawn `fraction` of the way between the two:
+// the steps elapsed after `last`, plus the fraction `t` of the current one, over the steps between the updates. With an
+// update every step this is `t`. 1 (as it is) when there is nothing to interpolate: no previous update, updates more
+// than kMaxUpdateGap steps apart, or an update overdue. `stepsDone` is CKTDXApp::GetFrameMoveCount (one past the last
+// step, while rendering).
+inline constexpr int kMaxUpdateGap = 8;   // CX2Main's P2P batch is 7 steps; NPCs simulate at most that far apart
+
+inline float UpdateFraction(int previous, int last, int stepsDone, float t)
+{
+    const int span = last - previous;
+    if (previous < 0 || span <= 0 || span > kMaxUpdateGap || t >= 1.f) {
+        return 1.f;
+    }
+    const float fraction = (static_cast<float>(stepsDone - 1 - last) + t) / static_cast<float>(span);
+    return fraction < 1.f ? (fraction > 0.f ? fraction : 0.f) : 1.f;
+}
+
 // Element-wise interpolation of two matrices: exact for translation, close to a rotation for the small turns of one
 // tick (IsWorldJump rules out the large ones).
 inline void LerpMatrix(const D3DXMATRIX& a, const D3DXMATRIX& b, float t, D3DXMATRIX& out)

@@ -599,4 +599,14 @@ TEST_CASE("ktdxlib: drawing between ticks interpolates views and matrices, and s
     CHECK(x2::ktdx::IsWorldJump(w0, w2));
     D3DXMatrixTranslation(&w3, 1000, 0, 0);
     CHECK(x2::ktdx::IsWorldJump(w0, w3));
+
+    // updates every step: the fraction of the current step; every 4 steps (an NPC's heuristic simulation): spread over
+    // the 4; overdue, too far apart or without a previous update: as it is
+    CHECK(x2::ktdx::UpdateFraction(9, 10, 11, 0.25f) == doctest::Approx(0.25f));
+    CHECK(x2::ktdx::UpdateFraction(6, 10, 11, 0.f) == doctest::Approx(0.f));
+    CHECK(x2::ktdx::UpdateFraction(6, 10, 13, 0.5f) == doctest::Approx(0.625f));
+    CHECK(x2::ktdx::UpdateFraction(6, 10, 15, 0.f) == 1.f);
+    CHECK(x2::ktdx::UpdateFraction(9, 10, 12, 0.5f) == 1.f);
+    CHECK(x2::ktdx::UpdateFraction(0, 10, 11, 0.5f) == 1.f);
+    CHECK(x2::ktdx::UpdateFraction(-1, 10, 11, 0.5f) == 1.f);
 }
