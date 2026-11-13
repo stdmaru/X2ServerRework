@@ -4953,7 +4953,7 @@ void CX2Main::CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCust
 	{
 		if ( DXUTGetDeviceLost() == false && DXUTGetDeviceObjectsReset() == true )
 		{
-			g_pKTDXApp->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x32323232, 1.0f, 0);
+			g_pKTDXApp->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x32000000, 1.0f, 0);
 			// Port: the device is never lost (T38), so a failed Present needs no recovery here.
 			g_pKTDXApp->RenderStageNow( m_pNowState );
 		}
