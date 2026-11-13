@@ -297,8 +297,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         the graphics tab with them, the frame limit and vertical sync (merged with `client/graphics-options`, user).
         Also fixed there: the camera updated twice per step, and the interpolated camera turning in 4-pixel steps on
         fields far from the origin (2026-11-13, user confirmed smooth).
-  - [x] `client/name-interpolation` (2026-11-13, PR #64): names, the dev overlay, small HP bars and talk balloons drawn
-        between steps with their units (user confirmed in the field and the village).
+  - [x] `client/name-interpolation` (2026-11-13, PR #64): names, the dev overlay, small HP bars, talk balloons and
+        attached equipment drawn between steps with their units (user confirmed in the field and the village).
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
   - [ ] **Widescreen, after audio** (user, 2026-11-12): no distortion at any aspect ratio. Today the UI's 1024×768
