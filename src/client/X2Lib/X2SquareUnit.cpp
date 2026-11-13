@@ -1590,20 +1590,20 @@ void CX2SquareUnit::RenderName()
 		if(m_bTFieldUnit == false)
 		{
 			if( NULL != g_pSquareGame )
-				g_pSquareGame->GetFontForUnitName()->OutProjectionText( m_SyncData.m_Pos, wstrName.c_str(), 0xffffaa77,
+				g_pSquareGame->GetFontForUnitName()->OutProjectionText( vRenderPos, wstrName.c_str(), 0xffffaa77,
 					CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
 			else if( NULL != g_pWeddingGame )
 			{
 				CKTDGFontManager::CUKFont* pFont = g_pWeddingGame->GetFontForUnitName();
 				if( NULL != pFont )
 				{
-					pFont->OutProjectionText( m_SyncData.m_Pos, wstrName.c_str(), 0xffffaa77,
+					pFont->OutProjectionText( vRenderPos, wstrName.c_str(), 0xffffaa77,
 											CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
 				}
 			}
 		}
 		else
-			g_pTFieldGame->GetFontForUnitName()->OutProjectionText( m_SyncData.m_Pos, wstrName.c_str(), 0xffffaa77,
+			g_pTFieldGame->GetFontForUnitName()->OutProjectionText( vRenderPos, wstrName.c_str(), 0xffffaa77,
 			CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
 	}
 	else
@@ -1611,18 +1611,18 @@ void CX2SquareUnit::RenderName()
 		if(m_bTFieldUnit == false)
 		{
 			if( NULL != g_pSquareGame )
-				g_pSquareGame->GetFontForUnitName()->OutProjectionText( m_SyncData.m_Pos, wstrName.c_str(), 0xff54ddff,
+				g_pSquareGame->GetFontForUnitName()->OutProjectionText( vRenderPos, wstrName.c_str(), 0xff54ddff,
 					CKTDGFontManager::FS_SHELL, 0xff0000ff, NULL, DT_CENTER  );
 			else if( NULL != g_pWeddingGame )
-				g_pWeddingGame->GetFontForUnitName()->OutProjectionText( m_SyncData.m_Pos, wstrName.c_str(), 0xff54ddff,
+				g_pWeddingGame->GetFontForUnitName()->OutProjectionText( vRenderPos, wstrName.c_str(), 0xff54ddff,
 					CKTDGFontManager::FS_SHELL, 0xff0000ff, NULL, DT_CENTER  );
 		}
 		else
-			g_pTFieldGame->GetFontForUnitName()->OutProjectionText( m_SyncData.m_Pos, wstrName.c_str(), 0xff54ddff,
+			g_pTFieldGame->GetFontForUnitName()->OutProjectionText( vRenderPos, wstrName.c_str(), 0xff54ddff,
 			CKTDGFontManager::FS_SHELL, 0xff0000ff, NULL, DT_CENTER  );
 	}
 
-	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos( m_SyncData.m_Pos );
+	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos( vRenderPos );
 	int iFinalLeft = 0, iFinalTop;
 
 	iFinalTop = (int)finalPos.y;;
