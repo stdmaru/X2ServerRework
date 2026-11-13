@@ -165,6 +165,8 @@ public:
 
 
 	bool	GetShow()const {return m_bShow;}
+	// The frame's horizontal anchor (T44): the minimaps draw their map inside it.
+	UIAnchor GetFrameAnchor() const { return m_pDLGFrameWindow != NULL ? m_pDLGFrameWindow->GetAnchor() : UIAnchor::Center; }
 
 	void CloseWorldMapUI() {if( NULL != m_pWorldMapUI )m_pWorldMapUI->CloseWorldMapUI();}
 

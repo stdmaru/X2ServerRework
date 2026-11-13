@@ -760,7 +760,7 @@ void CX2MiniMapUI::CreateNewQuestEffect()
 		return;
 
 
-	D3DXVECTOR2 pos = pButton->GetDialog()->GetPos() + pButton->GetPos();  // 717,92
+	D3DXVECTOR2 pos = pButton->GetDialog()->GetCanvasPos() + pButton->GetPos();  // 717,92
 	//const float MAGIC_EFFECT_POSITION_X = 744.f;
 	//const float MAGIC_EFFECT_POSITION_Y = 119.f;
 // 	const float MAGIC_EFFECT_OFFSET_X = 27.f;
@@ -891,7 +891,7 @@ void CX2MiniMapUI::CreateNewMailEffect()
 	g_pKTDXApp->GetDeviceManager()->PlaySound( L"PostLetterNew.ogg", false, false );
 
 	CKTDGUIButton* pButton = (CKTDGUIButton*) m_pDLGFrameWindow->GetControl( L"Button_NewMail" );
-	D3DXVECTOR2 pos = pButton->GetDialog()->GetPos() + pButton->GetPos();  // 717,92
+	D3DXVECTOR2 pos = pButton->GetDialog()->GetCanvasPos() + pButton->GetPos();  // 717,92
 	//const float MAGIC_EFFECT_POSITION_X = 744.f;
 	//const float MAGIC_EFFECT_POSITION_Y = 119.f;
 	const float fButtonSizeX = (float)pButton->GetWidth();

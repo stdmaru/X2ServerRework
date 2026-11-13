@@ -89,6 +89,9 @@ void    CX2MiniMap::OnFrameRender_Draw()
 	if( false == m_pMiniMapUI->GetShow() )
 		return;
 
+	// The map is drawn by code at the frame's layout position (824, 558): with the frame's anchor.
+	CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_pMiniMapUI->GetFrameAnchor() );
+
 	switch( g_pMain->GetNowStateID() )
 	{
 	//case CX2Main::XS_PVP_GAME:

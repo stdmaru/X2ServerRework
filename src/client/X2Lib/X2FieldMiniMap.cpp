@@ -47,6 +47,9 @@ m_pStage(NULL)
 		return;
 	}
 
+	// The map is drawn by code at the frame's layout position (824, 558): with the frame's anchor (T44).
+	CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, NULL != m_pMiniMapUI ? m_pMiniMapUI->GetFrameAnchor() : UIAnchor::Center );
+
 	D3DXVECTOR2 vProjectedPos = ProjectToScreenShot( g_pTFieldGame->GetMyUnit()->GetPos() );
 	CalcWindowTexturePos( vProjectedPos );
 
