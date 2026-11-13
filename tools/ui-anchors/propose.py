@@ -10,6 +10,8 @@ dialog was drawn at. This tool reads one or more of those files and proposes anc
 - a dialog spanning the width (a HUD) stays CENTER and its controls get their own anchors: held to the left or right
   edge, or lying in the left or right third, LEFT or RIGHT; held to both edges, STRETCH;
 - full-screen pictures (backgrounds) and everything in the middle stay CENTER (the default, so not written);
+- a dialog moved by code after its script loaded (the floating windows CX2UIManager opens to one side, popups next
+  to something) stays CENTER: its position is the code's;
 - a dialog drawn at more than one position (moved by the player or placed by code next to something else) stays
   CENTER and is listed for review: its placement is derived, not a layout position.
 
@@ -44,6 +46,7 @@ class Control:
     max_x: float
     max_y: float
     positions: set[tuple[int, int]] = field(default_factory=set)
+    placed_by_code: bool = False
 
 
 @dataclass
@@ -81,6 +84,7 @@ class Proposal:
     controls: dict[str, str] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
     review: str | None = None   # why a person should look at it
+    floating: bool = False      # moved by code after its script loaded: left centered
 
 
 def read_records(paths: list[Path]) -> dict[str, dict[str, Control]]:
@@ -100,11 +104,13 @@ def read_records(paths: list[Path]) -> dict[str, dict[str, Control]]:
                 for pos in cols[7].split(";"):
                     x, y = pos.split(",")
                     positions.add((int(x), int(y)))
+            placed = len(cols) > 8 and cols[8].strip() == "1"
             controls = scripts.setdefault(script, {})
             old = controls.get(name)
             if old is None:
-                controls[name] = Control(name, ctype, min_x, min_y, max_x, max_y, positions)
+                controls[name] = Control(name, ctype, min_x, min_y, max_x, max_y, positions, placed)
             else:   # the same control in another record file: union
+                old.placed_by_code |= placed
                 old.min_x, old.min_y = min(old.min_x, min_x), min(old.min_y, min_y)
                 old.max_x, old.max_y = max(old.max_x, max_x), max(old.max_y, max_y)
                 old.positions |= positions
@@ -134,6 +140,11 @@ def control_anchor(box: Box) -> tuple[str, str]:
 
 def propose(script: str, controls: dict[str, Control]) -> Proposal:
     proposal = Proposal(script)
+    if any(c.placed_by_code for c in controls.values()):
+        # A floating window (CX2UIManager places it, opening it to one side) or one placed next to something: its
+        # position is the code's, in the centered column (T44's derived positions).
+        proposal.floating = True
+        return proposal
     positions = set().union(*(c.positions for c in controls.values())) or {(0, 0)}
     if len(positions) > 1:
         proposal.review = f"drawn at {len(positions)} positions (moved or placed by code): left centered"
@@ -227,7 +238,11 @@ def main(argv: list[str]) -> int:
 
     anchored = [p for p in proposals if p.dialog != "CENTER" or p.controls]
     review = [p for p in proposals if p.review]
-    print(f"{len(scripts)} dialog scripts recorded: {len(anchored)} anchored, {len(review)} to review", file=sys.stderr)
+    floating = [p for p in proposals if p.floating]
+    print(f"{len(scripts)} dialog scripts recorded: {len(anchored)} anchored, {len(floating)} placed by code "
+          f"(centered), {len(review)} to review", file=sys.stderr)
+    if floating:
+        print("  placed by code: " + ", ".join(p.script for p in floating), file=sys.stderr)
     for p in review:
         print(f"  review {p.script}: {p.review}", file=sys.stderr)
     if args.scripts:

@@ -9,7 +9,7 @@ in the original 1024×768 layout. Two parts:
 1. **Recording, in the client** (`X2_DEV_TOOLS` builds only): run the client with `X2_RECORD_UI_ANCHORS=1`. Every
    dialog drawn from a script notes, for each control, the box of what it drew (layout units, relative to the dialog;
    the quads of `CKTDGUIControl::UpdateVertex`, transparent ones skipped) and every position the dialog was drawn at
-   (up to 16). Unnamed controls are noted as `#<index>`. The file `UIAnchorsRecord.tsv` in the game folder is rewritten
+   (up to 16), and whether code moved the dialog after its script loaded. Unnamed controls are noted as `#<index>`. The file `UIAnchorsRecord.tsv` in the game folder is rewritten
    every 2 seconds when something new was seen, merged with what earlier runs recorded, so several play sessions add up
    (`CKTDGUIAnchorRecorder`, `KTDGUIAnchor.cpp`). Controls that draw only text (edit boxes) are not recorded; they
    follow their dialog.
@@ -29,6 +29,7 @@ In layout units; "held to an edge" is within 24 units of it.
 
 | Recorded | Proposal |
 |---|---|
+| Dialog moved by code after its script loaded (`SetPos` outside the script): the floating windows `CX2UIManager` opens to one side (shop, quests, inventory…), popups next to something | Center, not reviewed: the code's position, in the column (user, 2026-11-13) |
 | Dialog drawn at more than one position (dragged, or placed by code next to something) | Center; listed for review (a derived position) |
 | Whole screen: at least 600×450 with a control covering 40% of it (a background), or spanning the width with a background and taller than half the screen | Center; listed for review (its pieces may be anchored by hand) |
 | Dialog at one edge and at least 600 wide | Center; listed for review |

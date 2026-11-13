@@ -64,6 +64,10 @@ class ProposeTest(unittest.TestCase):
         self.assertEqual(p.dialog, "CENTER")
         self.assertIn("wide", p.review)
 
+    def test_dialog_placed_by_code_stays_centered(self):
+        p = self.proposals(("dlg_shop.lua", "Back", 5, 0, 0, 460, 480, "0,0", 1))["dlg_shop.lua"]
+        self.assertEqual((p.dialog, p.controls, p.review, p.floating), ("CENTER", {}, None, True))
+
     def test_moved_dialog_is_left_for_review(self):
         p = self.proposals(("dlg_inventory.lua", "Back", 5, 0, 0, 300, 400, "0,0;500,100"))["dlg_inventory.lua"]
         self.assertEqual(p.dialog, "CENTER")

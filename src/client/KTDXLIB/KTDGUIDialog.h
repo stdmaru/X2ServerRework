@@ -551,6 +551,13 @@ private:
 		bool GetShowScriptName() { return m_bShowScriptName; }
 		void SetShowScriptName( bool bValue_ ) { m_bShowScriptName = bValue_; }
 		wstring GetScriptFileName() { return m_strScriptFileName; }
+		// Moved by code after its script loaded (a floating window, or one placed next to something): for the anchor
+		// recorder (CKTDGUIAnchorRecorder).
+		bool GetPlacedByCode() const { return m_bPlacedByCode; }
+	private:
+		bool		m_bLoadingScript = false;
+		bool		m_bPlacedByCode = false;
+	public:
 		wstring GetMouseOverStaticName() { return m_strMouseOverStaticName; }
 #endif //LOG_LOAD_DLG_SCRIPT
 
