@@ -319,8 +319,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
     - [ ] `tools/ui-capture`: the dev tool capturing the main screens (below). It was split from the step above
           (2026-11-13) because it has to render at sizes other than the window's, and Hyprland does not resize
           windowed clients.
-    - [ ] `client/widescreen-anchors`: the anchor model in `KTDGUIDialog`/`KTDGUIControl` (an offset in drawing and
-          hit testing) and the `UIAnchors.lua` loader.
+    - [x] `client/widescreen-anchors` (2026-11-13, PR #67): the anchor model in `KTDGUIDialog`/`KTDGUIControl` (the UI
+          origin moved while a dialog or control draws and takes the mouse) and the `UIAnchors.lua` loader; the file is
+          in the client_data, empty ([KTDXLIB](../porting/client-ktdxlib.md#anchors-2026-11-13-clientwidescreen-anchors)).
+          Packing new client_data files is still needed before a release build reads it.
     - [ ] `tools/ui-anchors`: inventory of the dialog scripts in use, the migration tool proposing anchors (static
           bounds plus a dev mode recording where each opened dialog sits).
     - [ ] `client/widescreen-migration`: `UIAnchors.lua` filled and reviewed, HUD first, then windows, then the rest;

@@ -429,6 +429,38 @@ The dialogs and controls have no anchors yet. Everything is drawn in the centere
 anchors come with `client/widescreen-anchors` ([roadmap](../project/roadmap.md#phase-4--client-graphics)). X2Lib's side is
 on [X2Lib](client-x2lib.md#widescreen-canvas-2026-11-13-clientwidescreen-scale).
 
+## Anchors (2026-11-13, `client/widescreen-anchors`, [T44](../project/decisions.md))
+
+A dialog or control declared `LEFT` or `RIGHT` is drawn and takes the mouse at that edge of the screen, instead of in the
+centered column; undeclared ones stay centered (`KTDGUIAnchor.h`).
+
+- **Mechanism:** `CKTDXApp::UIAnchorScope` moves the UI origin by the anchor's shift (`GetUIAnchorShift`: left = canvas
+  left, right = canvas right − 1024, in layout units) while `CKTDGUIDialog` draws (`OnFrameRender`), steps
+  (`OnFrameMove`) and handles messages (`MsgProc`, the mouse part of `SetShow`), and again while a control with its own
+  anchor draws or handles the mouse. Every position converted meanwhile follows, so the controls' own drawing code
+  (vertices, text, edit boxes) is unchanged. The dialog's hit tests add a control's shift relative to its dialog
+  (`GetControlAnchorShift`) to the control's offset. Render targets save and restore the shift with the origin.
+- **Control anchors are relative to the screen**, not to the dialog: a `CENTER` control in a `LEFT` dialog goes back to
+  the column.
+- **Positions:** `GetPos`/`SetPos` stay in layout units under the dialog's anchor (layout positions, as in the
+  original); `GetCanvasPos`/`SetCanvasPos` are where it is drawn, for positions derived from other windows or the mouse.
+- **Declaration:** `UIAnchors.lua` in the [client_data](../tools/client-data.md#content-changes-t42), read once at
+  the first dialog script, applied after each script loads (`CKTDGUIAnchors::Apply`). A script's own `SetAnchor` (Lua,
+  on the dialog or a control) wins. Without the file every dialog is centered (a line on stderr).
+
+  ```lua
+  UI_ANCHORS =
+  {
+      ["DLG_Login_Back.lua"] = { DIALOG = "RIGHT", CONTROLS = { Login = "CENTER" } },
+  }
+  ```
+
+  Script names are matched without folder and case; a control name not in the dialog is reported on stderr.
+- `STRETCH` is accepted and drawn as center until the stretched pieces exist (`client/widescreen-stretch`).
+
+Checked at 1920×1080 (2026-11-13) with the example above: the login buttons and fields drawn 240 pixels to the right,
+the background centered, the moved ID field taking clicks and text and the moved LOG-IN button its press.
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)
