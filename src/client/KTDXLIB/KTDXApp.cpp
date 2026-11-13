@@ -588,7 +588,24 @@ HRESULT CKTDXApp::OnFrameRender()
 	if( bInterpolateView )
 	{
 		D3DXMATRIX view;
-		x2::ktdx::InterpolateView( m_PrevTickViewMatrix, m_TickViewMatrix, GetTickInterpolation(), view );
+		const bool bViewInterpolated =
+			x2::ktdx::InterpolateView( m_PrevTickViewMatrix, m_TickViewMatrix, GetTickInterpolation(), view );
+#if X2_DEV_TOOLS
+		// X2_INTERP_TRACE (see KTDGXSkinAnim.cpp): the camera's eye each frame, as drawn and at the last two ticks.
+		static const bool s_bTraceView = std::getenv( "X2_INTERP_TRACE" ) != NULL;
+		if( s_bTraceView )
+		{
+			D3DXMATRIX a, b, c;
+			D3DXMatrixInverse( &a, NULL, &m_PrevTickViewMatrix );
+			D3DXMatrixInverse( &b, NULL, &m_TickViewMatrix );
+			D3DXMatrixInverse( &c, NULL, &view );
+			std::fprintf( stderr, "interp-view steps=%d t=%.3f %s eye=%.2f,%.2f,%.2f prev=%.2f,%.2f,%.2f last=%.2f,%.2f,%.2f "
+				"fwd=%.3f,%.3f,%.3f\n", GetFrameMoveCount(), GetTickInterpolation(), bViewInterpolated ? "lerp" : "cut",
+				c._41, c._42, c._43, a._41, a._42, a._43, b._41, b._42, b._43, b._31, b._32, b._33 );
+		}
+#else
+		(void)bViewInterpolated;
+#endif
 		SetViewTransform( &view );
 	}
 

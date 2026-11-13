@@ -173,6 +173,15 @@ void CKTDGCamera::UpVecRel( float XAdd, float YAdd, float ZAdd )
 
 void CKTDGCamera::UpdateCamera( float fElapsedTime )
 {
+#if X2_DEV_TOOLS
+	// X2_INTERP_TRACE (see KTDGXSkinAnim.cpp): the camera's tracking each step.
+	static const bool s_bTrace = std::getenv( "X2_INTERP_TRACE" ) != NULL;
+	if( s_bTrace )
+		std::fprintf( stderr, "interp-cam steps=%d dt=%.4f eye=%.2f,%.2f,%.2f at=%.2f,%.2f,%.2f track=%.2f,%.2f,%.2f/%.3f "
+			"trackAt=%.2f,%.2f,%.2f/%.3f\n", g_pKTDXApp->GetFrameMoveCount(), fElapsedTime,
+			m_Camera.m_Eye.x, m_Camera.m_Eye.y, m_Camera.m_Eye.z, m_Camera.m_LookAt.x, m_Camera.m_LookAt.y, m_Camera.m_LookAt.z,
+			m_Track.x, m_Track.y, m_Track.z, m_fTrackTime, m_TrackAt.x, m_TrackAt.y, m_TrackAt.z, m_fTrackAtTime );
+#endif
 	if( IsSamef( m_fTrackTime, 0.f ) == false && IsSamef( m_fTrackAtTime, 0.f ) == true )
 	{
 		MoveRel( m_Track.x * fElapsedTime,
