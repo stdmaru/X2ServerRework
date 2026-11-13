@@ -12,7 +12,10 @@ inline constexpr float kSnapDistance = 400.f;     // world units moved in one ti
 inline constexpr float kSnapCosine = 0.866f;      // cos 30°: largest turn of a direction in one tick
 
 // The view between `previous` and `last` (view matrices of a look-at camera): eye, forward and up interpolated, then
-// rebuilt with D3DXMatrixLookAtLH so the result stays a rotation. False (and `out` = `last`) on a cut.
+// rebuilt as an orthonormal look-at basis (what D3DXMatrixLookAtLH builds) so the result stays a rotation. The basis is
+// built from the direction itself, not from a point `eye + forward`: far from the origin (fields sit near x = 37000,
+// where a float's step is 0.004) that point would round the direction to steps of ~0.2°, and the whole scene would move
+// in 4-pixel jumps. False (and `out` = `last`) on a cut.
 inline bool InterpolateView(const D3DXMATRIX& previous, const D3DXMATRIX& last, float t, D3DXMATRIX& out)
 {
     out = last;
@@ -39,10 +42,18 @@ inline bool InterpolateView(const D3DXMATRIX& previous, const D3DXMATRIX& last, 
     D3DXVec3Lerp(&eye, &eyeA, &eyeB, t);
     D3DXVec3Lerp(&forward, &forwardA, &forwardB, t);
     D3DXVec3Lerp(&up, &upA, &upB, t);
+    D3DXVECTOR3 right, trueUp;
     D3DXVec3Normalize(&forward, &forward);
-    D3DXVec3Normalize(&up, &up);
-    const D3DXVECTOR3 at = eye + forward;
-    D3DXMatrixLookAtLH(&out, &eye, &at, &up);
+    D3DXVec3Cross(&right, &up, &forward);
+    D3DXVec3Normalize(&right, &right);
+    D3DXVec3Cross(&trueUp, &forward, &right);
+    D3DXMatrixIdentity(&out);
+    out._11 = right.x;   out._12 = trueUp.x;   out._13 = forward.x;
+    out._21 = right.y;   out._22 = trueUp.y;   out._23 = forward.y;
+    out._31 = right.z;   out._32 = trueUp.z;   out._33 = forward.z;
+    out._41 = -D3DXVec3Dot(&right, &eye);
+    out._42 = -D3DXVec3Dot(&trueUp, &eye);
+    out._43 = -D3DXVec3Dot(&forward, &eye);
     return true;
 }
 

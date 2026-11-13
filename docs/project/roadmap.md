@@ -295,6 +295,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         ([Frame pacing](../porting/client-ktdxlib.md#frame-pacing-2026-11-12-client-frame-pacing-t41)).
   - [x] `client/msaa` (2026-11-12, PR #63): MSAA 2x/4x/8x with alpha-to-coverage, anisotropic filtering up to 16x, SSAA 2x, and
         the graphics tab with them, the frame limit and vertical sync (merged with `client/graphics-options`, user).
+        Also fixed there: the camera updated twice per step, and the interpolated camera turning in 4-pixel steps on
+        fields far from the origin (2026-11-13, user confirmed smooth).
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
   - [ ] **Widescreen, after audio** (user, 2026-11-12): no distortion at any aspect ratio. Today the UI's 1024×768

@@ -588,6 +588,28 @@ TEST_CASE("ktdxlib: drawing between ticks interpolates views and matrices, and s
     CHECK_FALSE(x2::ktdx::InterpolateView(a, b, 0.5f, out));
     CHECK(out == b);
 
+    // far from the origin (a field near x = 37000) a small turn is still interpolated smoothly: the direction must not
+    // round to the float step of `eye + forward` (0.004 there, 0.2° of turn, 4 pixels on screen)
+    {
+        const D3DXVECTOR3 eye(37392.55f, 3643.77f, -7599.6f);
+        const float yawA = 0.1f, yawB = 0.1f + 0.002f;     // radians: 0.11° in one tick
+        const D3DXVECTOR3 dirA(std::sin(yawA), -0.13f, std::cos(yawA)), dirB(std::sin(yawB), -0.13f, std::cos(yawB));
+        const D3DXVECTOR3 lookA = eye + dirA * 1000.f, lookB = eye + dirB * 1000.f;
+        D3DXMatrixLookAtLH(&a, &eye, &lookA, &up);
+        D3DXMatrixLookAtLH(&b, &eye, &lookB, &up);
+        float previousYaw = yawA;
+        for (int step = 1; step <= 4; ++step) {
+            const float t = step / 4.f;
+            REQUIRE(x2::ktdx::InterpolateView(a, b, t, out));
+            const float yaw = std::atan2(out._13, out._33);
+            CHECK(yaw == doctest::Approx(yawA + (yawB - yawA) * t).epsilon(1e-4));
+            CHECK(yaw > previousYaw);
+            previousYaw = yaw;
+            D3DXMatrixInverse(&camera, nullptr, &out);
+            CHECK(camera._41 == doctest::Approx(eye.x));
+        }
+    }
+
     // world matrices: a small step is interpolated, a turn around or a teleport is not
     D3DXMATRIX w0, w1, w2, w3;
     D3DXMatrixTranslation(&w0, 0, 0, 0);

@@ -311,7 +311,7 @@ What is drawn is interpolated between the last two steps by `GetTickInterpolatio
 over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMatrix`):
 
 - **Camera:** the view after each step is kept; `OnFrameRender` draws with eye, forward and up interpolated (rebuilt as a
-  look-at view) and then gives the simulation back the last step's view. Not when something else changed the view
+  look-at basis, not through a point ahead of the eye, which loses precision far from the origin) and then gives the simulation back the last step's view. Not when something else changed the view
   since the step, nor on a cut (the eye moves over 400 units or turns over 30° in one step).
 - **Skinned meshes** (`CKTDGXSkinAnim`): the first pose update of a step keeps the previous step's bone matrices;
   `CopyModelFrameStructure`, which copies the pose into the meshes right before drawing, copies matrices interpolated
@@ -344,9 +344,17 @@ left for `client/render-perf`.
 `UpdateCamera` on the shared `CKTDGCamera` before `CX2Game` set the step's target and updated it, so the camera moved
 twice as far per step, half toward the previous target, and turned unevenly on curved line maps. The original had the
 fix (`if( NULL == g_pX2Game )`, `FIX_CAMERA_CRASH_BY_EFFECT_SET`, its comment describing this bug) but never defined the
-flag; the port applies it. The camera now follows at the speed the scripts give. A vibration on the curve of a field near
-(36550, −4744) remains (user, 2026-11-12): the traces show smooth drawn positions and views, a window capture showed
-the whole scene moving in 4-pixel jumps every ~40 ms; still open, with frame presentation as the lead.
+flag; the port applies it. The camera now follows at the speed the scripts give.
+
+**Camera turning in 4-pixel steps far from the origin** (fixed 2026-11-13, `client/msaa`): on fields whose cameras sit
+far from the origin (eye near x = 37400 on the curve by Torre de Guarda Gêmea), the character seemed to shake on the move and
+the camera snapped while settling, at any frame rate. `InterpolateView` rebuilt the view with
+`D3DXMatrixLookAtLH(eye, eye + forward, up)`; a float's step at 37400 is 0.004, so the point `eye + forward` rounded
+the direction to steps of ~0.2°, and a slow turn reached the screen as the whole scene standing still for several
+frames and then jumping 4 pixels (measured with a lossless window recording and the views of each frame's draws,
+`X2_PRESENT_TRACE`). The view is now built from the interpolated basis itself (the same matrix `LookAtLH` builds, without
+the far point); test in `test_ktdxlib.cpp`. Presentation was ruled out on the way: 144 Hz, steady 6.9 ms submits, the
+compositor receiving every frame. The user confirmed the motion smooth on 2026-11-13.
 
 Measured on 2026-11-12 (optimized build, 144 Hz display, vsync off): character select ~1,200 fps, village ~600, field
 ~350; with vsync, 144.
