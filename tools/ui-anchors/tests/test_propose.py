@@ -50,6 +50,20 @@ class ProposeTest(unittest.TestCase):
         )["dlg_login.lua"]
         self.assertEqual((p.dialog, p.controls, p.review), ("CENTER", {}, None))
 
+    def test_whole_screen_with_background_is_left_for_review(self):
+        p = self.proposals(
+            ("dlg_shop.lua", "Back", 5, 340, 0, 1024, 768, "0,0"),
+            ("dlg_shop.lua", "Tabs", 5, 0, 0, 790, 50, "0,0"),
+            ("dlg_shop.lua", "Exit", 1, 40, 700, 300, 750, "0,0"),
+        )["dlg_shop.lua"]
+        self.assertEqual((p.dialog, p.controls), ("CENTER", {}))
+        self.assertIn("whole screen", p.review)
+
+    def test_wide_dialog_at_one_edge_is_left_for_review(self):
+        p = self.proposals(("dlg_wide.lua", "Back", 5, 0, 500, 740, 740, "0,0"))["dlg_wide.lua"]
+        self.assertEqual(p.dialog, "CENTER")
+        self.assertIn("wide", p.review)
+
     def test_moved_dialog_is_left_for_review(self):
         p = self.proposals(("dlg_inventory.lua", "Back", 5, 0, 0, 300, 400, "0,0;500,100"))["dlg_inventory.lua"]
         self.assertEqual(p.dialog, "CENTER")

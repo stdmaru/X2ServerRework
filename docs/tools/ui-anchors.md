@@ -30,6 +30,8 @@ In layout units; "held to an edge" is within 24 units of it.
 | Recorded | Proposal |
 |---|---|
 | Dialog drawn at more than one position (dragged, or placed by code next to something) | Center; listed for review (a derived position) |
+| Whole screen: at least 600×450 with a control covering 40% of it (a background), or spanning the width with a background and taller than half the screen | Center; listed for review (its pieces may be anchored by hand) |
+| Dialog at one edge and at least 600 wide | Center; listed for review |
 | Dialog held to the left or right edge | `DIALOG = "LEFT"` / `"RIGHT"` |
 | Dialog spanning the width (a HUD) | Center, with control anchors: held to both edges `STRETCH`, to one edge or lying in that third `LEFT`/`RIGHT` |
 | Full-screen picture (background), or anything in the middle | Center (the default: nothing written) |
