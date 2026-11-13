@@ -419,6 +419,10 @@ the skeleton (`X2/X2Skeleton.cpp`, now replaced by `X2.cpp`) drew a test card th
   `SDL_LogWarn` (category render; shown with `SDL_LOGGING='*=warn'`), up to 256.
 - `X2_D3D9_TRACE=<n>` logs every draw (primitive, FVF, target, viewport, stage 0's texture and operations, blending,
   alpha test) and clear of frame `n`, and its present, with `SDL_Log`.
+- `X2_PRESENT_TRACE` (2026-11-13) logs every frame with `SDL_Log`: when the swapchain acquire started, how long it waited,
+  whether it got a texture (`NONE`: the frame was not shown), when it was submitted, how long that took, the time since
+  the previous submit, and the distinct views its draws used (`_11`, `_13`, `_41`, `_43`). It found the camera's
+  quantized turns ([KTDXLIB](client-ktdxlib.md)) and showed presentation steady (144 Hz, no frame without a texture).
 
 ## Not emulated yet (2026-11-07)
 

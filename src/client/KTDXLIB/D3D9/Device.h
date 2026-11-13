@@ -383,6 +383,13 @@ private:
     // X2_D3D9_TRACE=<n>: logs every draw and clear of frame n (debugging aid)
     long m_traceFrame = -1;
     long m_frameNumber = 0;
+    // X2_PRESENT_TRACE: logs every frame's swapchain acquire (start, wait, texture or none) and submit (debugging aid)
+    bool m_presentTrace = false;
+    std::uint64_t m_acquireStartNs = 0;
+    std::uint64_t m_acquireWaitNs = 0;
+    std::uint64_t m_lastSubmitNs = 0;
+    std::string m_presentViews;     // the distinct views drawn with this frame (X2_PRESENT_TRACE)
+    D3DMATRIX m_presentLastView{};
     render::ShaderFormat m_shaderFormat = render::ShaderFormat::None;
 
     // States (D3D9 values)
