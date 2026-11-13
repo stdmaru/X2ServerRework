@@ -747,7 +747,7 @@ wstring CX2EnchantItem::GetToolTip( CX2DamageManager::EXTRA_DAMAGE_TYPE extraDam
 
 	if ( false == bTotal )
 	{
-		const int iWidth = static_cast<int>( DXUTGetBackBufferSurfaceDesc()->Width / 3 / g_pKTDXApp->GetResolutionScaleX() );
+		const int iWidth = static_cast<int>( CKTDXApp::kUILayoutWidth / 3 );
 		enchantDesc = CWordLineHandler::GetStrByLineBreakColorInX2Main( enchantDesc.c_str(), iWidth, SLOT_MANAGER_FONT_INDEX );
 	}
 

@@ -174,7 +174,7 @@ HRESULT	CX2NoticeManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 				int textWidth = pCXText->GetNowTextWidth();
 				D3DXVECTOR2 textPos = pCXText->GetPos();
 
-				if ( textPos.x + textWidth < 1024 - m_NoticeGapWidth )
+				if ( textPos.x + textWidth < g_pKTDXApp->GetUICanvasRight() - m_NoticeGapWidth )
 				{
 					AddNoticeData();
 				}
@@ -212,14 +212,16 @@ void CX2NoticeManager::AddNoticeData()
 		tempNotice->m_RepeatCount -= 1;
 
 		CX2TextManager::CX2Text* pCXText;
-		pCXText = g_pMain->GetTextManager()->AddText( XUF_DODUM_20_BOLD, D3DXVECTOR2( 1024, 260 ), tempNotice->m_Msg.c_str(),
+		pCXText = g_pMain->GetTextManager()->AddText( XUF_DODUM_20_BOLD, D3DXVECTOR2( g_pKTDXApp->GetUICanvasRight(), 260 ), tempNotice->m_Msg.c_str(),
 			D3DXCOLOR(1,1,0,1), D3DXCOLOR(0,0,0,1) );
 
 		//20글자를 기준으로 10초라고 생각한다?
 		float fChangeTime;
-		fChangeTime = 23.0f * ( (float)pCXText->GetTextWidth( tempNotice->m_Msg.c_str() ) + 1024.0f ) / 1024.0f;
+		// across the whole screen (T44), at the original's speed: 23 s per 1024 units
+		const float fScreenWidth = g_pKTDXApp->GetUICanvasRight() - g_pKTDXApp->GetUICanvasLeft();
+		fChangeTime = 23.0f * ( (float)pCXText->GetTextWidth( tempNotice->m_Msg.c_str() ) + fScreenWidth ) / 1024.0f;
 
-		pCXText->Move( D3DXVECTOR2( (float)(0 - pCXText->GetTextWidth( tempNotice->m_Msg.c_str() ) ) , 260), tempNotice->m_Msg.c_str(), D3DXCOLOR(1,1,0,1), D3DXCOLOR(0,0,0,1), fChangeTime, false, true );
+		pCXText->Move( D3DXVECTOR2( g_pKTDXApp->GetUICanvasLeft() - (float)pCXText->GetTextWidth( tempNotice->m_Msg.c_str() ) , 260), tempNotice->m_Msg.c_str(), D3DXCOLOR(1,1,0,1), D3DXCOLOR(0,0,0,1), fChangeTime, false, true );
 
 		m_TextListToDelete.push_back( pCXText );
 		if ( tempNotice->m_RepeatCount <= 0 )

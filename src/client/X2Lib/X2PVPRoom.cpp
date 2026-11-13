@@ -108,9 +108,8 @@ bool CX2PVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( KEGS_CHANGE_SLOT_OPEN_NOT& kE
 int	CX2PVPRoom::GetClickSlot( int x, int y )
 {
 	D3DXVECTOR2 kConvertPos;
-	kConvertPos.x = (float)x / g_pKTDXApp->GetResolutionScaleX();
-	kConvertPos.y = (float)y / g_pKTDXApp->GetResolutionScaleY();
-	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertByResolution( 50.0f, 50.0f );
+	kConvertPos = g_pKTDXApp->MouseConvertByResolution( (float)x, (float)y );
+	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertSizeByResolution( 50.0f, 50.0f );
 
 	if( GetDistance2( kConvertPos.x, kConvertPos.y, 129.0f, 198.0f ) < kConvertSize.x )
 	{
@@ -151,9 +150,8 @@ int	CX2PVPRoom::GetClickSlot( int x, int y )
 bool CX2PVPRoom::GetClickPetSlot( int x, int y )
 {
 	D3DXVECTOR2 kConvertPos;
-	kConvertPos.x = (float)x / g_pKTDXApp->GetResolutionScaleX();
-	kConvertPos.y = (float)y / g_pKTDXApp->GetResolutionScaleY();
-	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertByResolution( 20.0f, 20.0f );
+	kConvertPos = g_pKTDXApp->MouseConvertByResolution( (float)x, (float)y );
+	D3DXVECTOR2 kConvertSize = g_pKTDXApp->ConvertSizeByResolution( 20.0f, 20.0f );
 
 	int iSlotIndex = -1;
 

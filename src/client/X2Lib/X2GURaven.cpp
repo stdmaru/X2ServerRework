@@ -4443,7 +4443,7 @@ void CX2GURaven::CommonFrameMove()
 
 		if( m_hSeqHyperBall == INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{
-			D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3(74.f * g_pKTDXApp->GetResolutionScaleX(), 60.f *g_pKTDXApp->GetResolutionScaleY(), 0.f);
+			D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3( g_pKTDXApp->ConvertXByResolution( 74.f ), g_pKTDXApp->ConvertYByResolution( 60.f ), 0.f );
 			m_hSeqHyperBall = g_pX2Game->GetMajorParticle()->CreateSequenceHandle( (CKTDGObject*) this,  L"raven_powrUp_UI_01", vHyperBallPos );
 			if( g_pX2Game->GetMajorParticle()->GetInstanceSequence(m_hSeqHyperBall ) != NULL )
 			{
@@ -4456,7 +4456,7 @@ void CX2GURaven::CommonFrameMove()
 			pSeq = g_pX2Game->GetMajorParticle()->GetInstanceSequence(m_hSeqHyperBall);
 			if( pSeq != NULL )
 			{
-				D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3(74.f * g_pKTDXApp->GetResolutionScaleX(), 60.f *g_pKTDXApp->GetResolutionScaleY(), 0.f);
+				D3DXVECTOR3 vHyperBallPos = D3DXVECTOR3( g_pKTDXApp->ConvertXByResolution( 74.f ), g_pKTDXApp->ConvertYByResolution( 60.f ), 0.f );
 				pSeq->SetPosition( vHyperBallPos );
 			}
 		}

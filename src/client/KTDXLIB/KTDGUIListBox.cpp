@@ -328,8 +328,6 @@ HRESULT CKTDGUIListBox::OnFrameRender()
 
 					FromRectToPoint(rcSel, m_TempPoint);
 
-					g_pKTDXApp->ConvertByResolution( 380, 380 );
-
 					m_TempPoint.rightTopPoint.x = GetPos().x + GetWidth();
 					m_TempPoint.rightBottomPoint.x = GetPos().x + GetWidth();
 

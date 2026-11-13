@@ -4855,7 +4855,7 @@ D3DXVECTOR2 CX2Main::GetWindowPos( D3DXVECTOR2 windowSize, D3DXVECTOR2 wantMouse
 	ScreenToClient( g_pKTDXApp->GetHWND(), &point );
 
 
-	windowSize = g_pKTDXApp->ConvertByResolution( windowSize );
+	windowSize = g_pKTDXApp->ConvertSizeByResolution( windowSize );
 	wantMousePoint = g_pKTDXApp->ConvertByResolution( wantMousePoint );
 
 	resultPos.x = (float)point.x;
@@ -4903,25 +4903,25 @@ D3DXVECTOR2 CX2Main::GetWindowPos( D3DXVECTOR2 windowSize, D3DXVECTOR2 wantMouse
 
 	resultPos -= wantMousePoint;
 
-
-
-
-	if ( resultPos.x < 0 )
+	// kept on the screen (T44: its edges in layout units, beyond 0 and 1024 on a wide screen)
+	const float fLeft = g_pKTDXApp->GetUICanvasLeft(), fRight = g_pKTDXApp->GetUICanvasRight();
+	const float fTop = g_pKTDXApp->GetUICanvasTop(), fBottom = g_pKTDXApp->GetUICanvasBottom();
+	if ( resultPos.x < fLeft )
 	{
-		resultPos.x = 0;
+		resultPos.x = fLeft;
 	}
-	else if ( resultPos.x + windowSize.x > 1024 )
+	else if ( resultPos.x + windowSize.x > fRight )
 	{
-		resultPos.x = 1024 - windowSize.x;
+		resultPos.x = fRight - windowSize.x;
 	}
 
-	if ( resultPos.y < 0 )
+	if ( resultPos.y < fTop )
 	{
-		resultPos.y = 0;
+		resultPos.y = fTop;
 	}
-	else if ( resultPos.y + windowSize.y > 768 )
+	else if ( resultPos.y + windowSize.y > fBottom )
 	{
-		resultPos.y = 768 - windowSize.y;
+		resultPos.y = fBottom - windowSize.y;
 	}
 
 	return resultPos;

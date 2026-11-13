@@ -260,7 +260,7 @@ void CX2SlideShot::AddText( bool bNameLeft, const WCHAR* wszName, const WCHAR* w
 	if( NULL == m_pDLGSlideShot )
 		return;
 
-	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 750, 512 );
+	D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 750, 512 );
 	const int CHAT_LINE_WIDTH = (int)vTemp.x;
 
 	wstring nextLineString = L"\n";

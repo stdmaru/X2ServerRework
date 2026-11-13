@@ -778,13 +778,13 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					{
 
 						D3DXVECTOR2 offsetPos;
-						offsetPos = g_pKTDXApp->ConvertByResolution( pControl->GetOffsetPos() );
+						offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
 
 						POINT mousePointFinal = mousePoint;
 						mousePointFinal.x -= (LONG)offsetPos.x;
 						mousePointFinal.y -= (LONG)offsetPos.y;
 
-						D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+						D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
 						mousePointFinal.x = (LONG)mousePos.x;
 						mousePointFinal.y = (LONG)mousePos.y;
 
@@ -1480,13 +1480,13 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 		)
 	{
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertByResolution( s_pControlFocus->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( s_pControlFocus->GetOffsetPos() );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
 		mousePointFinal.y -= (LONG)offsetPos.y;
 
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
 		mousePointFinal.x = (LONG)mousePos.x;
 		mousePointFinal.y = (LONG)mousePos.y;
 
@@ -1509,13 +1509,13 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
 		mousePointFinal.y -= (LONG)offsetPos.y;
 
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
 		mousePointFinal.x = (LONG)mousePos.x;
 		mousePointFinal.y = (LONG)mousePos.y;
 
@@ -1788,13 +1788,13 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPoint( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
 		mousePointFinal.y -= (LONG)offsetPos.y;
 
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
 		mousePointFinal.x = (LONG)mousePos.x;
 		mousePointFinal.y = (LONG)mousePos.y;
 
@@ -1824,13 +1824,13 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPointForStatic( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
 		mousePointFinal.y -= (LONG)offsetPos.y;
 
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
 		mousePointFinal.x = (LONG)mousePos.x;
 		mousePointFinal.y = (LONG)mousePos.y;
 
@@ -1863,13 +1863,13 @@ CKTDGUIControl*	CKTDGUIDialog::GetControlAtPointExceptStatic( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
 		mousePointFinal.y -= (LONG)offsetPos.y;
 
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
 		mousePointFinal.x = (LONG)mousePos.x;
 		mousePointFinal.y = (LONG)mousePos.y;
 
@@ -1901,13 +1901,13 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPointAbsolute( POINT pt )
 			continue;
 
 		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertByResolution( pControl->GetOffsetPos() );
+		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() );
 
 		POINT mousePointFinal = pt;
 		mousePointFinal.x -= (LONG)offsetPos.x;
 		mousePointFinal.y -= (LONG)offsetPos.y;
 
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
 		mousePointFinal.x = (LONG)mousePos.x;
 		mousePointFinal.y = (LONG)mousePos.y;
 
@@ -2298,7 +2298,8 @@ void CKTDGUIDialog::ShowGuideDesc( CKTDGUIControl* pControl )
 
 	wstring guideDesc = pControl->GetGuideDesc();
 	CKTDGFontManager::CUKFont* pItemDescFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( 2 );
-	const int iWidth = static_cast<int>( DXUTGetBackBufferSurfaceDesc()->Width / g_pKTDXApp->GetResolutionScaleX() );
+	const int iLeft = static_cast<int>( g_pKTDXApp->GetUICanvasLeft() );
+	const int iWidth = static_cast<int>( g_pKTDXApp->GetUICanvasRight() );	// the right edge
 	int itemDescWidth = (int)( pItemDescFont->GetWidth( guideDesc.c_str() ) / g_pKTDXApp->GetResolutionScaleX() ) + 12;
 	int itemDescHeight = (int)( pItemDescFont->GetHeight( guideDesc.c_str() ) / g_pKTDXApp->GetResolutionScaleY() ) + 12;
 
@@ -2331,7 +2332,7 @@ void CKTDGUIDialog::ShowGuideDesc( CKTDGUIControl* pControl )
     }
 
 
-	if ( offsetPos.x >= 0 ) //왼쪽에 공간이 충분한 경우
+	if ( offsetPos.x >= iLeft ) // enough room on the left
 	{
 		if ( offsetPos.x + itemDescWidth >= iWidth )
 			itemDescPosX = static_cast<int>( iWidth - itemDescWidth );
@@ -2340,16 +2341,17 @@ void CKTDGUIDialog::ShowGuideDesc( CKTDGUIControl* pControl )
 	}
 	else
 	{
-		itemDescPosX = 0;
+		itemDescPosX = iLeft;
 	}
 
-	if ( offsetPos.y >= 0 )
+	const int iTop = static_cast<int>( g_pKTDXApp->GetUICanvasTop() );
+	if ( offsetPos.y >= iTop )
 	{
 		itemDescPosY = (int)offsetPos.y;
 	}
 	else
 	{
-		itemDescPosY = 4;
+		itemDescPosY = iTop + 4;
 	}
 
 	if ( pControl->GetIsGuideDescAbsolutePos() == true )

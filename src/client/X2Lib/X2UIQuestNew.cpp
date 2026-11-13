@@ -2103,11 +2103,9 @@ void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, i
 		return;
 
 
-	const int iWidth = DXUTGetBackBufferSurfaceDesc()->Width;
-	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
 
 
-	int itemDescWidth = static_cast<int>( iWidth / 3 / g_pKTDXApp->GetResolutionScaleX() );
+	int itemDescWidth = static_cast<int>( CKTDXApp::kUILayoutWidth / 3 );
 	int itemDescHeight = 0;
 	int itemDescFontHeight = g_pKTDXApp->GetResolutionScaleY() > 1.1 ? 15 : 16;	// XUF_DODUM_13_SEMIBOLD의 크기
 
@@ -2121,7 +2119,7 @@ void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, i
 	if( NULL != pItemDesc &&
 		NULL != pItemDesc->GetString(0) )
 	{
-		const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int>( iHeight / g_pKTDXApp->GetResolutionScaleY() );
+		const int MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() );
 
 		if( itemDescHeight > MAGIC_ITEM_TOOL_TIP_MAX_HEIGHT )
 		{
@@ -2149,15 +2147,15 @@ void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, i
 	itemDescHeight += lineNum;
 
 	//{{ 폰트를 작게 설정했는데도 화면 높이보다 클 경우는 분할
-	if ( itemDescHeight > iHeight / g_pKTDXApp->GetResolutionScaleY() )
+	if ( itemDescHeight > g_pKTDXApp->GetUICanvasBottom() )
 	{
-		itemDescWidth = static_cast<int>( iWidth / 4 / g_pKTDXApp->GetResolutionScaleX() );
+		itemDescWidth = static_cast<int>( CKTDXApp::kUILayoutWidth / 4 );
 
 		wstrItemDesc = CWordLineHandler::GetStrByLineBreakColorInX2Main(wstrItemDescTemp.c_str(), itemDescWidth - ITEM_DESC_ADD_SIZE_X, SLOT_MANAGER_FONT_INDEX_SMALL);
 
 		SplitDescHeight( &wstrItemDesc, &wstrItemDescTemp, itemDescHeight, itemDescFontHeight, SLOT_MANAGER_FONT_INDEX, false );
 
-		itemDescHeight = static_cast<int>( iHeight / g_pKTDXApp->GetResolutionScaleY() );
+		itemDescHeight = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() );
 
 		SplitDescHeight( &wstrItemDesc, &wstrItemDescTemp, itemDescHeight, itemDescFontHeight, SLOT_MANAGER_FONT_INDEX, true );
 	}
@@ -2558,7 +2556,7 @@ bool CX2UIQuestNew::MouseOnQuestListArea( D3DXVECTOR2 mousePos )
 {
 	// 퀘스트 목록의 위치와 크기
 	D3DXVECTOR2 m_ConvertPos	= g_pKTDXApp->ConvertByResolution( D3DXVECTOR2(15, 75) + m_MovedPosition );
-	D3DXVECTOR2 m_ConvertSize	= g_pKTDXApp->ConvertByResolution( D3DXVECTOR2(409, 452) );
+	D3DXVECTOR2 m_ConvertSize	= g_pKTDXApp->ConvertSizeByResolution( D3DXVECTOR2(409, 452) );
 
 	if ( mousePos.x >= m_ConvertPos.x   && mousePos.x <= m_ConvertPos.x + m_ConvertSize.x &&
 		mousePos.y >= m_ConvertPos.y && mousePos.y <= m_ConvertPos.y + m_ConvertSize.y )
@@ -5768,15 +5766,7 @@ void CX2UIQuestNew::NotificationByQuickQuestInfoChange( const int iQuestID_, boo
 		if( iQuestID_ == m_vecUIQuickQuest[i].m_QuestID )
 		{
 			D3DXVECTOR2 vPos = m_vecUIQuickQuest[i].m_pDLGUIQuickQuest->GetPos();
-			vPos.x = (vPos.x + 96.f) * g_pKTDXApp->GetResolutionScaleX();
-			if( true == m_vecUIQuickQuest[i].m_bIsExpand )
-			{
-				vPos.y = (vPos.y + 30.f ) * g_pKTDXApp->GetResolutionScaleY();
-			}
-			else
-			{
-				vPos.y = (vPos.y + 10.f ) * g_pKTDXApp->GetResolutionScaleY();
-			}
+			vPos = g_pKTDXApp->ConvertByResolution( vPos.x + 96.f, vPos.y + ( true == m_vecUIQuickQuest[i].m_bIsExpand ? 30.f : 10.f ) );
 
 			CKTDGParticleSystem::CParticleEventSequence* pParticle = NULL;
 			pParticle = g_pData->GetUIMajorParticle()->CreateSequence( NULL, L"UI_quickQuest_complete_P01",

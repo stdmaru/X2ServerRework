@@ -2982,8 +2982,9 @@ HRESULT CKTDGUIIMEEditBox::DrawRect( RECT* prcDest, D3DCOLOR color )
 	long lScreenRight = static_cast<long>((rcScreen.right + m_pDialog->GetPos().x) - (rcScreen.left + m_pDialog->GetPos().x));
 	long lScreenBottom = static_cast<long>((rcScreen.bottom + m_pDialog->GetPos().y) - (rcScreen.top + m_pDialog->GetPos().y));
 
-	rcScreen.left		= (LONG)(rcScreen.left * g_pKTDXApp->GetResolutionScaleX() + m_pDialog->GetPos().x * g_pKTDXApp->GetResolutionScaleX());
-	rcScreen.top		= (LONG)(rcScreen.top * g_pKTDXApp->GetResolutionScaleY() + m_pDialog->GetPos().y * g_pKTDXApp->GetResolutionScaleY());
+	const D3DXVECTOR2 vLeftTop = g_pKTDXApp->ConvertByResolution( rcScreen.left + m_pDialog->GetPos().x, rcScreen.top + m_pDialog->GetPos().y );
+	rcScreen.left		= (LONG)vLeftTop.x;
+	rcScreen.top		= (LONG)vLeftTop.y;
 	rcScreen.right		= rcScreen.left + lScreenRight;
 	rcScreen.bottom		= rcScreen.top + lScreenBottom;
 

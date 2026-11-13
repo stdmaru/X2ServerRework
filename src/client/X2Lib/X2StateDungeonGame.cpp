@@ -4754,7 +4754,7 @@ void CX2StateDungeonGame::DungeonEndingEvent::OnFrameMove( double /*fTime*/, flo
 						if( NULL == pFont )
 							return;
 
-						D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 840, 512 );
+						D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 840, 512 );
 
 						const int CHAT_LINE_WIDTH = (int)vTemp.x;;
 

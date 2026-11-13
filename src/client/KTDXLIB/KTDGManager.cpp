@@ -664,7 +664,11 @@ void CKTDGManager::FrontUIRender()
 		D3DXCOLOR color = 0xffffffff;
 		color.a = m_fFadeAlpha;
 		if( m_pTextureFadeInOut != NULL )
-			m_pTextureFadeInOut->Draw( 0, 0, 1024, 768, color );
+		{
+			int iX, iY, iWidth, iHeight;
+			g_pKTDXApp->GetUICanvasRect( iX, iY, iWidth, iHeight );
+			m_pTextureFadeInOut->Draw( iX, iY, iWidth, iHeight, color );
+		}
 	}
 
     _RenderObjectRenderHintVector( m_OverUIChain );
@@ -884,7 +888,11 @@ HRESULT CKTDGManager::RemoveObjectChain( CKTDGObject* object )
 	else
 	{
 		m_fOrthoScale = fOrthoScale;
-		D3DXMatrixOrthoLH( &m_matProjection, 1024 * fOrthoScale, 768 * fOrthoScale,	m_Near, m_Far );
+		// T44: one world unit per layout unit on both axes, so the view is as wide as the UI canvas (1024x768 at 4:3).
+		D3DXVECTOR2 vCanvas = g_pKTDXApp->GetUICanvasSize();
+		if( vCanvas.x <= 0.f || vCanvas.y <= 0.f )
+			vCanvas = D3DXVECTOR2( CKTDXApp::kUILayoutWidth, CKTDXApp::kUILayoutHeight );
+		D3DXMatrixOrthoLH( &m_matProjection, vCanvas.x * fOrthoScale, vCanvas.y * fOrthoScale,	m_Near, m_Far );
 	}
 
 	g_pKTDXApp->SetProjectionTransform( &m_matProjection );

@@ -330,21 +330,22 @@ void CX2UserListPopUp::OpenPopupMenu( bool bNotOpen )
 
 
 			// 팝업 메뉴가 화면 밖으로 벗어나지 않게 수정
-			if( vMousePos.x > 860.f )
+			// kept on the screen (T44: its edges in layout units)
+			if( vMousePos.x > g_pKTDXApp->GetUICanvasRight() - 164.f )
 			{
-				vMousePos.x = 860.f;
+				vMousePos.x = g_pKTDXApp->GetUICanvasRight() - 164.f;
 			}
 
-			if( vMousePos.x < 0.f )
+			if( vMousePos.x < g_pKTDXApp->GetUICanvasLeft() )
 			{
-				vMousePos.x = 0.f;
+				vMousePos.x = g_pKTDXApp->GetUICanvasLeft();
 			}
 
 
 
-			if( vMousePos.y > 768.f - (float) 4 * 30.f )
+			if( vMousePos.y > g_pKTDXApp->GetUICanvasBottom() - (float) 4 * 30.f )
 			{
-				vMousePos.y = 768.f - (float) 4 * 30.f;
+				vMousePos.y = g_pKTDXApp->GetUICanvasBottom() - (float) 4 * 30.f;
 			}
 
 			if( vMousePos.y < 0.f )

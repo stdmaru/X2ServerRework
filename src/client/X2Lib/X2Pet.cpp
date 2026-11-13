@@ -508,8 +508,7 @@ HRESULT	CX2PET::OnFrameMove( double fTime, float fElapsedTime )
 				{
 					D3DXVECTOR2 vResoultion( g_pKTDXApp->GetResolutionScaleX(), g_pKTDXApp->GetResolutionScaleY() );
 					D3DXVECTOR2 leftTop = m_pDlgPetGage->GetPos();
-					leftTop.x *= vResoultion.x;
-					leftTop.y *= vResoultion.y;
+					leftTop = g_pKTDXApp->ConvertByResolution( leftTop );
 					D3DXVECTOR2 RigthBottom( leftTop.x + m_pDlgPetGage->GetSize().x * vResoultion.x, leftTop.y + m_pDlgPetGage->GetSize().y * vResoultion.y );
 					D3DXVECTOR2 mousePoint( (float)g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos(), (float)g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() );
 

@@ -3695,7 +3695,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 					partPos.x = temp.x;
 					partPos.y = temp.y;
 				}
-				temp = g_pKTDXApp->ConvertByResolution( partSize.x, partSize.y );
+				temp = g_pKTDXApp->ConvertSizeByResolution( partSize.x, partSize.y );
 				partSize.x = temp.x;
 				partSize.y = temp.y;
 

@@ -1100,7 +1100,7 @@ void CX2TFieldNpcShop::SetNpcMessage(const wstring &npcMsg)
 		if( NULL == pFont )
 			return;
 
-		D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 650, 512 );
+		D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 650, 512 );
 		const int CHAT_LINE_WIDTH = (int)vTemp.x;
 		int addRow = CWordLineHandler::LineBreakInX2Main(str, pFont, CHAT_LINE_WIDTH, L"", true, false);
 
@@ -1123,7 +1123,7 @@ void CX2TFieldNpcShop::SetNpcMessageWithEtc(const wstring &npcMsg, const wstring
 		if( NULL == pFont )
 			return;
 
-		D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 650, 512 );
+		D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertSizeByResolution( 650, 512 );
 		const int CHAT_LINE_WIDTH = (int)vTemp.x;
 		int addRow = CWordLineHandler::LineBreakInX2Main(str, pFont, CHAT_LINE_WIDTH, L"", true, false);
 
@@ -1570,7 +1570,7 @@ void CX2TFieldNpcShop::UpdateQuestDesc( const wstring& wstrDesc )
 	};
 
 	m_vQuestDescSize = D3DXVECTOR2( (float) m_pDlgMessage->GetDummyInt( 0 ), (float) m_pDlgMessage->GetDummyInt( 1 ) );
-	m_vQuestDescSize = g_pKTDXApp->ConvertByResolution( m_vQuestDescSize );
+	m_vQuestDescSize = g_pKTDXApp->ConvertSizeByResolution( m_vQuestDescSize );
 
 	CKTDGUIStatic* pStatic_QuestDesc = (CKTDGUIStatic*) m_pDlgMessage->GetControl( L"npcMessage" );
 	if( NULL == pStatic_QuestDesc )

@@ -1321,8 +1321,7 @@ void CX2OldGageManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 			D3DXVECTOR3 vUserPos = pUser->GetPos();
 			vUserPos.y += 400.f;
 			D3DXVECTOR2 vAirGagePos = g_pKTDXApp->GetProj3DPos( vUserPos );
-			vAirGagePos.x /= g_pKTDXApp->GetResolutionScaleX();
-			vAirGagePos.y /= g_pKTDXApp->GetResolutionScaleY();
+			vAirGagePos = g_pKTDXApp->MouseConvertByResolution( vAirGagePos );
 
 			vAirGagePos.x -= 25.f;
 

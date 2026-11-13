@@ -221,8 +221,7 @@ HRESULT CKTDGUIStatic::OnFrameRender()
 		if ( NULL != pMovieData &&
 			 pMovieData->GetShow() )
 		{
-			D3DXVECTOR2 vPos( (pMovieData->GetOriginPos().x + m_pDialog->GetPos().x + m_OffsetPos.x) * g_pKTDXApp->GetResolutionScaleX(),
-				(pMovieData->GetOriginPos().y + m_pDialog->GetPos().y + m_OffsetPos.y) * g_pKTDXApp->GetResolutionScaleY() );
+			D3DXVECTOR2 vPos = g_pKTDXApp->ConvertByResolution( pMovieData->GetOriginPos() + m_pDialog->GetPos() + m_OffsetPos );
 			pMovieData->SetPos( vPos );
 
 			pMovieData->OnFrameRender();

@@ -1454,11 +1454,11 @@ void CX2UIGuildSkillTreeInfo::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID 
 		int itemDescPosX = 0;
 		int itemDescPosY = 0;
 
-		if ( pos.x + ( size.x / 2 ) - ( itemDescWidth / 2 ) >= 0 ) //왼쪽에 공간이 충분한 경우
+		if ( pos.x + ( size.x / 2 ) - ( itemDescWidth / 2 ) >= g_pKTDXApp->GetUICanvasLeft() ) //왼쪽에 공간이 충분한 경우
 		{
-			if ( pos.x+ ( size.x / 2 ) - ( itemDescWidth / 2 ) + itemDescWidth > 1024 )
+			if ( pos.x+ ( size.x / 2 ) - ( itemDescWidth / 2 ) + itemDescWidth > g_pKTDXApp->GetUICanvasRight() )
 			{
-				itemDescPosX = (int)(1024 - itemDescWidth);
+				itemDescPosX = (int)(g_pKTDXApp->GetUICanvasRight() - itemDescWidth);
 			}
 			else
 			{
@@ -1467,7 +1467,7 @@ void CX2UIGuildSkillTreeInfo::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID 
 		}
 		else
 		{
-			itemDescPosX = 0;
+			itemDescPosX = static_cast<int>( g_pKTDXApp->GetUICanvasLeft() );
 		}
 
 		if ( pos.y - itemDescHeight >= 0 ) //슬롯위로 표시할 수 있는경우
@@ -1478,7 +1478,7 @@ void CX2UIGuildSkillTreeInfo::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID 
 		{
 			itemDescPosY = (int)(pos.y + size.y);
 
-			int overSize = 768 - (itemDescPosY + itemDescHeight);
+			int overSize = static_cast<int>( g_pKTDXApp->GetUICanvasBottom() ) - (itemDescPosY + itemDescHeight);
 			if ( overSize < 0 )
 			{
 				itemDescPosY += overSize;

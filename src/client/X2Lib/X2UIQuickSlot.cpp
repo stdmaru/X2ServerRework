@@ -1862,8 +1862,8 @@ void CX2UIQuickSlot::OnFrameMove_CoolTime( CX2Item* pItem_, CX2SlotItem* pSlotIt
 			if ( pPicture->GetShow() == true )
 			{
 				//퀵슬롯을 다시 쓸 수 있다는 표시
-				float fEffectPosX = (pSlotItem_->GetDialog()->GetPos().x + ( pPicture->GetOriginalSize().x/2 )) * g_pKTDXApp->GetResolutionScaleX() ;
-				float fEffectPosY = (pSlotItem_->GetDialog()->GetPos().y + ( pPicture->GetOriginalSize().y/2 )) * g_pKTDXApp->GetResolutionScaleY() ;
+				float fEffectPosX = g_pKTDXApp->ConvertXByResolution( pSlotItem_->GetDialog()->GetPos().x + ( pPicture->GetOriginalSize().x/2 ) );
+				float fEffectPosY = g_pKTDXApp->ConvertYByResolution( pSlotItem_->GetDialog()->GetPos().y + ( pPicture->GetOriginalSize().y/2 ) );
 				CKTDGParticleSystem::CParticleEventSequence* pParticle = g_pData->GetUIMajorParticle()->CreateSequence( NULL, L"UI_ItemBox_enable_P01",
 					fEffectPosX, fEffectPosY, 0, 100, 100, true, 5, 10 );
 

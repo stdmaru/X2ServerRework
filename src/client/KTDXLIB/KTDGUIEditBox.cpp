@@ -883,10 +883,12 @@ HRESULT CKTDGUIEditBox::DrawRect( RECT* prcDest, D3DCOLOR color )
 {
 	RECT rcScreen = *prcDest;
 
-	rcScreen.left		= (LONG)(rcScreen.left * g_pKTDXApp->GetResolutionScaleX() + m_pDialog->GetPos().x * g_pKTDXApp->GetResolutionScaleX());
-	rcScreen.top		= (LONG)(rcScreen.top * g_pKTDXApp->GetResolutionScaleY() + m_pDialog->GetPos().y * g_pKTDXApp->GetResolutionScaleY());
-	rcScreen.right		= (LONG)(rcScreen.right * g_pKTDXApp->GetResolutionScaleX() + m_pDialog->GetPos().x * g_pKTDXApp->GetResolutionScaleX());
-	rcScreen.bottom		= (LONG)(rcScreen.bottom * g_pKTDXApp->GetResolutionScaleY() + m_pDialog->GetPos().y * g_pKTDXApp->GetResolutionScaleY());
+	const D3DXVECTOR2 vLeftTop = g_pKTDXApp->ConvertByResolution( rcScreen.left + m_pDialog->GetPos().x, rcScreen.top + m_pDialog->GetPos().y );
+	const D3DXVECTOR2 vRightBottom = g_pKTDXApp->ConvertByResolution( rcScreen.right + m_pDialog->GetPos().x, rcScreen.bottom + m_pDialog->GetPos().y );
+	rcScreen.left		= (LONG)vLeftTop.x;
+	rcScreen.top		= (LONG)vLeftTop.y;
+	rcScreen.right		= (LONG)vRightBottom.x;
+	rcScreen.bottom		= (LONG)vRightBottom.y;
 
 	CKTDGUIControl::VERTEX_UI vertices[4] =
 	{

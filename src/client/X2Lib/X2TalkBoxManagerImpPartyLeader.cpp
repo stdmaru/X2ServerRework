@@ -71,8 +71,8 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 			m_bExtraVariable = talkBox.m_bExtraVariable;
 
 			DrawBalloon( talkBox.m_TalkBoxType,
-				talkBox.m_vPos.x * g_pKTDXApp->GetResolutionScaleX(),
-				talkBox.m_vPos.y * g_pKTDXApp->GetResolutionScaleY(),
+				g_pKTDXApp->ConvertXByResolution( talkBox.m_vPos.x ),
+				g_pKTDXApp->ConvertYByResolution( talkBox.m_vPos.y ),
 				(talkBox.m_vTalkBoxSize.x - m_fTalkBoxCornerWidth * 2.f) * g_pKTDXApp->GetResolutionScaleX(),
 				(talkBox.m_vTalkBoxSize.y - m_fTalkBoxCornerHeight * 2.f) * g_pKTDXApp->GetResolutionScaleY(),
 				talkBox.m_vTalkBoxSizeScale.x, talkBox.m_vTalkBoxSizeScale.y, talkBox.m_fTalkBoxTipLerpCoef, talkBox.m_BackTexColor );
@@ -149,7 +149,8 @@ void CX2TalkBoxManagerImpPartyLeader::DrawBalloon( int iType, float fX, float fY
 
 	_fY = fY-fCornerHeightScaled-fCenterHeightScaled;
 
-	DrawPartyInfoIcon( (int)( _fX / g_pKTDXApp->GetResolutionScaleX() - 10), (int)( _fY / g_pKTDXApp->GetResolutionScaleY() - 20)  );
+	const D3DXVECTOR2 vIconPos = g_pKTDXApp->MouseConvertByResolution( _fX, _fY );
+	DrawPartyInfoIcon( (int)( vIconPos.x - 10), (int)( vIconPos.y - 20)  );
 }
 
 
