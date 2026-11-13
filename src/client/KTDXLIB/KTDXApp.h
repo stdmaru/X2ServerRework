@@ -233,8 +233,43 @@ class CKTDXApp
 		D3DXVECTOR2 MouseConvertByResolution( const D3DXVECTOR2& fSrc ) const { return MouseConvertByResolution( fSrc.x, fSrc.y ); }
 		// Screen position of the layout's origin (the centered column's top left), in pixels.
 		const D3DXVECTOR2& GetUIOrigin() const { return m_UIOrigin; }
-		// Drawing into a render target: its layout starts at its own top left (CKTDXDeviceRenderTargetTexture).
-		void SetUIOrigin( const D3DXVECTOR2& vOrigin ) { m_UIOrigin = vOrigin; }
+		// Drawing into a render target: its layout starts at its own top left (CKTDXDeviceRenderTargetTexture). The
+		// anchor shift in effect goes with the origin.
+		void SetUIOrigin( const D3DXVECTOR2& vOrigin, float fAnchorShift = 0.f ) { m_UIOrigin = vOrigin; m_fUIAnchorShift = fAnchorShift; }
+		float GetUIAnchorShiftInEffect() const { return m_fUIAnchorShift; }
+
+		// Horizontal anchors (T44, KTDGUIAnchor.h).
+		// How far, in layout units, an anchor moves the layout from the centered column on this screen.
+		float GetUIAnchorShift( UIAnchor eAnchor ) const
+		{
+			const float fBaseOriginX = m_UIOrigin.x - m_fUIAnchorShift * m_ResolutionScale.x;
+			switch ( eAnchor )
+			{
+			case UIAnchor::Left:	return -fBaseOriginX / m_ResolutionScale.x;
+			case UIAnchor::Right:	return ( m_ViewPort.Width - fBaseOriginX ) / m_ResolutionScale.x - kUILayoutWidth;
+			default:				return 0.f;
+			}
+		}
+		// Draws and reads the mouse under an anchor while it lives: the UI origin moves by the anchor's shift, so
+		// every position converted meanwhile (vertices, text, hit tests) lands where the anchor puts it.
+		class UIAnchorScope
+		{
+		public:
+			UIAnchorScope( CKTDXApp& kApp, UIAnchor eAnchor )
+				: m_kApp( kApp ), m_vOrigin( kApp.m_UIOrigin ), m_fShift( kApp.m_fUIAnchorShift )
+			{
+				const float fShift = kApp.GetUIAnchorShift( eAnchor );
+				kApp.m_UIOrigin.x += ( fShift - kApp.m_fUIAnchorShift ) * kApp.m_ResolutionScale.x;
+				kApp.m_fUIAnchorShift = fShift;
+			}
+			~UIAnchorScope() { m_kApp.m_UIOrigin = m_vOrigin; m_kApp.m_fUIAnchorShift = m_fShift; }
+			UIAnchorScope( const UIAnchorScope& ) = delete;
+			UIAnchorScope& operator=( const UIAnchorScope& ) = delete;
+		private:
+			CKTDXApp& m_kApp;
+			D3DXVECTOR2 m_vOrigin;
+			float m_fShift;
+		};
 		// The whole screen in reference units: its left/top edge (<= 0) and its size (>= 1024x768).
 		D3DXVECTOR2 GetUICanvasMin() const { return MouseConvertByResolution( 0.f, 0.f ); }
 		D3DXVECTOR2 GetUICanvasSize() const
@@ -461,6 +496,7 @@ class CKTDXApp
 		int						m_ViewMatChangeCount;
 		D3DXVECTOR2				m_ResolutionScale;	// T44: screen pixels per layout unit, equal on both axes
 		D3DXVECTOR2				m_UIOrigin{ 0.f, 0.f };	// screen position of the layout's (0, 0)
+		float					m_fUIAnchorShift = 0.f;	// layout units m_UIOrigin is moved by (UIAnchorScope)
 		//KLuabinder				m_LuaBinder;
 
 		CKTDXCollision*			m_pCollision;

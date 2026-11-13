@@ -1143,6 +1143,7 @@ void CKTDXApp::RegisterLuabind( KLuabinder* pKLuabinder )
 	lua_tinker::class_add<CKTDGUIDialog>( L, "CKTDGUIDialog" );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "SetName",							&CKTDGUIDialog::SetName_LUA );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "SetPos",							&CKTDGUIDialog::SetPos_LUA );
+	lua_tinker::class_def<CKTDGUIDialog>( L, "SetAnchor",						&CKTDGUIDialog::SetAnchor_LUA );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "SetModal",						&CKTDGUIDialog::SetModal );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "CreatePicture",					&CKTDGUIDialog::CreatePicture );
 
@@ -1232,6 +1233,7 @@ void CKTDXApp::RegisterLuabind( KLuabinder* pKLuabinder )
 	lua_tinker::class_def<CKTDGUIControl>( L, "SetTabControlName",				&CKTDGUIControl::SetTabControlName_LUA );
 	lua_tinker::class_def<CKTDGUIControl>( L, "SetPrevTabControlName",			&CKTDGUIControl::SetPrevTabControlName_LUA );
 	lua_tinker::class_def<CKTDGUIControl>( L, "SetOffsetPos",					&CKTDGUIControl::SetOffsetPos_LUA );
+	lua_tinker::class_def<CKTDGUIControl>( L, "SetAnchor",						&CKTDGUIControl::SetAnchor_LUA );
 	lua_tinker::class_def<CKTDGUIControl>( L, "GetOffsetPos",					&CKTDGUIControl::GetOffsetPos );
 	lua_tinker::class_def<CKTDGUIControl>( L, "SetColor",						&CKTDGUIControl::SetColor );
 	lua_tinker::class_def<CKTDGUIControl>( L, "Move",							&CKTDGUIControl::Move_LUA );
@@ -1880,6 +1882,7 @@ void CKTDXApp::UpdateUICanvas()
 		fScale = 1.f;
 	m_ResolutionScale = D3DXVECTOR2( fScale, fScale );
 	m_UIOrigin = D3DXVECTOR2( ( fWidth - kUILayoutWidth * fScale ) * 0.5f, ( fHeight - kUILayoutHeight * fScale ) * 0.5f );
+	m_fUIAnchorShift = 0.f;
 }
 
 D3DXVECTOR2 CKTDXApp::GetProj3DPos( const D3DXVECTOR3& pos )

@@ -80,6 +80,7 @@ void CKTDXDeviceRenderTargetTexture::BeginRender( bool bClear )
 	CKTDGStateManager::SetRenderTarget( m_pRenderTargetTexture );
 	// T44: what is drawn in layout units into the target starts at its top left, not at the screen's centered column.
 	m_vBackupUIOrigin = g_pKTDXApp->GetUIOrigin();
+	m_fBackupUIAnchorShift = g_pKTDXApp->GetUIAnchorShiftInEffect();
 	g_pKTDXApp->SetUIOrigin( D3DXVECTOR2( 0.f, 0.f ) );
 
 	if( bClear == true )
@@ -94,7 +95,7 @@ void CKTDXDeviceRenderTargetTexture::EndRender()
 	// back to the target in use before BeginRender (the back buffer in the original, which saved it at creation)
 	CKTDGStateManager::SetRenderTarget( m_pBackupTarget );
 	m_pBackupTarget = NULL;
-	g_pKTDXApp->SetUIOrigin( m_vBackupUIOrigin );
+	g_pKTDXApp->SetUIOrigin( m_vBackupUIOrigin, m_fBackupUIAnchorShift );
 }
 
 void CKTDXDeviceRenderTargetTexture::Clear( D3DCOLOR color )

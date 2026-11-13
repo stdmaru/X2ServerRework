@@ -78,5 +78,6 @@ class CKTDXDeviceRenderTargetTexture
 		LPDIRECT3DTEXTURE9		m_pBackupTarget;		// the target BeginRender replaced (null: the back buffer)
 		D3DFORMAT				m_D3DFormat;
 		D3DXVECTOR2				m_vBackupUIOrigin{ 0.f, 0.f };	// the UI origin BeginRender replaced
+		float					m_fBackupUIAnchorShift = 0.f;	// and the anchor shift in effect with it
 
 };
