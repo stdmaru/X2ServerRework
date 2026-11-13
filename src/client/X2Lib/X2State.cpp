@@ -429,6 +429,10 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 	g_pKTDXApp->GetDGManager()->OnFrameMove( fTime, fElapsedTime );
 	m_pCursor->OnFrameMove( fTime, fElapsedTime );
 
+	// In a game, CX2Game's camera (the same CKTDGCamera) already updated this step; a second update moved it twice
+	// as far, half of it toward the previous step's target, and the view turned unevenly on curves. The original's
+	// fix (FIX_CAMERA_CRASH_BY_EFFECT_SET) was never enabled.
+	if( NULL == g_pX2Game )
 	{
 		g_pKTDXApp->GetDGManager()->GetCamera().UpdateCamera( fElapsedTime );
 	}
