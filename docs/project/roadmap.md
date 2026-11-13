@@ -290,8 +290,9 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [x] `client/global-tick`: one simulation rate of 60 steps per second in every state ([T43](decisions.md), PR #61).
   - [x] `client/resolution`: choosing another resolution or full screen resets the game's device objects; full screen at
         the closest display mode (Hyprland refuses windowed resizes) (2026-11-12, PR #60).
-  - [ ] `client/interpolation-2`: everything that still moves at tick rate (T41 later phases; before MSAA, user 2026-11-12): mesh players, particles, UI and
-        billboards (quest balloons).
+  - [x] `client/interpolation-2` (2026-11-12, PR #62): particles, mesh players, world objects, dialogs (quest balloons)
+        and monsters updated every few steps drawn between steps
+        ([Frame pacing](../porting/client-ktdxlib.md#frame-pacing-2026-11-12-client-frame-pacing-t41)).
   - [ ] `client/msaa`: MSAA 2x/4x/8x on the back buffer and its resolve.
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
