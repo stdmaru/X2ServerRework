@@ -219,6 +219,15 @@ dialog's, and slot hit tests, dragging, tooltips and highlights go through `CX2S
 they draw it with the frame's anchor (`CX2MiniMapUI::GetFrameAnchor`); the map is 248 wide and runs 48 units past the
 right edge under the frame's buttons, as in the original. The anchors of single-sided dialogs are in `UIAnchors.lua` ([client_data](../tools/client-data.md)).
 
+Character select and creation (2026-11-13, `client/widescreen-screens`): the character stays centered, the lists and
+the creation panel go right, and the info and exit buttons go left. Some statics mixed pictures from both sides, and anchors
+are per control. Those pictures are statics of their own in the client_data, and the code shows them with the originals:
+- `CX2StateServerSelect` shows the list labels `characListLabel` and `ChannelListLabel` with their lists.
+- `CX2StateCreateUnit` shows the right half of the class info (`StaticUnit_NoChange_Unit_Info_Right`) and the create graph
+  (`StaticUnit_Create_Unit_Graph`, the original's picture 3).
+- `CX2StateCreateUnit::OnFrameMove` keeps the daily creation notice (`Creative_Character_Notice`, centered) shown with the
+  panel (`Creative_Character`).
+
 Known, left for the migration: screens whose texture does not match its rectangle's aspect stay as the original drew
 them. The character select background, for example, is a 512×512 texture drawn at 1024×768, so it is stretched 33% in
 the original as well.
