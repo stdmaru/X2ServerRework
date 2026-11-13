@@ -400,6 +400,16 @@ HRESULT CX2StateCreateUnit::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 
+	// The daily creation notice, under the character, was a picture of "Creative_Character" (the panel on the right);
+	// it is a static of its own in the client_data so that it stays centered (T44), shown with the panel.
+	if ( NULL != m_pDLGCreateUnitFront )
+	{
+		CKTDGUIControl* pPanel = m_pDLGCreateUnitFront->GetControl( L"Creative_Character" );
+		CKTDGUIControl* pNotice = m_pDLGCreateUnitFront->GetControl( L"Creative_Character_Notice" );
+		if ( NULL != pPanel && NULL != pNotice && pNotice->GetShow() != pPanel->GetShow() )
+			pNotice->SetShow( pPanel->GetShow() );
+	}
+
 	if ( NULL != m_pDLGCreateUnitFront && NULL != m_pDLGCreateUnitFront->GetControl( L"Creative_Character_Center" ) )
 	{
 		if ( true == m_pDLGCreateUnitFront->GetControl( L"Creative_Character_Center" )->GetShow () )
@@ -2261,6 +2271,10 @@ void CX2StateCreateUnit::ChangeCreateUnitClassChangeInfoDlg ( CX2Unit::UNIT_TYPE
 	CKTDGUIStatic * pInfoNoChangeStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitBack->GetControl( L"StaticUnit_NoChange_Unit_Info" ) );
 	if ( NULL != pInfoNoChangeStatic )
 		pInfoNoChangeStatic->SetShow ( true );
+	// The right-hand pieces of these statics are statics of their own in the client_data, so that they follow the
+	// panel to the right (T44): the NoChange lines, and the Create graph (the original's picture 3).
+	if ( CKTDGUIControl* pInfoNoChangeRight = m_pDLGCreateUnitBack->GetControl( L"StaticUnit_NoChange_Unit_Info_Right" ) )
+		pInfoNoChangeRight->SetShow( true );
 
 	// �߰��ؾ� �� ���ҽ��� ��� ���⿡ �����Ѵ�.
 	CKTDGUIStatic * pCreateInfoStatic = static_cast<CKTDGUIStatic*> ( m_pDLGCreateUnitBack->GetControl( L"StaticUnit_Create_Unit_Info" ) );
@@ -2284,6 +2298,15 @@ void CX2StateCreateUnit::ChangeCreateUnitClassChangeInfoDlg ( CX2Unit::UNIT_TYPE
  					pCreateInfoStatic->GetPicture( i )->SetTex( wstrCreateStaticTexName.c_str(), wstrKeyName.c_str() );
  				}
 			}
+		}
+
+		CKTDGUIStatic* pCreateGraphStatic = static_cast<CKTDGUIStatic*>( m_pDLGCreateUnitBack->GetControl( L"StaticUnit_Create_Unit_Graph" ) );
+		if ( NULL != pCreateGraphStatic && NULL != pCreateGraphStatic->GetPicture( 0 ) )
+		{
+			const wstring wstrKeyName = GetUnitClassCreateInfoKeyNameByPictureIndex( 3, eUpperClassType_, eClassLine_ );
+			pCreateGraphStatic->SetShow( wstrKeyName.empty() == false );
+			if ( wstrKeyName.empty() == false )
+				pCreateGraphStatic->GetPicture( 0 )->SetTex( wstrCreateStaticTexName.c_str(), wstrKeyName.c_str() );
 		}
 
 		if( NULL != pCreateInfoStatic2->GetPicture(0) )
