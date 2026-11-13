@@ -3706,6 +3706,7 @@ void CX2PET::DoCheer()
 
 void CX2PET::RenderName()
 {
+	const D3DXVECTOR3 vRenderPos = GetPos() + GetRenderOffset();	// drawn between steps, like the unit (T41)
 	KTDXPROFILE();
 
 	if( m_pXSkinAnim == NULL || GetLoaded() == false )
@@ -3717,7 +3718,7 @@ void CX2PET::RenderName()
 	if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
 		return;
 
-	D3DXVECTOR3 vPos = GetPos();
+	D3DXVECTOR3 vPos = vRenderPos;
 	vPos.y -= 44.0f;
 	wstring wstrPetName = L"";
 

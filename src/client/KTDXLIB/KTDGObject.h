@@ -143,6 +143,12 @@ class CKTDGObject
         // interpolated from that note to now, or as it is when the last step did not note it or the object jumped.
         void            NoteTickMatrix( int iTick );
         D3DXMATRIX      GetRenderMatrix( CKTDGMatrix::BILLBOARD_TYPE billboardType = CKTDGMatrix::BT_NONE );
+        // GetRenderMatrix's position minus GetMatrix's: added to a position taken from the object (a name, a bar or
+        // text drawn over a unit), it draws that position between steps too. Zero when the object is drawn as it is.
+        D3DXVECTOR3     GetRenderOffset();
+    private:
+        bool            GetRenderStep( D3DXVECTOR3& vMoved, D3DXVECTOR3& vTurned, float& t );
+    public:
         CKTDGObject*    GetManagerObject() { return m_pManagerObject; }
 
 		void			SetAlphaObject( bool bAlpha ){ m_bAlphaObject = bAlpha; }

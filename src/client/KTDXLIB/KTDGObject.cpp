@@ -131,21 +131,42 @@ void CKTDGObject::NoteTickMatrix( int iTick )
     m_iTickMatrix = iTick;
 }
 
+// Whether the object is drawn between the last two steps this frame: what it moved and turned in the last step, and the
+// fraction of a step to draw it at. Not when the last step did not note it, nor on a jump or a turn over 30 degrees.
+bool CKTDGObject::GetRenderStep( D3DXVECTOR3& vMoved, D3DXVECTOR3& vTurned, float& t )
+{
+    if ( m_pManagerObject == NULL && m_pMatrix == NULL )
+        return false;
+    CKTDGMatrix& kMatrix = GetMatrix();
+    t = g_pKTDXApp->GetTickInterpolation();
+    if ( m_iTickMatrix < 0 || m_iTickMatrix != g_pKTDXApp->GetFrameMoveCount() - 1 || t >= 1.f )
+        return false;
+    vMoved = kMatrix.GetPos() - m_vTickPos;
+    vTurned = kMatrix.GetRotate() - m_vTickRotate;
+    constexpr float fSnapRadians = 0.5236f;   // 30 degrees in one step: a turn, not a motion
+    return D3DXVec3Dot( &vMoved, &vMoved ) <= x2::ktdx::kSnapDistance * x2::ktdx::kSnapDistance
+        && fabsf( vTurned.x ) <= fSnapRadians && fabsf( vTurned.y ) <= fSnapRadians && fabsf( vTurned.z ) <= fSnapRadians;
+}
+
 D3DXMATRIX CKTDGObject::GetRenderMatrix( CKTDGMatrix::BILLBOARD_TYPE billboardType )
 {
     CKTDGMatrix& kMatrix = GetMatrix();
-    const float t = g_pKTDXApp->GetTickInterpolation();
-    if ( m_iTickMatrix < 0 || m_iTickMatrix != g_pKTDXApp->GetFrameMoveCount() - 1 || t >= 1.f )
-        return kMatrix.GetMatrix( billboardType );
-    const D3DXVECTOR3 vMoved = kMatrix.GetPos() - m_vTickPos;
-    const D3DXVECTOR3 vTurned = kMatrix.GetRotate() - m_vTickRotate;
-    constexpr float fSnapRadians = 0.5236f;   // 30 degrees in one step: a turn, not a motion
-    if ( D3DXVec3Dot( &vMoved, &vMoved ) > x2::ktdx::kSnapDistance * x2::ktdx::kSnapDistance
-        || fabsf( vTurned.x ) > fSnapRadians || fabsf( vTurned.y ) > fSnapRadians || fabsf( vTurned.z ) > fSnapRadians )
+    D3DXVECTOR3 vMoved, vTurned;
+    float t = 1.f;
+    if ( !GetRenderStep( vMoved, vTurned, t ) )
         return kMatrix.GetMatrix( billboardType );
     CKTDGMatrix kBetween( NULL );
     kBetween.Move( m_vTickPos + vMoved * t );
     kBetween.Rotate( m_vTickRotate + vTurned * t );
     kBetween.Scale( m_vTickScale + ( kMatrix.GetScale() - m_vTickScale ) * t );
     return kBetween.GetMatrix( billboardType );
+}
+
+D3DXVECTOR3 CKTDGObject::GetRenderOffset()
+{
+    D3DXVECTOR3 vMoved, vTurned;
+    float t = 1.f;
+    if ( !GetRenderStep( vMoved, vTurned, t ) )
+        return D3DXVECTOR3( 0.f, 0.f, 0.f );
+    return vMoved * ( t - 1.f );
 }

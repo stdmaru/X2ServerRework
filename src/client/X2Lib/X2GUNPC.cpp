@@ -19115,6 +19115,7 @@ void CX2GUNPC::SetRideToUnit( CX2GameUnit* pGameUnit_ )
 
 void CX2GUNPC::RenderName()
 {
+	const D3DXVECTOR3 vRenderPos = GetPos() + GetRenderOffset();	// drawn between steps, like the unit (T41)
     if ( false == GetShowObject() )
 		return;
 
@@ -19141,7 +19142,7 @@ void CX2GUNPC::RenderName()
 	if ( true == GetNoRenderName() )	/// 몬스터 이름 미출력 설정하였다면, 출력 제외
 		return;
 
-	D3DXVECTOR3 vPosName( GetPos() );
+	D3DXVECTOR3 vPosName( vRenderPos );
 	vPosName.y -= 80;
 
 	if ( m_wstrChampionName.empty() == false )
@@ -19156,12 +19157,12 @@ void CX2GUNPC::RenderName()
 	{
 		if( GetTeam() == CX2Room::TN_BLUE )
 		{
-			g_pX2Game->GetFontForUnitName()->OutProjectionText( GetPos(), m_wstrLvAndNameAndPostFix.c_str(),
+			g_pX2Game->GetFontForUnitName()->OutProjectionText( vRenderPos, m_wstrLvAndNameAndPostFix.c_str(),
 				m_colorName, CKTDGFontManager::FS_SHELL, m_colorOutLine, NULL, DT_CENTER  );
 		}
 		else
 		{
-			g_pX2Game->GetFontForUnitName()->OutProjectionText( GetPos(), m_wstrLvAndNameAndPostFix.c_str(),
+			g_pX2Game->GetFontForUnitName()->OutProjectionText( vRenderPos, m_wstrLvAndNameAndPostFix.c_str(),
 				m_colorName,	CKTDGFontManager::FS_SHELL, m_colorOutLine , NULL, DT_CENTER  );
 		}
 
@@ -19189,7 +19190,7 @@ void CX2GUNPC::RenderName()
 #if X2_DEV_TOOLS
 	if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 	{
-		//vPosName = GetPos() + D3DXVECTOR3( 0, -100, 0 );
+		//vPosName = vRenderPos + D3DXVECTOR3( 0, -100, 0 );
 
 		//*
 		D3DCOLOR colorFont = 0xffffaa77;

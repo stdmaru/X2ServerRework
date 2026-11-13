@@ -456,7 +456,7 @@ void CX2SmallGageUI::DrawSmallGage()
 {
 	if ( NULL != m_pHPSmallBar || NULL != m_pMPSmallBar )
 	{
-		D3DXVECTOR3 vGameUnitPos( m_optrGameUnit->GetPos() );
+		D3DXVECTOR3 vGameUnitPos( m_optrGameUnit->GetPos() + m_optrGameUnit->GetRenderOffset() );	// drawn between steps (T41)
 		vGameUnitPos.y -= 7.0f;
 
 		D3DVIEWPORT vp;

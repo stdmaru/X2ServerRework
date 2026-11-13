@@ -17063,6 +17063,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 
 /*virtual*/ void CX2GUUser::RenderName()
 {
+	const D3DXVECTOR3 vRenderPos = GetPos() + GetRenderOffset();	// drawn between steps, like the unit (T41)
 	if( false == GetShowObject() )
 		return;
 
@@ -17093,12 +17094,12 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 	{
 		if ( g_pX2Game->GetMyUnit() == this )
 		{
-			g_pX2Game->GetFontForUnitName()->OutProjectionText( GetPos(), GetUnit()->GetNickName(), 0xffffaa77,
+			g_pX2Game->GetFontForUnitName()->OutProjectionText( vRenderPos, GetUnit()->GetNickName(), 0xffffaa77,
 				CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
 		}
 		else
 		{
-			g_pX2Game->GetFontForUnitName()->OutProjectionText( GetPos(), GetUnit()->GetNickName(), 0xff54ddff,
+			g_pX2Game->GetFontForUnitName()->OutProjectionText( vRenderPos, GetUnit()->GetNickName(), 0xff54ddff,
 				CKTDGFontManager::FS_SHELL, 0xff0000ff, NULL, DT_CENTER  );
 		}
 	}
@@ -17106,19 +17107,19 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 	{
 		if( GetTeam() == CX2Room::TN_BLUE )
 		{
-			g_pX2Game->GetFontForUnitName()->OutProjectionText( GetPos(), GetUnit()->GetNickName(), 0xff54ddff,
+			g_pX2Game->GetFontForUnitName()->OutProjectionText( vRenderPos, GetUnit()->GetNickName(), 0xff54ddff,
 				CKTDGFontManager::FS_SHELL, 0xff0000ff, NULL, DT_CENTER  );
 		}
 		else
 		{
 			if ( ShouldAttackAllTeam() )
 			{
-				g_pX2Game->GetFontForUnitName()->OutProjectionText( GetPos(), GetUnit()->GetNickName(), 0xff54ddff,
+				g_pX2Game->GetFontForUnitName()->OutProjectionText( vRenderPos, GetUnit()->GetNickName(), 0xff54ddff,
 					CKTDGFontManager::FS_SHELL, 0xff0000ff, NULL, DT_CENTER  );
 			}
 			else
 			{
-				g_pX2Game->GetFontForUnitName()->OutProjectionText( GetPos(), GetUnit()->GetNickName(), 0xffffaa77,
+				g_pX2Game->GetFontForUnitName()->OutProjectionText( vRenderPos, GetUnit()->GetNickName(), 0xffffaa77,
 					CKTDGFontManager::FS_SHELL, 0xffff0000 , NULL, DT_CENTER  );
 			}
 		}
@@ -17128,7 +17129,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 	int iWidthUnitName = 0;
 	int iFinalTop = 0;
 
-	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos(GetPos());
+	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos(vRenderPos);
 
 	iWidthUnitName = g_pX2Game->GetFontForUnitName()->GetWidth(GetUnit()->GetNickName());
 
@@ -17152,7 +17153,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 	//{{ ����� : [2009/10/13] //	����̸� ���
 	if( GetUnit()->GetUnitData().m_wstrGuildName != L"" )
 	{
-		D3DXVECTOR3 vPos = GetPos();
+		D3DXVECTOR3 vPos = vRenderPos;
 
 		vPos.y -= 22.0f;
 
@@ -17168,7 +17169,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 	{
 		if( GetUnit()->GetUnitData().m_bCouple == true && GetUnit()->GetUnitData().m_wstrRelationTargetUserNickname != L"" )
 		{
-			D3DXVECTOR3 vPos = GetPos();
+			D3DXVECTOR3 vPos = vRenderPos;
 
 			if( m_pUnit->GetUnitData().m_wstrGuildName != L"" )
 			{
@@ -17194,7 +17195,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 		if( true == CX2Game::GetRenderNPCName() )
 		{
 			WCHAR adBuf[200] = {0,};
-			D3DXVECTOR3 vPos( GetPos() );
+			D3DXVECTOR3 vPos( vRenderPos );
 			vPos.y -= 20.0f;
 
 
@@ -17265,7 +17266,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 				else
 					StringCchPrintfW( RageGuageBuf, ARRAY_SIZE( RageGuageBuf ), L"�г������: (%d)", pRaven->GetNasodBall() );
 
-				vPos = GetPos() + D3DXVECTOR3( 0, -100, 0 );
+				vPos = vRenderPos + D3DXVECTOR3( 0, -100, 0 );
 				g_pX2Game->GetFontForUnitName()->OutProjectionText( vPos, RageGuageBuf, 0xff77aaff, CKTDGFontManager::FS_SHELL, 0xff0000ff, NULL, DT_CENTER  );
 			}
 
@@ -17379,7 +17380,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 // 			{
 // 				StringCchPrintfW( adBuf, ARRAY_SIZE( adBuf ), L"KFactor: %f", GetUnit()->GetUnitData().m_fKFactor );
 //
-// 				vPos = GetPos() + D3DXVECTOR3( 0, -180, 0 );
+// 				vPos = vRenderPos + D3DXVECTOR3( 0, -180, 0 );
 // 				g_pX2Game->GetFontForUnitName()->OutProjectionText( vPos, adBuf,
 // 					0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
 // 			}
