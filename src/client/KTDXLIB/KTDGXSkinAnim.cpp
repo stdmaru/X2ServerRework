@@ -2,6 +2,92 @@
 #include "./KTDGXSkinAnim.h"
 #include "./KTDXTickInterpolation.h"
 
+#if X2_DEV_TOOLS
+#include "x2/platform/unicode.h"
+
+#include <array>
+#include <chrono>
+#include <cstdio>
+#include <cstdlib>
+#include <map>
+#include <string>
+
+namespace {
+
+// Diagnostics of drawing between steps (T41), dev tools only. X2_INTERP_STATS=1 logs once a second how many skinned
+// meshes were drawn interpolated and why the others were not, with the meshes most often left as they are;
+// X2_INTERP_TRACE=<text> logs every draw of the meshes whose name contains <text>: time, steps, fraction, root position.
+enum PoseDraw { kInterpolated, kNoPrevious, kFrameCount, kOverdue, kJump, kPoseDrawCount };
+const char* const kPoseDrawNames[kPoseDrawCount] = { "interpolated", "no-previous", "frame-count", "overdue", "jump" };
+
+struct InterpDiagnostics
+{
+    bool bStats = false;
+    std::string strTrace;
+    std::array<int, kPoseDrawCount> aCounts{};
+    std::map<std::string, std::array<int, kPoseDrawCount>> mapByMesh;
+    std::chrono::steady_clock::time_point tLast = std::chrono::steady_clock::now();
+
+    InterpDiagnostics()
+    {
+        const char* pStats = std::getenv( "X2_INTERP_STATS" );
+        bStats = pStats != NULL && pStats[0] == '1';
+        if ( const char* pTrace = std::getenv( "X2_INTERP_TRACE" ) )
+            strTrace = pTrace;
+    }
+
+    void Record( const std::wstring& wstrMesh, PoseDraw eDraw, int iPrev, int iLast, float fFraction, const D3DXMATRIX& root )
+    {
+        if ( !bStats && strTrace.empty() )
+            return;
+        const std::string strMesh = x2::platform::WideToUtf8( wstrMesh );
+        const auto tNow = std::chrono::steady_clock::now();
+        if ( !strTrace.empty() && strMesh.find( strTrace ) != std::string::npos )
+        {
+            std::fprintf( stderr, "interp-trace %s us=%lld steps=%d t=%.3f prev=%d last=%d f=%.3f %s pos=%.2f,%.2f,%.2f\n",
+                strMesh.c_str(), (long long)std::chrono::duration_cast<std::chrono::microseconds>( tNow.time_since_epoch() ).count(),
+                g_pKTDXApp->GetFrameMoveCount(), g_pKTDXApp->GetTickInterpolation(), iPrev, iLast, fFraction,
+                kPoseDrawNames[eDraw], root._41, root._42, root._43 );
+        }
+        if ( !bStats )
+            return;
+        aCounts[eDraw]++;
+        if ( eDraw != kInterpolated )
+            mapByMesh[strMesh][eDraw]++;
+        if ( tNow - tLast < std::chrono::seconds( 1 ) )
+            return;
+        tLast = tNow;
+        std::fprintf( stderr, "interp-stats" );
+        for ( int i = 0; i < kPoseDrawCount; i++ )
+            std::fprintf( stderr, " %s=%d", kPoseDrawNames[i], aCounts[i] );
+        std::fprintf( stderr, "\n" );
+        for ( const auto& kMesh : mapByMesh )
+        {
+            std::fprintf( stderr, "interp-stats   %s:", kMesh.first.c_str() );
+            for ( int i = 1; i < kPoseDrawCount; i++ )
+                if ( kMesh.second[i] > 0 )
+                    std::fprintf( stderr, " %s=%d", kPoseDrawNames[i], kMesh.second[i] );
+            std::fprintf( stderr, "\n" );
+        }
+        aCounts = {};
+        mapByMesh.clear();
+    }
+};
+
+InterpDiagnostics& Diagnostics()
+{
+    static InterpDiagnostics kDiagnostics;
+    return kDiagnostics;
+}
+
+}  // namespace
+#define X2_INTERP_RECORD( eDraw, fFraction, root ) \
+    Diagnostics().Record( m_pAnimXSkinMesh != NULL ? m_pAnimXSkinMesh->GetDeviceID() : std::wstring(), eDraw, m_iPrevPoseTick, \
+        m_iPoseTick, fFraction, root )
+#else
+#define X2_INTERP_RECORD( eDraw, fFraction, root ) ((void)0)
+#endif
+
 bool CKTDGXSkinAnim::m_sbTestUpdateAnimation = true;
 
 CKTDGXSkinAnim::CKTDGXSkinAnim()
@@ -214,16 +300,25 @@ void CKTDGXSkinAnim::PrepareRenderPose()
 {
 	// Between the last two pose updates (usually the last two ticks), without a jump or an instant turn.
 	m_bRenderPoseInterpolated = false;
-	if( !m_bPrevPoseValid || (int)m_PrevTickFrames.size() != m_FrameNum )
+	if( m_FrameNum <= 0 )
 		return;
+	if( !m_bPrevPoseValid || (int)m_PrevTickFrames.size() != m_FrameNum )
+	{
+		X2_INTERP_RECORD( m_bPrevPoseValid ? kFrameCount : kNoPrevious, 1.f, *m_FrameMatrixList[0] );
+		return;
+	}
 	const float t = x2::ktdx::UpdateFraction( m_iPrevPoseTick, m_iPoseTick, g_pKTDXApp->GetFrameMoveCount(),
 		g_pKTDXApp->GetTickInterpolation() );
 	if( t >= 1.f || x2::ktdx::IsWorldJump( m_PrevTickWorld, m_TickWorld ) )
+	{
+		X2_INTERP_RECORD( t >= 1.f ? kOverdue : kJump, t, *m_FrameMatrixList[0] );
 		return;
+	}
 	m_RenderFrames.resize( m_FrameNum );
 	for( int j = 0; j < m_FrameNum; j++ )
 		x2::ktdx::LerpMatrix( m_PrevTickFrames[j], *m_FrameMatrixList[j], t, m_RenderFrames[j] );
 	m_bRenderPoseInterpolated = true;
+	X2_INTERP_RECORD( kInterpolated, t, m_RenderFrames[0] );
 }
 
 void CKTDGXSkinAnim::BuildCloneFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame, CKTDXDeviceXSkinMesh::MultiAnimFrame* pSrcFrame )
