@@ -145,6 +145,13 @@ New, not in D3D9's interface; the game's options set them ([Game options](client
   geometry edges. Other tests and blended draws keep the alpha test as it was.
 - `SetAnisotropy(1 to 16)`: samplers of mipmapped textures filtered linearly (the world; the UI is not minified) get at
   least that anisotropy; a sampler the game sets anisotropic keeps its own level if higher.
+- `SetSupersample(1 or 2)` (SSAA): the back buffer is drawn at twice the window's size into a texture of its own (with
+  MSAA, the multisampled texture is that size and resolves into it) and scaled down into the swapchain at `Present` by a
+  linear blit, which at 2:1 is the average of each 2×2 block. The game still sees the window's size: only the pass's
+  viewport is scaled, so positions, `GetViewport` and pre-transformed vertices keep the game's units. Pre-transformed
+  (`XYZRHW`) draws on the back buffer, the UI, magnify their textures with the nearest texel instead of the game's filter:
+  a 1:1 UI texture drawn at 2× and averaged back comes out as sharp as without supersampling, where linear magnification
+  blurred it. Render targets are not supersampled.
 
 ## Image files (2026-11-07, `client/d3dx-textures`)
 

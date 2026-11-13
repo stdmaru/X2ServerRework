@@ -293,11 +293,28 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [x] `client/interpolation-2` (2026-11-12, PR #62): particles, mesh players, world objects, dialogs (quest balloons)
         and monsters updated every few steps drawn between steps
         ([Frame pacing](../porting/client-ktdxlib.md#frame-pacing-2026-11-12-client-frame-pacing-t41)).
-  - [x] `client/msaa` (2026-11-12, PR #63): MSAA 2x/4x/8x with alpha-to-coverage, anisotropic filtering up to 16x, and
+  - [x] `client/msaa` (2026-11-12, PR #63): MSAA 2x/4x/8x with alpha-to-coverage, anisotropic filtering up to 16x, SSAA 2x, and
         the graphics tab with them, the frame limit and vertical sync (merged with `client/graphics-options`, user).
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
-  - [ ] `client/widescreen`, after audio: native widescreen, UI anchored instead of stretched.
+  - [ ] **Widescreen, after audio** (user, 2026-11-12): no distortion at any aspect ratio. Today the UI's 1024×768
+        layout is scaled by separate X and Y factors (about 270 uses in 70 files, 2026-11-12), so it stretches; the
+        3D camera already uses the window's aspect ratio (it shows more at the sides), the fonts scale by Y only. Steps:
+    - [ ] `client/widescreen-scale`: one uniform scale (screen height / 768) and a virtual canvas as wide as the
+          screen (1365 at 16:9), through one conversion in `KTDXApp` used by dialogs, mouse input, world-attached UI
+          (`GetProj3DPos`: names, HP bars, balloons) and tooltip bounds; full-screen backgrounds and fades per D7. Starts
+          with an inventory of the scale's users; also the 2D orthographic mode (fixed 1024×768) and 1024×768 render
+          targets. Nothing stretches; the UI still sits at the left.
+    - [ ] `client/widescreen-anchors`: a horizontal anchor per dialog (left, center, right: x moves by
+          (canvas width − 1024) × 0, ½ or 1), defaults per D8, overrides in the client_data; per-control anchors or
+          stretched middle pieces for the HUD and dialogs spanning the width. Probably two PRs (HUD, windows).
+    - [ ] `client/ui-scale`: a "UI scale" option (automatic, 100–200%) and a pixel-perfect mode (integer scale,
+          nearest texels: 1× at 1080p, 2× at 4K), since a fractional scale (1.41 at 1080p) blurs the UI a little.
+    - [ ] `client/ui-hd-assets`, later: 2× UI textures, same formats and names in a separate package (T42); the
+          engine divides the `.tet` UV keys by the loaded texture's scale; offline upscaling (Real-ESRGAN or similar)
+          with manual review of text and thin outlines, the original as fallback.
+    - Validation for every step: a dev tool that captures the main screens (login, character select, village, field,
+          dungeon, PvP, inventory, shop) at 4:3, 16:9, 16:10 and 21:9 to compare across PRs.
 - [ ] **Audio, last** (user, 2026-11-05): replace the silent backend with a real one, FMOD Ex / DirectSound →
       miniaudio/SDL3 audio (or current cross-platform FMOD Core); only those files change.
 

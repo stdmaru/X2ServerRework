@@ -179,12 +179,13 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
 - `MULTISAMPLE = 1|2|4|8` and `ANISOTROPY = 1|2|4|8|16` (new, 2026-11-12, `client/msaa`): anti-aliasing and anisotropic
   filtering, applied by the [D3D9 device](client-d3d9.md#anti-aliasing-and-anisotropic-filtering-2026-11-12-clientmsaa)
   from the next frame (`CX2GameOption::SetMultisample`, `SetAnisotropy`).
+- `SUPERSAMPLE = 1|2` (new, 2026-11-12, `client/msaa`): supersampling, applied the same way (`SetSupersample`).
 - **Graphics tab** (2026-11-12, `client/msaa`, content changes in [client_data](../tools/client-data.md)): combo boxes
-  for anti-aliasing, anisotropic filtering and the frame limit, and the vertical sync check box, moved from the other
+  for anti-aliasing, anisotropic filtering, the frame limit and supersampling, and the vertical sync check box, moved from the other
   options' tab. Their labels are in `DLG_UI_Option_Graphic.lua`; `X2StateOption.cpp` maps each item index to its
-  value (`kMultisampleItems`, `kAnisotropyItems`, `kFrameLimitItems`: 0, 30, 60, 120, 144, 165 and 240 fps). A value
+  value (`kMultisampleItems`, `kAnisotropyItems`, `kSupersampleItems`, `kFrameLimitItems`: 0, 30, 60, 120, 144, 165 and 240 fps). A value
   edited in `GameOptions.lua` that no item has leaves its combo box empty. New messages
-  `SOUCM_OPTION_GRAPHIC_MULTISAMPLE`/`ANISOTROPY`/`FRAME_LIMIT` (2520–2522), also in `Enum.lua`.
+  `SOUCM_OPTION_GRAPHIC_MULTISAMPLE`/`ANISOTROPY`/`FRAME_LIMIT`/`SUPERSAMPLE` (2520–2523), also in `Enum.lua`.
 
 ## Status
 
