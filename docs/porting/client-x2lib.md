@@ -210,12 +210,14 @@ Each use of the old X/Y scale is now a position, a size or a canvas edge:
   preset (was 800×600), and the device opens at 1280×720 (`X2.cpp`). 4:3 sizes remain in the options list.
 
 Anchors placed by the code (2026-11-13, `client/widescreen-migration`): the gauges of other players use one script on
-both sides of the screen, so `CX2PartyMemberGageUI::SetPosition` anchors the party list left, and
+both sides of the screen, so `CX2PartyMemberGageUI::SetPosition` anchors the party list left (and both classes anchor the members' buffs left), and
 `CX2PVPPlayerGageUI::SetPosition` anchors each PvP team to the side it is placed on (x 6 left, x 868 right). The
 item slots (`CX2SlotManager`) draw each item as a dialog of its own (`DLG_SlotManager.lua`, shared by every slot
 window) placed by the code, so a slot manager has an anchor its items take: `CX2UIQuickSlot` sets it to its own
-dialog's, and slot hit tests, dragging, tooltips and highlights go through `CX2Slot::GetCanvasPos`. The
-anchors of single-sided dialogs are in `UIAnchors.lua` ([client_data](../tools/client-data.md)).
+dialog's, and slot hit tests, dragging, tooltips and highlights go through `CX2Slot::GetCanvasPos`. The minimaps
+(`CX2MiniMap`, `CX2FieldMiniMap`) draw the map at the frame's layout position (824, 558) outside the frame dialog, so
+they draw it with the frame's anchor (`CX2MiniMapUI::GetFrameAnchor`); the map is 248 wide and runs 48 units past the
+right edge under the frame's buttons, as in the original. The anchors of single-sided dialogs are in `UIAnchors.lua` ([client_data](../tools/client-data.md)).
 
 Known, left for the migration: screens whose texture does not match its rectangle's aspect stay as the original drew
 them. The character select background, for example, is a 512×512 texture drawn at 1024×768, so it is stretched 33% in
