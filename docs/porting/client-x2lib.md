@@ -187,6 +187,32 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
   edited in `GameOptions.lua` that no item has leaves its combo box empty. New messages
   `SOUCM_OPTION_GRAPHIC_MULTISAMPLE`/`ANISOTROPY`/`FRAME_LIMIT`/`SUPERSAMPLE` (2520–2523), also in `Enum.lua`.
 
+## Widescreen canvas (2026-11-13, `client/widescreen-scale`, [T44](../project/decisions.md))
+
+This is the X2Lib side of [the uniform scale](client-ktdxlib.md#widescreen-canvas-2026-11-13-clientwidescreen-scale).
+Each use of the old X/Y scale is now a position, a size or a canvas edge:
+
+- Tooltips (item slots, quests, party, enchant, skill trees, guild skills, world map): widths in layout units
+  (`kUILayoutWidth / 3`, `/ 4`), kept on screen by the canvas edges. Compare tooltips can therefore extend into the area
+  beside the column.
+- Talk boxes, gauges (hit boxes, air gauge, hyper balls), pets, quick-slot effects, room clicks: positions and sizes
+  sorted. Everything named `*Size*` now goes through the size conversion.
+- `CX2Main::GetWindowPos`, the user list popup and the notice marquee are bound by the canvas. The marquee spans the screen
+  and keeps the original's speed.
+- `WordWrap` measures with 1 / scale.
+- **Behavior change:** the rank and server icons over units (`X2GUUser`, `X2SquareUnit`, `X2GUNPC`) had a size scaled by X
+  and Y separately, so they were not square at 16:9. Their offsets and size are now in layout units.
+- **Behavior change:** the monster indicator's box (where off-screen monsters are pointed at) mixed layout units with the
+  particles' screen pixels. It is now in screen pixels, from the viewport's size.
+- **Behavior change, default resolution:** with no `GameOptions.lua`, or without its resolution keys, the client takes the
+  largest of 3840×2160, 2560×1440, 1920×1080, 1600×900 and 1280×720 that fits the desktop (`DefaultResolution` in
+  `X2GameOption.cpp`). The original used 1024×768. A failed mode change falls back to 1280×720, as does the low-spec
+  preset (was 800×600), and the device opens at 1280×720 (`X2.cpp`). 4:3 sizes remain in the options list.
+
+Known, left for the migration: screens whose texture does not match its rectangle's aspect stay as the original drew
+them. The character select background, for example, is a 512×512 texture drawn at 1024×768, so it is stretched 33% in
+the original as well.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them
