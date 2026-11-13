@@ -2569,6 +2569,8 @@ void CX2PartyMemberGageUI::SetPosition( const UINT uiPositionIndex_ )
 			if( false == g_pMain->GetGameOption().GetIsSkillUITypeA() )
 				vPos.y += 20.f;
 		}
+		// Party members are listed down the left edge (T44).
+		m_pDLGOtherUnit->SetAnchor( UIAnchor::Left );
 		m_pDLGOtherUnit->SetPos( vPos );
 	}
 
@@ -3042,6 +3044,8 @@ void CX2PVPPlayerGageUI::SetPosition( const UINT uiPositionIndex_ )
 			}
 		}
 
+		// The teams are listed down the left (x 6) and right (x 868) edges (T44).
+		m_pDLGOtherUnit->SetAnchor( vPos.x < CKTDXApp::kUILayoutWidth / 2 ? UIAnchor::Left : UIAnchor::Right );
 		m_pDLGOtherUnit->SetPos( vPos );
 	}
 
