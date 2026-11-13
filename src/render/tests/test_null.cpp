@@ -222,6 +222,27 @@ TEST_CASE("render: null multisampled target resolves into a single-sampled one")
     device->ReleaseTexture(resolved);
 }
 
+TEST_CASE("render: null blit scales a texture into another")
+{
+    auto device = NullDevice();
+    Texture big = device->CreateTexture({.format = TextureFormat::R8G8B8A8Unorm, .width = 4, .height = 2});
+    Texture small = device->CreateTexture({.format = TextureFormat::R8G8B8A8Unorm,
+                                           .usage = TextureUsage::Sampler | TextureUsage::ColorTarget,
+                                           .width = 2, .height = 1});
+    REQUIRE(big);
+    REQUIRE(small);
+    Upload(*device, big, 4, 2, Bytes({1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4,
+                                      5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8}));
+    CommandBuffer* commands = device->AcquireCommandBuffer();
+    commands->BlitTexture({.texture = big, .w = 4, .h = 2}, {.texture = small, .w = 2, .h = 1}, Filter::Linear);
+    CHECK(commands->Submit());
+    CHECK(Contains(null::Commands(*device), "BlitTexture"));
+    const auto bytes = null::TextureBytes(*device, small);
+    CHECK(std::vector<std::byte>(bytes.begin(), bytes.end()) == Bytes({1, 1, 1, 1, 3, 3, 3, 3}));    // nearest texels
+    device->ReleaseTexture(big);
+    device->ReleaseTexture(small);
+}
+
 TEST_CASE("render: null texture upload and readback round trip")
 {
     auto device = NullDevice();

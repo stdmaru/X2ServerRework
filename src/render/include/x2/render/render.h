@@ -303,6 +303,13 @@ struct ColorTargetInfo {
     Texture resolveTexture = {};    // single-sampled; with StoreOp::Resolve or ResolveAndStore
 };
 
+// A region of one level of a 2D texture, for BlitTexture.
+struct BlitRegion {
+    Texture texture = {};
+    std::uint32_t mipLevel = 0;
+    std::uint32_t x = 0, y = 0, w = 0, h = 0;
+};
+
 struct DepthStencilTargetInfo {
     Texture texture = {};
     float clearDepth = 1.0f;
@@ -424,6 +431,8 @@ public:
                                         const DepthStencilTargetInfo* depthStencilTarget) = 0;
     virtual CopyPass* BeginCopyPass() = 0;
     virtual void GenerateMipmaps(Texture texture) = 0;
+    // Copies and scales `source` into `destination` (outside any pass); the destination must be a color target.
+    virtual void BlitTexture(const BlitRegion& source, const BlitRegion& destination, Filter filter) = 0;
 
     virtual void PushDebugGroup(std::string_view name) = 0;
     virtual void PopDebugGroup() = 0;

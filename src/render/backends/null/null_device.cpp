@@ -433,6 +433,7 @@ public:
             Record("GenerateMipmaps " + Id(Kind::Texture, texture.value));
         }
     }
+    void BlitTexture(const BlitRegion& source, const BlitRegion& destination, Filter filter) override;
     void PushDebugGroup(std::string_view name) override { Record("PushDebugGroup " + std::string(name)); }
     void PopDebugGroup() override { Record("PopDebugGroup"); }
     void InsertDebugLabel(std::string_view text) override { Record("InsertDebugLabel " + std::string(text)); }
@@ -825,6 +826,51 @@ RenderPass* NullCommandBuffer::BeginRenderPass(std::span<const ColorTargetInfo> 
     });
     m_inPass = true;
     return &m_render;
+}
+
+void NullCommandBuffer::BlitTexture(const BlitRegion& source, const BlitRegion& destination, Filter filter)
+{
+    if (m_inPass) {
+        Error("BlitTexture inside a pass");
+        return;
+    }
+    if (!Check(Kind::Texture, source.texture.value, "BlitTexture") ||
+        !Check(Kind::Texture, destination.texture.value, "BlitTexture")) {
+        return;
+    }
+    Record("BlitTexture " + Id(Kind::Texture, source.texture.value) + " " + std::to_string(source.w) + "x" +
+               std::to_string(source.h) + " -> " + Id(Kind::Texture, destination.texture.value) + " " +
+               std::to_string(destination.w) + "x" + std::to_string(destination.h) +
+               (filter == Filter::Linear ? " linear" : " nearest"),
+           [source, destination](NullDevice& device) {
+               // Nearest texel, for uncompressed textures of one format (enough for tests).
+               Resource* from = device.FindLocked(Kind::Texture, source.texture.value);
+               Resource* to = device.FindLocked(Kind::Texture, destination.texture.value);
+               if (!from || !to || from->format != to->format || IsBlockCompressed(from->format) ||
+                   source.w == 0 || source.h == 0) {
+                   return;
+               }
+               std::vector<std::byte>* src = from->Subresource(source.mipLevel, 0);
+               std::vector<std::byte>* dst = to->Subresource(destination.mipLevel, 0);
+               if (!src || !dst) {
+                   return;
+               }
+               const std::uint32_t texel = TexelBlockSize(from->format);
+               const std::uint32_t srcPitch = from->LevelWidth(source.mipLevel) * texel;
+               const std::uint32_t dstPitch = to->LevelWidth(destination.mipLevel) * texel;
+               for (std::uint32_t y = 0; y < destination.h; ++y) {
+                   for (std::uint32_t x = 0; x < destination.w; ++x) {
+                       const std::uint32_t sx = source.x + x * source.w / destination.w;
+                       const std::uint32_t sy = source.y + y * source.h / destination.h;
+                       const std::size_t s = std::size_t{sy} * srcPitch + std::size_t{sx} * texel;
+                       const std::size_t d = std::size_t{destination.y + y} * dstPitch +
+                                             std::size_t{destination.x + x} * texel;
+                       if (s + texel <= src->size() && d + texel <= dst->size()) {
+                           std::memcpy(dst->data() + d, src->data() + s, texel);
+                       }
+                   }
+               }
+           });
 }
 
 CopyPass* NullCommandBuffer::BeginCopyPass()

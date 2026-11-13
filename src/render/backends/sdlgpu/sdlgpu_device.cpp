@@ -650,6 +650,16 @@ public:
     }
 
     void GenerateMipmaps(Texture texture) override { SDL_GenerateMipmapsForGPUTexture(m_commands, Sdl(texture)); }
+    void BlitTexture(const BlitRegion& source, const BlitRegion& destination, Filter filter) override
+    {
+        SDL_GPUBlitInfo info{};
+        info.source = {Sdl(source.texture), source.mipLevel, 0, source.x, source.y, source.w, source.h};
+        info.destination = {Sdl(destination.texture), destination.mipLevel, 0, destination.x, destination.y,
+                            destination.w, destination.h};
+        info.load_op = SDL_GPU_LOADOP_DONT_CARE;
+        info.filter = ToSdl(filter);
+        SDL_BlitGPUTexture(m_commands, &info);
+    }
     void PushDebugGroup(std::string_view name) override { SDL_PushGPUDebugGroup(m_commands, std::string(name).c_str()); }
     void PopDebugGroup() override { SDL_PopGPUDebugGroup(m_commands); }
     void InsertDebugLabel(std::string_view text) override
