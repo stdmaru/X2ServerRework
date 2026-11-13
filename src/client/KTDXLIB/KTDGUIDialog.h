@@ -166,6 +166,14 @@ class CKTDGUIDialog
 		void			SetCanvasPos( const D3DXVECTOR2& pos ) { SetPos( D3DXVECTOR2( pos.x - GetAnchorShift(), pos.y ) ); }
 		// How far a control with its own anchor is drawn from where the dialog's anchor would put it, in layout units.
 		float			GetControlAnchorShift( const CKTDGUIControl* pControl ) const;
+		// The mouse, relative to the dialog in pixels, in a control's layout units (relative to its offset), with the
+		// control's anchor or stretch.
+		POINT			ToControlPoint( POINT ptDialog, CKTDGUIControl* pControl ) const;
+		// A layout x of a control (with its anchor or stretch) as a layout x under the dialog's anchor, for what the
+		// dialog draws next to it (its guide description).
+		float			ControlXToDialogX( const CKTDGUIControl* pControl, float fX ) const;
+		// Where STRETCH controls grow (UIAnchors.lua STRETCH_ZONES); none: they are scaled whole.
+		CKTDGUIStretch&	GetStretch()					{ return m_kStretch; }
 
 		// Drawing between simulation steps (T41): the dialog manager notes the position when a step begins and ends;
 		// OnFrameRender draws at the position between the two, when nothing moved the dialog since (dragging does).
@@ -541,6 +549,7 @@ private:
 
 		UIAnchor	m_eAnchor = UIAnchor::Center;
 		bool		m_bAnchorDeclared = false;
+		CKTDGUIStretch	m_kStretch;
 
 #if X2_DEV_TOOLS
 		wstring		m_strScriptFileName;

@@ -185,7 +185,7 @@ CKTDGUIDialog::~CKTDGUIDialog(void)
 HRESULT	CKTDGUIDialog::OnFrameMove( double fTime, float fElapsedTime )
 {
 	KTDXPROFILE();
-	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
+	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor, &m_kStretch, m_Pos.x );
 
 	if ( m_pStaticGuideDesc != NULL )
 		m_pStaticGuideDesc->SetShow( false );
@@ -412,7 +412,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 		TickPos( const TickPos& ) = delete;
 		TickPos& operator=( const TickPos& ) = delete;
 	} kTickPos( *this );
-	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
+	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor, &m_kStretch, m_Pos.x );
 
 
 
@@ -469,7 +469,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 			{
 				if ( pControl->HasAnchor() )
 				{
-					const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor() );
+					const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor(), &m_kStretch, m_Pos.x );
 					pControl->OnFrameRender();
 				}
 				else
@@ -484,7 +484,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 			{
 				if ( pControl->HasAnchor() )
 				{
-					const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor() );
+					const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor(), &m_kStretch, m_Pos.x );
 					pControl->OnFrameRenderEnd();
 				}
 				else
@@ -644,7 +644,7 @@ HRESULT	CKTDGUIDialog::OnLostDevice()
 bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	KTDXPROFILE();
-	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
+	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor, &m_kStretch, m_Pos.x );
 
 	//m_bIsOverControl = false;
 
@@ -809,16 +809,7 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					if ( pControl != NULL )
 					{
 
-						D3DXVECTOR2 offsetPos;
-						offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
-
-						POINT mousePointFinal = mousePoint;
-						mousePointFinal.x -= (LONG)offsetPos.x;
-						mousePointFinal.y -= (LONG)offsetPos.y;
-
-						D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
-						mousePointFinal.x = (LONG)mousePos.x;
-						mousePointFinal.y = (LONG)mousePos.y;
+						const POINT mousePointFinal = ToControlPoint( mousePoint, pControl );
 
 						int deltaX = mousePointFinal.x - m_PrevMousePointX;
 						int deltaY = mousePointFinal.y - m_PrevMousePointY;
@@ -1511,22 +1502,13 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 			 s_pControlFocus->GetType() == CKTDGUIControl::UCT_IME_EDITBOX )	// dmlee, 2009-01-12: editbox에서 drag로 텍스트 선택중에 editbox영역을 벗어나는 경우에 releasecapture해주기 위해서 여기에 추가
 		)
 	{
-		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( s_pControlFocus->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( s_pControlFocus ), 0.f ) );
-
-		POINT mousePointFinal = pt;
-		mousePointFinal.x -= (LONG)offsetPos.x;
-		mousePointFinal.y -= (LONG)offsetPos.y;
-
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
-		mousePointFinal.x = (LONG)mousePos.x;
-		mousePointFinal.y = (LONG)mousePos.y;
+		const POINT mousePointFinal = ToControlPoint( pt, s_pControlFocus );
 
 		// 자식 컨트롤의 메세지 핸들링
 		bool bHandled = false;
 		if ( s_pControlFocus->HasAnchor() )
 		{
-			const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, s_pControlFocus->GetAnchor() );
+			const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, s_pControlFocus->GetAnchor(), &m_kStretch, m_Pos.x );
 			bHandled = s_pControlFocus->HandleMouse( uMsg, mousePointFinal, wParam, lParam );
 		}
 		else
@@ -1548,16 +1530,7 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 		if( pControl == NULL )
 			continue;
 
-		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
-
-		POINT mousePointFinal = pt;
-		mousePointFinal.x -= (LONG)offsetPos.x;
-		mousePointFinal.y -= (LONG)offsetPos.y;
-
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
-		mousePointFinal.x = (LONG)mousePos.x;
-		mousePointFinal.y = (LONG)mousePos.y;
+		const POINT mousePointFinal = ToControlPoint( pt, pControl );
 
 		if( pControl->ContainsPoint( mousePointFinal ) == true && pControl->GetShow() == true )
 		{
@@ -1577,7 +1550,7 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 			bool bHandled = false;
 			if ( pControl->HasAnchor() )
 			{
-				const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor() );
+				const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor(), &m_kStretch, m_Pos.x );
 				bHandled = pControl->HandleMouse( uMsg, mousePointFinal, wParam, lParam );
 			}
 			else
@@ -1835,16 +1808,7 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPoint( POINT pt )
 		if( pControl == NULL )
 			continue;
 
-		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
-
-		POINT mousePointFinal = pt;
-		mousePointFinal.x -= (LONG)offsetPos.x;
-		mousePointFinal.y -= (LONG)offsetPos.y;
-
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
-		mousePointFinal.x = (LONG)mousePos.x;
-		mousePointFinal.y = (LONG)mousePos.y;
+		const POINT mousePointFinal = ToControlPoint( pt, pControl );
 
 		if( pControl->ContainsPoint( mousePointFinal ) == true
 			&& pControl->GetEnable() == true
@@ -1871,16 +1835,7 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPointForStatic( POINT pt )
 		if( pControl == NULL )
 			continue;
 
-		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
-
-		POINT mousePointFinal = pt;
-		mousePointFinal.x -= (LONG)offsetPos.x;
-		mousePointFinal.y -= (LONG)offsetPos.y;
-
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
-		mousePointFinal.x = (LONG)mousePos.x;
-		mousePointFinal.y = (LONG)mousePos.y;
+		const POINT mousePointFinal = ToControlPoint( pt, pControl );
 
 		if( pControl->ContainsPoint( mousePointFinal ) == true
 			//&& pControl->GetEnable() == true
@@ -1910,16 +1865,7 @@ CKTDGUIControl*	CKTDGUIDialog::GetControlAtPointExceptStatic( POINT pt )
 		if ( pControl->GetType() == CKTDGUIControl::UCT_STATIC )
 			continue;
 
-		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
-
-		POINT mousePointFinal = pt;
-		mousePointFinal.x -= (LONG)offsetPos.x;
-		mousePointFinal.y -= (LONG)offsetPos.y;
-
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
-		mousePointFinal.x = (LONG)mousePos.x;
-		mousePointFinal.y = (LONG)mousePos.y;
+		const POINT mousePointFinal = ToControlPoint( pt, pControl );
 
 		if( pControl->ContainsPoint( mousePointFinal ) == true
 			&& pControl->GetShow() == true
@@ -1948,16 +1894,7 @@ CKTDGUIControl* CKTDGUIDialog::GetControlAtPointAbsolute( POINT pt )
 		if( pControl == NULL )
 			continue;
 
-		D3DXVECTOR2 offsetPos;
-		offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
-
-		POINT mousePointFinal = pt;
-		mousePointFinal.x -= (LONG)offsetPos.x;
-		mousePointFinal.y -= (LONG)offsetPos.y;
-
-		D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
-		mousePointFinal.x = (LONG)mousePos.x;
-		mousePointFinal.y = (LONG)mousePos.y;
+		const POINT mousePointFinal = ToControlPoint( pt, pControl );
 
 		if( pControl->ContainsPoint( mousePointFinal ) == true )
 		{
@@ -2003,7 +1940,7 @@ void CKTDGUIDialog::SetShow( bool bShow )
 		//////////////////////////////////
 		if( bShow == true)
 		{
-			const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor );
+			const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor, &m_kStretch, m_Pos.x );
 			POINT mousePoint = { static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos() ), static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() ) };
 			D3DXVECTOR2 resolPos;
 			resolPos = g_pKTDXApp->ConvertByResolution( m_Pos );
@@ -2050,6 +1987,37 @@ bool CKTDGUIDialog::SetAnchor_LUA( const char* pszAnchor )
 float CKTDGUIDialog::GetAnchorShift() const
 {
 	return g_pKTDXApp->GetUIAnchorShift( m_eAnchor );
+}
+
+POINT CKTDGUIDialog::ToControlPoint( POINT ptDialog, CKTDGUIControl* pControl ) const
+{
+	if ( pControl->HasAnchor() && pControl->GetAnchor() == UIAnchor::Stretch )
+	{
+		// Back to the screen (under the dialog's anchor), then through the stretch map to layout units.
+		const float fScreenX = ptDialog.x + g_pKTDXApp->ConvertXByResolution( m_Pos.x );
+		const float fScreenY = ptDialog.y + g_pKTDXApp->ConvertYByResolution( m_Pos.y );
+		const CKTDXApp::UIAnchorScope kStretch( *g_pKTDXApp, UIAnchor::Stretch, &m_kStretch, m_Pos.x );
+		const D3DXVECTOR2 vLayout = g_pKTDXApp->MouseConvertByResolution( fScreenX, fScreenY ) - m_Pos - pControl->GetOffsetPos();
+		return POINT{ (LONG)vLayout.x, (LONG)vLayout.y };
+	}
+
+	const D3DXVECTOR2 offsetPos = g_pKTDXApp->ConvertSizeByResolution( pControl->GetOffsetPos() + D3DXVECTOR2( GetControlAnchorShift( pControl ), 0.f ) );
+	POINT mousePointFinal = ptDialog;
+	mousePointFinal.x -= (LONG)offsetPos.x;
+	mousePointFinal.y -= (LONG)offsetPos.y;
+	const D3DXVECTOR2 mousePos = g_pKTDXApp->MouseConvertSizeByResolution( (float)mousePointFinal.x, (float)mousePointFinal.y );
+	return POINT{ (LONG)mousePos.x, (LONG)mousePos.y };
+}
+
+float CKTDGUIDialog::ControlXToDialogX( const CKTDGUIControl* pControl, float fX ) const
+{
+	if ( pControl == NULL || pControl->HasAnchor() == false )
+		return fX;
+	if ( pControl->GetAnchor() != UIAnchor::Stretch )
+		return fX + GetControlAnchorShift( pControl );
+	const float fLeft = g_pKTDXApp->GetUIAnchorShift( UIAnchor::Left );
+	const float fExtra = g_pKTDXApp->GetUIAnchorShift( UIAnchor::Right ) - fLeft;
+	return m_kStretch.Map( fX, m_Pos.x, fLeft, fExtra ) - GetAnchorShift();
 }
 
 float CKTDGUIDialog::GetControlAnchorShift( const CKTDGUIControl* pControl ) const
@@ -2404,12 +2372,12 @@ void CKTDGUIDialog::ShowGuideDesc( CKTDGUIControl* pControl )
 
     if(pControl->GetGuideDescLT() == true)
     {
-        offsetPos.x = pControl->GetGuideDescPos().x;
+        offsetPos.x = ControlXToDialogX( pControl, pControl->GetGuideDescPos().x );
         offsetPos.y = pControl->GetGuideDescPos().y;
     }
     else
     {
-		offsetPos.x = pControl->GetGuideDescPos().x + GetPos().x - (itemDescWidth/2.0f);
+		offsetPos.x = ControlXToDialogX( pControl, pControl->GetGuideDescPos().x + GetPos().x ) - (itemDescWidth/2.0f);
         offsetPos.y = pControl->GetGuideDescPos().y - (itemDescHeight );
     }
 

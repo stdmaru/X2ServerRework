@@ -1,5 +1,7 @@
 #pragma once
 
+#include "KTDGUIAnchor.h"
+
 #define D3DFVF_RENDERTARGET_RHW_VERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE)
 #define D3DFVF_RENDERTARGET_VERTEX (D3DFVF_XYZ | D3DFVF_TEX1)
 
@@ -79,5 +81,6 @@ class CKTDXDeviceRenderTargetTexture
 		D3DFORMAT				m_D3DFormat;
 		D3DXVECTOR2				m_vBackupUIOrigin{ 0.f, 0.f };	// the UI origin BeginRender replaced
 		float					m_fBackupUIAnchorShift = 0.f;	// and the anchor shift in effect with it
+		UIStretchState			m_kBackupUIStretch;			// and the stretch in effect
 
 };

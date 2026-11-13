@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 class CKTDGUIDialog;
 
@@ -14,11 +16,39 @@ enum class UIAnchor : std::uint8_t { Center, Left, Right, Stretch };
 // "CENTER", "LEFT", "RIGHT" or "STRETCH", in any case.
 bool ParseUIAnchor( const char* pszName, UIAnchor& eAnchor );
 
+// How a STRETCH piece of a dialog spans the canvas (T44): x in the 1024 layout maps onto the canvas, from its left
+// edge to its right. Its zones are the parts that grow (the plain middles between end pieces), in layout units
+// relative to the dialog; they share the extra width by length and are linear inside, so a gauge sized by ratio over a
+// middle stays proportional, and what lies outside them keeps its size. With no zones the piece is scaled whole: a
+// plain fill.
+class CKTDGUIStretch
+{
+public:
+	void AddZone( float fMin, float fMax );
+	bool HasZones() const { return m_vecZones.empty() == false; }
+	// fX in layout units; fBase: the dialog's x; fLeft: the canvas's left edge from the centered column (<= 0);
+	// fExtra: the canvas's width beyond 1024. Returns layout units from the centered column.
+	float Map( float fX, float fBase, float fLeft, float fExtra ) const;
+	float Unmap( float fCanvasX, float fBase, float fLeft, float fExtra ) const;
+
+private:
+	std::vector<std::pair<float, float>> m_vecZones;	// sorted, apart
+	float m_fZonesWidth = 0.f;
+};
+
+// The stretch in effect while a STRETCH piece draws (CKTDXApp::UIAnchorScope).
+struct UIStretchState
+{
+	const CKTDGUIStretch* pZones = nullptr;	// null: no stretch in effect
+	float fBase = 0.f, fLeft = 0.f, fExtra = 0.f;
+};
+
 // The anchors declared in UIAnchors.lua, by dialog script:
 //
 //     UI_ANCHORS =
 //     {
 //         ["DLG_UI_Quick_Slot.lua"] = { DIALOG = "LEFT", CONTROLS = { Static_Exp = "STRETCH" } },
+//         ["DLG_Menu_Button_NEW.lua"] = { STRETCH_ZONES = { { 49, 494 }, { 569, 1011 } }, CONTROLS = { ... } },
 //     }
 //
 // Read once, at the first dialog script. A script's own SetAnchor calls take precedence; what neither declares is
@@ -34,6 +64,7 @@ public:
 		bool bHasDialog = false;
 		UIAnchor eDialog = UIAnchor::Center;
 		std::unordered_map<std::wstring, UIAnchor> mapControls;
+		std::vector<std::pair<float, float>> vecStretchZones;
 	};
 
 private:
