@@ -293,10 +293,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [x] `client/interpolation-2` (2026-11-12, PR #62): particles, mesh players, world objects, dialogs (quest balloons)
         and monsters updated every few steps drawn between steps
         ([Frame pacing](../porting/client-ktdxlib.md#frame-pacing-2026-11-12-client-frame-pacing-t41)).
-  - [ ] `client/msaa`: MSAA 2x/4x/8x on the back buffer and its resolve.
+  - [x] `client/msaa` (2026-11-12, PR #63): MSAA 2x/4x/8x with alpha-to-coverage, anisotropic filtering up to 16x, and
+        the graphics tab with them, the frame limit and vertical sync (merged with `client/graphics-options`, user).
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
-  - [ ] `client/graphics-options`: a larger options dialog with the new settings (vsync, frame limit, MSAA, resolution).
   - [ ] `client/widescreen`, after audio: native widescreen, UI anchored instead of stretched.
 - [ ] **Audio, last** (user, 2026-11-05): replace the silent backend with a real one, FMOD Ex / DirectSound →
       miniaudio/SDL3 audio (or current cross-platform FMOD Core); only those files change.

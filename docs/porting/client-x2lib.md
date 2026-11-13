@@ -175,7 +175,16 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
   benchmark on Yes) and saved the file only after a login or an option change, so the question came back at every start
   until then. The port saves right after the answer.
 - `FRAME_LIMIT = <fps>` (new, 2026-11-12, [T41](../project/decisions.md)): at most that many frames per second, 0 for
-  no limit; read, saved and applied with the other options (`CX2GameOption::SetFrameLimit`). No option screen sets it.
+  no limit; read, saved and applied with the other options (`CX2GameOption::SetFrameLimit`).
+- `MULTISAMPLE = 1|2|4|8` and `ANISOTROPY = 1|2|4|8|16` (new, 2026-11-12, `client/msaa`): anti-aliasing and anisotropic
+  filtering, applied by the [D3D9 device](client-d3d9.md#anti-aliasing-and-anisotropic-filtering-2026-11-12-clientmsaa)
+  from the next frame (`CX2GameOption::SetMultisample`, `SetAnisotropy`).
+- **Graphics tab** (2026-11-12, `client/msaa`, content changes in [client_data](../tools/client-data.md)): combo boxes
+  for anti-aliasing, anisotropic filtering and the frame limit, and the vertical sync check box, moved from the other
+  options' tab. Their labels are in `DLG_UI_Option_Graphic.lua`; `X2StateOption.cpp` maps each item index to its
+  value (`kMultisampleItems`, `kAnisotropyItems`, `kFrameLimitItems`: 0, 30, 60, 120, 144, 165 and 240 fps). A value
+  edited in `GameOptions.lua` that no item has leaves its combo box empty. New messages
+  `SOUCM_OPTION_GRAPHIC_MULTISAMPLE`/`ANISOTROPY`/`FRAME_LIMIT` (2520–2522), also in `Enum.lua`.
 
 ## Status
 

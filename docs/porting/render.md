@@ -14,6 +14,7 @@ Only what SDL_GPU does, nothing added in advance for a future backend (T36 (1)):
 |---|---|
 | Handles | `Buffer`, `TransferBuffer`, `Texture`, `Sampler`, `Shader`, `GraphicsPipeline`: opaque, a default handle is "none", released explicitly (`Device::Release*`) as in SDL_GPU |
 | Descriptions | `BufferDesc`, `TextureDesc`, `SamplerDesc`, `ShaderDesc` (code + reflection: sampler and uniform block counts), `GraphicsPipelineDesc` (vertex layout, rasterizer, depth-stencil, blend per color target) |
+| Multisampling (2026-11-12, `client/msaa`) | `TextureDesc::sampleCount`, `GraphicsPipelineDesc::sampleCount` and `alphaToCoverage`, `StoreOp::Resolve`/`ResolveAndStore` with `ColorTargetInfo::resolveTexture`, `Device::TextureSupportsSampleCount`; the null backend copies a resolved target's contents into the resolve texture |
 | Recording | `CommandBuffer` (uniforms pushed by slot, render and copy passes, mipmaps, debug groups, swapchain texture, `Submit`/`Cancel`), `RenderPass` (pipeline, viewport, scissor, blend constants, stencil reference, vertex/index buffers and samplers by slot, draws), `CopyPass` (uploads, copies, downloads) |
 | `Device` | Created at run time for a `Backend` (`Device::Create`); window claims and swapchain parameters, format support, resource creation, transfer buffer mapping, `AcquireCommandBuffer`, `WaitIdle`, `LastError` |
 | Helpers | `WindowClaim` (claims a window and sets its present mode for its lifetime), `BackendName`/`ParseBackend`, texture format sizes |
@@ -21,7 +22,7 @@ Only what SDL_GPU does, nothing added in advance for a future backend (T36 (1)):
 - **Conventions** (T36 (2)), as in Direct3D: clip-space depth 0..1, texture and viewport origin at the top left (row 0 is the top
   row). SDL_GPU already uses them, so the SDL_GPU backend converts nothing.
 - **Left out for now** (2026-11-06), until a caller needs them: compute, storage buffers and textures, fences, blits, indirect
-  draws, multisample resolve, HDR swapchains. D3D9 features SDL_GPU lacks (triangle fans, border and mirror-once addressing) are
+  draws, HDR swapchains. D3D9 features SDL_GPU lacks (triangle fans, border and mirror-once addressing) are
   the D3D9 translation's job in `KTDXLIB` (T36 (5)), not the backends'.
 - Failures return a none handle, null or false, with the message in `Device::LastError()`; `Device::Create` reports through its
   `error` argument.

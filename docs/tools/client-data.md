@@ -133,4 +133,8 @@ is listed here with the step that changed it and why.
 
 | File | Step | Change |
 |---|---|---|
+| `ui/scripts/DLG_UI_Option_Graphic.lua` | `client/msaa` (2026-11-12) | Two rows after the resolution: anti-aliasing, anisotropic filtering and frame limit combo boxes and the vertical sync check box (helpers `AddGraphicLabel`/`AddGraphicCombo` in the script, labels in Portuguese with `STRING`) |
+| `ui/scripts/DLG_UI_Option_Etc.lua` | `client/msaa` (2026-11-12) | Vertical sync row removed (moved to the graphics tab); the rows below it moved up 26 points |
+| `ui/scripts/DLG_UI_Option_Back_New.lua` | `client/msaa` (2026-11-12) | Option window 58 points taller: the nine background pieces' `ADD_SIZE_Y` 26 → 84 |
+| `data/Enum.lua` | `client/msaa` (2026-11-12) | `STATE_OPTION_UI_CUSTOM_MSG`: `SOUCM_OPTION_GRAPHIC_MULTISAMPLE` 2520, `ANISOTROPY` 2521, `FRAME_LIMIT` 2522 |
 | `ui/scripts/DLG_UI_Option_Graphic.lua` | `client/resolution` (2026-11-12) | Window mode check box: hit box `RIGHT_BOTTOM` (282, 275) → (282, 285). The original's was a 15×5 strip at the top of the 15×15 box, so only its upper edge took clicks; the other check boxes of the dialog are 15×15 |
