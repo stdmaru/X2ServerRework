@@ -130,6 +130,22 @@ What the engine sets and reads back but the fixed-function shaders do not use ye
 - `UpdateTexture(source, destination)` copies the levels both textures have from the source's CPU copy and uploads them
   (same size and format); `Texture::AddDirtyRect` is accepted (whole levels are copied).
 
+## Anti-aliasing and anisotropic filtering (2026-11-12, `client/msaa`)
+
+New, not in D3D9's interface; the game's options set them ([Game options](client-x2lib.md#game-options-file-2026-11-12-clientx2-run)).
+
+- `SetMultisample(1, 2, 4 or 8)`: from the next frame the back buffer is drawn into a multisampled color texture with a
+  multisampled depth-stencil buffer, and resolved into the swapchain texture by a pass of its own at `Present`. The
+  count is lowered to one the GPU takes for both formats (`TextureSupportsSampleCount`). Render target textures stay
+  single-sampled: with anti-aliasing on, same-size ones get a single-sampled depth buffer of their own. The pipeline key
+  holds the target's sample count.
+- **Alpha-to-coverage**: draws on the back buffer with the alpha test on (`GREATER` or `GREATEREQUAL`) and blending off
+  use alpha-to-coverage, and `FixedFunction.frag.hlsl` replaces the test by an edge about one pixel wide
+  (`(alpha − ref) / fwidth(alpha) + 0.5`) instead of discarding, so cut-out leaves, grass and fences are smoothed like
+  geometry edges. Other tests and blended draws keep the alpha test as it was.
+- `SetAnisotropy(1 to 16)`: samplers of mipmapped textures filtered linearly (the world; the UI is not minified) get at
+  least that anisotropy; a sampler the game sets anisotropic keeps its own level if higher.
+
 ## Image files (2026-11-07, `client/d3dx-textures`)
 
 `CKTDXDeviceTexture` loads every texture through `D3DXGetImageInfoFromFileInMemory` and
