@@ -3,6 +3,39 @@
 
 inline int RectWidth( RECT &rc ) { return ( (rc).right - (rc).left ); }
 inline int RectHeight( RECT &rc ) { return ( (rc).bottom - (rc).top ); }
+
+namespace
+{
+	// The height of a text item in the dropdown, in dialog (1024x768) units. The original used the font's height,
+	// which is in screen pixels (scaled with the resolution) and is then scaled again: at 1024x768 the rows were as
+	// tall as the text, so the focus bar (2 more above and below) covered the neighbors. At least the font's height in
+	// dialog units plus a margin, never less than before (unchanged at 1920x1080).
+	int TextDialogHeight( CKTDGFontManager::CUKFont* pFont )
+	{
+		const float fScale = g_pKTDXApp->GetResolutionScaleY();
+		return fScale > 0.f ? static_cast<int>( pFont->GetHeight() / fScale + 0.5f ) : pFont->GetHeight();
+	}
+
+	int TextItemHeight( CKTDGFontManager::CUKFont* pFont )
+	{
+		return std::max( pFont->GetHeight(), TextDialogHeight( pFont ) + 5 );
+	}
+
+	// Text items: the focus bar covers the item's row only (the original's reached 2 into each neighbor) and the
+	// text is centered in it. Static items keep the original's bar.
+	RECT FocusRect( const RECT& rcDropdown, const RECT& rcActive, bool bStatic )
+	{
+		const int iMargin = bStatic ? 2 : 0;
+		RECT rc;
+		SetRect( &rc, rcDropdown.left, rcActive.top - iMargin, rcDropdown.right, rcActive.bottom + iMargin );
+		return rc;
+	}
+
+	float TextTop( CKTDGFontManager::CUKFont* pFont, const RECT& rcActive )
+	{
+		return static_cast<float>( rcActive.top + ( RectHeight( const_cast<RECT&>( rcActive ) ) - TextDialogHeight( pFont ) ) / 2 );
+	}
+}
 inline RECT AddRect( RECT &rc1, RECT &rc2 )
 {
 	RECT rc;
@@ -247,7 +280,7 @@ HRESULT CKTDGUIComboBox::OnFrameRender()
 				// Update the page size of the scroll bar
 				if( pFont != NULL )
 				{
-					m_pScrollBar->SetPageSize( RectHeight( m_rcDropdownText ) / pFont->GetHeight() );
+					m_pScrollBar->SetPageSize( RectHeight( m_rcDropdownText ) / TextItemHeight( pFont ) );
 				}
 				else
 				{
@@ -479,7 +512,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 				if ( m_bIsStaticComboBox == false )
 				{
 					// Make sure there's room left in the dropdown
-					nRemainingHeight -= (pFont->GetHeight());
+					nRemainingHeight -= TextItemHeight( pFont );
 				}
 				else
 				{
@@ -493,8 +526,8 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 
 				if ( m_bIsStaticComboBox == false )
 				{
-					SetRect( &pItem->rcActive, m_rcDropdownText.left, curY, m_rcDropdownText.right + m_pScrollBar->GetWidth(), curY + (pFont->GetHeight()) );
-					curY += (pFont->GetHeight());
+					SetRect( &pItem->rcActive, m_rcDropdownText.left, curY, m_rcDropdownText.right + m_pScrollBar->GetWidth(), curY + TextItemHeight( pFont ) );
+					curY += TextItemHeight( pFont );
 				}
 				else
 				{
@@ -510,8 +543,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 
 				if( m_bOpened )
 				{
-					RECT rc;
-					SetRect( &rc, m_rcDropdown.left, pItem->rcActive.top-2, m_rcDropdown.right, (pItem->rcActive.bottom+2) );
+					RECT rc = FocusRect( m_rcDropdown, pItem->rcActive, m_bIsStaticComboBox );
 
 					if( (int)i == m_iFocused )
 					{
@@ -540,7 +572,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 							{
 								D3DXVECTOR2 tempPos;
 								tempPos.x = (float)pItem->rcActive.left;
-								tempPos.y = (float)pItem->rcActive.top;
+								tempPos.y = TextTop( pFont, pItem->rcActive );
 
 								D3DXCOLOR	tempColor;
 								D3DXCOLOR	tempOutLineColor;
@@ -601,7 +633,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 							{
 								D3DXVECTOR2 tempPos;
 								tempPos.x = (float)pItem->rcActive.left;
-								tempPos.y = (float)pItem->rcActive.top;
+								tempPos.y = TextTop( pFont, pItem->rcActive );
 
 								D3DXCOLOR	tempColor;
 								D3DXCOLOR	tempOutLineColor;
@@ -662,7 +694,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 				if ( m_bIsStaticComboBox == false )
 				{
 					// Make sure there's room left in the dropdown
-					nRemainingHeight -= (pFont->GetHeight());
+					nRemainingHeight -= TextItemHeight( pFont );
 				}
 				else
 				{
@@ -677,11 +709,11 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 				if ( m_bIsStaticComboBox == false )
 				{
 					if ( m_pScrollBar != NULL )
-						SetRect( &pItem->rcActive, m_rcDropdownText.left, curY, m_rcDropdownText.right + m_pScrollBar->GetWidth(), curY + (pFont->GetHeight()) );
+						SetRect( &pItem->rcActive, m_rcDropdownText.left, curY, m_rcDropdownText.right + m_pScrollBar->GetWidth(), curY + TextItemHeight( pFont ) );
 					else
-						SetRect( &pItem->rcActive, m_rcDropdownText.left, curY, m_rcDropdownText.right, curY + (pFont->GetHeight()) );
+						SetRect( &pItem->rcActive, m_rcDropdownText.left, curY, m_rcDropdownText.right, curY + TextItemHeight( pFont ) );
 
-					curY += (pFont->GetHeight());
+					curY += TextItemHeight( pFont );
 				}
 				else
 				{
@@ -701,8 +733,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 
 				if( m_bOpened )
 				{
-					RECT rc;
-					SetRect( &rc, m_rcDropdown.left, pItem->rcActive.top-2, m_rcDropdown.right, (pItem->rcActive.bottom+2) );
+					RECT rc = FocusRect( m_rcDropdown, pItem->rcActive, m_bIsStaticComboBox );
 
 					if( (int)i == m_iFocused )
 					{
@@ -728,7 +759,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 							{
 								D3DXVECTOR2 tempPos;
 								tempPos.x = (float)pItem->rcActive.left;
-								tempPos.y = (float)pItem->rcActive.top;
+								tempPos.y = TextTop( pFont, pItem->rcActive );
 
 								D3DXCOLOR	tempColor;
 								D3DXCOLOR	tempOutLineColor;
@@ -770,7 +801,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 							{
 								D3DXVECTOR2 tempPos;
 								tempPos.x = (float)pItem->rcActive.left;
-								tempPos.y = (float)pItem->rcActive.top;
+								tempPos.y = TextTop( pFont, pItem->rcActive );
 
 								D3DXCOLOR	tempColor;
 								D3DXCOLOR	tempOutLineColor;
@@ -814,7 +845,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 	if ( m_bIsStaticComboBox == false )
 	{
 		// Scroll bar
-		if( m_bOpened && m_pScrollBar != NULL && pFont != NULL && m_nDropHeight < pFont->GetHeight() * m_Items.GetSize() )
+		if( m_bOpened && m_pScrollBar != NULL && pFont != NULL && m_nDropHeight < TextItemHeight( pFont ) * m_Items.GetSize() )
 		{
 			m_pScrollBar->OnFrameRender();
 		}
@@ -1181,7 +1212,9 @@ void CKTDGUIComboBox::UpdateRects()
 	else
 		m_rcDropdownText.right -= (int) (0.1f * RectWidth( m_rcDropdown ));
 
-	m_rcDropdownText.top += (int) (0.1f * RectHeight( m_rcDropdown ));
+	// A fixed top margin: the original's 10% of the dropdown's height left an empty row above the items of a long list
+	// (and cut the last one off).
+	m_rcDropdownText.top += 3;
 	//m_rcDropdownText.bottom -= (int) (0.1f * RectHeight( m_rcDropdown ));
 
 
@@ -1200,7 +1233,7 @@ void CKTDGUIComboBox::UpdateRects()
 		CKTDGFontManager::CUKFont* pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( m_pStringData->fontIndex );
 
 		if ( m_bIsStaticComboBox == false )
-			m_pScrollBar->SetPageSize( RectHeight( m_rcDropdownText ) / pFont->GetHeight() );
+			m_pScrollBar->SetPageSize( RectHeight( m_rcDropdownText ) / TextItemHeight( pFont ) );
 		else
 			m_pScrollBar->SetPageSize( RectHeight( m_rcDropdownText ) / m_nStaticHeight );
 
@@ -1524,7 +1557,7 @@ HRESULT CKTDGUIComboBox::AddItem( const WCHAR* strText, void* pData, bool bSendC
 				pFont = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetUKFont( m_pStringData->fontIndex );
 
 			if ( pFont != NULL )
-				SetDropHeight( pFont->GetHeight() * GetNumItems() );
+				SetDropHeight( TextItemHeight( pFont ) * GetNumItems() );
 		}
 		else
 		{
