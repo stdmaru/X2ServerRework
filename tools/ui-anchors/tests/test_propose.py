@@ -68,6 +68,16 @@ class ProposeTest(unittest.TestCase):
         p = self.proposals(("dlg_shop.lua", "Back", 5, 0, 0, 460, 480, "0,0", 1))["dlg_shop.lua"]
         self.assertEqual((p.dialog, p.controls, p.review, p.floating), ("CENTER", {}, None, True))
 
+    def test_centered_list_wins(self):
+        path = self.root / "UIAnchorsRecord.tsv"
+        path.write_text("dlg_ui_shop.lua\tBack\t5\t0\t0\t460\t480\t0,0\n", encoding="utf-8")
+        centered = self.root / "centered.txt"
+        centered.write_text("# windows\nDLG_UI_Shop.lua  # floating\n", encoding="utf-8")
+        controls = propose.read_records([path])["dlg_ui_shop.lua"]
+        p = propose.propose("dlg_ui_shop.lua", controls, propose.read_centered(centered))
+        self.assertEqual((p.dialog, p.kept), ("CENTER", True))
+        self.assertEqual(propose.propose("dlg_ui_shop.lua", controls).dialog, "LEFT")
+
     def test_moved_dialog_is_left_for_review(self):
         p = self.proposals(("dlg_inventory.lua", "Back", 5, 0, 0, 300, 400, "0,0;500,100"))["dlg_inventory.lua"]
         self.assertEqual(p.dialog, "CENTER")
