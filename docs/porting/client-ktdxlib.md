@@ -355,6 +355,18 @@ steps (audited 2026-11-12):
 - the P2P batches of `CX2Main::GetFrameBufferNum` (7 steps) and the NPC frame-move intervals stay in steps: 117 ms per
   batch instead of 100 ms in dungeons;
 - the non-host NPC position history keeps at least 70 entries, now 1.17 s.
+## Combo box dropdowns (2026-11-12, `client/msaa`)
+
+**Behavior change** (`CKTDGUIComboBox`), fixing the original's layout at 1024×768:
+
+- A text item's row was the font's height, which is in screen pixels (scaled with the resolution) but was used in
+  dialog units (1024×768) and scaled again: at 1024×768 the rows were exactly as tall as the text and the focus bar,
+  2 units taller above and below, covered the neighbors; at 1920×1080 the rows were roomier. A row is now the font's
+  height in dialog units plus 5, never less than before (`TextItemHeight`; unchanged at 1920×1080).
+- The focus bar of a text item covers its row only, and the text is centered in it (static items keep the original's).
+- The items start 3 units below the dropdown's top; the original left 10% of the dropdown's height, an empty row above
+  long lists such as the resolutions.
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)
