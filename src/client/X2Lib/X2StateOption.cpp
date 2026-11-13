@@ -9,6 +9,7 @@ namespace
 	constexpr int kMultisampleItems[] = { 1, 2, 4, 8 };
 	constexpr int kAnisotropyItems[] = { 1, 2, 4, 8, 16 };
 	constexpr int kFrameLimitItems[] = { 0, 30, 60, 120, 144, 165, 240 };
+	constexpr int kSupersampleItems[] = { 1, 2 };
 
 	// The value of a combo box's selected item, or -1.
 	template <std::size_t N>
@@ -956,6 +957,14 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			return true;
 		} break;
 
+	case SOUCM_OPTION_GRAPHIC_SUPERSAMPLE:
+		{
+			const int iValue = SelectedValue( m_pDLGOptionWindow, L"Option_Supersample", kSupersampleItems );
+			if( iValue > 0 )
+				pGameOption->SetSupersample( iValue );
+			return true;
+		} break;
+
 	case SOUCM_OPTION_GRAPHIC_FRAME_LIMIT:
 		{
 			const int iValue = SelectedValue( m_pDLGOptionWindow, L"Option_FrameLimit", kFrameLimitItems );
@@ -1366,8 +1375,9 @@ void CX2StateOption::ShowGraphicOption( bool bShow )
 	}
 
 	// Added on 2026-11-12 (client/msaa); vertical sync moved here from the other options.
-	for( const WCHAR* wszName : { L"Option_Multisample", L"Option_Anisotropy", L"Option_FrameLimit", L"VerticalSync",
-		L"OptionMultisample", L"OptionAnisotropy", L"OptionFrameLimit", L"OptionVerticalSync" } )
+	for( const WCHAR* wszName : { L"Option_Multisample", L"Option_Anisotropy", L"Option_FrameLimit", L"Option_Supersample",
+		L"VerticalSync", L"OptionMultisample", L"OptionAnisotropy", L"OptionFrameLimit", L"OptionSupersample",
+		L"OptionVerticalSync" } )
 	{
 		if( CKTDGUIControl* pControl = m_pDLGOptionWindow->GetControl( wszName ) )
 			pControl->SetShowEnable( bShow, bShow );
@@ -1884,6 +1894,7 @@ void CX2StateOption::InitGraphicOption()
 	SelectValue( m_pDLGOptionWindow, L"Option_Multisample", kMultisampleItems, pOptionList->m_iMultisample );
 	SelectValue( m_pDLGOptionWindow, L"Option_Anisotropy", kAnisotropyItems, pOptionList->m_iAnisotropy );
 	SelectValue( m_pDLGOptionWindow, L"Option_FrameLimit", kFrameLimitItems, pOptionList->m_iFrameLimit );
+	SelectValue( m_pDLGOptionWindow, L"Option_Supersample", kSupersampleItems, pOptionList->m_iSupersample );
 	if( CKTDGUICheckBox* pCheckVerticalSync = (CKTDGUICheckBox*) m_pDLGOptionWindow->GetControl( L"VerticalSync" ) )
 		pCheckVerticalSync->SetChecked( pOptionList->m_bVerticalSync );
 }

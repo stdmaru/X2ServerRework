@@ -1283,7 +1283,7 @@ render::GraphicsPipeline Device::Pipeline(const PipelineKey& key, DWORD fvf, UIN
     return pipeline;
 }
 
-render::Sampler Device::SamplerFor(DWORD stage)
+render::Sampler Device::SamplerFor(DWORD stage, bool pointMagnify)
 {
     const auto& ss = m_samplerStates[stage];
     std::uint64_t key = 0xCBF29CE484222325ULL;
@@ -1293,12 +1293,13 @@ render::Sampler Device::SamplerFor(DWORD stage)
         key = (key ^ ss[type]) * 0x100000001B3ULL;
     }
     key = (key ^ m_anisotropy) * 0x100000001B3ULL;
+    key = (key ^ (pointMagnify ? 1u : 0u)) * 0x100000001B3ULL;
     if (auto it = m_samplers.find(key); it != m_samplers.end()) {
         return it->second;
     }
     render::SamplerDesc desc;
     desc.minFilter = TextureFilter(ss[D3DSAMP_MINFILTER]);
-    desc.magFilter = TextureFilter(ss[D3DSAMP_MAGFILTER]);
+    desc.magFilter = pointMagnify ? render::Filter::Nearest : TextureFilter(ss[D3DSAMP_MAGFILTER]);
     desc.mipmapMode = ss[D3DSAMP_MIPFILTER] == D3DTEXF_LINEAR ? render::MipmapMode::Linear : render::MipmapMode::Nearest;
     desc.addressU = Address(ss[D3DSAMP_ADDRESSU]);
     desc.addressV = Address(ss[D3DSAMP_ADDRESSV]);
@@ -1418,10 +1419,14 @@ bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buf
     if (!pipeline) {
         return false;
     }
+    // Supersampling: the UI (pre-transformed vertices) is laid out texel for pixel; magnified linearly at twice the
+    // size, each drawn pixel would mix a quarter of the next texel and the scaled-down result would be blurred. With
+    // nearest texels each one covers 2x2 drawn pixels and comes back as it was.
+    const bool pointMagnify = m_ssaa > 1 && !m_target && (fvf & D3DFVF_POSITION_MASK) == D3DFVF_XYZRHW;
     std::array<render::TextureSamplerBinding, kTextureStages> samplers;
     for (DWORD stage = 0; stage < kTextureStages; ++stage) {
         samplers[stage] = {m_textures[stage] && m_textures[stage]->m_texture ? m_textures[stage]->m_texture : m_white,
-                           SamplerFor(stage)};
+                           SamplerFor(stage, pointMagnify)};
         if (!samplers[stage].sampler) {
             return false;
         }
