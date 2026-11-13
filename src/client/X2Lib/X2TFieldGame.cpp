@@ -4594,6 +4594,15 @@ HRESULT CX2TFieldGame::NpcJoinShadow::OnFrameMove( double /*fTime*/, float fElap
     CKTDGParticleSystem::CParticle*	pNpcShadowTopParticle = g_pTFieldGame->GetUiParticle()->ValidateParticleHandle( m_hNpcShadowTopParticle );
     CKTDGParticleSystem::CParticle*	pNpcShadowBottomParticle = g_pTFieldGame->GetUiParticle()->ValidateParticleHandle( m_hNpcShadowBottomParticle );
 
+	// The shades are 1024 wide, centered on the layout's middle (UIMajorParticle.txt); they span the screen, however
+	// wide (T44).
+	const float fCanvasWidth = g_pKTDXApp->GetUICanvasSize().x;
+	for ( CKTDGParticleSystem::CParticle* pShade : { pNpcShadowTopParticle, pNpcShadowBottomParticle } )
+	{
+		if ( pShade != NULL && pShade->GetSize().x != fCanvasWidth )
+			pShade->SetSize( D3DXVECTOR3( fCanvasWidth, pShade->GetSize().y, pShade->GetSize().z ) );
+	}
+
 	if(m_bStart == true)
 	{
 		if(m_fTimer <= 1.0f)
