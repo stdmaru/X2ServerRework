@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <bit>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <limits>
@@ -24,6 +25,8 @@ constexpr std::uint32_t kUploadChunkSize = 4u << 20;
 constexpr std::uint32_t kUploadFlushThreshold = 64u << 20;     // flush staged uploads past this, even mid-frame
 constexpr std::uint32_t kDynamicVertexBytes = 4u << 20;        // DrawPrimitiveUP ring
 constexpr std::uint32_t kMaxFanTriangles = 16384;
+// Supersampling: pre-transformed draws up to this many pixels per texel magnify with nearest texels.
+constexpr float kPointMagnifyMaxScale = 1.25f;
 
 std::uint32_t AlignUp(std::uint32_t value, std::uint32_t alignment)
 {
@@ -1395,8 +1398,66 @@ void Device::PushFixedFunctionVertexUniforms(float width, float height)
     m_frame->PushVertexUniformData(0, std::as_bytes(std::span(&v, 1)));
 }
 
+std::span<const std::byte> Device::StreamBytes() const
+{
+    if (!m_stream || m_streamOffset >= m_stream->m_bytes.size()) {
+        return {};
+    }
+    return std::span<const std::byte>(m_stream->m_bytes).subspan(m_streamOffset);
+}
+
+float Device::TexelScale(D3DPRIMITIVETYPE type, std::span<const std::byte> vertices, UINT stride, INT firstVertex,
+                         DWORD fvf, const IndexBuffer* indices, UINT startIndex) const
+{
+    if (type != D3DPT_TRIANGLELIST && type != D3DPT_TRIANGLESTRIP && type != D3DPT_TRIANGLEFAN) {
+        return 0.0f;
+    }
+    const Texture* texture = m_textures[0];
+    const FvfLayout layout = DescribeFvf(fvf);
+    const DWORD set = m_stageStates[0][D3DTSS_TEXCOORDINDEX] & 0xFFFF;
+    if (!texture || texture->m_width == 0 || texture->m_height == 0 || set >= 2 || layout.texOffset[set] < 0 ||
+        layout.texFormat[set] != render::VertexElementFormat::Float2) {
+        return 0.0f;
+    }
+    float position[3][2], uv[3][2];
+    for (UINT i = 0; i < 3; ++i) {
+        std::int64_t vertex = firstVertex;
+        if (indices) {
+            const std::size_t bytes = indices->m_format == D3DFMT_INDEX32 ? 4 : 2;
+            const std::size_t at = (static_cast<std::size_t>(startIndex) + i) * bytes;
+            if (at + bytes > indices->m_bytes.size()) {
+                return 0.0f;
+            }
+            if (bytes == 4) {
+                std::uint32_t index = 0;
+                std::memcpy(&index, &indices->m_bytes[at], 4);
+                vertex += index;
+            } else {
+                std::uint16_t index = 0;
+                std::memcpy(&index, &indices->m_bytes[at], 2);
+                vertex += index;
+            }
+        } else {
+            vertex += i;
+        }
+        const std::size_t at = static_cast<std::size_t>(vertex) * stride;
+        if (vertex < 0 || at + layout.size > vertices.size()) {
+            return 0.0f;
+        }
+        std::memcpy(position[i], &vertices[at], sizeof position[i]);
+        std::memcpy(uv[i], &vertices[at + static_cast<std::size_t>(layout.texOffset[set])], sizeof uv[i]);
+    }
+    const auto area = [](const float (&p)[3][2], float sx, float sy) {
+        return std::abs(((p[1][0] - p[0][0]) * (p[2][1] - p[0][1]) - (p[2][0] - p[0][0]) * (p[1][1] - p[0][1])) *
+                        sx * sy);
+    };
+    const float texels = area(uv, static_cast<float>(texture->m_width), static_cast<float>(texture->m_height));
+    return texels > 0.0f ? std::sqrt(area(position, 1.0f, 1.0f) / texels) : 0.0f;
+}
+
 bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buffer, UINT offset, UINT stride,
-                  INT firstVertex, DWORD fvf, const IndexBuffer* indices, UINT startIndex)
+                  INT firstVertex, DWORD fvf, std::span<const std::byte> cpuVertices, const IndexBuffer* indices,
+                  UINT startIndex)
 {
     PrimitiveShape shape{};
     if (!Shape(type, primitiveCount, shape)) {
@@ -1421,8 +1482,13 @@ bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buf
     }
     // Supersampling: the UI (pre-transformed vertices) is laid out texel for pixel; magnified linearly at twice the
     // size, each drawn pixel would mix a quarter of the next texel and the scaled-down result would be blurred. With
-    // nearest texels each one covers 2x2 drawn pixels and comes back as it was.
-    const bool pointMagnify = m_ssaa > 1 && !m_target && (fvf & D3DFVF_POSITION_MASK) == D3DFVF_XYZRHW;
+    // nearest texels each one covers 2x2 drawn pixels and comes back as it was. Only near 1:1: a small texture
+    // stretched over the screen (a village's light overlay, 128x128) keeps the game's filter, or its texels show.
+    bool pointMagnify = false;
+    if (m_ssaa > 1 && !m_target && (fvf & D3DFVF_POSITION_MASK) == D3DFVF_XYZRHW) {
+        const float scale = TexelScale(type, cpuVertices, stride, firstVertex, fvf, indices, startIndex);
+        pointMagnify = scale > 0.0f && scale <= kPointMagnifyMaxScale;
+    }
     std::array<render::TextureSamplerBinding, kTextureStages> samplers;
     for (DWORD stage = 0; stage < kTextureStages; ++stage) {
         samplers[stage] = {m_textures[stage] && m_textures[stage]->m_texture ? m_textures[stage]->m_texture : m_white,
@@ -1481,7 +1547,7 @@ bool Device::DrawPrimitive(D3DPRIMITIVETYPE type, UINT startVertex, UINT primiti
         return Fail("DrawPrimitive: no vertex buffer on stream 0");
     }
     return Draw(type, primitiveCount, m_stream->m_buffer, m_streamOffset, m_streamStride, static_cast<INT>(startVertex),
-                m_fvf);
+                m_fvf, StreamBytes());
 }
 
 bool Device::DrawIndexedPrimitive(D3DPRIMITIVETYPE type, INT baseVertexIndex, UINT /*minIndex*/,
@@ -1507,7 +1573,7 @@ bool Device::DrawIndexedPrimitive(D3DPRIMITIVETYPE type, INT baseVertexIndex, UI
         }
     }
     return Draw(type, primitiveCount, m_stream->m_buffer, m_streamOffset, m_streamStride, baseVertexIndex, m_fvf,
-                m_indices, startIndex);
+                StreamBytes(), m_indices, startIndex);
 }
 
 bool Device::DrawPrimitiveUP(D3DPRIMITIVETYPE type, UINT primitiveCount, const void* vertices, UINT stride)
@@ -1538,7 +1604,8 @@ bool Device::DrawPrimitiveUP(D3DPRIMITIVETYPE type, UINT primitiveCount, const v
         return false;
     }
     m_dynamicOffset = offset + size;
-    return Draw(type, primitiveCount, m_dynamicVertices, offset, stride, 0, m_fvf);
+    return Draw(type, primitiveCount, m_dynamicVertices, offset, stride, 0, m_fvf,
+                {static_cast<const std::byte*>(vertices), size});
 }
 
 // --- Uploads --------------------------------------------------------------------------------------------------------
