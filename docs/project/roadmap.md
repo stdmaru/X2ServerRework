@@ -301,6 +301,9 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         attached equipment drawn between steps with their units (user confirmed in the field and the village).
   - [ ] `client/render-perf`: UI costs (`DrawPrimitiveUP` uploads; opening the options menu costs ~0.4 ms), descriptor
         rebinding per draw.
+  - [ ] `client/font-rendering`, after widescreen (user, 2026-11-13): UI text looks too bold at 1080p, as it does in
+        the original. FreeType hinting and weight (the `fontWeight` parameter is ignored) and the outline styles, which
+        redraw the text at ±1 layout unit, so 1 or 2 pixels at 1080p (`CUKFont::DrawFontStyle`).
   - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
         ratio, ultrawide included, and 16:9 by default. Today the UI's 1024×768 layout is scaled by separate X and Y
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it
