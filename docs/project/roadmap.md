@@ -304,6 +304,18 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [ ] `client/font-rendering`, after widescreen (user, 2026-11-13): UI text looks too bold at 1080p, as it does in
         the original. FreeType hinting and weight (the `fontWeight` parameter is ignored) and the outline styles, which
         redraw the text at ±1 layout unit, so 1 or 2 pixels at 1080p (`CUKFont::DrawFontStyle`).
+  - [ ] `server/add-character`, soon (user, 2026-11-13): enable Add (`UT_ADD` = 9; Nasod Ruler 9, Psychic Tracer 32,
+        Lunatic Psyker 122). Investigated 2026-11-13. The code is in place: `CX2GUAdd`, the classes on both sides, and the
+        creation slot. One limit gates it on both sides, `_CONST_LIMIT_UNIT_::iLimitType = 8` (Elesis) in
+        `ServerDefine_Global.h`. Our client has the models, motions, effects, sounds, UI and `UnitTemplet.lua` entries.
+        Missing data:
+        - no Add skills or skill tree in `NewSkillTempletVer2.lua`;
+        - 17 Add items in `Item.lua` (Elesis has 461);
+        - nothing for classes 9/32/122 in `runtime/ServerResource` (`StatTable`, `ClassChange*`);
+        - in `Game01`, `gup_create_unit` accepts only classes 1–8, `GSkill_Default` has no class 9, and `GBase_Item`'s
+          class 9 rows are Ara items.
+        The V5 client (`Elsword-V5.0318.6_3`, same `.kom` format) has the Add data, but it is a later version with third
+        jobs. Take only these three classes, checking field by field.
   - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
         ratio, ultrawide included, and 16:9 by default. Today the UI's 1024×768 layout is scaled by separate X and Y
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it
@@ -330,7 +342,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
     - [ ] `client/widescreen-migration`: `UIAnchors.lua` filled and reviewed, HUD first, then windows, then the rest;
           the C++ placement sites (about 224) sorted into layout and derived positions along the way. Two or three PRs.
           Part 1, the HUD, done 2026-11-13 (with the code-placed pieces it showed: quick slot items, minimap, party and
-          PvP gauges, buffs); next, full screens (character select, PvP rooms, cash shop) and the review list.
+          PvP gauges, buffs). Part 2 (`client/widescreen-screens`, PR #72): character select and creation done
+          (user checked, 2026-11-13); next, PvP rooms, cash shop, boss bars, the NPC talk shade and the review list.
+          Full-screen black shades found by a scan (2026-11-13), to stretch with their screens: cash shop popups,
+          minimap item choice, event scenes and slideshow, world map, login keyboard, bingo.
           This includes the content fixes for full-screen images whose texture does not match its rectangle (the
           character select background: 512×512 drawn at 1024×768, also stretched in the original), found by comparing
           `.tet` UVs with script rectangles.
