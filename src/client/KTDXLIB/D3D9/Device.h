@@ -280,6 +280,11 @@ public:
     // alpha-to-coverage. Takes effect at the next frame.
     void SetMultisample(UINT samples);
     UINT Multisample() const { return m_samples; }
+    // Supersampling (2026-11-12): the back buffer is drawn `factor` times wider and taller (1 or 2) and scaled down
+    // to the window at Present. The game still sees the window's size: viewports and pre-transformed vertices stay in
+    // its pixels. Combines with SetMultisample. Takes effect at the next frame.
+    void SetSupersample(UINT factor);
+    UINT Supersample() const { return m_supersample; }
     // Anisotropic filtering for every mipmapped texture sampled with linear filtering, up to `level` (1: off, as the
     // game asks; at most 16). Samplers the game sets anisotropic keep their own level if higher.
     void SetAnisotropy(UINT level);
@@ -303,6 +308,7 @@ private:
         render::TextureFormat colorFormat = render::TextureFormat::Invalid;
         UINT width = 0, height = 0;
         UINT samples = 1;
+        UINT scale = 1;             // supersampling: drawn pixels per game pixel, on each axis
         render::Texture depth;      // none when no depth buffer fits the target
         render::TextureFormat depthFormat = render::TextureFormat::Invalid;
     };
@@ -409,6 +415,11 @@ private:
     render::TextureFormat m_msaaFormat = render::TextureFormat::Invalid;
     render::Texture m_textureDepth;
     UINT m_anisotropy = 1;
+    // Supersampling: m_supersample asked; with m_ssaa > 1 the back buffer is drawn into m_ssaaColor (and m_msaaColor,
+    // m_depth) m_ssaa times the window's size and blitted into the swapchain texture.
+    UINT m_supersample = 1;
+    UINT m_ssaa = 1;
+    render::Texture m_ssaaColor;
     PendingClear m_pendingClear;
     bool m_inScene = false;
 
