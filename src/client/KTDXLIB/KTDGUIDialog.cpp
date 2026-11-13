@@ -2062,6 +2062,10 @@ float CKTDGUIDialog::GetControlAnchorShift( const CKTDGUIControl* pControl ) con
 void CKTDGUIDialog::SetPos( const D3DXVECTOR2& pos )
 {
 	KTDXPROFILE();
+#if X2_DEV_TOOLS
+	if ( m_bLoadingScript == false )
+		m_bPlacedByCode = true;
+#endif
 
 	m_Pos.x = pos.x;
 	m_Pos.y = pos.y;
@@ -2303,7 +2307,13 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 
 
 
+#if X2_DEV_TOOLS
+	m_bLoadingScript = true;
+#endif
 	bool bResult = g_pKTDXApp->LoadLuaTinker( pFilename );
+#if X2_DEV_TOOLS
+	m_bLoadingScript = false;
+#endif
 	if ( bResult == true )
 		CKTDGUIAnchors::Apply( *this, pFilename );
 

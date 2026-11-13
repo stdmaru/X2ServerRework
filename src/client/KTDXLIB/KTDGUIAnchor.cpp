@@ -172,6 +172,7 @@ namespace
 		int iType = 0;
 		float fMinX = 0.f, fMinY = 0.f, fMaxX = 0.f, fMaxY = 0.f;
 		std::set<std::pair<int, int>> setDialogPos;
+		bool bPlacedByCode = false;
 	};
 
 	class AnchorRecordFile
@@ -183,7 +184,7 @@ namespace
 		AnchorRecordFile() { Read(); }
 
 		void Note( const std::string& strScript, const std::string& strControl, int iType, const D3DXVECTOR2& vMin,
-			const D3DXVECTOR2& vMax, const D3DXVECTOR2& vDialogPos )
+			const D3DXVECTOR2& vMax, const D3DXVECTOR2& vDialogPos, bool bPlacedByCode )
 		{
 			const std::string strKey = strScript + '\t' + strControl;
 			auto [it, bNew] = m_mapRecords.try_emplace( strKey );
@@ -206,6 +207,11 @@ namespace
 				kRecord.fMaxY = std::max( kRecord.fMaxY, vMax.y );
 				m_bDirty = true;
 			}
+			if ( bPlacedByCode && kRecord.bPlacedByCode == false )
+			{
+				kRecord.bPlacedByCode = true;
+				m_bDirty = true;
+			}
 			if ( kRecord.setDialogPos.size() < kMaxPositions && kRecord.setDialogPos.insert( kPos ).second )
 				m_bDirty = true;
 		}
@@ -219,7 +225,7 @@ namespace
 			m_bDirty = false;
 
 			std::ofstream kFile( kFileName, std::ios::trunc );
-			kFile << "# script\tcontrol\ttype\tmin_x\tmin_y\tmax_x\tmax_y\tdialog_positions (layout units; control box relative to the dialog)\n";
+			kFile << "# script\tcontrol\ttype\tmin_x\tmin_y\tmax_x\tmax_y\tdialog_positions\tplaced_by_code (layout units; control box relative to the dialog)\n";
 			for ( const auto& [strKey, kRecord] : m_mapRecords )
 			{
 				kFile << strKey << '\t' << kRecord.iType << '\t' << kRecord.fMinX << '\t' << kRecord.fMinY << '\t'
@@ -230,7 +236,7 @@ namespace
 					kFile << ( bFirst ? "" : ";" ) << x << ',' << y;
 					bFirst = false;
 				}
-				kFile << '\n';
+				kFile << '\t' << ( kRecord.bPlacedByCode ? 1 : 0 ) << '\n';
 			}
 		}
 
@@ -250,7 +256,10 @@ namespace
 					|| !( kLine >> kRecord.iType >> kRecord.fMinX >> kRecord.fMinY >> kRecord.fMaxX >> kRecord.fMaxY ) )
 					continue;
 				kLine >> std::ws;
-				std::getline( kLine, strPositions );
+				std::getline( kLine, strPositions, '\t' );
+				int iPlacedByCode = 0;
+				if ( kLine >> iPlacedByCode )
+					kRecord.bPlacedByCode = iPlacedByCode != 0;
 				std::istringstream kPositions( strPositions );
 				std::string strPos;
 				while ( std::getline( kPositions, strPos, ';' ) )
@@ -302,7 +311,7 @@ void CKTDGUIAnchorRecorder::Note( CKTDGUIDialog& kDialog )
 			continue;
 		const std::wstring wstrName = pControl->GetName() != NULL ? pControl->GetName() : L"";
 		const std::string strControl = wstrName.empty() ? "#" + std::to_string( i ) : ToUtf8( wstrName );
-		kFile.Note( strScript, strControl, static_cast<int>( pControl->GetType() ), vMin, vMax, kDialog.GetPos() );
+		kFile.Note( strScript, strControl, static_cast<int>( pControl->GetType() ), vMin, vMax, kDialog.GetPos(), kDialog.GetPlacedByCode() );
 	}
 	kFile.FlushIfDue();
 }
