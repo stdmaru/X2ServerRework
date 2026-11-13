@@ -290,6 +290,8 @@ HRESULT CX2TalkBoxManagerImp::OnFrameRender()
 {
 	KTDXPROFILE();
 
+	PlaceTalkBoxesBetweenSteps();
+
 	//float boxWidth = 186;
 	//float boxCenterHeight = 53;
 
@@ -1724,10 +1726,37 @@ void CX2TalkBoxManagerImp::TalkBox::Update( CKTDGFontManager::CUKFont* pKTDGFont
 
 		m_vPos += vOffset;
 
+		const int iTick = g_pKTDXApp->GetFrameMoveCount();
+		m_bTickPosPrevious = m_iTickPos >= 0 && m_iTickPos == iTick - 1;
+		m_vTickPosPrevious = m_vTickPosLast;
+		m_vTickPosLast = m_vPos;
+		m_iTickPos = iTick;
+
 		ResetFontPos( pKTDGFont, fMarginLeft, fMarginTop );
 
 	}
 
+}
+
+void CX2TalkBoxManagerImp::TalkBox::PlaceBetweenSteps( CKTDGFontManager::CUKFont* pKTDGFont, const float fMarginLeft, const float fMarginTop )
+{
+	if( false == m_bTraceUnit || false == m_bShow || m_iTickPos < 0 || m_iTickPos != g_pKTDXApp->GetFrameMoveCount() - 1 )
+		return;
+	D3DXVECTOR2 vPos = m_vTickPosLast;
+	const float t = g_pKTDXApp->GetTickInterpolation();
+	const D3DXVECTOR2 vMoved = m_vTickPosLast - m_vTickPosPrevious;
+	if( m_bTickPosPrevious && t < 1.f && D3DXVec2Dot( &vMoved, &vMoved ) < 200.f * 200.f )
+		vPos = m_vTickPosPrevious + vMoved * t;
+	if( vPos == m_vPos )
+		return;
+	m_vPos = vPos;
+	ResetFontPos( pKTDGFont, fMarginLeft, fMarginTop );
+}
+
+void CX2TalkBoxManagerImp::PlaceTalkBoxesBetweenSteps()
+{
+	for( TalkBox& talkBox : m_TalkBoxList )
+		talkBox.PlaceBetweenSteps( m_pFont, m_fMarginLeft, m_fMarginRight );   // the margins Update is given
 }
 
 void CX2TalkBoxManagerImp::TalkBox::ResetFontPos( CKTDGFontManager::CUKFont* pKTDGFont, const float fMarginLeft, const float fMarginTop)
