@@ -343,7 +343,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           the C++ placement sites (about 224) sorted into layout and derived positions along the way. Two or three PRs.
           Part 1, the HUD, done 2026-11-13 (with the code-placed pieces it showed: quick slot items, minimap, party and
           PvP gauges, buffs). Part 2 (`client/widescreen-screens`, PR #72): character select and creation done
-          (user checked, 2026-11-13); next, PvP rooms, cash shop, boss bars, the NPC talk shade and the review list.
+          (user checked, 2026-11-13), the NPC talk shade spans the screen, and dragged dialogs follow the pointer.
+          **Paused 2026-11-13** (user): merged as it stands; the migration resumes with the UI editor
+          (`tools/ui-editor`, below), with the user reviewing screens and the agent taking what needs code.
+          Left: PvP rooms, cash shop, boss bars, the character select background fix and the review list.
           Full-screen black shades found by a scan (2026-11-13), to stretch with their screens: cash shop popups,
           minimap item choice, event scenes and slideshow, world map, login keyboard, bingo.
           This includes the content fixes for full-screen images whose texture does not match its rectangle (the
@@ -365,8 +368,15 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
     - Validation for every step: a dev tool that captures the main screens (login, character select, village, field,
           dungeon, PvP, inventory, shop) at 4:3, 16:9, 16:10 and 21:9 to compare across PRs; at 4:3 a migrated
           screen must match the original.
-- [ ] **Audio, last** (user, 2026-11-05): replace the silent backend with a real one, FMOD Ex / DirectSound →
+- [ ] **Audio, next** (user, 2026-11-05; **moved ahead of the rest of the widescreen migration**, user, 2026-11-13: a
+      long-pending, self-contained task): replace the silent backend with a real one, FMOD Ex / DirectSound →
       miniaudio/SDL3 audio (or current cross-platform FMOD Core); only those files change.
+- [ ] `tools/ui-editor`, after audio (user, 2026-11-13): a UI editor for the user, under the client development suite
+      ([T29](decisions.md)), built from the client's own GUI code so it renders dialogs exactly as the game does: view
+      any dialog at any resolution and aspect, select a control, and see and edit its anchor, position, texture and
+      UV in a side panel. It replaces the agent reviewing each screen by captures. Open when it starts: how it places
+      the dialogs the C++ positions at run time (the positions recorded by `X2_RECORD_UI_ANCHORS`, or moving that
+      placement out of the game states), and where position/texture edits are saved (anchors go to `UIAnchors.lua`).
 
 ## Phase 5 — Deep cleanup
 
