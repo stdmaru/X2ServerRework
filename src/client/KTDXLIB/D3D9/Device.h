@@ -176,6 +176,16 @@ struct PipelineKeyHash {
     std::size_t operator()(const PipelineKey& key) const;
 };
 
+// Where the game's back buffer sits in a window of the given pixel size: the whole window when its aspect is within
+// the UI's 4:3 to 21:9 (64:27, T44), else the largest rectangle of the nearest of those aspects, centered, with black
+// bars around it (a window manager that tiles the window ignores SDL_SetWindowAspectRatio). The game sees only this
+// rectangle: its client size, the back buffer and the mouse (DXUT offsets the cursor by x, y).
+struct BackBufferRect {
+    int x = 0, y = 0, width = 0, height = 0;
+    friend bool operator==(const BackBufferRect&, const BackBufferRect&) = default;
+};
+BackBufferRect BackBufferRectIn(int windowWidth, int windowHeight);
+
 class Device {
 public:
     // The window must already be claimed by `render` (DXUT's WindowClaim); null for a device that only renders into
@@ -342,6 +352,8 @@ private:
     Target CurrentTarget() const;
     bool EnsureBackBufferTextures();
     bool ResolveBackBuffer();
+    void Letterbox();               // EnsureFrame: the back buffer of the window's aspect-limited size
+    bool PresentLetterbox();        // SubmitFrame: bars and the back buffer into the swapchain texture
     // Whether the next draw uses alpha-to-coverage (the pipeline and the fragment uniforms must agree).
     bool AlphaToCoverage() const;
     bool SubmitFrame();
@@ -434,6 +446,11 @@ private:
     UINT m_supersample = 1;
     UINT m_ssaa = 1;
     render::Texture m_ssaaColor;
+    // Letterbox (BackBufferRectIn): when the window's aspect is out of range, m_backBuffer is m_letterboxColor and
+    // m_swapchain the window's texture, cleared to black and given the back buffer centered at Present.
+    render::SwapchainTexture m_swapchain;
+    render::Texture m_letterboxColor;
+    UINT m_letterboxWidth = 0, m_letterboxHeight = 0;
     PendingClear m_pendingClear;
     bool m_inScene = false;
 

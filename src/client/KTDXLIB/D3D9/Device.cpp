@@ -304,6 +304,9 @@ Device::Device(render::Device& render, SDL_Window* window) : m_render(render), m
     int width = 0, height = 0;
     if (m_window) {
         SDL_GetWindowSizeInPixels(m_window, &width, &height);
+        const BackBufferRect rect = BackBufferRectIn(width, height);
+        width = rect.width;
+        height = rect.height;
         m_backBufferFormat = m_render.SwapchainTextureFormat(m_window);
     }
     m_viewport = {0, 0, static_cast<DWORD>(width), static_cast<DWORD>(height), 0.0f, 1.0f};
@@ -418,6 +421,7 @@ Device::~Device()
     m_render.ReleaseTexture(m_depth);
     m_render.ReleaseTexture(m_msaaColor);
     m_render.ReleaseTexture(m_ssaaColor);
+    m_render.ReleaseTexture(m_letterboxColor);
     m_render.ReleaseTexture(m_textureDepth);
     m_render.ReleaseBuffer(m_fanIndices);
     m_render.ReleaseBuffer(m_dynamicVertices);
@@ -871,6 +875,78 @@ bool Device::ResolveBackBuffer()
     return true;
 }
 
+BackBufferRect BackBufferRectIn(int windowWidth, int windowHeight)
+{
+    BackBufferRect rect{0, 0, windowWidth, windowHeight};
+    if (windowWidth <= 0 || windowHeight <= 0) {
+        return rect;
+    }
+    const long long w = windowWidth, h = windowHeight;
+    if (w * 3 < h * 4) {                // narrower than 4:3: bars above and below
+        rect.height = static_cast<int>(w * 3 / 4);
+    } else if (w * 27 > h * 64) {       // wider than 21:9: bars left and right
+        rect.width = static_cast<int>(h * 64 / 27);
+    }
+    rect.x = (windowWidth - rect.width) / 2;
+    rect.y = (windowHeight - rect.height) / 2;
+    return rect;
+}
+
+void Device::Letterbox()
+{
+    m_swapchain = {};
+    if (!m_backBuffer.texture) {
+        return;
+    }
+    const BackBufferRect rect =
+        BackBufferRectIn(static_cast<int>(m_backBuffer.width), static_cast<int>(m_backBuffer.height));
+    if (rect.width == static_cast<int>(m_backBuffer.width) && rect.height == static_cast<int>(m_backBuffer.height)) {
+        return;
+    }
+    const UINT width = static_cast<UINT>(rect.width), height = static_cast<UINT>(rect.height);
+    if (!m_letterboxColor || m_letterboxWidth != width || m_letterboxHeight != height) {
+        m_render.ReleaseTexture(m_letterboxColor);
+        m_letterboxColor = m_render.CreateTexture({.format = m_backBufferFormat,
+                                                   .usage = render::TextureUsage::ColorTarget |
+                                                            render::TextureUsage::Sampler,
+                                                   .width = width,
+                                                   .height = height,
+                                                   .name = "d3d9 letterboxed back buffer"});
+        m_letterboxWidth = m_letterboxColor ? width : 0;
+        m_letterboxHeight = m_letterboxColor ? height : 0;
+        if (!m_letterboxColor) {
+            Fail("letterboxed back buffer: " + m_render.LastError());
+            return;                     // draws the whole window, stretched UI and all
+        }
+        SDL_LogInfo(SDL_LOG_CATEGORY_RENDER, "d3d9: window %ux%u, back buffer %ux%u at %d,%d (letterbox)",
+                    m_backBuffer.width, m_backBuffer.height, width, height, rect.x, rect.y);
+    }
+    m_swapchain = m_backBuffer;
+    m_backBuffer = {.texture = m_letterboxColor, .width = width, .height = height};
+}
+
+bool Device::PresentLetterbox()
+{
+    const render::ColorTargetInfo bars{.texture = m_swapchain.texture,
+                                       .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
+                                       .loadOp = render::LoadOp::Clear};
+    render::RenderPass* pass = m_frame->BeginRenderPass({&bars, 1}, nullptr);
+    if (!pass) {
+        return Fail("letterbox: " + m_render.LastError());
+    }
+    pass->End();
+    const BackBufferRect rect =
+        BackBufferRectIn(static_cast<int>(m_swapchain.width), static_cast<int>(m_swapchain.height));
+    m_frame->BlitTexture({.texture = m_backBuffer.texture, .w = m_backBuffer.width, .h = m_backBuffer.height},
+                         {.texture = m_swapchain.texture,
+                          .x = static_cast<std::uint32_t>(rect.x),
+                          .y = static_cast<std::uint32_t>(rect.y),
+                          .w = m_backBuffer.width,
+                          .h = m_backBuffer.height},
+                         render::Filter::Nearest);
+    return true;
+}
+
 bool Device::AlphaToCoverage() const
 {
     const auto& rs = m_renderStates;
@@ -900,6 +976,7 @@ bool Device::EnsureFrame()
             return Fail("swapchain: " + m_render.LastError());
         }
         m_backBufferFormat = m_render.SwapchainTextureFormat(m_window);
+        Letterbox();
         // A viewport covering the old back buffer follows a resize (D3D9 resets it with the device).
         if (!m_target && m_backBuffer.texture && m_viewport.X == 0 && m_viewport.Y == 0 &&
             ((m_viewport.Width == oldWidth && m_viewport.Height == oldHeight) || m_viewport.Width == 0)) {
@@ -1004,6 +1081,9 @@ bool Device::SubmitFrame()
     if ((m_msaaSamples > 1 || m_ssaa > 1) && m_backBuffer.texture) {
         ResolveBackBuffer();
     }
+    if (m_swapchain.texture) {
+        PresentLetterbox();
+    }
     const bool uploaded = FlushUploads();       // before the frame, whose draws read them
     const bool hadTexture = static_cast<bool>(m_backBuffer.texture);
     const std::uint64_t submitStart = m_presentTrace ? SDL_GetTicksNS() : 0;
@@ -1020,6 +1100,7 @@ bool Device::SubmitFrame()
     }
     m_frame = nullptr;
     m_backBuffer.texture = {};
+    m_swapchain = {};
     if (!submitted) {
         return Fail("Submit: " + m_render.LastError());
     }

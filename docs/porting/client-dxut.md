@@ -47,6 +47,13 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   projection, UI scale and render targets. Before, the window changed size but the game kept drawing for the old one.
   Hyprland ignores a window's own size requests (fixed or resizable, 2026-11-12), so there the windowed size is the
   one the window manager gives (a tile, or a floating window resized by hand); full screen works.
+- **Aspect 4:3 to 21:9, letterbox outside it** (decision [T48](../project/decisions.md#accepted), 2026-11-14). The window
+  asks for that range (`SDL_SetWindowAspectRatio`), but Hyprland ignores it (the window still stretched without limit,
+  user, 2026-11-14). So the game's part of the window is `x2::d3d9::BackBufferRectIn` of its pixel size: the whole window
+  within the range, else the largest 4:3 or 21:9 rectangle, centered. `DXUTGetClientArea` returns it; `GetClientRect`,
+  `DXUTGetBackBufferSurfaceDesc`, `ResetIfResized` and `WM_SIZE` report its size, and the mouse (`WM_MOUSE*`,
+  `InputState::Cursor`, `ScreenToClient`) is offset by its corner. The D3D9 device draws into a texture of that size and,
+  at `Present`, clears the window black and blits it in ([D3D9 device](client-d3d9.md)). Not yet checked in game.
 - Main loop: events → messages → frame (`CDXUTTimer` → `FrameMove` → `FrameRender`); while minimized it waits for events (100 ms).
   The frame is drawn by the callbacks through the D3D9 device; a frame they do not draw is presented cleared to black
   (2026-11-06); after `FrameRender` it presents through KTDXLIB's [D3D9 device](client-d3d9.md), which the callbacks receive (`DXUTGetD3DDevice()`; 2026-11-06, T38).
