@@ -562,7 +562,11 @@ private:
 		// Moved by code after its script loaded (a floating window, or one placed next to something): for the anchor
 		// recorder (CKTDGUIAnchorRecorder).
 		bool GetPlacedByCode() const { return m_bPlacedByCode; }
+		// Every script loaded into the dialog, in order: the one it was created with, then those code added
+		// (OpenScriptFile), for the live UI snapshot (CKTDGUIAnchorRecorder::NoteLive).
+		const std::vector<wstring>& GetOpenedScripts() const { return m_vecOpenedScripts; }
 	private:
+		std::vector<wstring> m_vecOpenedScripts;
 		bool		m_bLoadingScript = false;
 		bool		m_bPlacedByCode = false;
 	public:

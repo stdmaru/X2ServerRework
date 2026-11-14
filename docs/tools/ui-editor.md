@@ -20,7 +20,7 @@ container's build runs on the desktop.
 
 | Panel | Contents |
 |---|---|
-| Dialogs (left) | "Watch game", "Freeze" and "Start game" ([below](#watch-game)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
+| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
 | Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or zoomed with the wheel around the pointer (10%–800%, "100%" for one pixel per pixel), panned with the right or middle button. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
 | Inspector (right) | The dialog: script, name, anchor (declared or the default), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor, offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels |
 
@@ -33,16 +33,20 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
 
 - The client, run in the game folder with `X2_UI_LIVE=1` (a dev build), writes `UILive.tsv` there a few times a second
   ([UI anchors](ui-anchors.md), `CKTDGUIAnchorRecorder::NoteLive`): the game state, its resolution, and the shown
-  dialogs drawn from scripts, back to front, each with its position, layer, and its controls' and pictures' shown
-  flags, textures and texts.
-- The editor reads it when it changes (`live.h`) and mirrors it: the n-th open dialog of a script stands for the
-  game's n-th, the others close, the missing ones open, and each takes the game's state (`Engine::ApplyLive`); the
-  screen takes the nearest of the editor's sizes to the game's resolution. "Freeze" stops following, to work on that
-  state; dialogs opened by hand while watching close at the next change.
+  dialogs drawn from scripts, back to front, each with its position, layer, the scripts code loaded into it after the
+  first (`OpenScriptFile`: a local map's regions, 2026-11-14), and every control (shown, type); for statics, every
+  picture (texture, key, corners, texture coordinates, color, shown) and every text (position, font, alignment, color).
+- The editor reads it when it changes (`live.h`) and mirrors it: a dialog stands for the game's when it was built from
+  the same scripts (the n-th of them for the game's n-th), the others close, the missing ones open with their scripts,
+  and each takes the game's state (`Engine::ApplyLive`): statics are made what the game holds, so pictures code removed
+  (the wake orbs of other classes) go, those it added or resized (gauges, quick slot items, quest marks) come, and so do
+  statics code added. The screen takes the nearest of the editor's sizes to the game's resolution. Unchecking "Watch
+  game" leaves the screen as it was last, to work on that state; dialogs opened by hand while watching close at the
+  next change.
 - "Start game" runs `x2` from the game folder with `X2_UI_LIVE=1` and `X2_RECORD_UI_ANCHORS=1`, its output in the
   editor's terminal; closing the editor leaves it running.
-- Not mirrored: dialogs built in code without a script, controls and pictures code adds after the script, and
-  positions code gives controls (they come in with slice (c)'s migration).
+- Not mirrored: dialogs built in code without a script, controls of other types than statics that code adds (buttons,
+  edit boxes), and what code changes in them besides being shown.
 
 ## How it works
 
@@ -76,11 +80,13 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
 
 `x2_ui_editor_tests`, headless on the null render backend: the script list (sorted, `.kom/` skipped), the record file
 (positions by script without folder or case, each once, placed by code; scenes and their scripts, older records without
-them), the live snapshot (records under their dialog, escaped texts, empty fields), and the engine on a temporary game folder
+them), the live snapshot (records under their dialog, escaped texts, empty fields, the scripts code loaded, pictures and
+texts in full), and the engine on a temporary game folder
 with loose files only: a missing script refused; a dialog opened, drawn at 1280×720 and at 1024×768, its controls named
 (`#1` when unnamed), boxes in layout units and pixels, the slot manager stub; moved and closed; a static's text
 inspected (not drawn: the tests have no fonts); the game's live state put into a dialog (position, a control hidden,
-a text), indexes it lacks ignored.
+a text); a script loaded into an open dialog; statics as the game holds them (a picture code removed, a static code
+added with its picture and text, a filler keeping the indexes).
 
 ## Status
 

@@ -73,9 +73,8 @@ struct EditorState {
     std::set<std::string> sceneScripts;   // lowercase, of the chosen scene
     std::filesystem::file_time_type recordTime{};
 
-    // Watch game: the running client's UILive.tsv, mirrored while not frozen.
+    // Watch game: the running client's UILive.tsv, mirrored while checked.
     bool watch = false;
-    bool freeze = false;
     x2::ui_editor::LiveSnapshot live;
     std::filesystem::file_time_type liveTime{};
     std::uint64_t lastPoll = 0;
@@ -157,15 +156,19 @@ void OpenScript(x2::ui_editor::Engine& engine, EditorState& state, const std::st
 void Mirror(x2::ui_editor::Engine& engine, EditorState& state)
 {
     const auto& wanted = state.live.dialogs;
-    std::vector<std::string> keys;
+    std::vector<std::string> keys;     // as LiveSnapshot::Dialog::Key
     for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
-        keys.push_back(Key(engine.DialogScript(i)));
+        std::string key = Key(engine.DialogScript(i));
+        for (const std::string& extra : engine.DialogExtraScripts(i)) {
+            key += '+' + Key(extra);
+        }
+        keys.push_back(std::move(key));
     }
     std::vector<int> match(wanted.size(), -1);
     std::vector<bool> used(keys.size(), false);
     for (std::size_t w = 0; w < wanted.size(); ++w) {
         for (std::size_t i = 0; i < keys.size(); ++i) {
-            if (!used[i] && keys[i] == wanted[w].script) {
+            if (!used[i] && keys[i] == wanted[w].Key()) {
                 match[w] = static_cast<int>(i);
                 used[i] = true;
                 break;
@@ -190,12 +193,20 @@ void Mirror(x2::ui_editor::Engine& engine, EditorState& state)
         if (match[w] >= 0) {
             continue;
         }
-        const auto listed = state.scriptByKey.find(wanted[w].script);
-        const std::string& script = listed != state.scriptByKey.end() ? listed->second : wanted[w].script;
+        const auto listed = [&](const std::string& key) {
+            const auto it = state.scriptByKey.find(key);
+            return it != state.scriptByKey.end() ? it->second : key;
+        };
         std::string error;
-        match[w] = engine.OpenDialog(script, error);
+        match[w] = engine.OpenDialog(listed(wanted[w].script), error);
         if (match[w] < 0) {
             failed = error;
+            continue;
+        }
+        for (const std::string& extra : wanted[w].extraScripts) {
+            if (!engine.LoadScriptInto(match[w], listed(extra), error)) {
+                failed = error;
+            }
         }
     }
     for (std::size_t w = 0; w < wanted.size(); ++w) {
@@ -225,9 +236,6 @@ void Poll(x2::ui_editor::Engine& engine, EditorState& state)
     const auto recordTime = std::filesystem::last_write_time(state.gameFolder / "UIAnchorsRecord.tsv", ec);
     if (!ec && recordTime != state.recordTime) {
         LoadRecord(state);
-    }
-    if (state.freeze) {
-        return;
     }
     const std::filesystem::path file = state.gameFolder / "UILive.tsv";
     const auto liveTime = std::filesystem::last_write_time(file, ec);
@@ -270,7 +278,6 @@ void StartGame(EditorState& state)
         return;
     }
     state.watch = true;
-    state.freeze = false;
     state.message = "game started";
 }
 
@@ -280,12 +287,9 @@ void WatchControls(EditorState& state)
         state.liveTime = {};    // mirror the current snapshot at once
         state.lastPoll = 0;
     }
-    ImGui::SameLine();
-    ImGui::BeginDisabled(!state.watch);
-    if (ImGui::Checkbox("Freeze", &state.freeze) && !state.freeze) {
-        state.liveTime = {};
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Follow the running game; unchecked, the screen stays as it was last");
     }
-    ImGui::EndDisabled();
     ImGui::SameLine();
     ImGui::BeginDisabled(state.game != nullptr);
     if (ImGui::SmallButton("Start game")) {
@@ -296,8 +300,8 @@ void WatchControls(EditorState& state)
         if (state.liveTime == std::filesystem::file_time_type{}) {
             ImGui::TextDisabled("waiting for UILive.tsv (a client run with X2_UI_LIVE=1)");
         } else {
-            ImGui::TextDisabled("%s%s, %zu dialogs", state.live.scene.empty() ? "(no state yet)" : state.live.scene.c_str(),
-                                state.freeze ? " (frozen)" : "", state.live.dialogs.size());
+            ImGui::TextDisabled("%s, %zu dialogs", state.live.scene.empty() ? "(no state yet)" : state.live.scene.c_str(),
+                                state.live.dialogs.size());
         }
     }
 }

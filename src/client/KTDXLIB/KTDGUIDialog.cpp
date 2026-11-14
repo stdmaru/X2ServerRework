@@ -2258,6 +2258,7 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 
 #if X2_DEV_TOOLS
 	m_bLoadingScript = true;
+	m_vecOpenedScripts.emplace_back( pFilename );
 #endif
 	bool bResult = g_pKTDXApp->LoadLuaTinker( pFilename );
 #if X2_DEV_TOOLS

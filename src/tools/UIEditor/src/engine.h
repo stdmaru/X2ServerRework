@@ -86,8 +86,12 @@ public:
     // Moves an open dialog to a layout position under its anchor, as the game's SetPos.
     void SetDialogPos(int index, float x, float y);
     void SetDialogShown(int index, bool shown);
-    // Puts what the running game shows into an open dialog of the same script (watch game): position, layer, and
-    // what code changed in it (shown flags, textures, texts) where the script built the same controls.
+    // Loads another script into an open dialog, as the game's code does (CKTDGUIDialog::OpenScriptFile).
+    bool LoadScriptInto(int index, const std::string& script, std::string& error);
+    const std::vector<std::string>& DialogExtraScripts(int index) const;
+    // Puts what the running game shows into an open dialog built from the same scripts (watch game): position,
+    // layer, shown flags, and every static as the game holds it (pictures and texts code added, removed or changed;
+    // statics code added). Controls of other types code added are left out.
     void ApplyLive(int index, const LiveSnapshot::Dialog& live);
 
     // Draws every open dialog into the render target, resized to width x height first. False with error set if the

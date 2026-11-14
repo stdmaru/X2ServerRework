@@ -189,8 +189,8 @@ TEST_CASE("ui editor: the game's live state goes into an open dialog of the same
     live.script = "dlg_text.lua";
     live.pos[0] = 300.0f;
     live.pos[1] = 40.0f;
-    live.controls = {{0, false}, {7, true}};     // index 7 does not exist: ignored
-    live.texts = {{0, 0, "Lv. 12"}, {0, 3, "none"}};
+    live.controls = {{0, false, -1}};
+    live.texts = {{0, 0, "Lv. 12"}};
     engine->ApplyLive(0, live);
     engine->ApplyLive(5, live);                  // no such dialog: ignored
 
@@ -202,4 +202,63 @@ TEST_CASE("ui editor: the game's live state goes into an open dialog of the same
     CHECK_FALSE(dialogs[0].controls[0].shown);
     REQUIRE(dialogs[0].controls[0].strings.size() == 1);
     CHECK(dialogs[0].controls[0].strings[0].text == "Lv. 12");
+}
+
+TEST_CASE("ui editor: statics as the game holds them, those code added and pictures it removed included")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Test.lua", error) == 0);
+    REQUIRE(engine->LoadScriptInto(0, "DLG_Text.lua", error));     // as code adds a script to a dialog
+    CHECK(engine->DialogExtraScripts(0) == std::vector<std::string>{"DLG_Text.lua"});
+    CHECK_FALSE(engine->LoadScriptInto(0, "DLG_Missing.lua", error));
+    const auto before = engine->Inspect();
+    REQUIRE(before.size() == 1);
+    const int scripted = static_cast<int>(before[0].controls.size());    // Panel, the unnamed static, the text
+    REQUIRE(scripted == 3);
+
+    x2::ui_editor::LiveSnapshot::Dialog live;
+    live.script = "dlg_test.lua";
+    live.extraScripts = {"dlg_text.lua"};
+    live.controls = {{0, true, 5}, {scripted + 1, true, 5}};    // a static code added, after another control
+    // No picture of control 0 in the snapshot: code removed the Panel's.
+    x2::ui_editor::LiveSnapshot::Picture added;
+    added.control = scripted + 1;
+    added.texture = "DLG_Test.tga";
+    added.points[1][0] = 40.0f;
+    added.points[3][0] = 40.0f;
+    added.points[2][1] = 20.0f;
+    added.points[3][1] = 20.0f;
+    added.full = true;
+    live.pictures.push_back(added);
+    x2::ui_editor::LiveSnapshot::Text text;
+    text.control = scripted + 1;
+    text.text = "Relax";
+    text.font = 2;
+    text.pos[0] = 5.0f;
+    text.full = true;
+    live.texts.push_back(text);
+    engine->ApplyLive(0, live);
+
+    const auto after = engine->Inspect();
+    REQUIRE(after.size() == 1);
+    REQUIRE(after[0].controls.size() == static_cast<std::size_t>(scripted + 2));
+    CHECK(after[0].controls[0].pictures.empty());               // the game holds no picture there
+    CHECK_FALSE(after[0].controls[static_cast<std::size_t>(scripted)].shown);   // a filler keeps the indexes
+    const auto& code = after[0].controls[static_cast<std::size_t>(scripted + 1)];
+    CHECK(code.shown);
+    REQUIRE(code.pictures.size() == 1);
+    CHECK(code.pictures[0].texture == "DLG_Test.tga");
+    CHECK(code.pictures[0].points[1][0] == 40.0f);
+    CHECK(code.pictures[0].points[3][1] == 20.0f);
+    REQUIRE(code.strings.size() == 1);
+    CHECK(code.strings[0].text == "Relax");
+    CHECK(code.strings[0].font == 2);
+    CHECK(code.strings[0].pos[0] == 5.0f);
 }
