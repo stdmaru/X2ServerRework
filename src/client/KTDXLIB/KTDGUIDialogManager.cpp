@@ -125,11 +125,6 @@ bool CKTDGUIDialogManager::_RemoveFromDialogList( CKTDGUIDialogType pkInDialog_ 
 
     ASSERT( pkInDialog_ != NULL && pkInDialog_->GetUIDialogManager() == this );
 
-#ifdef _DEBUG // 2009-1-13
-    CKTDGUIDialogList::reverse_iterator ritor = m_listDialog.rend();
-    CKTDGUIDialogType  pritor = *ritor;
-#endif // _DEBUG // 2009-1-13
-
     for( CKTDGUIDialogList::iterator iter = m_listDialog.begin();
         iter != m_listDialog.end(); iter++ )
     {

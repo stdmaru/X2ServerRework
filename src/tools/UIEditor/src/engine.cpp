@@ -82,9 +82,14 @@ for _, name in ipairs({ "g_pCX2SlotManager", "g_pData", "g_pState", "g_pCouponBo
 end
 )lua";
 
+// Only fonts that exist: the font manager reports a missing one with a modal message box, which on Windows waits for
+// a click (and forever in the headless tests, which have no fonts).
 void InstallFont(const char* name, const char* file)
 {
-    g_pKTDXApp->GetDGManager()->GetFontManager()->InstallFont(name != NULL ? name : "", file != NULL ? file : "");
+    if (name == NULL || file == NULL || !g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile(Wide(file))) {
+        return;
+    }
+    g_pKTDXApp->GetDGManager()->GetFontManager()->InstallFont(name, file);
 }
 
 // The editor's stage: what CX2State draws and steps for the UI, nothing of the game.

@@ -13,6 +13,7 @@
 #include "x2/app/imgui_layer.h"
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>  // WinMain on Windows
 #include <imgui.h>
 
 #include <algorithm>
