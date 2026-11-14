@@ -94,7 +94,14 @@ add_library(x2_client_ktdxlib STATIC
 add_library(x2::client_ktdxlib ALIAS x2_client_ktdxlib)
 target_link_libraries(x2_client_ktdxlib PUBLIC
     x2_client_includes x2::platform x2::kncsdk x2::client_d3d9 x2::client_dxut x2::client_luacommon
-    x2::client_massfile x2::client_browser x2::client_movie Freetype::Freetype ZLIB::ZLIB)
+    x2::client_massfile x2::client_browser x2::client_movie x2::client_audio Freetype::Freetype ZLIB::ZLIB)
+
+# The client's audio on miniaudio and SDL3, replacing FMOD Ex (decision T45, docs/porting/client-ktdxlib.md#sound).
+# KTDXLIB's sound devices, music player and manager play through it; new code with no equivalent file in the original.
+add_library(x2_client_audio STATIC Audio/SoundSystem.cpp)
+add_library(x2::client_audio ALIAS x2_client_audio)
+target_include_directories(x2_client_audio PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Audio)
+target_link_libraries(x2_client_audio PUBLIC x2::options PRIVATE x2::miniaudio SDL3::SDL3)
 
 # The client's MPEG-1 movies on pl_mpeg, replacing BandiVideo (docs/porting/client-movie.md). KTDXLIB's CMovieData plays
 # them; new code with no equivalent file in the original.

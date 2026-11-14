@@ -26,15 +26,6 @@ class CKTDSManager : public CKTDXStage
 
 		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime );
 
-		//void ErrorCheck( FMOD_RESULT fr )
-		//{
-		//	if (fr != FMOD_OK)
-		//	{
-		//		//printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-		//		//exit(-1);
-		//	}
-		//}
-
 		KTDSSoundSystem* GetSystem() const { return m_pSystem; }
 
 		bool GetEnable3DSound() const { return m_bEnable3DSound; }
@@ -55,12 +46,13 @@ class CKTDSManager : public CKTDXStage
 		bool					m_bSoundMute;
 		float					m_fSoundVolume;
 
-		CKTDSMP3Play*			m_pMP3Play;
+		CKTDSMP3Play*			m_pMP3Play = NULL;	// NULL only when the sound system could not start (m_bInit false)
 
 
+		std::unique_ptr<KTDSSoundSystem>	m_pOwnedSystem;
 		KTDSSoundSystem*			m_pSystem;
-		bool					m_bEnable3DSound;		// 옵션 설정등에서 실제로 3D sound를 사용할지
-		bool					m_bCapable3DSound;		// 시스템에서 3D sound를 지원하는지
+		bool					m_bEnable3DSound;		// whether 3D sound is used (the options)
+		bool					m_bCapable3DSound;		// whether the system supports 3D sound
 
 
 		float					m_fDistanceUnit;          // Units per meter.  I.e feet would = 3.28.  centimeters would = 100.

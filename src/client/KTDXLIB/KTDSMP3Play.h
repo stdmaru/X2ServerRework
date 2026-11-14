@@ -27,6 +27,7 @@ private:
 	bool			m_bLoop;
 	int				m_Volume;
 	bool			m_bPaused;
+	bool			m_bLoaded = false;	// a track is on the sound system (FMOD's channel in the original)
 
 	KTDSSoundSystem*	m_pSystem;
 };
