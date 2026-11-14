@@ -22,6 +22,15 @@ struct PictureInfo {
     bool shown = true;
 };
 
+struct StringInfo {
+    std::string text;           // as the dialog holds it now; empty when the game's code fills it at run time
+    int stringId = -1;          // the string table index the script named (STR_ID_*), -1 when none
+    float pos[2] = {};          // layout units, relative to the control
+    int font = 0;               // the font index (XUF_*)
+    unsigned sortFlag = 0;      // DT_* alignment flags
+    float color[4] = {};        // r, g, b, a
+};
+
 struct ControlInfo {
     int index = 0;              // in the dialog's control list
     std::string name;           // "#<index>" when unnamed, as the anchor recorder names it
@@ -36,6 +45,7 @@ struct ControlInfo {
     float drawnMin[2] = {}, drawnMax[2] = {};   // what it drew in the last frame, in layout units relative to the dialog
     float pixelMin[2] = {}, pixelMax[2] = {};   // the same box in render target pixels (anchors and stretch applied)
     std::vector<PictureInfo> pictures;
+    std::vector<StringInfo> strings;
 };
 
 struct DialogInfo {

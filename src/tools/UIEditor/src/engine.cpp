@@ -199,6 +199,7 @@ std::unique_ptr<Engine> Engine::Create(render::Device& render, const EngineOptio
             state->app->LoadLuaTinker(script);
         }
     }
+    InstallFont(FT_DEFAULT_FONTNAME, "Gulim.ttc");     // CX2Main's default font, before the config's
     const wchar_t* config = X2_DEV_TOOLS ? L"Config_INTERNAL.lua" : L"Config_SERVICE.lua";
     if (files->IsValidFile(config)) {
         state->app->LoadLuaTinker(config);
@@ -431,6 +432,24 @@ std::vector<DialogInfo> Engine::Inspect() const
                         }
                     }
                     c.pictures.push_back(std::move(pi));
+                }
+                for (int t = 0; t < picturesOf->GetStringNum(); ++t) {
+                    const CKTDGUIControl::UIStringData* string = picturesOf->GetString(t);
+                    if (string == NULL) {
+                        continue;
+                    }
+                    StringInfo si;
+                    si.text = Utf8(string->msg);
+                    si.stringId = string->stringTableID == STR_ID_EMPTY ? -1 : string->stringTableID;
+                    si.pos[0] = string->pos.x;
+                    si.pos[1] = string->pos.y;
+                    si.font = string->fontIndex;
+                    si.sortFlag = static_cast<unsigned>(string->sortFlag);
+                    si.color[0] = string->color.r;
+                    si.color[1] = string->color.g;
+                    si.color[2] = string->color.b;
+                    si.color[3] = string->color.a;
+                    c.strings.push_back(std::move(si));
                 }
             }
             info.controls.push_back(std::move(c));

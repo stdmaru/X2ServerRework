@@ -9,7 +9,6 @@
 #include "record.h"
 
 #include "x2/app/imgui_layer.h"
-#include "x2/render/sdlgpu.h"
 
 #include <imgui.h>
 
@@ -178,6 +177,36 @@ void PictureTable(const ControlInfo& control)
     }
 }
 
+void StringTable(const ControlInfo& control)
+{
+    if (control.strings.empty()) {
+        return;
+    }
+    ImGui::SeparatorText("Texts");
+    for (std::size_t t = 0; t < control.strings.size(); ++t) {
+        const auto& string = control.strings[t];
+        ImGui::PushID(static_cast<int>(t));
+        const std::string label = std::to_string(t + 1) + ": " +
+                                  (string.text.empty() ? std::string("(empty: filled by the game's code)") : string.text);
+        if (ImGui::TreeNode(label.c_str())) {
+            if (string.stringId >= 0) {
+                ImGui::Text("string table: STR_ID_%d", string.stringId);
+            } else {
+                ImGui::TextDisabled("no string table entry");
+            }
+            ImGui::Text("position: %.0f, %.0f", static_cast<double>(string.pos[0]), static_cast<double>(string.pos[1]));
+            ImGui::Text("font: %d, alignment flags: 0x%x", string.font, string.sortFlag);
+            ImGui::ColorButton("##color", ImVec4(string.color[0], string.color[1], string.color[2], string.color[3]));
+            ImGui::SameLine();
+            ImGui::Text("color %.2f, %.2f, %.2f, %.2f", static_cast<double>(string.color[0]),
+                        static_cast<double>(string.color[1]), static_cast<double>(string.color[2]),
+                        static_cast<double>(string.color[3]));
+            ImGui::TreePop();
+        }
+        ImGui::PopID();
+    }
+}
+
 void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     const Selection& sel = state.selected;
@@ -257,6 +286,7 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     } else {
         ImGui::TextDisabled("drew nothing in the last frame");
     }
+    StringTable(control);
     PictureTable(control);
 }
 
@@ -276,7 +306,7 @@ Selection Pick(const std::vector<DialogInfo>& dialogs, float x, float y)
     return {};
 }
 
-void ScreenPanel(x2::ui_editor::Engine& engine, x2::render::Device& device, EditorState& state)
+void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, EditorState& state)
 {
     ImGui::SetNextItemWidth(90);
     if (ImGui::BeginCombo("aspect", kAspects[state.aspect].name)) {
@@ -309,9 +339,8 @@ void ScreenPanel(x2::ui_editor::Engine& engine, x2::render::Device& device, Edit
         ImGui::TextDisabled("%s", state.message.c_str());
     }
 
-    const x2::render::Texture target = engine.Target();
-    SDL_GPUTexture* texture = x2::render::sdlgpu::Native::Texture(device, target);
-    if (texture == nullptr) {
+    const std::uint64_t texture = gui.TextureId(engine.Target());
+    if (texture == 0) {
         return;
     }
     if (ImGui::BeginChild("screen", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar)) {
@@ -323,8 +352,10 @@ void ScreenPanel(x2::ui_editor::Engine& engine, x2::render::Device& device, Edit
         }
         const ImVec2 size(tw * zoom, th * zoom);
         const ImVec2 origin = ImGui::GetCursorScreenPos();
-        ImGui::Image(ImTextureRef(static_cast<ImTextureID>(reinterpret_cast<intptr_t>(texture))), size);
+        ImGui::Image(ImTextureRef(static_cast<ImTextureID>(texture)), size);
         ImDrawList* draw = ImGui::GetWindowDrawList();
+        draw->AddRect(ImVec2(origin.x - 1, origin.y - 1), ImVec2(origin.x + size.x + 1, origin.y + size.y + 1),
+                      IM_COL32(110, 110, 120, 255));     // the screen's edges, around the black bars
         const auto box = [&](const ControlInfo& c, ImU32 color, float thickness) {
             draw->AddRect(ImVec2(origin.x + c.pixelMin[0] * zoom, origin.y + c.pixelMin[1] * zoom),
                           ImVec2(origin.x + c.pixelMax[0] * zoom, origin.y + c.pixelMax[1] * zoom), color, 0.0f, thickness);
@@ -382,8 +413,8 @@ int main(int argc, char** argv)
             unsigned w = 0, h = 0;
             if (std::sscanf(argv[++i], "%ux%u", &w, &h) == 2 && h > 0) {
                 const float ratio = static_cast<float>(w) / static_cast<float>(h);
-                for (int a = 0; a < static_cast<int>(std::size(kAspects)); ++a) {
-                    if (std::fabs(kAspects[a].ratio - ratio) < 0.02f) {
+                for (int a = 0; a < static_cast<int>(std::size(kAspects)); ++a) {     // the nearest aspect
+                    if (std::fabs(kAspects[a].ratio - ratio) < std::fabs(kAspects[state.aspect].ratio - ratio)) {
                         state.aspect = a;
                     }
                 }
@@ -479,7 +510,7 @@ int main(int argc, char** argv)
         ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + side, viewport->WorkPos.y));
         ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x - 2 * side, viewport->WorkSize.y));
         if (ImGui::Begin("Screen", nullptr, fixed)) {
-            ScreenPanel(*engine, *device, state);
+            ScreenPanel(*engine, *gui, state);
         }
         ImGui::End();
         ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - side, viewport->WorkPos.y));

@@ -153,6 +153,15 @@ void ImGuiLayer::NewFrame()
     ImGui::NewFrame();
 }
 
+std::uint64_t ImGuiLayer::TextureId(render::Texture texture) const
+{
+    if (!texture) {
+        return 0;
+    }
+    // The sdlgpu3 backend's ImTextureID is the SDL_GPUTexture pointer (ImGui 1.92.2 and later).
+    return static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(render::sdlgpu::Native::Texture(m_device, texture)));
+}
+
 void ImGuiLayer::Render(render::CommandBuffer& commands, render::Texture target, const render::Color& clear)
 {
     ImGui::Render();

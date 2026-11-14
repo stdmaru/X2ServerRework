@@ -9,7 +9,7 @@ lives and how its dependencies enter the build is decision T32.
 | Target | For | Contents |
 |---|---|---|
 | `x2::app` (`x2/app/app.h`) | client and tools | `Sdl` (process-wide `SDL_Init`/`SDL_Quit`), `Window` (SDL3 window; drawing into it goes through an [`x2::render`](render.md) device that claims it), `PollEvents` (quit on `SDL_EVENT_QUIT` or the main window's close request), `WaitForEvents`/`WakeEventLoop` (tools that redraw only on change) |
-| `x2::app_imgui` (`x2/app/imgui_layer.h`) | tools only | `ImGuiLayer` (ImGui context with the `sdl3` platform and `sdlgpu3` renderer backends, created for an `x2::render` `sdlgpu` device; `Render` draws into the swapchain texture of a command buffer), `ConfigureImGui` (style, DPI scale, fonts), `DefaultFontFiles`, `DefaultHangulFontFiles` |
+| `x2::app_imgui` (`x2/app/imgui_layer.h`) | tools only | `ImGuiLayer` (ImGui context with the `sdl3` platform and `sdlgpu3` renderer backends, created for an `x2::render` `sdlgpu` device; `Render` draws into the swapchain texture of a command buffer; `TextureId` turns an `x2::render` texture into the ImTextureID `ImGui::Image` takes), `ConfigureImGui` (style, DPI scale, fonts), `DefaultFontFiles`, `DefaultHangulFontFiles` |
 
 - **Rendering is [`x2::render`](render.md)'s** (T36), on SDL_GPU (T19), never SDL_Renderer or OpenGL. Until 2026-11-06 `Window`
   owned the SDL_GPU device; it moved to `x2::render` (`client/render-boundary`), and `x2::app` keeps the window and events. A tool

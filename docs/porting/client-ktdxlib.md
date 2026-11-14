@@ -512,6 +512,13 @@ Known, not fixed: UI pieces drawn at a fractional pixel with linear filtering pi
 bar's end piece (`EXP_BG_RIGHT_2`, next to a transparent white texel) shows a light 1-pixel column at 1920×1080; it does
 with the centered HUD too.
 
+## Drawn bounds for tools (2026-11-14, `tools/ui-editor`)
+
+`CKTDGUIControl` notes the box of what it draws (`GetDrawnBounds`) while the anchor recorder is on
+(`X2_RECORD_UI_ANCHORS`) or a tool asks for it (`CKTDGUIAnchorRecorder::SetToolTracking`): the
+[UI editor](../tools/ui-editor.md) picks and outlines controls with it without writing the record file. The game never
+turns it on.
+
 ## Dragging dialogs (2026-11-13, `client/widescreen-screens`)
 
 **Behavior change.** Dialogs that allow it (`SetEnableMoveByDrag`: message boxes, field and world maps, messenger,
