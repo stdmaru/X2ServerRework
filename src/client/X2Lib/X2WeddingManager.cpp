@@ -934,7 +934,7 @@ void CX2WeddingBehavior::OpenScript( KLuaManager& luaManager_ )
 }
 void CX2WeddingBehavior::CheckTimeError( [[maybe_unused]] float fBehaviorTime_, [[maybe_unused]] float fPreBehabiorTime_ )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( fBehaviorTime_ < fPreBehabiorTime_ )
 	{
 		MessageBox( NULL, L"Wedding_Manager 스크립트 설정 실패\n시간 순서에 맞게 설정 해주세요", L"Error", MB_OK );

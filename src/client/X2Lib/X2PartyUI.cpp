@@ -4086,7 +4086,7 @@ void CX2PartyUI::UpdateBossItemList(const CX2Dungeon::DungeonData::mapBossDropIt
 				}
 				SetBossDropItemTexture( iBossDropItemIndex++, it->second[i], true );
 
-#if X2_DEV_TOOLS //	//예상 보스드랍 아이템이 직업과 맞지 않게 설정되어 있을 때 팝업창 추가
+#ifdef X2_DEBUG //	//예상 보스드랍 아이템이 직업과 맞지 않게 설정되어 있을 때 팝업창 추가
 				if( NULL != g_pData && NULL != g_pData->GetItemManager() )
 				{
 					const CX2Item::ItemTemplet* pItemTemplet = g_pData->GetItemManager()->GetItemTemplet(it->second[i]);

@@ -3,7 +3,7 @@
 
 
 //x2.exe 바로 실행을 막는 코드
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #define PATCHER_RUN_ONLY "8f9slxa02nkp29ak1u26mqpcmshnf7k"		// argv[]의 제일 뒤가 이 스트링이 맞아야 통과.
 #endif // _SERVICE_
 //////////////////////////////////////////////////////////////////////////

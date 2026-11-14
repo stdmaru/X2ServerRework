@@ -7,7 +7,7 @@ KOGGamePerformanceCheckPort_Function g_KOGGamePerformanceCheckPort_Function;
 
 KOGGamePerformanceCheckPort_Function::KOGGamePerformanceCheckPort_Function()
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	//클라 시작할때는 로그파일을 항상 지워준다.
 	FILE* pPingLog_Field = fopen( "PingLog_Field.txt", "w" );
 	fclose( pPingLog_Field );
@@ -463,7 +463,7 @@ void KOGGamePerformanceCheckPort_Function::SendServer_Field( const KOGGamePerfor
 		//
 		bExistData = true;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		{
 			FILE* pPingLog_Field = fopen( "PingLog_Field.txt", "a+" );
 
@@ -653,7 +653,7 @@ void KOGGamePerformanceCheckPort_Function::SendServer_Dungeon( const KOGGamePerf
 		//
 		bExistData = true;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		{
 			FILE* pPingLog_Dungeon = fopen( "PingLog_Dungeon.txt", "a+" );
 
@@ -834,7 +834,7 @@ void KOGGamePerformanceCheckPort_Function::SendServer_PvP( const KOGGamePerforma
 		//
 		bExistData = true;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		{
 			FILE* pPingLog_PvP = fopen( "PingLog_PvP.txt", "a+" );
 

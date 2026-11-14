@@ -100,7 +100,7 @@ void CX2EmblemManager::ParsingEmblemTemplet( KLuaManager& luaManager )
 			{
 				if( pEmblem->m_eEmblemID == pEmblemTemplet->m_eEmblemID )
 				{
-			#if X2_DEV_TOOLS
+			#ifdef X2_DEBUG
 					ASSERT(!"Duplicate Emblem Templet");
 			#endif // _IN_HOUSE_
 					bCheckDuplicate = true;
@@ -166,7 +166,7 @@ void CX2EmblemManager::ParsingEmblemTemplet( KLuaManager& luaManager )
 		}
 		else
 		{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			ASSERT(!"Empty Emblem Templet");
 #endif // _IN_HOUSE_
 		}
@@ -271,7 +271,7 @@ void CX2EmblemManager::PlayEmblemEffect( const EmblemTemplet& sEmblemTemplet_ )
 	if( NULL == g_pData || NULL == g_pData->GetUIMajorParticle() )
 		return;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( true == sEmblemTemplet_.m_wstrTextureFileName.empty() )
 		DISPLAY_ERROR( L"TextureFile Name don't exist" );
 #endif // _IN_HOUSE_

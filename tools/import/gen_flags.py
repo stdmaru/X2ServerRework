@@ -124,8 +124,8 @@ def main() -> int:
          f"- **true: {len(true)}**, **false: {len(false)}** (universe {len(universe)}, flags used in code {len(used_flags)}, files scanned {scanned})",
          ""]
     L += ["## Defined only in the development build", "",
-          "Whitelisted names become `X2_DEV_TOOLS`; the others are discarded (resolved as in the service build).", ""]
-    L += [f"- `{n}` " + ("**-> X2_DEV_TOOLS**" if n in dev_whitelist else "-> false") for n in sorted(dev_only)] or ["(none)"]
+          "Whitelisted names become `X2_DEBUG`; the others are discarded (resolved as in the service build).", ""]
+    L += [f"- `{n}` " + ("**-> X2_DEBUG**" if n in dev_whitelist else "-> false") for n in sorted(dev_only)] or ["(none)"]
     L += ["", "## Flags with a value", "", "Resolved only through `defined()`; `#if NAME` comparisons are kept.", ""]
     L += [f"- `{n}` = `{v}`" for n, v in sorted(valued.items())] or ["(none)"]
     L += ["", "## Flags also defined in ordinary code (left unresolved)", ""]

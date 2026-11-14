@@ -1474,7 +1474,7 @@ float CX2GameOption::GetCameraDistance()
 #ifdef PVP_ZOOM_CAMERA
 void CX2GameOption::ResetAutoCamera()
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	FILE *fp = fopen("ZoomCamera.ini", "r");
 	if( fp != NULL )
 	{

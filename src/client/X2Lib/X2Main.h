@@ -722,7 +722,7 @@ class CX2Main : public CKTDXStage
 
 			virtual DWORD RunThread()
 			{
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
                 g_CKTDXLog.RegisterCurrentThread();
@@ -757,7 +757,7 @@ class CX2Main : public CKTDXStage
 				}
 
 				m_bLoop = false;
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 				return 0;
 			}//RunThread()
@@ -780,7 +780,7 @@ class CX2Main : public CKTDXStage
 		};//class TThread : public KJohnThread
 
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 		struct DeveloperScriptSet
 		{
 			enum DEVELOPER_SCRIPT_TYPE
@@ -933,7 +933,7 @@ class CX2Main : public CKTDXStage
 		}
 
 		// 09.07.03 태완 : 사내에서 계정생성 되게
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		int GetGameServerPortForCreateID() const { return m_iGameServerPortForCreateID; }
 		void SetGameServerPortForCreateID(int val) { m_iGameServerPortForCreateID = val; }
 		void AddGameServerIPForCreateID_LUA( const char* pServerIP )
@@ -1457,7 +1457,7 @@ class CX2Main : public CKTDXStage
 		bool GetIsValideCheckKomScript() const { return m_bIsValideCheckKomScript; }
 		void SetIsValideCheckKomScript(bool val) { m_bIsValideCheckKomScript = val; }
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 		bool ResetDeveloperScriptSet ( const WCHAR* pFileName );	// DevScriptTable.lua 파싱
 		bool ResetDeveloperScriptSet_GameEffectSet ( DeveloperScriptSet::DeveloperScript devScript );
 		bool ResetDeveloperScriptSet_DamageEffect ( DeveloperScriptSet::DeveloperScript devScript );
@@ -1646,7 +1646,7 @@ class CX2Main : public CKTDXStage
 
 		std::vector< ReservedServerPacket > m_vecReservedServerPacket;
 //{{ 09.07.03 태완 : 사내에서 계정생성 되게
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		int m_iGameServerPortForCreateID;
 		wstring m_wstrGameServerIPForCreateID;
 #endif //!defined(_SERVICE_) || defined(SERV_JOIN_IN_CLIENT_FOR_TW_TEST_SERVER)
@@ -1747,7 +1747,7 @@ private:
 
 
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 	DeveloperScriptSet			m_DeveloperScriptSet;
 #endif // EXPAND_DEVELOPER_SCRIPT  // 김종훈, 개발자 스크립트 확장 기능 추가
 

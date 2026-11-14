@@ -139,7 +139,7 @@ bool CX2ServerProtocol::ConnectedToCollectServer( const WCHAR* pIP, const int po
 {
 	if( IsCSConnected() )
 	{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		AlreadyConnected( L"collect server", m_pkCSUserProxy.load(), pIP, port );
 #endif
 		return false;

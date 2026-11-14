@@ -1633,7 +1633,7 @@ float CX2GameUnit::CalcExtraAttackPower( CX2DamageManager::DamageData* pAttDamag
 // 자신이 받을 damage를 계산해준다
 float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// NOTE: 데미지 해킹이 된다면 그 때 여기를 themida로 보호하자
 	// checked
 #endif
@@ -2308,7 +2308,7 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 
 	// 크리티컬인 경우 데미지를 2배 해주는 코드는 이 함수 밖에 있다
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	return fFinalDamage;
@@ -12125,7 +12125,7 @@ bool CX2GameUnit::IsCanNotIntput() const
 }
 
 
-#if X2_DEV_TOOLS // 김태환
+#ifdef X2_DEBUG // 김태환
 void CX2GameUnit::WriteLogByConsoleWindow_LUA( const char* wstrLog_ )
 {
 	wstring wstrStateName = L"";

@@ -264,7 +264,7 @@ bool CX2UnitManager::_OpenNPCStatScriptFile( const WCHAR* pFileName )
     }
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 // 마을 NPC, 사용하지 않는 NPC등 Stat설정 안 된 NPC가 많아서 정상적인 로그로써 사용이 불가능하다 판단되어 임시 제거.
 	bool bCheckEmpty = false;
@@ -562,7 +562,7 @@ bool CX2UnitManager::AddNPCStat_LUA()
     NPC_UNIT_ID		nNPCUnitID = NUI_NONE;
 	LUA_GET_VALUE_ENUM(	luaManager, "NPC_ID", nNPCUnitID, CX2UnitManager::NPC_UNIT_ID, CX2UnitManager::NUI_NONE );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // 	if ( m_setNPCStatCheck.find( nNPCUnitID ) != m_setNPCStatCheck.end() )
 // 	{
 // 		ASSERT( 0 );
@@ -620,7 +620,7 @@ bool CX2UnitManager::AddNPCStat_LUA()
 	LUA_GET_VALUE(		luaManager, "CRITICAL_PERCENT",	stat.m_fPercentCritical,			0.f );
 	//}} megagame / 박교현 / 2010.04.30 / NPC 스탯 추가
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	m_setNPCStatCheck.insert( nNPCUnitID );
 #endif // _SERVICE_
 

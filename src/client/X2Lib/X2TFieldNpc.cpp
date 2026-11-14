@@ -1331,7 +1331,7 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 	}
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	// 설정된 값에 따라 npc 머리 조절
 	if( m_pXSkinAnim != NULL && g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV && g_pInstanceData->GetFrameScale() == true)

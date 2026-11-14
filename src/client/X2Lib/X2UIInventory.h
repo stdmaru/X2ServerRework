@@ -486,7 +486,7 @@ public:
 	void OpenResolveResultWindow( std::map< int, int >& mapInsertedItem, std::vector< KInventoryItemInfo >& vecKInventorySlotInfo,
 		bool bJackpot );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	bool AuthDeleteItem( UidType DeleteItemUid_, int Quantity_  )
 	{
 		return Handler_EGS_DELETE_ITEM_REQ( DeleteItemUid_, Quantity_ );

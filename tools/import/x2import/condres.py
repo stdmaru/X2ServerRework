@@ -1,20 +1,20 @@
 """Partial preprocessor: resolves #if/#ifdef/#elif groups for a known set of macros.
 
 Like unifdef/coan, but with one extra rule required by the project (docs/original/debug-and-development.md):
-macros in the "dev" set are not resolved but rewritten to the X2_DEV_TOOLS switch.
+macros in the "dev" set are not resolved but rewritten to the X2_DEBUG switch.
 
 Each macro is one of:
   true      - defined in the target build
   false     - not defined in the target build
-  dev       - defined only in development builds  -> X2_DEV_TOOLS
-  dev_not   - defined only in non-development builds -> !X2_DEV_TOOLS
+  dev       - defined only in development builds  -> #ifdef X2_DEBUG (defined(X2_DEBUG) in expressions)
+  dev_not   - defined only in non-development builds -> #ifndef X2_DEBUG
   (absent)  - unknown: conditions using it are kept as they are (_WIN32, _MSC_VER, guards...)
 """
 
 import re
 from dataclasses import dataclass, field
 
-DEV_SWITCH = "X2_DEV_TOOLS"
+DEV_SWITCH = "X2_DEBUG"  # the original's _IN_HOUSE_ behavior (decision T47; X2_DEV_TOOLS before 2026-11-14)
 
 _DIRECTIVE_RE = re.compile(r"^(\s*)#(\s*)(\w+)(.*)$", re.S)
 _TOKEN_RE = re.compile(
@@ -52,7 +52,7 @@ class Res:
     """Residual (unresolved) expression."""
     text: str
     prec: int          # precedence of the outermost operator, 100 = atom
-    dev: bool = False  # depends on X2_DEV_TOOLS
+    dev: bool = False  # depends on X2_DEBUG
 
 
 Val = int | Res
@@ -323,7 +323,22 @@ def _logical_lines(text: str) -> list[tuple[int, str]]:
     return out
 
 
+_DEV_TOKEN_RE = re.compile(r"(?<![\w(])" + DEV_SWITCH + r"\b")
+
+
+def _dev_style(kw: str, expr: str) -> tuple[str, str]:
+    """The dev switch is defined or not (decision T47): `#ifdef`/`#ifndef` alone, `defined(...)` in expressions."""
+    if kw not in ("if", "elif") or DEV_SWITCH not in expr:
+        return kw, expr
+    if kw == "if" and expr.strip() == DEV_SWITCH:
+        return "ifdef", DEV_SWITCH
+    if kw == "if" and expr.strip() == "!" + DEV_SWITCH:
+        return "ifndef", DEV_SWITCH
+    return kw, _DEV_TOKEN_RE.sub(f"defined({DEV_SWITCH})", expr)
+
+
 def _fmt(indent: str, hspace: str, kw: str, expr: str, comment: str) -> str:
+    kw, expr = _dev_style(kw, expr)
     line = f"{indent}#{hspace}{kw}"
     if expr:
         line += " " + expr

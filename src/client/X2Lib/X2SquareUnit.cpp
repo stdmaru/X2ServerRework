@@ -1279,7 +1279,7 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 //}} robobeg : 2008-10-18
 
 #ifdef HANABI_VILLAGE
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// Ư�� �ð����� 7/1, 7/4 12:00 ~ 20:00 ������
 	bool bDay1 = (CTime( 2013, 7, 1, 12, 0, 0 ).GetTime() <= g_pData->GetServerCurrentTime()
 		&& g_pData->GetServerCurrentTime() <= CTime( 2013, 7, 1, 20, 0, 0 ).GetTime());
@@ -1817,7 +1817,7 @@ void CX2SquareUnit::StateStart()
 		}
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 		if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
 		{
@@ -1952,7 +1952,7 @@ void CX2SquareUnit::StateFrameMove()
 		}
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 		if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
 		{

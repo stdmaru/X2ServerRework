@@ -101,7 +101,7 @@ extern KSuperAssert g_kSuperAssert;
 
 #define KLOG(filename)			KDbgStm.SetLogFilename(filename); KDbgStm
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 #ifdef BUG_TRAP
 	#define InHouseLog( msg )

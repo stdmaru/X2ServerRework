@@ -1,6 +1,6 @@
 #pragma once
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 class MonsterStateListDialog
 {
 public:
@@ -220,7 +220,7 @@ private:
 	//int								m_RenderCount;
 	SHORT								m_SumDelta;		/// 마우스 휠 저장값
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	MonsterStateListDialog m_MonsterStateListDialog;
 #endif // MONSTER_STATE_LIST_TEST
 };

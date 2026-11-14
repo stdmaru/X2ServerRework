@@ -421,7 +421,7 @@ void CX2DungeonSubStage::PrepareClearSubStage( int iClearConditionIndex )
 
 void CX2DungeonSubStage::ClearSubStage( int clearType, int nextStageNum, int nextSubStageNum )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	if( NULL == g_pX2Game )
 		return;
@@ -525,7 +525,7 @@ void CX2DungeonSubStage::ClearSubStage( int clearType, int nextStageNum, int nex
 			} break;
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 
@@ -584,7 +584,7 @@ void CX2DungeonSubStage::SetEnableClearCondition( int iIndex, bool bEnable )
 // 이 함수 코드가 조금 복잡하게 꼬여있으니 수정할 때 주의해주세요~
 void CX2DungeonSubStage::CheckIfSubStageCleared()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	if( NULL == g_pX2Game )
 		return;
@@ -792,7 +792,7 @@ void CX2DungeonSubStage::CheckIfSubStageCleared()
 		PrepareClearSubStage( iCompletedClearCondIndex );
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 

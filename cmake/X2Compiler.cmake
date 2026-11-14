@@ -11,9 +11,18 @@ set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 add_library(x2_options INTERFACE)
 add_library(x2::options ALIAS x2_options)
 
-# Always defined (0/1) so code can use `#if X2_DEV_TOOLS`.
-target_compile_definitions(x2_options INTERFACE
-    X2_DEV_TOOLS=$<IF:$<BOOL:${X2_DEV_TOOLS}>,1,0>)
+# Decision T47: the command line carries only what selects the code to compile (X2_DEV_TOOLS, from the option and the
+# presets); the switches of the program's behavior live in src/define.h, forced into every X2 translation unit as the
+# original's ServerDefine.h/Always.h reached every file through its headers. Both are defined or not, tested with #ifdef.
+# C and C++ only (not the .rc files of x2_windows_icon).
+if(MSVC)
+    target_compile_options(x2_options INTERFACE "$<$<COMPILE_LANGUAGE:C,CXX>:/FI${PROJECT_SOURCE_DIR}/src/define.h>")
+else()
+    target_compile_options(x2_options INTERFACE "$<$<COMPILE_LANGUAGE:C,CXX>:-include${PROJECT_SOURCE_DIR}/src/define.h>")
+endif()
+if(X2_DEV_TOOLS)
+    target_compile_definitions(x2_options INTERFACE X2_DEV_TOOLS)
+endif()
 
 # The original is a Unicode build: TCHAR, LPCTSTR and the Win32 A/W macros are the wide ones.
 if(WIN32)

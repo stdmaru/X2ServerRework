@@ -349,7 +349,7 @@ class CX2Camera : public CKTDXStage
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 		void CalcManualCameraPosition( CX2GameUnit* pFocusUnit, const D3DXVECTOR3& vEyePosition );
 		void ManualTrackingCamera( CX2GameUnit* pFocusUnit, float distance, const D3DXVECTOR3& vRelativeEyePos );
@@ -437,7 +437,7 @@ class CX2Camera : public CKTDXStage
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		bool			m_bEnabledManualCameraPosition;
 		D3DXVECTOR3		m_vManualCameraPosition;
 #endif // IN_GAME_MANUAL_CAMERA_POSITION_TEST

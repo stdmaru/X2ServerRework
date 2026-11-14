@@ -246,7 +246,7 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 					}
 				}
 			} break;
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		case GUCM_ERASE_BUFF_CHEAT:
 			{
 				if( NULL != g_pX2Game &&
@@ -1348,7 +1348,7 @@ void CX2OldGageManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 	}
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	if( m_pGameUnit != NULL && m_pGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
 	{
@@ -1365,7 +1365,7 @@ void CX2OldGageManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 			}
 		}
 	}
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -1499,7 +1499,7 @@ void CX2OldGageManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 	if( m_bEnable == false )
 		return;
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 
 	if ( m_sbSendReportHackUserPacket == false )
 	{

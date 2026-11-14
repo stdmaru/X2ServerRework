@@ -134,3 +134,24 @@ compile (`server-x2lib`, in `src/server/X2Lib`).
 Across the two generated sets, the 1,188 names they share have the same value; the only environment difference is
 `_SERVICE_`, which no shared file tests. The shared files are therefore kept once and compiled by both (decision
 [T33](../project/decisions.md#accepted)).
+
+## Port switches (`src/define.h`)
+
+Decision [T47](../project/decisions.md#accepted) (2026-11-14): the command line says what is compiled, and
+[`src/define.h`](../../src/define.h) how the program behaves. Both kinds are defined or not and tested with
+`#ifdef`/`#ifndef` (`defined(NAME)` in expressions), as the original did.
+
+| Switch | Where | Meaning | On in |
+|---|---|---|---|
+| `X2_DEV_TOOLS` | command line (CMake option, presets) | compile the development tools (the UI editor) and the client hooks they need (anchor recorder, live UI snapshot, loose client_data files) | `*-debug` |
+| `X2_DEBUG` | `src/define.h` | debug behavior of servers and client: the original's `_IN_HOUSE_` blocks (overlays, consoles, cheats, logs, loose files, start without the patcher, `Config_INTERNAL.lua`) and the port's diagnostics | builds without `NDEBUG` (`*-debug`) |
+
+Platform and toolchain macros stay in CMake. `src/define.h` is force-included in every X2 target by `x2::options`
+(`cmake/X2Compiler.cmake`); `#define NAME` turns a switch on, `//#define NAME` off, and the command line does not
+override it.
+
+The importer writes `X2_DEBUG` in this style (`condres.DEV_SWITCH`, `_dev_style`); `check_equivalence.py` defines it in
+the dev configuration and leaves it undefined in the service one. On 2026-11-14 the ~590 `#if X2_DEV_TOOLS` /
+`#if !X2_DEV_TOOLS` lines were converted to `#ifdef`/`#ifndef` and split by origin (`git blame`): the 11 written for the
+UI tools' hooks stay `X2_DEV_TOOLS`, the rest (imported, and the port's loose files, config and traces) became
+`X2_DEBUG`. Older import reports under `tools/import/reports/` still say `X2_DEV_TOOLS`.

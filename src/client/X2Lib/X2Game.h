@@ -32,7 +32,7 @@ namespace	_CONST_X2GAME_
 class CX2Game : public CKTDXStage
 {
 	public:
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		DECLARE_HELP_SYSTEM( CX2Game );
 #endif // KHELP_SYSTEM_TEST
 
@@ -789,7 +789,7 @@ class CX2Game : public CKTDXStage
 		bool GetEnableMonsterFly() { return m_bEnableMonsterFlyTest; }
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void EnableManualCameraPosition( bool bEnabled );
 #endif // IN_GAME_MANUAL_CAMERA_POSITION_TEST
 

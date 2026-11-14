@@ -77,7 +77,7 @@ namespace KBenchMark_MXM
 
 	  double min_mflops = INT_MAX;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  double time_estimate;
 	  timestamp ( );
 
@@ -132,7 +132,7 @@ namespace KBenchMark_MXM
 	//
 	  flop_count = 2 * n1 * n2 * n3;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  cout << "  Matrix B is " << n1 << " by " << n2 << "\n";
 	  cout << "  Matrix C is " << n2 << " by " << n3 << "\n";
@@ -150,7 +150,7 @@ namespace KBenchMark_MXM
 	  b = matgen ( n1, n2, &seed );
 	  c = matgen ( n2, n3, &seed );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  cout << "  Method     Cpu Seconds       MegaFlopS\n";
 	  cout << "  ------  --------------  --------------\n";
@@ -172,7 +172,7 @@ namespace KBenchMark_MXM
 
 	  min_mflops = min( min_mflops, mflops );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "  IJK   "
 		   << "  " << setw(14) << cpu_seconds
 		   << "  " << setw(14) << mflops << "\n";
@@ -194,7 +194,7 @@ namespace KBenchMark_MXM
 
 	  min_mflops = min( min_mflops, mflops );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "  IKJ   "
 		   << "  " << setw(14) << cpu_seconds
 		   << "  " << setw(14) << mflops << "\n";
@@ -216,7 +216,7 @@ namespace KBenchMark_MXM
 
 	  min_mflops = min( min_mflops, mflops );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "  JIK   "
 		   << "  " << setw(14) << cpu_seconds
 		   << "  " << setw(14) << mflops << "\n";
@@ -238,7 +238,7 @@ namespace KBenchMark_MXM
 
 	  min_mflops = min( min_mflops, mflops );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "  JKI   "
 		   << "  " << setw(14) << cpu_seconds
 		   << "  " << setw(14) << mflops << "\n";
@@ -260,7 +260,7 @@ namespace KBenchMark_MXM
 
 	  min_mflops = min( min_mflops, mflops );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "  KIJ   "
 		   << "  " << setw(14) << cpu_seconds
 		   << "  " << setw(14) << mflops << "\n";
@@ -282,7 +282,7 @@ namespace KBenchMark_MXM
 
 	  min_mflops = min( min_mflops, mflops );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "  KJI   "
 		   << "  " << setw(14) << cpu_seconds
 		   << "  " << setw(14) << mflops << "\n";
@@ -297,7 +297,7 @@ namespace KBenchMark_MXM
 	//  Terminate.
 	//
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  cout << "MXM:\n";
 	  cout << "  Normal end of execution.\n";
@@ -326,7 +326,7 @@ namespace KBenchMark_MXM
 	  //else
 		 // iScore = 2;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << fScore << "\n";
 #endif //_SERVICE_
 

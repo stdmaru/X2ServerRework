@@ -57,7 +57,7 @@ CX2ChatBox*			g_pChatBox		= NULL;
 // The client's own anti-cheat. The original read the PEB's BeingDebugged byte with 32-bit x86 assembly.
 BOOL Pesudo_IsDebuggerPresent()
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	return FALSE;
 #else
 	return x2::platform::IsDebuggerAttached() ? TRUE : FALSE;
@@ -199,7 +199,7 @@ CX2Main::CX2Main() :
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -246,7 +246,7 @@ CX2Main::CX2Main() :
 
 	m_pCheckSumManager		= new CX2CheckSumManager();
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	dbg::logfile::SetLogLevel(-1);
 
 		m_bManualLogin = false;
@@ -441,7 +441,7 @@ CX2Main::CX2Main() :
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 		wstringstream wstrmWindowTitle;
 		wstrmWindowTitle << L"Elsword - " << m_ClientVersion.c_str() << L"_" << m_SubClientVersion.c_str();
 		SetWindowText( g_pKTDXApp->GetHWND(), wstrmWindowTitle.str().c_str() );
@@ -471,7 +471,7 @@ CX2Main::CX2Main() :
 
 	m_fCheckHackToolTime = 0.f;
 
-#	if !X2_DEV_TOOLS
+#	ifndef X2_DEBUG
 	// checked
 #	endif
 
@@ -489,13 +489,13 @@ CX2Main::CX2Main() :
 
 
 
-#	if !X2_DEV_TOOLS
+#	ifndef X2_DEBUG
 #	endif
 
 g_pKTDXApp->GetDeviceManager()->ResumeThread();
 	const std::string enMachineId = GetMachineId();
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
  	FILE *fp = NULL;
 	fp = fopen("MachineId.info", "w");
 	if( fp != NULL )
@@ -507,11 +507,11 @@ g_pKTDXApp->GetDeviceManager()->ResumeThread();
 
 	ErrorLogMsg( XEM_ERROR1, enMachineId.c_str() );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	std::remove( "OpenScriptFile.log" );
 #endif //LOG_LOAD_DLG_SCRIPT
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 #endif
 
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
@@ -615,7 +615,7 @@ CX2Main::~CX2Main(void)
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif //_SERVICE_
 
 	//{{ ????? : [2010/03/24]	//	???????? ????
@@ -644,7 +644,7 @@ std::wstring CX2Main::GetWstrBasicConfigFile()
 {
 	// One variant (US): the configs have no country in their names (Config_US_*.lua of datai015.kom renamed,
 	// 2026-11-12).
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	return L"Config_INTERNAL.lua";
 #else
 	return L"Config_SERVICE.lua";
@@ -654,7 +654,7 @@ std::wstring CX2Main::GetWstrBasicConfigFile()
 HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 {
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// checked
 #endif
 
@@ -684,7 +684,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 			break;
 		}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 
 	m_fCheckDebugeTimer += fElapsedTime;
 	if( m_fCheckDebugeTimer > 20.f )
@@ -752,7 +752,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -763,7 +763,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 		pWaitServerPacket->fReamainTimeOut -= fElapsedTime;
 		if( pWaitServerPacket->fReamainTimeOut <= 0.0f )
 		{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			std::map<int, int>::iterator it;
 			it = m_mapWaitServerPacketList.find( (int) pWaitServerPacket->waitACK );
 			if( it != m_mapWaitServerPacketList.end() )
@@ -813,7 +813,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -863,7 +863,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 #endif // _DEBUG
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -1300,7 +1300,7 @@ void CX2Main::RegisterLuabind()
 	lua_tinker::class_def<CX2Main>( L, "GetTitleCheat",					&CX2Main::GetTitleCheat );
 	//}}
 	//{{ 09.07.03 ?��? : ?ͧ???? ????? ???? ??? ???????
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	lua_tinker::class_def<CX2Main>( L, "SetGameServerPortForCreateID",			&CX2Main::SetGameServerPortForCreateID );
 	lua_tinker::class_def<CX2Main>( L, "AddGameServerIPForCreateID_LUA",		&CX2Main::AddGameServerIPForCreateID_LUA );
 #endif //!defined(_SERVICE_) || defined (SERV_JOIN_IN_CLIENT_FOR_TW_TEST_SERVER)
@@ -1689,7 +1689,7 @@ void CX2Main::RegisterLuabind()
 
 	lua_tinker::class_def<CX2Game>( L, "Send_EGS_ADMIN_NPC_UNIT_CREATE_REQ_LUA",	&CX2Game::Send_EGS_ADMIN_NPC_UNIT_CREATE_REQ_LUA );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	lua_tinker::class_def<CX2Game>( L, "EnableManualCameraPosition",			&CX2Game::EnableManualCameraPosition);
 #endif // IN_GAME_MANUAL_CAMERA_POSITION_TEST
 
@@ -1855,7 +1855,7 @@ void CX2Main::RegisterLuabind()
 
 	lua_tinker::class_def<CX2GameUnit>( L, "HaveThisBuff",				&CX2GameUnit::HaveThisBuff );
 
-#if X2_DEV_TOOLS // ?????
+#ifdef X2_DEBUG // ?????
 	lua_tinker::class_def<CX2GameUnit>( L, "WriteLogByConsoleWindow",	&CX2GameUnit::WriteLogByConsoleWindow_LUA );
 #endif // WRITE_SCRIPT_LOG_AT_CONSOLE_WINDOW
 
@@ -2308,7 +2308,7 @@ void CX2Main::RegisterLuabind()
 	//}}
 
 	//{{ lucidash : 2010.11.24
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	//lua_tinker::class_def<CX2GameEdit>( L, "ItemViewCheat",		&CX2GameEdit::ItemViewCheat );
 #endif // ITEM_VIEW_CHEAT
 	//}} lucidash : 2010.11.24
@@ -2337,7 +2337,7 @@ void CX2Main::RegisterLuabind()
 	lua_tinker::class_def<CX2GameEdit>( L, "IncreaseLoverDate_LUA",	&CX2GameEdit::IncreaseLoverDate_LUA );
 
 	lua_tinker::class_def<CX2GameEdit>( L, "FullChargeRidingStamina",	&CX2GameEdit::FullChargeRidingStamina );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	lua_tinker::class_def<CX2GameEdit>( L, "SetEffectLogLevel",	&CX2GameEdit::SetEffectLogLevel );
 #endif //EFFECT_USE_LOG
 
@@ -2593,7 +2593,7 @@ void CX2Main::RegisterLuabind()
 	lua_tinker::class_add<CX2UIInventory>( L, "CX2UIInventory" );
 	lua_tinker::class_def<CX2UIInventory>( L, "AddIceHeaterEventInfo",			&CX2UIInventory::AddIceHeaterEventInfo_LUA );
 
-#if X2_DEV_TOOLS // ??????, ?????? ?????? ??? ??? ???
+#ifdef X2_DEBUG // ??????, ?????? ?????? ??? ??? ???
 	lua_tinker::class_add<DeveloperScriptSet>( L, "CX2DeveloperScriptSet" );
 	lua_tinker::class_def<DeveloperScriptSet>( L, "AddDeveloperScript",						&DeveloperScriptSet::AddDeveloperScript_LUA );
 	lua_tinker::class_def<DeveloperScriptSet>( L, "AddDamageEffectDevFileList_LUA",			&DeveloperScriptSet::AddDamageEffectDevFileList_LUA );
@@ -2631,7 +2631,7 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 
 		m_NowStateID = (X2_STATE)stateID;
 		StateInLog();
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 		CKTDGUIAnchorRecorder::SetScene( StateName( m_NowStateID ) );
 #endif
 		AllDeleteServerPacket();
@@ -2925,7 +2925,7 @@ void CX2Main::PostStateChange()
 	}
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	g_pInstanceData->GetItemCheatPopup().SetStage( (CKTDXStage*) GetNowState() );
 	if( true == g_pInstanceData->GetItemCheatPopup().IsOpened() )
 	{
@@ -3807,7 +3807,7 @@ void CX2Main::AddServerPacket( SERVER_EVENT_ID waitACK, float fReamainTimeOut /*
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	map<int, int>::iterator it;
 	it = m_mapWaitServerPacketList.find( (int) waitACK );
@@ -3839,7 +3839,7 @@ bool CX2Main::DeleteServerPacket( SERVER_EVENT_ID waitACK )
 		if( pWaitServerPacket->waitACK == waitACK )
 		{
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 			map<int, int>::iterator it;
 			it = m_mapWaitServerPacketList.find( (int) waitACK );
@@ -4074,7 +4074,7 @@ bool CX2Main::IsValidPacket( int enumID )
 	std::wstringstream wstrStream;
 	wstrStream << L"IsValidPacket" << L"_" << NetError::GetErrStrF(enumID);
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( enumID >= NetError::ERR_SENTINEL || enumID < 0 )
 		wstrStream << L"(" << enumID << L")";
 #endif //_SERVICE_
@@ -4284,7 +4284,7 @@ void CX2Main::BuyItemSuper_LUA( int itemID, int iQuantity /*= 1*/, short sPeriod
 
 void CX2Main::SetAuthLevel_LUA( [[maybe_unused]] const CHAR* userID, [[maybe_unused]] CX2User::X2_USER_AUTH_LEVEL level )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pData->GetMyUser()->GetAuthLevel() < CX2User::XUAL_OPERATOR )
 		return;
 
@@ -6653,7 +6653,7 @@ bool CX2Main::KeyProcess()
 		return false;
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 #endif // defined( _IN_HOUSE_ ) || defined( _OPEN_TEST_ )
 
 
@@ -6783,7 +6783,7 @@ bool CX2Main::KeyProcess()
 			return true;
 		}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if ( bHideDialog == false && g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 		{
 			if ( bHideDialog == false && g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_0) == TRUE )
@@ -8013,7 +8013,7 @@ void CX2Main::ChangeCashSkillPointDate( const int iYear_, const int iMonth_, con
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 void CX2Main::OccurLag_LUA( float fLagTime, int iLagType )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( KOGGamePerformanceCheck_CallbackFuncTable::GetInstance()->m_pfnGetGameSpace )
 	{
 		int iGameSpace = KOGGamePerformanceCheck_CallbackFuncTable::GetInstance()->m_pfnGetGameSpace();
@@ -8102,7 +8102,7 @@ void CX2Main::_InitKOGGamePerformanceCheck()
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 void CX2Main::ForceHost_LUA( bool bEnable )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if ( NULL != g_pX2Room )
 		g_pX2Room->ForceHostForGameEdit( bEnable );
 #endif //_SERVICE_
@@ -8110,7 +8110,7 @@ void CX2Main::ForceHost_LUA( bool bEnable )
 
 void CX2Main::SwitchConnect_LUA( int iMode )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( GetX2Data()->GetGameUDP() )
 		GetX2Data()->GetGameUDP()->SetForceConnectMode( CKTDNUDP::EForceConnectMode( iMode ) );
 #endif //_SERVICE_
@@ -8121,7 +8121,7 @@ void CX2Main::SwitchConnect_LUA( int iMode )
 #ifdef UDP_PACKET_ANALYSIS_LOG
 void CX2Main::UdpPacketAnalysisLog_LUA( bool bEnable )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	GetX2Data()->GetGameUDP()->SetEnablePacketAnalysisLog( bEnable );
 #endif //_SERVICE_
 }
@@ -8130,7 +8130,7 @@ void CX2Main::UdpPacketAnalysisLog_LUA( bool bEnable )
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 void CX2Main::UdpPacketOverlapTest_LUA( [[maybe_unused]] bool bEnable )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	m_bUdpPacketOverlap = bEnable;
 #endif //_SERVICE_
 }
@@ -8215,7 +8215,7 @@ void    CX2Main::SetUDPMode( CX2Game::GAME_TYPE eGameType, CKTDNUDP::EForceConne
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 
-#if X2_DEV_TOOLS // ??????, ?????? ?????? ??? ??? ???
+#ifdef X2_DEBUG // ??????, ?????? ?????? ??? ??? ???
 // ?????? ?????? ??? ??? ???
 // DevScriptTable.lua ?????? ?��?��?.
 

@@ -371,7 +371,7 @@ void CX2WorldObjectMesh::SetXMesh_LUA( const char* pFileName )
 	SAFE_CLOSE( m_pXMesh );
 	ConvertUtf8ToWCHAR( m_XMeshName, pFileName );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if ( NULL != pFileName && !m_XMeshName.empty() )
 	{
 		StateLog( m_XMeshName.c_str() );

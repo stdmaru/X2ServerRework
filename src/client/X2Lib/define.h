@@ -2,7 +2,7 @@
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #	define PATCH_ORG_SRC		"http://gamepatch.elswordonline.com/"	// 본섭
 #	define PATCH_PATH_FILE		"PatchPath.dat"     // 본섭
 #else

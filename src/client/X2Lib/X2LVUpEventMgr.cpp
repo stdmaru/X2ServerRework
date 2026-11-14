@@ -176,7 +176,7 @@ void CX2LVUpEventMgr::AddLevelUpEvent_LUA()
 		wstringstream wstrstm;
 		wstrstm << pLVUpEvent->m_EventID << L" " << GET_STRING( STR_ID_344 ) << L" ";
 		ErrorLogMsg( KEM_ERROR352, wstrstm.str().c_str() );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		MessageBox( g_pKTDXApp->GetHWND(), wstrstm.str().c_str(), L"레벨업 이벤트 매니져 오류", MB_OK );
 #endif
 		SAFE_DELETE( pLVUpEvent );

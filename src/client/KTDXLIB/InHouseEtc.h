@@ -89,7 +89,7 @@
 
 
 // 아이템 치트로 사는 인터페이스
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif //ITEM_CHEAT_POPUP_TEST
 
 

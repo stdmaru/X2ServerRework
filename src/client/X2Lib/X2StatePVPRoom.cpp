@@ -632,7 +632,7 @@ bool CX2StatePVPRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			}
 			break;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 		case PRUCM_CHANGE_MAP_SELECT_FOR_DEBUG:
 			{
@@ -819,7 +819,7 @@ bool CX2StatePVPRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 				if ( m_pCX2PVPRoom->GetPVPGameType() == CX2PVPRoom::PGT_TEAM )
 				{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 					// 개발자면 50초 되게
 					if( NULL != g_pData->GetMyUser() &&
 						g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
@@ -838,7 +838,7 @@ bool CX2StatePVPRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 				}
 				else
 				{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 					// 개발자면 50초 되게
 					if( NULL != g_pData->GetMyUser() &&
 						g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
@@ -4017,7 +4017,7 @@ void CX2StatePVPRoom::InitPvpRoomUI()
 
 CX2StatePVPRoom::CX2MapSelectWindow::CX2MapSelectWindow()
 : m_pDLGBack( NULL )
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 , m_pDLGPVPMapSelectionWindowForDebug( NULL )
 #endif
 , m_pDLGSelected( NULL )
@@ -4046,7 +4046,7 @@ CX2StatePVPRoom::CX2MapSelectWindow::~CX2MapSelectWindow()
 
 	SAFE_DELETE_DIALOG( m_pDLGBack );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	SAFE_DELETE_DIALOG( m_pDLGPVPMapSelectionWindowForDebug );
 #endif // FREE_SELECT_PVP_MAP
 
@@ -4130,7 +4130,7 @@ void CX2StatePVPRoom::CX2MapSelectWindow::Open( int selectedMapWorldID )
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	OpenPVPMapSelectWindowForDebug( true );
 
@@ -4156,7 +4156,7 @@ void CX2StatePVPRoom::CX2MapSelectWindow::Close()
 		m_pDLGBack->SetShowEnable( false, false );
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	OpenPVPMapSelectWindowForDebug( false );
 
@@ -4477,7 +4477,7 @@ void CX2StatePVPRoom::CX2MapSelectWindow::ResetSelectedMapButton()
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 
 

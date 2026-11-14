@@ -356,7 +356,7 @@ void CX2ItemStatCalculator::SetUnitData( CX2Unit::UNIT_TYPE eUnitType_, CX2Unit:
 void CX2ItemStatCalculator::GetItemDescDev( OUT wstring& wstrItemDesc_,
 	IN const CX2Item::ItemTemplet* pItemTemplet ) const
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	return;
 #endif //_IN_HOUSE_
 

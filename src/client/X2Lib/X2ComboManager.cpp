@@ -360,7 +360,7 @@ int CX2ComboManager::AddCombo()
 			m_pPicChar->Clear();
 
 			const float fFinalDamage = m_pUnit->GetCurrentDamage();
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			if( NULL != m_pUnit &&
 				true == m_pUnit->IsMyUnit() )
 			{

@@ -47,7 +47,7 @@ void KStatisticsLocalLog::InitLocalLogInfo()
 	//{{ 2010. 11. 17	최육사	오토핵 검증 기능
 	m_kLocalLog[LOG_ABUSER_MORNITORING].Init( KStatistics::SI_LOC_ABUSER_MORNITORING,	"SI_LOG_ABUSER_MORNITORING" );
 	//}}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	m_kLocalLog[LOG_UNDEFINED_QUEST_TEMPLET].Init( KStatistics::SI_LOC_UNDEFINED_QUEST_TEMPLET,	"SI_LOG_UNDEFINED_QUEST_TEMPLET" );
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 
@@ -107,7 +107,7 @@ static bool IsDailyStatisticsFile( const std::wstring& strFilename )
 		L"SI_LOG_SERV_DISCONNECT",		// 2010-10-11 disconnections between servers
 		L"SI_LOG_BILLING_PACKET",		// 2010-10-11 Nexon billing packets
 		L"SI_LOG_ABUSER_MORNITORING",	// 2010-11-17 auto-hack checks
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		L"SI_LOG_UNDEFINED_QUEST_TEMPLET",
 #endif
 	};
@@ -470,7 +470,7 @@ void KStatisticsLocalLog::WriteLocalLogHead( std::wfstream& fout, int iStatistic
 		}
 		break;
 		//}}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	case KStatistics::SI_LOC_UNDEFINED_QUEST_TEMPLET:
 		{
 			fout

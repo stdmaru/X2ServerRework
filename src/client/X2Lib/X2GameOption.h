@@ -120,7 +120,7 @@ class CX2GameOption
 
 			bool			m_bIsSkillUITypeA;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			bool			m_bShowOnlyMyDamage;
 #endif //SHOW_ONLY_MY_DAMAGE
 
@@ -206,7 +206,7 @@ class CX2GameOption
 
 				m_bIsSkillUITypeA			= true;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				m_bShowOnlyMyDamage			= false;
 #endif //SHOW_ONLY_MY_DAMAGE
 
@@ -434,7 +434,7 @@ class CX2GameOption
 		void SetIsSkillUITypeA( bool bIsSkillUITypeA_, bool bShowBuffIcon_ = true );
 		bool GetIsSkillUITypeA() const { return m_OptionList.m_bIsSkillUITypeA; }
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void SetShowOnlyMyDamage( bool bShowOnlyMyDamage_ ) { m_OptionList.m_bShowOnlyMyDamage = bShowOnlyMyDamage_; }
 		bool GetShowOnlyMyDamage() const { return m_OptionList.m_bShowOnlyMyDamage; }
 #endif //SHOW_ONLY_MY_DAMAGE

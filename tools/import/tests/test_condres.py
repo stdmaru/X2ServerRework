@@ -40,10 +40,14 @@ class ResolveTest(unittest.TestCase):
         self.assertEqual(r(src), "#if defined(_X)\nx\n#else\nother\n#endif")
 
     def test_dev_rewrite(self):
-        self.assertEqual(r("#ifndef _SERVICE_\nd\n#endif"), "#if X2_DEV_TOOLS\nd\n#endif")
-        self.assertEqual(r("#ifdef _SERVICE_\ns\n#else\nd\n#endif"), "#if !X2_DEV_TOOLS\ns\n#else\nd\n#endif")
-        self.assertEqual(r("#ifdef ITEM_CHEAT_POPUP_TEST\nd\n#endif"), "#if X2_DEV_TOOLS\nd\n#endif")
-        self.assertEqual(r("#if defined(_IN_HOUSE_) || defined(_OPEN_TEST_)\nd\n#endif"), "#if X2_DEV_TOOLS\nd\n#endif")
+        self.assertEqual(r("#ifndef _SERVICE_\nd\n#endif"), "#ifdef X2_DEBUG\nd\n#endif")
+        self.assertEqual(r("#ifdef _SERVICE_\ns\n#else\nd\n#endif"), "#ifndef X2_DEBUG\ns\n#else\nd\n#endif")
+        self.assertEqual(r("#ifdef ITEM_CHEAT_POPUP_TEST\nd\n#endif"), "#ifdef X2_DEBUG\nd\n#endif")
+        self.assertEqual(r("#if defined(_IN_HOUSE_) || defined(_OPEN_TEST_)\nd\n#endif"), "#ifdef X2_DEBUG\nd\n#endif")
+        self.assertEqual(r("#if defined(_IN_HOUSE_) && defined(_WIN32)\nd\n#endif"),
+                         "#if defined(X2_DEBUG) && defined(_WIN32)\nd\n#endif")
+        self.assertEqual(r("#ifdef _WIN32\nw\n#elif defined(_IN_HOUSE_)\nd\n#endif"),
+                         "#ifdef _WIN32\nw\n#elif defined(X2_DEBUG)\nd\n#endif")
         res = resolve("#ifdef _IN_HOUSE_\nd\n#endif\n", FLAGS)
         self.assertEqual(len(res.dev_blocks), 1)
 

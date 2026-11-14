@@ -162,7 +162,7 @@ public:
 	void EnchantItem( UidType EnchantItemUID, D3DXVECTOR2 pos = D3DXVECTOR2(300, 300) );
 	void EnchantAttributeItem( UidType AttributeEnchantItemUID, D3DXVECTOR2 pos = D3DXVECTOR2(300, 300) );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	void AuthAutoSellItem( CX2Inventory::SORT_TYPE SortType );
 #endif
 

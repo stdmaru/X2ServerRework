@@ -442,7 +442,7 @@ HRESULT CX2StateField::OnFrameMove( double fTime, float fElapsedTime )
 		g_pData->GetUIManager()->GetUIQuestNew()->ToggleUserShowQuickQuestDLG();
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != g_pData->GetMyUser() &&
 		CX2User::XUAL_DEV <= g_pData->GetMyUser()->GetAuthLevel() )
 	{

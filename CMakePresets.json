@@ -31,15 +31,6 @@
             }
         },
         {
-            "name": "linux-development",
-            "inherits": "linux-base",
-            "displayName": "Linux Development (optimized, dev tools on)",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "X2_DEV_TOOLS": "ON"
-            }
-        },
-        {
             "name": "linux-release",
             "inherits": "linux-base",
             "displayName": "Linux Release",
@@ -92,15 +83,6 @@
             }
         },
         {
-            "name": "windows-development",
-            "inherits": "windows-base",
-            "displayName": "Windows Development (optimized, dev tools on)",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "X2_DEV_TOOLS": "ON"
-            }
-        },
-        {
             "name": "windows-release",
             "inherits": "windows-base",
             "displayName": "Windows Release",
@@ -116,10 +98,6 @@
             "configurePreset": "linux-debug"
         },
         {
-            "name": "linux-development",
-            "configurePreset": "linux-development"
-        },
-        {
             "name": "linux-release",
             "configurePreset": "linux-release"
         },
@@ -132,10 +110,6 @@
             "configurePreset": "windows-debug"
         },
         {
-            "name": "windows-development",
-            "configurePreset": "windows-development"
-        },
-        {
             "name": "windows-release",
             "configurePreset": "windows-release"
         }
@@ -144,13 +118,6 @@
         {
             "name": "linux-debug",
             "configurePreset": "linux-debug",
-            "output": {
-                "outputOnFailure": true
-            }
-        },
-        {
-            "name": "linux-development",
-            "configurePreset": "linux-development",
             "output": {
                 "outputOnFailure": true
             }
@@ -172,13 +139,6 @@
         {
             "name": "windows-debug",
             "configurePreset": "windows-debug",
-            "output": {
-                "outputOnFailure": true
-            }
-        },
-        {
-            "name": "windows-development",
-            "configurePreset": "windows-development",
             "output": {
                 "outputOnFailure": true
             }

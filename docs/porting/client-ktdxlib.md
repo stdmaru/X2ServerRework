@@ -11,7 +11,7 @@ fonts, post effects), the UI widgets (`KTDGUI*`), input (`KTDI*`), sound (`KTDS*
 
 - Module `client-ktdxlib` ([report](../../tools/import/reports/client-ktdxlib/REPORT.md)): files of `KTDXLIB/` compiled by
   `KTDXLIB.vcxproj` (`US_INTERNAL|Win32`) and their headers: **253 files** (102 `.cpp`), 151k lines written; 2,141 `#if` groups
-  resolved, 17k lines removed; 78 blocks became `X2_DEV_TOOLS`; 179 include spellings fixed. Encoding: 168 CP949, 78 ASCII,
+  resolved, 17k lines removed; 78 blocks became `X2_DEV_TOOLS` (now `X2_DEBUG`, T47); 179 include spellings fixed. Encoding: 168 CP949, 78 ASCII,
   7 UTF-8. Largest: `KTDGParticleSystem.cpp` (5.5k), `KTDGXMeshPlayer.cpp` (3.9k), `KTDGUIIMEEditBox.cpp` (3.6k).
 - **Excluded** (references counted in the report): vendored libraries, which come from upstream or are replaced (T3): `DXUT/`
   (18 references; see [DXUT](client.md#for-the-skeleton-step)), `CxImage/` (24), `FMOD/` (12), `tinyxml/` (5), `zlib.h`/`zconf.h`,
@@ -64,7 +64,7 @@ of the info types is left), libxml2, Win32 handles, `RegisterCurrentThread` and 
 - **Data directories** (every build): `SetSubDirectory(root)` registers the game folder and its subfolders, recursively,
   except `root/data` and folders starting with `.`; `*_LocalFile` and `GetPullPath` search them in order (user settings
   such as `GameOptions.lua`, `music/`, `movie/`), case-insensitively on Linux. Never the archives.
-- **Loose assets** (`X2_DEV_TOOLS` only, T35 (3)): `SetSubDirectory` also indexes `root/data` recursively by file name
+- **Loose assets** (`X2_DEBUG` or `X2_DEV_TOOLS`: the UI editor reads them too; T35 (3), T47): `SetSubDirectory` also indexes `root/data` recursively by file name
   (`SetLooseFileFolder`; again to pick up new files), skipping folders starting with `.` — a
   [client_data](../tools/client-data.md) folder works as `/data/data`, its `.kom/` skipped. `LoadDataFile`, `IsValidFile`
   and `LoadTwoDataFiles` **prefer** a loose file (flagged `MFI_LOCALFILE`), then the archives; `*_LocalFile` and
@@ -263,6 +263,7 @@ two globals (`g_pd3dDevice`, `g_pEffectStateManager`) are defined for them in `t
 | `CKTDNUDP` socket | `UDP_CHECKSUM_COVERAGE` set (Winsock UDP-Lite option) | Not set | UDP over IPv4 has checksums anyway |
 | `_IsEqualSign` (`KTDXAnimationController`, key compression) | Or-ed `uiFlags1` with the uninitialized result itself | `uiFlags1 | uiFlags2` | Evident bug |
 | Ctrl+\ in `CKTDGUIEditBox`/`CKTDGUIIMEEditBox` | The comment `// Ctrl \` spliced the next `break;` into it, so Ctrl+[, ], \ fell into Enter | Ignored, as the other control characters | Evident bug |
+| `CKTDGUIUniBuffer::CPtoY` | `back()` of an empty string with the caret at the start (`nCP` 0): garbage in MSVC release, an abort with libstdc++ assertions (opening the mailbox, 2026-11-14) | Only a non-empty string's last character is checked | Evident bug |
 | `CKTDGPicChar` textures | Indexed by a signed `char` (below the array for bytes 0x80 and up) | Bounded by the byte value | Evident bug |
 | `CKTDGUIDialog` script-name tool (dev) | Opened `MouseOverScript.txt` in notepad++ | Only writes the file | Windows-only editor |
 | `CKTDXApp` start-up (release) | Minimized every other window unless `Inactivation_Mimize.txt` existed | Nothing minimized | Windows shell only; hostile to the desktop |

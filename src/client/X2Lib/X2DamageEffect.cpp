@@ -730,7 +730,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::CreateInstance( CX2GameUnit* pGameUni
 		}
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != g_pMain->GetGameEdit() &&
 		CX2GameEdit::ELL_EFFECT_LOG_1 <= g_pMain->GetGameEdit()->GetEffectLogLevel() )
 	{
@@ -2647,7 +2647,7 @@ void CX2DamageEffect::CEffect::OnFrameMove_Trace()
 
 void CX2DamageEffect::CEffect::DamageReact( CX2DamageManager::DamageData* pDamageData )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// checked
 #endif
 
@@ -2724,13 +2724,13 @@ void CX2DamageEffect::CEffect::DamageReact( CX2DamageManager::DamageData* pDamag
 
 	m_bLive = false;
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 
 void CX2DamageEffect::CEffect::AttackResult()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// checked
 #endif
 
@@ -3455,7 +3455,7 @@ void CX2DamageEffect::CEffect::AttackResult()
 
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 
@@ -4859,7 +4859,7 @@ void CX2DamageEffect::CEffect::LoadLockOnData()
 		// 이전 타겟팅 한 대상을 재 타겟 하지 않도록 하는 기능
 		PLUA_GET_VALUE( m_pLuaManager, "NOT_TARGET_PRE_LOCK_ON_TARGET", m_LockOnData.m_bIsNotTargetPreLockOnTarget, false );
 
-	#if X2_DEV_TOOLS
+	#ifdef X2_DEBUG
 		//NOT_TARGET_PRE_LOCK_ON_TARGET 기능은 LOT_NEARST_UID_VECTOR_IN_RANGE에서만 사용 가능.
 		if( true == m_LockOnData.m_bIsNotTargetPreLockOnTarget &&
 			LOT_NEARST_UID_VECTOR_IN_RANGE != m_LockOnData.m_LockOnType )

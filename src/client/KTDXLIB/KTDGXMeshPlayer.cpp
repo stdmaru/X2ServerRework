@@ -35,7 +35,7 @@ CKTDGXMeshPlayer::CKTDGXMeshPlayer(
 	m_fElapsedTime = 0.f;
 	m_bRenderEffectMadeByGameUnit = true;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	m_bShowAttackBox = false;
 #endif // SHOW_ATTACK_BOX_DUMMY
 }
@@ -998,7 +998,7 @@ CKTDGXMeshPlayer::CXMeshInstance::CXMeshInstance( CKTDGXMeshPlayer* pMeshPlayer,
 , m_pFrame_TRACE_END0( NULL )
 , m_bParabolicCurve( false )
 , m_bToggleRotate(false)
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 , m_pXMeshSphere ( NULL )
 , m_pMatrixSphere ( NULL )
 , m_bShowAttackBox ( false )
@@ -1271,7 +1271,7 @@ CKTDGXMeshPlayer::CXMeshInstance::CXMeshInstance( CKTDGXMeshPlayer* pMeshPlayer,
 
 	OpenResource();
 	RunEvent();
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != m_pMeshPlayer &&
 		true == m_pMeshPlayer->GetShowAttackBox())
 	{
@@ -1311,7 +1311,7 @@ CKTDGXMeshPlayer::CXMeshInstance::~CXMeshInstance()
 		CKTDXDeviceSound* pSound = iter2->second;
 		SAFE_CLOSE( pSound );
 	}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( NULL != m_pXMeshSphere &&
 			NULL != g_pKTDXApp &&
 			NULL != g_pKTDXApp->GetDeviceManager() )
@@ -1828,7 +1828,7 @@ RENDER_HINT   CKTDGXMeshPlayer::CXMeshInstance::OnFrameRender_Prepare()
 
 void    CKTDGXMeshPlayer::CXMeshInstance::OnFrameRender_Draw()
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( true == m_bShowAttackBox )
 		CKTDGStateManager::SetRenderState( D3DRS_FILLMODE, D3DFILL_SOLID );
 #endif // SHOW_ATTACK_BOX_DUMMY
@@ -1896,7 +1896,7 @@ void    CKTDGXMeshPlayer::CXMeshInstance::OnFrameRender_Draw()
         g_pKTDXApp->GetDGManager()->GetXRenderer()->OnFrameRender( renderParam, mWorld, *m_pXMesh, m_pChangeTexXET, m_pMultiTexXET, m_pAniData, m_fAniTime, m_DrawCount );
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( true == m_bShowAttackBox )
 	{
 		CKTDGStateManager::SetRenderState( D3DRS_FILLMODE, D3DFILL_WIREFRAME );
@@ -3882,7 +3882,7 @@ UINT    CKTDGXMeshPlayer::EstimateInstanceNum()
 
 
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 
 bool CKTDGXMeshPlayer::MergeXMeshTemplet( CKTDGXMeshPlayer::XMeshTemplet* pNewXMeshTemplet_, CKTDGXMeshPlayer::XMeshTemplet* pOrgXMeshTemplet_ )
 {

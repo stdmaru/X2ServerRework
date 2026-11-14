@@ -3987,7 +3987,7 @@ bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*
 }
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CX2UIShop::AuthAutoSellItem( CX2Inventory::SORT_TYPE SortType )
 {
 	if( CX2User::XUAL_DEV == g_pData->GetMyUser()->GetAuthLevel()
@@ -4016,7 +4016,7 @@ void CX2UIShop::AuthAutoSellItem( CX2Inventory::SORT_TYPE SortType )
 				g_pData->GetUIManager()->GetUIShop()->Handler_EGS_SELL_ITEM_REQ();
 			}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			if ( CX2Item::SPT_NONE == pItem->GetItemTemplet()->GetShopPriceType() )
 			{
 				m_SellItemUID = pItem->GetUID();

@@ -454,7 +454,7 @@ void KThreadStatisticsManager::BackUpAndSendFTPLocalLog( bool bSendFileFtp )
 	//{{ 2010. 11. 17	최육사	오토핵 검증 기능
 	KApplyAllFiles( KSendLocalLog( kLogReporter, L"SI_LOG_ABUSER_MORNITORING" ) );
 	//}}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	KApplyAllFiles( KSendLocalLog( kLogReporter, L"SI_LOG_UNDEFINED_QUEST_TEMPLET" ) );
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 

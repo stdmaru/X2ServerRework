@@ -1079,7 +1079,7 @@ inline bool IsSamef( float a, float b = 0.f )
 inline bool DisplayErrorMessage( [[maybe_unused]] const WCHAR* wszError_ )
 {
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	StateLog( wszError_ );
 
 #if defined(_DEBUG )
@@ -1098,7 +1098,7 @@ inline bool DisplayErrorMessage( [[maybe_unused]] const WCHAR* wszError_ )
 inline bool DisplayErrorMessage( [[maybe_unused]] const char* szError_ )
 {
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	StateLog( szError_ );
 
 //hcsung_test

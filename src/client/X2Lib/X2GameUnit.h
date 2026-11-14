@@ -2651,7 +2651,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void CreateAndInsertReflectMagicByBuff( const KBuffIdentity& BuffIdentity_, float fValue_ );
 		void EraseReflectMagicByBuff( const KBuffIdentity& BuffIdentity_ );
 
-#if X2_DEV_TOOLS // 김태환
+#ifdef X2_DEBUG // 김태환
 		/// 스크립트에서 콘솔창에 로그를 찍을 수 있는 기능 추가
 		void WriteLogByConsoleWindow_LUA( const char* wstrLog_ );
 #endif // WRITE_SCRIPT_LOG_AT_CONSOLE_WINDOW

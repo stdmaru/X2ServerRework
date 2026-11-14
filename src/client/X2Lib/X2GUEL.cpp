@@ -2944,7 +2944,7 @@ bool CX2GUEL::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAct
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 #endif // _SERVICE_
 		{

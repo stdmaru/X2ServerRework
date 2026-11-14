@@ -104,7 +104,7 @@ What the client step replaced (roadmap Phase 3), with the Win32 it used. The por
   `x2::kom` decodes by the attribute instead.
 - **Buffers**: `KGCMassFileBufferManager` hands out per-thread reusable buffers (`KGCMassFileBufferPtr`); data returned by
   `LoadDataFile` lives in them.
-- **Loose files**: dev builds (`X2_DEV_TOOLS`, the original's `_DEBUG_`/not `_SERVICE_`) fall back to files on disk **only when the
+- **Loose files**: dev builds (`X2_DEBUG`, the original's `_DEBUG_`/not `_SERVICE_`) fall back to files on disk **only when the
   name is in no `.kom`** (`LoadRealFile`): `SetSubDirectory` registers the current folder and every subfolder, recursively
   (`FindFirstFileW`; except `.svn`, `Branches`, `epay`, `SupportFiles`), and the first folder holding the name wins
   (`CreateFileW`). Such files are flagged `MFI_LOCALFILE` and not decrypted. `*_LocalFile` variants read only loose files, in

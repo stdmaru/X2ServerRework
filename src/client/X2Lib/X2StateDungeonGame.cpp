@@ -882,11 +882,11 @@ HRESULT CX2StateDungeonGame::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			m_CreateMonsterListDialog.KeyProcess( this );
 #endif // CREATE_MONSTER_LIST_TEST
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			m_MonsterStateListDialog.KeyProcess( this );
 #endif // MONSTER_STATE_LIST_TEST
 
@@ -1055,7 +1055,7 @@ HRESULT CX2StateDungeonGame::OnLostDevice()
 bool CX2StateDungeonGame::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	// 개발자 모드일 경우
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_SPECIAL_USER )
 	{
 		switch( uMsg )
@@ -1249,7 +1249,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 		} break;
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		case DGUCM_SUMMON_SELECTED_MONSTER_DEBUG:
 			{
 				CKTDGUIListBox* pListBox = (CKTDGUIListBox*) lParam;
@@ -1262,14 +1262,14 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 
 
-#	if X2_DEV_TOOLS
+#	ifdef X2_DEBUG
 				if( pListBox->GetDialog() == m_CreateMonsterListDialog.GetDialog() )
 				{
 					m_CreateMonsterListDialog.OnCommand( pListBoxItem->strText );
 				}
 #	endif // CREATE_MONSTER_LIST_TEST
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				if( pListBox->GetDialog() == m_MonsterStateListDialog.GetDialog() )
 				{
 					m_MonsterStateListDialog.OnCommand( *((const std::string*)(pListBoxItem->pData)) );
@@ -1286,7 +1286,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 				if( NULL == pControl )
 					return false;
 
-#	if X2_DEV_TOOLS
+#	ifdef X2_DEBUG
 				if( pControl->GetDialog() == m_CreateMonsterListDialog.GetDialog() )
 				{
 					m_CreateMonsterListDialog.OnChangeSorting();
@@ -1351,7 +1351,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 bool CX2StateDungeonGame::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	if ( CX2StateMenu::UIServerEventProc( hWnd, uMsg, wParam, lParam ) == true )
@@ -1715,7 +1715,7 @@ bool CX2StateDungeonGame::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 		break;
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	return false;
 }
@@ -2792,7 +2792,7 @@ bool CX2StateDungeonGame::SecretDungeonStageLoadReq(int iVal)
 
 bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_REQ()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	if( NULL != g_pX2Game )
@@ -2805,14 +2805,14 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_REQ()
 		}
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	return false;
 }
 
 bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	bool bResult = false;
@@ -2858,7 +2858,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND /*hWnd*
 		}
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// 핵유저로 판단된다면 핵유저등록하고 핵실드검사 요청한다.
 	if( bResult == false &&
 		g_pData != NULL &&
@@ -2875,7 +2875,7 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND /*hWnd*
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	return bResult;
@@ -3491,7 +3491,7 @@ bool CX2StateDungeonGame::ShortCutKeyProcess()
 		return true;
 
 	// 던전내에서 먼전 처리해야 할 키들
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_SEMICOLON) == TRUE )
 	{
 		if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
@@ -3665,7 +3665,7 @@ bool CX2StateDungeonGame::ShortCutKeyProcess()
 		//	m_pDungeonGame->GetWorld()->SetLOD( m_pDungeonGame->GetWorld()->GetLOD() + 5 );
 		//	return true;
 		//}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if ( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_0) == TRUE )
 		{
 			g_pInstanceData->SetFrameScale( !g_pInstanceData->GetFrameScale() );
@@ -5159,7 +5159,7 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CreateMonsterListDialog::Update( bool bSortAlphabetical )
 {
 	if( m_pDLGCreateMonsterList == NULL )
@@ -5250,7 +5250,7 @@ void CreateMonsterListDialog::OnCommand( const std::wstring& monsterName )
 #endif // CREATE_MONSTER_LIST_TEST
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // void MonsterStateListDialog::Update()
 // {
 // 	if( m_pDLGMonsterStateList == NULL )

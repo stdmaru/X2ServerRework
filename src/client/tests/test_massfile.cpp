@@ -218,7 +218,7 @@ TEST_CASE("massfile: loose files under data/ (dev tools) and the folders of user
 
     auto texture = m.manager.LoadDataFile(std::wstring(L"texture.dds"));
     auto onlyLoose = m.manager.LoadDataFile(std::wstring(L"only_loose.X"));
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
     CHECK(m.manager.GetLooseFileCount() == 3);  // twice.txt once
     CHECK(Text(texture) == "loose texture");
     CHECK((texture->dwFlag & MFI_LOCALFILE) != 0);
@@ -250,7 +250,7 @@ TEST_CASE("massfile: loose files under data/ (dev tools) and the folders of user
     CHECK(fs::equivalent(fs::path(narrow), root / "music" / "Town.mp3"));
     WCHAR nothing[MAX_PATH] = L"nothing.txt";
     CHECK(m.manager.GetPullPath(nothing) == nullptr);
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
     WCHAR loose[MAX_PATH] = L"Only_Loose.x";  // the loose files come after the data directories
     CHECK(m.manager.GetPullPath(loose) != nullptr);
 #endif
@@ -258,7 +258,7 @@ TEST_CASE("massfile: loose files under data/ (dev tools) and the folders of user
     // New loose files show up after indexing again.
     WriteText(root / "data" / "New.txt", "new");
     REQUIRE(m.manager.SetLooseFileFolder(root / "data"));
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
     CHECK(Text(m.manager.LoadDataFile(std::wstring(L"new.txt"))) == "new");
 #endif
 }
@@ -436,7 +436,7 @@ TEST_CASE("massfile: the client's archives (X2_MASSFILE_CLIENT_DATA)")
     {
         REQUIRE(m.manager.SetLooseFileFolder(loose));
         MESSAGE("loose files: " << m.manager.GetLooseFileCount());
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
         auto script = m.manager.LoadDataFile(std::wstring(L"Enum.lua"));
         CHECK((script->dwFlag & MFI_LOCALFILE) != 0);
         CHECK(std::string_view(script.pRealData, 3) == "\xEF\xBB\xBF");  // client_data's readable Lua

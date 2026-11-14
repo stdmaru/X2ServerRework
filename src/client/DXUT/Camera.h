@@ -1,7 +1,7 @@
 #pragma once
 
 // DXUT's first-person camera (DXUTmisc.h), the part the client uses: X2Lib's free camera and its camera key frame
-// editing (developer tools, X2_DEV_TOOLS and SetFreeCamera from the Lua console). Keys move (arrows/WASD/numpad,
+// editing (developer tools, X2_DEBUG and SetFreeCamera from the Lua console). Keys move (arrows/WASD/numpad,
 // Q/E and Page Up/Down vertically, Home resets), Z/C roll and X levels (the client's KEYFRAME_CAMERA), and dragging
 // with an enabled mouse button turns. Mouse motion comes from WM_MOUSEMOVE instead of GetCursorPos.
 // See docs/porting/client-dxut.md.

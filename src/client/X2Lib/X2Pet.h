@@ -84,7 +84,7 @@ public:
 		PAC_FORCE_SLEEP,// 13. 무조건자 - 100%
 		PAC_SPECIAL,	// 14. 스페셜!
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		PAC_ATTACK,
 		PAC_CHEER,
 #endif

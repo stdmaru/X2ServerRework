@@ -126,7 +126,7 @@ CX2StateBattleField::CX2StateBattleField()
 		//}} kimhc // 2011-04-25 // 디펜스 던전, Time UI
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		m_MonsterStateListDialog.KeyProcess( this );
 #endif // MONSTER_STATE_LIST_TEST
 	return S_OK;
@@ -239,7 +239,7 @@ CX2StateBattleField::CX2StateBattleField()
 			return true;
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	switch( wParam )
 	{
 	case CX2StateDungeonGame::DGUCM_SUMMON_SELECTED_MONSTER_DEBUG:
@@ -268,7 +268,7 @@ CX2StateBattleField::CX2StateBattleField()
 
 /*virtual*/ bool CX2StateBattleField::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	if ( CX2StateMenu::UIServerEventProc( hWnd, uMsg, wParam, lParam ) == true )
@@ -435,7 +435,7 @@ CX2StateBattleField::CX2StateBattleField()
 // 		return Handler_EGS_DUNGEON_INTRUDE_SYNC_NOT( hWnd, uMsg, wParam, lParam );
 // 		break;
 	}
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	return false;
@@ -1585,7 +1585,7 @@ void CX2StateBattleField::MoveToBeforePlaceAtRaidField()
 	SetNowMovingToOtherPlace( true );
 }
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void MonsterStateListDialog::Update()
 {
 	if( m_pDLGMonsterStateList == NULL )

@@ -1486,7 +1486,7 @@ void CX2TrainingGameUI::OpenFreeTrainingMainMenu( bool bOpen )
 			m_vecNpc.push_back( CX2UnitManager::NUI_MUSHROOM_WOODEN );
 			m_vecNpc.push_back( CX2UnitManager::NUI_MONKEY_WOOD_SMALL );
 			m_vecNpc.push_back( CX2UnitManager::NUI_MONKEY_WOOD_BIG );
-	#if X2_DEV_TOOLS
+	#ifdef X2_DEBUG
 			//오현빈//2012-11-27//사내 테스트를 위해 자유훈련장 NPC 4종 추가
 			m_vecNpc.push_back( CX2UnitManager::NUI_DUMMY_MOVE );
 			m_vecNpc.push_back( CX2UnitManager::NUI_DUMMY_WAIT );

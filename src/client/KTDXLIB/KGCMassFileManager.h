@@ -3,7 +3,7 @@
 //
 //   KGCMassFileManager manager;
 //   manager.SetSubDirectory( gameFolder );             // folders for user files, music, movies (every build); with
-//                                                      // X2_DEV_TOOLS also indexes gameFolder/data (loose assets)
+//                                                      // X2_DEBUG also indexes gameFolder/data (loose assets)
 //   manager.AddMassFiles( gameFolder, komNames, error ); // CX2Main's fixed list, in load order
 //   manager.LockMassFileMap();
 //
@@ -11,10 +11,10 @@
 //   if ( info != NULL ) use( info->pRealData, info->size );  // decoded data; info keeps its buffer alive
 //
 // Names are entry names (no folders), compared case-insensitively (ASCII), never truncated. Lookups:
-// - LoadDataFile / IsValidFile / LoadTwoDataFiles: with X2_DEV_TOOLS a loose file of that name under the loose-file
+// - LoadDataFile / IsValidFile / LoadTwoDataFiles: with X2_DEBUG a loose file of that name under the loose-file
 //   folder first (flagged MFI_LOCALFILE), then the archives; release builds read the archives only.
 // - *_LocalFile and GetPullPath: the data directories (SetSubDirectory, AddDataDirectory) in order, then with
-//   X2_DEV_TOOLS the loose-file folder; never the archives. Every build.
+//   X2_DEBUG the loose-file folder; never the archives. Every build.
 // Thread-safe: any number of threads load at once (positional reads); mounting happens before LockMassFileMap.
 #pragma once
 
@@ -110,14 +110,14 @@ public:
     void AddDataDirectory(const std::string& strDirectory, bool bInsertFront = false);
 
     // Registers root and its subfolders, recursively, as data directories (skipping folders whose name starts with
-    // '.' and root/data). With X2_DEV_TOOLS, also SetLooseFileFolder(root/data) when that folder exists. The overload
+    // '.' and root/data). With X2_DEBUG, also SetLooseFileFolder(root/data) when that folder exists. The overload
     // without arguments uses the current folder, as the original.
     bool SetSubDirectory();
     bool SetSubDirectory(const std::filesystem::path& root);
 
     // Indexes every file under `folder`, recursively, by name (skipping folders whose name starts with '.', such as a
     // client_data's .kom). A name in two folders: the first in sorted path order wins, with a warning. Read only in
-    // builds with X2_DEV_TOOLS. Can be called again to pick up new files.
+    // builds with X2_DEBUG. Can be called again to pick up new files.
     bool SetLooseFileFolder(const std::filesystem::path& folder);
     std::size_t GetLooseFileCount() const;
 

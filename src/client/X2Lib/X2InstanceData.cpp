@@ -50,13 +50,13 @@ m_wstrPurchaseTok( L"" )
 , m_iChannelingCode( 0 )
 {
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	m_bFrameScale = false;
 #endif
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// checked
 
 #endif
@@ -85,7 +85,7 @@ m_wstrPurchaseTok( L"" )
 	m_bSendedLoadedModuleList = false;
 
 	m_bMoneyMonitoring = false;
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 

@@ -142,7 +142,7 @@ void KTRUser::Tick()
         return;
 
     JIF( m_spSockObj );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
     START_LOG( clog, L" Heart-bit " << m_iUnitUID << L"  :" << ::GetTickCount() - GetTick( KTRUser::HB_TICK ) );
 #endif
     SetTick( KTRUser::HB_TICK );
@@ -151,7 +151,7 @@ void KTRUser::Tick()
     buff.Append( sizeof(USHORT) + sizeof(char), sizeof(USHORT) );
     buff.Append( E_HEART_BEAT, sizeof(char) );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	LIF( m_spSockObj->SendData( ( const char* )buff.data(), buff.length() ) );
 #else
 	m_spSockObj->SendData( ( const char* )buff.data(), buff.length() );

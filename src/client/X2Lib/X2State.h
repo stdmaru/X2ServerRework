@@ -642,7 +642,7 @@ class CX2State : public CKTDXStage
 	public:
 		vector<FadeInOutNotice*> m_vecFadeInOutNotice;	/// 페이드 인 ~ 페이드 아웃 공지 정보 저장용 컨테이너
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 #endif // _IN_HOUSE_
 
 

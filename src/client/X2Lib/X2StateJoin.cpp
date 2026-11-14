@@ -111,7 +111,7 @@ bool CX2StateJoin::ServerConnectReq( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wPar
 //#endif//X2OPTIMIZE_TCP_RELAY_TEST
 
 // 09.07.03 태완 : 아이디 생성 사내에서는 가능하게 수정
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // 		KEVENT_X2_SERVER_CONNECT_REQ kEVENT_X2_SERVER_CONNECT_REQ;
 // 		kEVENT_X2_SERVER_CONNECT_REQ.gameMainVersion	= 0;
 // 		kEVENT_X2_SERVER_CONNECT_REQ.gameSubVersion		= 0;

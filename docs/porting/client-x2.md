@@ -9,7 +9,7 @@ the DXUT samples (`Common/dxstdafx.*`), `resource.h`, and `KOGGamePerformanceChe
 ## Import (2026-11-05)
 
 - Module `client-x2` ([report](../../tools/import/reports/client-x2/REPORT.md)): **5 files**, 1.4k lines written; 88 `#if`
-  groups resolved, 1.2k lines removed; 8 blocks became `X2_DEV_TOOLS`.
+  groups resolved, 1.2k lines removed; 8 blocks became `X2_DEV_TOOLS` (now `X2_DEBUG`, T47).
 - `KOGGamePerformanceCheckDefine.h` is in no `X2` project, but `KTDXLIB/KTDX.h` and `X2Lib/X2Main.h` include it: added as
   `extra`. Its `ACTIVE_KOG_GAME_PERFORMANCE_CHECK*` defines are commented out, so everything in it except the empty `KLagCheck`
   macros is dead.
@@ -43,7 +43,7 @@ The executable links warning-free on Clang (dev tools ON) and GCC (dev tools OFF
   [DXUT replacement](client-dxut.md) now has. `DXUTCreateDevice( D3DADAPTER_DEFAULT, true, 1024, 768 )` loses its
   `IsDeviceAcceptable` and `ModifyDeviceSettings` callbacks. They checked D3D caps and chose depth formats and behavior
   flags for DXUT's enumeration, and the port has one device (T38).
-- **Release builds** (`X2_DEV_TOOLS` off) still need `PATCHER_RUN_ONLY` as the last argument, as the original did. The
+- **Release builds** (`X2_DEBUG` off) still need `PATCHER_RUN_ONLY` as the last argument, as the original did. The
   `ElswordX2` mutex is now `x2::platform::SingleInstance` ([Platform](platform.md)).
 - **Removed:**
   - `ObtainSeDebugPrivilege` and `ReallySetForegroundWindow`, the HackShield workarounds;

@@ -4,7 +4,7 @@
 
 
 CX2GameEdit::CX2GameEdit(void)
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 :m_eShowEffetLogLevel(ELL_NONE)
 #endif // EFFECT_USE_LOG
 
@@ -289,7 +289,7 @@ bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 			return false;
         }
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 // 		if( NULL != g_pData &&
 // 			NULL != g_pData->GetMyUser() )
 // 		{
@@ -318,7 +318,7 @@ bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CX2GameEdit::ExecuteLastCommand()
 {
 	if( m_CommandHistory.empty() )
@@ -806,7 +806,7 @@ void CX2GameEdit::AdminGetGuildSPoint_LUA( int iCount )
 
 
 //{{ lucidash : 2010.11.24 . 드롭뷰어 치트.
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 void CX2GameEdit::ItemViewCheat( int iItemID )
 {
@@ -1099,7 +1099,7 @@ void CX2GameEdit::FullChargeRidingStamina( int iValue_ )
 		CX2RidingPetManager::GetInstance()->FullChargeRidingStamina( iValue_ );
 }
 
-#if X2_DEV_TOOLS //JHKang
+#ifdef X2_DEBUG //JHKang
 void CX2GameEdit::ToggleClassChangeCheat()
 {
 	m_bShowClassChangeCheat = !m_bShowClassChangeCheat;
@@ -1144,11 +1144,11 @@ void CX2GameEdit::HotKeyProcess()
 		return;
 
 	HotKeyProcess_BossRaid();
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	HotKeyProcess_FreeTraining();
 #endif // SUMMON_MONSTER_BY_PRESS_KEY_AT_TRAINING_GAME
 }
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CX2GameEdit::HotKeyProcess_FreeTraining()
 {
 	if( NULL == g_pX2Game )

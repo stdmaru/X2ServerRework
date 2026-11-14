@@ -70,7 +70,10 @@ def configs(pr: profile.Profile, flags: condres.Flags, entries=None):
                 t.pop(n, None)
             else:
                 t[n] = v
-        t[DEV] = "1" if dev_on else "0"
+        if dev_on:                      # defined or not (decision T47)
+            t[DEV] = ""
+        else:
+            t.pop(DEV, None)
         return t
 
     return {"service": table(svc, False), "dev": table(dev, True)}

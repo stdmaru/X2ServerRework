@@ -848,7 +848,7 @@ void CX2StatusGageUI::SetBuffIconStatic(const BuffIcon& BuffIconInfo_, int iInde
 			pButtonBuffIcon->SetDownPoint( pDownPointData );
 			pButtonBuffIcon->SetShowEnable( true, true );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			pButtonBuffIcon->SetCustomMsgMouseDblClk( CX2GageManager::GUCM_ERASE_BUFF_CHEAT );
 			pButtonBuffIcon->AddDummyInt( static_cast<int>(BuffIconInfo_.eBuffID) );
 #endif // ERASE_BUFF_CHEAT
@@ -1531,7 +1531,7 @@ void CX2MyGageUI::UpdateBuffIcon()
 		m_pDlgBuffIcon->SetShow(true);
 		//m_pDlgBuffIcon->SetPos(D3DXVECTOR2(720.f, 2.f));
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		m_pDlgBuffIcon->SetStage( g_pMain->GetNowState() );
 #endif // ERASE_BUFF_CHEAT
 	}
@@ -1586,12 +1586,12 @@ void CX2MyGageUI::SetBuffIconGuideDesc()
 				if ( true == g_pData->GetMyUser()->GetSelectUnit()->IsTradeBlockUnit() && BuffIconData.eBuffID == BTI_BUFF_TRADE_BLOCK )
 					UpdateTradeBlockDesc( slotItemDesc );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				slotItemDesc += L"\n\nKey : ";
 				slotItemDesc += BuffIconData.szTextureKeyName;
 #endif //_IN_HOUSE_
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				slotItemDesc += L"\n���� Ŭ�� : ���� ����(ġƮ)";
 #endif // ERASE_BUFF_CHEAT
 
@@ -1615,7 +1615,7 @@ void CX2MyGageUI::SetBuffIconGuideDesc()
 				slotItemDesc += L"\n\n";
 				slotItemDesc += GET_STRING( BuffIconData.iBuffDesc );				/// ���� ����
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				slotItemDesc += L"\n\nKey : ";
 				slotItemDesc += BuffIconData.szTextureKeyName;
 #endif //_IN_HOUSE_

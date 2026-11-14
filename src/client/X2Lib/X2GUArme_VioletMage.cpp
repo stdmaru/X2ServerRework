@@ -4226,7 +4226,7 @@ RENDER_HINT CX2GUArme_VioletMage::CommonRender_Prepare()
 
 	float fMPConsume = GetActualMPConsume( pSkillTemplet->m_eID, iSkillTempletLevel );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 #endif // _SERVICE_
 	{

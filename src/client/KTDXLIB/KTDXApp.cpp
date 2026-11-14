@@ -590,7 +590,7 @@ HRESULT CKTDXApp::OnFrameRender()
 		D3DXMATRIX view;
 		const bool bViewInterpolated =
 			x2::ktdx::InterpolateView( m_PrevTickViewMatrix, m_TickViewMatrix, GetTickInterpolation(), view );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		// X2_INTERP_TRACE (see KTDGXSkinAnim.cpp): the camera's eye each frame, as drawn and at the last two ticks.
 		static const bool s_bTraceView = std::getenv( "X2_INTERP_TRACE" ) != NULL;
 		if( s_bTraceView )
@@ -1756,7 +1756,7 @@ void CKTDXApp::InitEnumToString()
 	SetEnumToString( L"UNIT_CLASS", 3, L"???? ??????" );
 	SetEnumToString( L"UNIT_CLASS", 4, L"????? ??????" );
 	SetEnumToString( L"UNIT_CLASS", 5, L"??? ??????" );
-#if X2_DEV_TOOLS //JHKang
+#ifdef X2_DEBUG //JHKang
 	SetEnumToString( L"UNIT_CLASS", 6, L"? ??????" );
 	SetEnumToString( L"UNIT_CLASS", 7, L"??? ??????" );
 	SetEnumToString( L"UNIT_CLASS", 8, L"??????? ??????" );
@@ -1920,7 +1920,7 @@ D3DXVECTOR2 CKTDXApp::GetProj3DPos( const D3DXVECTOR3& pos )
 
 void CKTDXApp::NoticeQuitType( [[maybe_unused]] KTDX_QUIT_TYPE quitType )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	if ( quitType == KQT_CLOSE_WINDOW )
 	{

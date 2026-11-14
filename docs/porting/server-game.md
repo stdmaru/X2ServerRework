@@ -13,7 +13,7 @@ The port preserves the original directory layout (`src/server/GameServer` beside
   **298 files** (145 `.cpp`, 153 `.h`), 163k written lines, 148k in `.cpp`. Largest: `GSGameDBThread.cpp` (15k),
   `Inventory.cpp` (15k), `GSUserFunction.cpp` (12k). `Common` includes are not followed (`include_scope`); no CenterServer header
   is used despite `..\CenterServer` being in vcxproj search path.
-- **Flags**: resolved 7,532 `#if` blocks, removed 81k lines. Converted to `X2_DEV_TOOLS`: two `_IN_HOUSE_` checks in
+- **Flags**: resolved 7,532 `#if` blocks, removed 81k lines. Converted to `X2_DEV_TOOLS` (now `X2_DEBUG`, T47): two `_IN_HOUSE_` checks in
   `GSUserGameCommon.cpp` and logs `SERV_LOG_UNDEFINED_QUEST_TEMPLET` (as in `Common`).
 - **Excluded (anti-cheat, T10)**: `HackShield/` (AhnLab, `HSAuth.cpp`), `nProtect/` (GameGuard, `GGAuth.cpp`, `NProtectFunc.cpp`),
   and XTrap (`..\..\Xtrap\Server\XTrap4Server.cpp`, `XTrapCSM.cpp`), compiled by vcxproj from outside `KncWX2Server` and not imported.
@@ -30,7 +30,7 @@ The port preserves the original directory layout (`src/server/GameServer` beside
 | Anti-cheat | 9 | remove calls |
 | `CTime`, `__int64`, `lua_tinker` | 64, 21, 21 | already covered by [Platform](platform.md) and KNCSDK |
 | Database | 502 `DO_QUERY` | `KODBC` already ported; procedures are in `Game01` |
-| Admin/cheat tools | `GSUserAdminCheat.*`, `UserCheatManager.*`, `RobotTestManager.*` | review under `X2_DEV_TOOLS` (T10) |
+| Admin/cheat tools | `GSUserAdminCheat.*`, `UserCheatManager.*`, `RobotTestManager.*` | review under `X2_DEBUG` (T10, T47) |
 
 ## Status (2026-10-31, branch `server/game-run`)
 

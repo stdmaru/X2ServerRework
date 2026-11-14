@@ -690,7 +690,7 @@ void CX2UIGuildSkillTreeInfo::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 
 		if(pSkillTemplet == NULL)
 		{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			WCHAR buf[256] = {0,};
 			//wsprintf(buf, L"Skill ID : %d\nExist in SkillTreeTemplet but NULL SkillTemplet", (int)eSkillID);
 			StringCchPrintf(buf, 256, L"Skill ID : %d\nExist in SkillTreeTemplet but NULL SkillTemplet", (int)eSkillID);
@@ -732,7 +732,7 @@ void CX2UIGuildSkillTreeInfo::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 				const CX2SkillTree::SkillTreeTemplet* pPreccedSkillTreeTemplet = g_pData->GetSkillTree()->GetGuildSkillTreeTemplet( (int)eUnitClass, PreccedSkillID );
 				if ( pPreccedSkillTreeTemplet == NULL )
 				{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 					WCHAR buf[256] = {0,};
 					//wsprintf(buf, L"Skill ID : %d Precceding Skill ID : %d\nPrecceding Skill Exist in SkillTreeTemplet but NULL SkillTemplet", (int)eSkillID, (int)PreccedSkillID);
 					StringCchPrintf(buf, 256, L"Skill ID : %d Precceding Skill ID : %d\nPrecceding Skill Exist in SkillTreeTemplet but NULL SkillTemplet", (int)eSkillID, (int)PreccedSkillID);

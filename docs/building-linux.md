@@ -11,15 +11,18 @@ Linux builds support both x86_64 and arm64 with the same CMake presets. Both arc
 
 Both use the same presets:
 
-| Preset | Compiler | Type | Dev tools (`X2_DEV_TOOLS`) |
-|---|---|---|---|
-| `linux-debug` | Clang | Debug | yes |
-| `linux-development` | Clang | RelWithDebInfo | yes |
-| `linux-release` | Clang | Release | no |
-| `linux-gcc` | GCC | Release | no (verification only) |
+| Preset | Compiler | Type | Dev tools (`X2_DEV_TOOLS`) | Debug behavior (`X2_DEBUG`) |
+|---|---|---|---|---|
+| `linux-debug` | Clang | Debug | yes | yes |
+| `linux-release` | Clang | Release | no | no |
+| `linux-gcc` | GCC | Release | no | no (verification only) |
 
-Dev tools are original debug and administration commands ([Debug and development](original/debug-and-development.md)).
-Without them, the build is for production.
+Dev tools are the development tools compiled in (the UI editor and its hooks in the client); debug behavior is the
+original's debug and administration commands, overlays and logs ([Debug and development](original/debug-and-development.md)),
+switched in `src/define.h` (on without `NDEBUG`; it can be turned on by hand in a release build, for example to measure
+frame rates with the overlays). Decision T47 ([Flags](tools/flags.md#port-switches-srcdefineh)). The
+`*-development` presets (RelWithDebInfo with dev tools) were removed on 2026-11-14: the release build with
+`X2_DEBUG` covers their use.
 
 ## 1. Get the code
 

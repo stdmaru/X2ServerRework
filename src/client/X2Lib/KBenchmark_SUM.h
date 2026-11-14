@@ -52,7 +52,7 @@ namespace KBenchMark_SUM
 	  double total;
 	  double *x;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  timestamp ( );
 	  cout << "\n";
@@ -64,7 +64,7 @@ namespace KBenchMark_SUM
 
 	  x = set_up ( n );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  cout << "         N      CPU time        MFLOPS          ERROR\n";
 	  cout << "                (seconds)\n";
@@ -90,7 +90,7 @@ namespace KBenchMark_SUM
 
 	  delete [] x;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  cout << "SUM_MILLION:\n";
 	  cout << "  Normal end of execution.\n";
@@ -118,7 +118,7 @@ namespace KBenchMark_SUM
 	  //else
 		 // iScore = 2;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << fScore << "\n";
 #endif //_SERVICE_
 

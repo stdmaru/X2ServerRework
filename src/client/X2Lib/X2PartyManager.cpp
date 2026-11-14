@@ -1123,7 +1123,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_REQ()
 	//kPacket.m_sWorldID = (short) iWorldID;
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	if( SEnum::DI_MONSTER_TEST_NORMAL == GetMyPartyData()->m_iDungeonID )
 	{
 		return false;

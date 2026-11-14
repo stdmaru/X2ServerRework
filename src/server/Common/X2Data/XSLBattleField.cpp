@@ -863,7 +863,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 		return true;
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	// 중간 보스 몬스터를 의도해서 설정하지 않은 것에 대한 예외처리
 	if( true == m_vecMiddleBossInfo.empty() )
 	{

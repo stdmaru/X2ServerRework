@@ -35,10 +35,10 @@ Therefore, the rule cannot be "enable all in-house features."
 
 ## Importer strategy
 
-Our flag, **`X2_DEV_TOOLS`**: enabled in `Development`, disabled in `Release`.
+Our switch, **`X2_DEBUG`** (`src/define.h`, on without `NDEBUG`; decision T47, 2026-11-14): the debug behavior in game. Until 2026-11-14 it was `X2_DEV_TOOLS`, which now only selects the development tools to compile (the UI editor and the client hooks it needs).
 
 1. Resolve everything else as in the US `_SERVICE_` build.
-2. **Whitelist debug macros**: do not resolve them; rewrite their checks to `X2_DEV_TOOLS`.
+2. **Whitelist debug macros**: do not resolve them; rewrite their checks to `X2_DEBUG`.
    Initial candidates (to review):
    - items/inventory: `ITEM_CHEAT_POPUP_TEST` (cheat item-purchase window), `ITEM_VIEW_CHEAT`, `AUTH_AUTO_SELL_ITEM`, `AUTH_DELETE_ITEM_ALL`, `JUNK_AVATAR`
    - character/buffs: `ERASE_BUFF_CHEAT`, `CHEAT_CLASS_CHANGE`, `VILLAGE_FLASH_MAN_DEV_ONLY`, `DAMAGE_ZERO`
@@ -48,11 +48,11 @@ Our flag, **`X2_DEV_TOOLS`**: enabled in `Development`, disabled in `Release`.
    - logs: `ADD_DAMAGE_LOG`, `WRITE_SCRIPT_LOG_AT_CONSOLE_WINDOW`, `LOG_LOAD_DLG_SCRIPT`, `ADD_RESOURCE_ERROR_LOG`, `EFFECT_USE_LOG`
    - scripts: `REALTIME_SCRIPT_PATCH` (hot-reload scripts), `EXPAND_DEVELOPER_SCRIPT`
    - convenience: `AUTO_LOGIN_IN_HOUSE`, `KHELP_SYSTEM_TEST`, `X2OPTIMIZE_INDICATE_LOCAL_MASSFILE`/`MASS_FILE_FIRST` (read loose file before `.kom`)
-3. **Direct checks** (`#ifndef _SERVICE_`, `#ifdef _IN_HOUSE_`) become `#if X2_DEV_TOOLS` by default.
+3. **Direct checks** (`#ifndef _SERVICE_`, `#ifdef _IN_HOUSE_`) become `#ifdef X2_DEBUG` by default (`#if X2_DEV_TOOLS` until 2026-11-14, T47).
    The importer generates a **report** of every converted block for manual triage. Blocks that are not debug
    (gameplay, another country, anti-cheat) resolve as `_SERVICE_`.
 4. Everything in `InHouse*.h` that is **not** whitelisted is discarded, leaving the `_SERVICE_` behavior.
-5. Requirement: with `X2_DEV_TOOLS` enabled, the client **remains compatible** with the server and protocol. Debug must not change packet format.
+5. Requirement: with `X2_DEBUG` on, the client **remains compatible** with the server and protocol. Debug must not change packet format.
    If a feature requires that, keep it out of the whitelist and redesign it later.
 
 ## Client dev-only names outside the whitelist (2026-11-05)
@@ -72,7 +72,7 @@ in `KTDXLIB`, `X2Lib` and `X2`:
 | Build experiment | `REDUCED_PRECOMPILED_HEADER_TEST` (11: alternative includes in `X2Main.h` and `X2NPCAI.h`) | no |
 
 Leaving them false keeps the client identical to the shipped `elsword.exe`. Whitelisting a candidate later means rewriting its
-`#ifdef` to `#if X2_DEV_TOOLS` by hand in `src/client` (the modules are not reimported once edited).
+`#ifdef` to the `X2_DEBUG` switch by hand in `src/client` (the modules are not reimported once edited).
 
 ## After the port (redesign, Phase 5+)
 

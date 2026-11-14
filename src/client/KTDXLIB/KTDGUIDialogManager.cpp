@@ -841,7 +841,7 @@ HRESULT CKTDGUIDialogManager::OnFrameMove( double fTime, float fElapsedTime )
 
 	KTDXPROFILE_END();
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 	if ( CKTDGUIAnchorRecorder::LiveIsOn() )
 		CKTDGUIAnchorRecorder::NoteLive( *this );
 #endif
@@ -916,7 +916,7 @@ HRESULT CKTDGUIDialogManager::OnFrameRender( bool bFront )
             pDialog->OnFrameRender();
     }//while
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if ( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetPureKeyState(DIK_LCONTROL) == TRUE )
 	{
 		m_vecIterator.back() = m_listDialog.begin();

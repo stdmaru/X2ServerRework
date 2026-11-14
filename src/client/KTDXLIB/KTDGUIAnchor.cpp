@@ -230,7 +230,7 @@ void CKTDGUIAnchors::Apply( CKTDGUIDialog& kDialog, const wchar_t* pwszScriptNam
 	}
 }
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 namespace
 {
 	std::string ToUtf8( const std::wstring& wstr )

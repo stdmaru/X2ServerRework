@@ -2,7 +2,7 @@
 #include "./KTDGXSkinAnim.h"
 #include "./KTDXTickInterpolation.h"
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 #include "x2/platform/unicode.h"
 
 #include <array>

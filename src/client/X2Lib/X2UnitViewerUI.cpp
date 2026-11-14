@@ -830,7 +830,7 @@ HRESULT CX2UnitViewerUI::OnFrameMove( double fTime, float fElapsedTime )
 
 // 엘소드 2차 키키우기 실시간 테스트용
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_R) == TRUE )
 	{
 		SetUnitReForm();
@@ -5449,7 +5449,7 @@ void CX2UnitViewerUI::SetUnitReForm()
 	[[maybe_unused]] float fScale = 1.f;
 
 	// 실시간 테스트용
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	FILE *fp = fopen("reform.txt", "r");
 	if(fp != NULL)

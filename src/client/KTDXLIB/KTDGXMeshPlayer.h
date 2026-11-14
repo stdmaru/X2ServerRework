@@ -784,7 +784,7 @@ public:
 			}
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // #ifdef EFFECT_TOOL
 			static bool IsSamef_( float a, float b = 0.f )
 			{
@@ -1342,7 +1342,7 @@ public:
 
 
 				bool						m_bApplyUnitScale;
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				CKTDXDeviceXMesh*								m_pXMeshSphere;
 				CKTDGMatrix*									m_pMatrixSphere;
 				bool											m_bShowAttackBox;
@@ -1547,13 +1547,13 @@ public:
 		bool GetRenderEffectMadeByGameUnit() const { return m_bRenderEffectMadeByGameUnit; }
 		void SetRenderEffectMadeByGameUnit(bool bVal_) { m_bRenderEffectMadeByGameUnit = bVal_; }
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		bool GetShowAttackBox() const { return m_bShowAttackBox; }
 		void SetShowAttackBox(bool val) { m_bShowAttackBox = val; }
 		void ToggleShowAttackBox() { SetShowAttackBox( !m_bShowAttackBox ); }
 #endif // SHOW_ATTACK_BOX_DUMMY
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 		typedef map< wstring, XMeshTemplet* > XMeshTempletMap;
 		bool MergeXMeshTemplet( CKTDGXMeshPlayer::XMeshTemplet* pNewXMeshTemplet_, CKTDGXMeshPlayer::XMeshTemplet* pOrgXMeshTemplet_ );
 		bool CreateXMeshTemplet( CKTDGXMeshPlayer::XMeshTemplet* pXMesshTemplet_ );
@@ -1628,7 +1628,7 @@ public:
 		bool									m_bRenderEffectMadeByGameUnit;
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		bool							m_bShowAttackBox;
 #endif // SHOW_ATTACK_BOX_DUMMY
 

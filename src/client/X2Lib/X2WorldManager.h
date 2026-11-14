@@ -12,7 +12,7 @@ class CX2WorldManager
 {
     public:
 
-#if X2_DEV_TOOLS // 2008-10-24
+#ifdef X2_DEBUG // 2008-10-24
         DECLARE_HELP_SYSTEM( CX2WorldManager );
 #endif // KHELP_SYSTEM_TEST // 2008-10-24
 

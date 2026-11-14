@@ -345,7 +345,7 @@ void CX2DropItemManager::AddDropItem( int iItemID, UidType ItemUID, const D3DXVE
                 pDropItemData->m_hParticle = INVALID_PARTICLE_HANDLE;
             }
 		}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		else
 		{
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), L"There is no drop viewer", g_pMain->GetNowState() );

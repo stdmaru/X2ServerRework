@@ -943,7 +943,7 @@ CX2PET::PET_ACTION_COMMAND CX2PetManager::GetPetActionCommand( wstring &wstrMsg 
 			}
 		}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( wstrToken.compare(GET_STRING(STR_ID_10439)) == 0 )
 		{
 			// happy

@@ -3,7 +3,7 @@
 
 CX2CheckSumManager::CX2CheckSumManager(void)
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 //	OpenScript( L"CheckSumFileList.lua" );
 //	CheckSumFileProcess();
 #endif

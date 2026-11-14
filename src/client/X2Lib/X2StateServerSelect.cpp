@@ -740,7 +740,7 @@ void CX2StateServerSelect::OnFrameMove_GameServerConnect( double /*fTime*/, floa
 		if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 		{
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			g_pData->GetServerProtocol()->SendID( E_DISABLE_HB_CHECK_REQ );
 
 			x2::platform::OpenDebugConsole();
@@ -749,7 +749,7 @@ void CX2StateServerSelect::OnFrameMove_GameServerConnect( double /*fTime*/, floa
 		}
 		else
 		{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			x2::platform::CloseDebugConsole();
 #endif
 		}
@@ -4910,7 +4910,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 		}
 		else
 		{
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #else
 
 #endif // _SERVICE_
@@ -5038,7 +5038,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 {
 	KEGS_VERIFY_ACCOUNT_REQ kPacket;
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	kPacket.m_wstrUserID = g_pInstanceData->GetUserID();
@@ -5078,7 +5078,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 		g_pMain->SendHackMail_VERIFYVALUE( ANTI_HACK_STRING_AntiHacking_MACHINE_ID_EMPTY );
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	return true;
@@ -5086,7 +5086,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 
 bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -5114,7 +5114,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /
 				g_pInstanceData->SetUserPassword( kEvent.m_kAccountInfo.m_wstrOTP );
 			}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 			//////////////////////////////////////////////////////////////////////////
 			//{{ 2009. 7. 25  ??????	�??????
@@ -5205,7 +5205,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /
 	}
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	return true;

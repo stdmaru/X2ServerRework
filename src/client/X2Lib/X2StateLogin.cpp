@@ -28,7 +28,7 @@ m_pDLGLoginFront( NULL )
 	g_pMain->SetPickedChannelServerIPIndex( g_pInstanceData->GetServerGroupID() );
 #endif // EXTEND_SERVER_GROUP_MASK
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pMain->GetManualLogin() == false )
 	{
 		TryVerifyAccount();
@@ -76,7 +76,7 @@ m_pDLGLoginFront( NULL )
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	if ( CheckIsVistaComputer() == true )
 	{
@@ -98,7 +98,7 @@ m_pDLGLoginFront( NULL )
 	g_pKTDXApp->SkipFrame();
 
 //{{ kimhc // 2010.5.11 // 사내에서 자동 로그인 할 수 있는 기능
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	ReadIDAndPassword();
 #endif // AUTO_LOGIN_IN_HOUSE
 //}} kimhc // 2010.5.11 // 사내에서 자동 로그인 할 수 있는 기능
@@ -323,7 +323,7 @@ void CX2StateLogin::RetrieveUserIDnPassword()
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	wstringstream wstrmWindowTitle;
 	wstrmWindowTitle << L"X2_" << g_pMain->GetClientVersion() << L"; " << __DATE__ << L", " << __TIME__ << L"; " << g_pInstanceData->GetUserID().c_str() << L"; " << x2::platform::CurrentProcessId();
 	SetWindowText( g_pKTDXApp->GetHWND(), wstrmWindowTitle.str().c_str() );
@@ -332,7 +332,7 @@ void CX2StateLogin::RetrieveUserIDnPassword()
 
 }
 //{{ kimhc // 2010.5.11 // 사내에서 자동 로그인 할 수 있는 기능
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CX2StateLogin::ReadIDAndPassword()
 {
 	const wstring wstrFileName( L"LoginKey.lua" );

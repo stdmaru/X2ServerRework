@@ -54,7 +54,7 @@ void KTSMEventProcess::ProcessEvent( const KEventPtr& spEvent_ )
 	//{{ 2010. 11. 17	최육사	오토핵 검증 기능
 	CASE( E_LOCAL_LOG_ABUSER_MORNITORING_NOT );
 	//}}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	CASE( E_LOCAL_LOG_UNDEFINED_QUEST_TEMPLET_NOT );
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 
@@ -320,7 +320,7 @@ IMPL_ON_FUNC( E_LOCAL_LOG_SERVER_DISCONNECT_NOT )
 
 //}}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 IMPL_ON_FUNC( E_LOCAL_LOG_UNDEFINED_QUEST_TEMPLET_NOT )
 {
 	std::wfstream& fout = KSIManager.GetLocalLog().LocalLogStm( KStatisticsLocalLog::LOG_UNDEFINED_QUEST_TEMPLET );

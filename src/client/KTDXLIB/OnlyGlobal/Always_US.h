@@ -5,7 +5,7 @@
 #ifdef _DEBUG
 #endif //_DEBUG
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 //[NOTE] 이 기능 켜면 loading state 에서 바로 꺼진다. 확인 필요
 #endif //_IN_HOUSE_
 
@@ -19,7 +19,7 @@
 
 //====================국가 전용 시작=============================================================
 // 2010. 12. 13. 지헌 : XTRAP 클라이언트 flag
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 //#define CLIENT_USE_XTRAP
 #endif
 
@@ -87,11 +87,11 @@
 //====================국가 전용 끝=============================================================
 
 // x2.exe 바로 실행을 막는 코드
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #define PATCHER_RUN_ONLY "pxk19slammsu286nfha02kpqnf729ck"		// argv[]의 제일 뒤가 이 스트링이 맞아야 통과.
 #endif // _SERVICE_
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif // _SERVICE_ || _OPEN_TEST_
 
 #ifdef _DEBUG
