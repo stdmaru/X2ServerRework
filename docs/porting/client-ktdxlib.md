@@ -479,6 +479,8 @@ centered column; undeclared ones stay centered (`KTDGUIAnchor.h`).
   ```
 
   Script names are matched without folder and case; a control name not in the dialog is reported on stderr.
+  `IsAnchorFromScript` tells a script's own `SetAnchor` apart, and `ClearAnchor` / `CKTDGUIStretch::Clear` undo a
+  declaration, for the [UI editor](../tools/ui-editor.md#editing-anchors) (2026-11-14).
 - `STRETCH` spans the screen; see [Stretched pieces](#stretched-pieces-2026-11-13-clientwidescreen-stretch-t44).
 
 Checked at 1920×1080 (2026-11-13) with the example above: the login buttons and fields drawn 240 pixels to the right,

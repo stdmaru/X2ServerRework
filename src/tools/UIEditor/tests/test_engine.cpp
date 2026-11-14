@@ -57,6 +57,17 @@ g_pUIDialog:AddControl(g_pStatic)
 g_pStatic:SetName("Label")
 g_pStatic:AddString({ STRING = "Hello", FONT_INDEX = 3, POS = D3DXVECTOR2(12, 8) })
 )lua";
+        // Anchors the script declares itself, which UIAnchors.lua does not override, beside a control it leaves.
+        std::ofstream(root / "data" / "ui" / "scripts" / "DLG_Anchored.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pUIDialog:SetAnchor("RIGHT")
+g_pOwn = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pOwn)
+g_pOwn:SetName("Own")
+g_pOwn:SetAnchor("LEFT")
+g_pFree = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pFree)
+g_pFree:SetName("Free")
+)lua";
         std::ofstream(root / "data" / "ui" / "scripts" / "dlg_another.lua") << "\xEF\xBB\xBFg_pUIDialog:SetName(\"x\")\n";
     }
     ~TempGame()
@@ -83,10 +94,11 @@ TEST_CASE("ui editor: dialog scripts are listed from the data folder, sorted, .k
 {
     TempGame game;
     const auto scripts = x2::ui_editor::FindDialogScripts(game.root);
-    REQUIRE(scripts.size() == 3);
-    CHECK(scripts[0] == "dlg_another.lua");
-    CHECK(scripts[1] == "DLG_Test.lua");
-    CHECK(scripts[2] == "DLG_Text.lua");
+    REQUIRE(scripts.size() == 4);
+    CHECK(scripts[0] == "DLG_Anchored.lua");
+    CHECK(scripts[1] == "dlg_another.lua");
+    CHECK(scripts[2] == "DLG_Test.lua");
+    CHECK(scripts[3] == "DLG_Text.lua");
 }
 
 TEST_CASE("ui editor: a dialog opens, draws at 16:9 and reports its controls in layout units and pixels")
@@ -261,4 +273,55 @@ TEST_CASE("ui editor: statics as the game holds them, those code added and pictu
     CHECK(code.strings[0].text == "Relax");
     CHECK(code.strings[0].font == 2);
     CHECK(code.strings[0].pos[0] == 5.0f);
+}
+
+TEST_CASE("ui editor: UIAnchors.lua entries go into open dialogs, the script's own anchors kept")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Test.lua", error) == 0);
+    REQUIRE(engine->OpenDialog("DLG_Anchored.lua", error) == 1);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+
+    x2::ui_editor::AnchorEntry entry;
+    entry.dialog = "LEFT";
+    entry.zones = {{10.0f, 50.0f}};
+    entry.SetControl("Panel", "STRETCH");
+    entry.SetControl("Missing", "RIGHT");   // skipped
+    engine->ApplyAnchors(0, entry, {});
+    auto dialogs = engine->Inspect();
+    CHECK(dialogs[0].anchor == "LEFT");
+    CHECK(dialogs[0].anchorDeclared);
+    CHECK_FALSE(dialogs[0].anchorFromScript);
+    CHECK(dialogs[0].stretchZones == std::vector<std::pair<float, float>>{{10.0f, 50.0f}});
+    CHECK(dialogs[0].controls[0].anchor == "STRETCH");
+    CHECK_FALSE(dialogs[0].controls[1].anchorDeclared);
+
+    // What the previous entry declared and the new one does not goes back to none.
+    engine->ApplyAnchors(0, {}, entry);
+    dialogs = engine->Inspect();
+    CHECK_FALSE(dialogs[0].anchorDeclared);
+    CHECK(dialogs[0].anchor == "CENTER");
+    CHECK(dialogs[0].stretchZones.empty());
+    CHECK_FALSE(dialogs[0].controls[0].anchorDeclared);
+
+    CHECK(dialogs[1].anchor == "RIGHT");
+    CHECK(dialogs[1].anchorFromScript);
+    CHECK(dialogs[1].controls[0].anchorFromScript);
+    x2::ui_editor::AnchorEntry other;
+    other.dialog = "LEFT";
+    other.SetControl("Own", "RIGHT");
+    other.SetControl("Free", "RIGHT");
+    engine->ApplyAnchors(1, other, {});
+    dialogs = engine->Inspect();
+    CHECK(dialogs[1].anchor == "RIGHT");
+    CHECK(dialogs[1].controls[0].anchor == "LEFT");
+    CHECK(dialogs[1].controls[1].anchor == "RIGHT");
+    CHECK_FALSE(dialogs[1].controls[1].anchorFromScript);
 }

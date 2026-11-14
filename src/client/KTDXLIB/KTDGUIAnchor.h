@@ -27,6 +27,8 @@ class CKTDGUIStretch
 public:
 	void AddZone( float fMin, float fMax );
 	bool HasZones() const { return m_vecZones.empty() == false; }
+	const std::vector<std::pair<float, float>>& GetZones() const { return m_vecZones; }
+	void Clear() { m_vecZones.clear(); m_fZonesWidth = 0.f; }
 	// fX in layout units; fBase: the dialog's x; fLeft: the canvas's left edge from the centered column (<= 0);
 	// fExtra: the canvas's width beyond 1024. Returns layout units from the centered column.
 	float Map( float fX, float fBase, float fLeft, float fExtra ) const;

@@ -758,6 +758,10 @@ class CKTDGUIControl : private x2::NonCopyable
 		bool			SetAnchor_LUA( const char* pszAnchor );
 		bool			HasAnchor() const						{ return m_bAnchorDeclared; }
 		UIAnchor		GetAnchor() const						{ return m_eAnchor; }
+		// Declared by the script itself (SetAnchor in Lua), which UIAnchors.lua does not override.
+		bool			IsAnchorFromScript() const				{ return m_bAnchorFromScript; }
+		// Back to its dialog's anchor, for the UI editor when an entry of UIAnchors.lua goes.
+		void			ClearAnchor()							{ m_eAnchor = UIAnchor::Center; m_bAnchorDeclared = false; m_bAnchorFromScript = false; }
 		virtual void	SetOffsetPos( D3DXVECTOR2 pos )		{ m_OffsetPos = pos; }
 
 		void			SetSize_LUA( float x, float y ) { SetSize( D3DXVECTOR2(x,y) ); }
@@ -921,6 +925,7 @@ class CKTDGUIControl : private x2::NonCopyable
 		D3DXVECTOR2			m_OffsetPos;
 		UIAnchor			m_eAnchor = UIAnchor::Center;
 		bool				m_bAnchorDeclared = false;
+		bool				m_bAnchorFromScript = false;
 #ifdef X2_DEV_TOOLS
 	public:
 		// What the control drew this frame, in layout units relative to its dialog (CKTDGUIAnchorRecorder).

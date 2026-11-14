@@ -464,6 +464,51 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
     }
 }
 
+void Engine::ApplyAnchors(int index, const AnchorEntry& entry, const AnchorEntry& previous)
+{
+    if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
+        return;
+    }
+    const State::Open& open = m_state->dialogs[static_cast<std::size_t>(index)];
+    CKTDGUIDialog* dialog = CKTDGUIDialog::GetObjectByUID(open.dialog.GetHandle());
+    if (dialog == nullptr) {
+        return;
+    }
+    UIAnchor anchor = UIAnchor::Center;
+    if (!dialog->IsAnchorFromScript()) {
+        if (ParseUIAnchor(entry.dialog.c_str(), anchor)) {
+            dialog->SetAnchor(anchor);
+        } else if (!previous.dialog.empty()) {
+            dialog->ClearAnchor();
+        }
+    }
+    if (!entry.zones.empty() || !previous.zones.empty()) {
+        dialog->GetStretch().Clear();
+        for (const auto& [lo, hi] : entry.zones) {
+            dialog->GetStretch().AddZone(lo, hi);
+        }
+    }
+    const auto apply = [&](const std::string& name, const std::string& value) {
+        CKTDGUIControl* control = dialog->GetControl(Wide(name).c_str());
+        if (control == nullptr || control->IsAnchorFromScript()) {
+            return;
+        }
+        if (ParseUIAnchor(value.c_str(), anchor)) {
+            control->SetAnchor(anchor);
+        } else {
+            control->ClearAnchor();
+        }
+    };
+    for (const auto& [name, value] : previous.controls) {
+        if (entry.Control(name).empty()) {
+            apply(name, {});
+        }
+    }
+    for (const auto& [name, value] : entry.controls) {
+        apply(name, value);
+    }
+}
+
 bool Engine::Render(unsigned width, unsigned height, float elapsed, std::string& error)
 {
     width = std::max(width, 64u);
@@ -553,6 +598,8 @@ std::vector<DialogInfo> Engine::Inspect() const
         info.canvasPos[1] = canvas.y;
         info.anchor = AnchorName(dialog->GetAnchor());
         info.anchorDeclared = dialog->IsAnchorDeclared();
+        info.anchorFromScript = dialog->IsAnchorFromScript();
+        info.stretchZones = dialog->GetStretch().GetZones();
         info.placedByCode = dialog->GetPlacedByCode();
 
         const std::vector<CKTDGUIControl*>& controls = dialog->GetControlList();
@@ -570,6 +617,7 @@ std::vector<DialogInfo> Engine::Inspect() const
             c.typeName = TypeName(c.type);
             c.anchor = AnchorName(control->GetAnchor());
             c.anchorDeclared = control->HasAnchor();
+            c.anchorFromScript = control->IsAnchorFromScript();
             c.shown = control->GetShow();
             const D3DXVECTOR2 offset = control->GetOffsetPos();
             c.offset[0] = offset.x;
