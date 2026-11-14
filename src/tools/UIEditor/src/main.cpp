@@ -4,21 +4,27 @@
 //   x2_ui_editor [<game folder>] [--open DLG_x.lua]... [--size WxH]
 //
 // The game folder holds the .kom archives and, in dev builds, data/ (a client_data); the default is the working folder.
+// "Watch game" mirrors the UI of a client running there with X2_UI_LIVE=1 (UILive.tsv); "Start game" starts one.
 
 #include "engine.h"
+#include "live.h"
 #include "record.h"
 
 #include "x2/app/imgui_layer.h"
 
+#include <SDL3/SDL.h>
 #include <imgui.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -59,7 +65,64 @@ struct EditorState {
     Selection selected;
     std::vector<DialogInfo> inspected;
     std::string message;
+
+    std::unordered_map<std::string, std::string> scriptByKey;  // lowercase name -> as listed in `scripts`
+    std::vector<std::string> scenes;    // recorded game states (XS_*)
+    int scene = 0;                      // 0: every script; n: scenes[n - 1]
+    std::set<std::string> sceneScripts;   // lowercase, of the chosen scene
+    std::filesystem::file_time_type recordTime{};
+
+    // Watch game: the running client's UILive.tsv, mirrored while not frozen.
+    bool watch = false;
+    bool freeze = false;
+    x2::ui_editor::LiveSnapshot live;
+    std::filesystem::file_time_type liveTime{};
+    std::uint64_t lastPoll = 0;
+    SDL_Process* game = nullptr;        // started by "Start game"
 };
+
+std::string Key(const std::string& script)
+{
+    std::string key = std::filesystem::path(script).filename().string();
+    std::transform(key.begin(), key.end(), key.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    return key;
+}
+
+// The nearest of the editor's aspects and heights to a resolution.
+void ChooseSize(EditorState& state, unsigned w, unsigned h)
+{
+    if (w == 0 || h == 0) {
+        return;
+    }
+    const float ratio = static_cast<float>(w) / static_cast<float>(h);
+    for (int a = 0; a < static_cast<int>(std::size(kAspects)); ++a) {
+        if (std::fabs(kAspects[a].ratio - ratio) < std::fabs(kAspects[state.aspect].ratio - ratio)) {
+            state.aspect = a;
+        }
+    }
+    for (int k = 0; k < static_cast<int>(std::size(kHeights)); ++k) {
+        const auto distance = [h](unsigned v) { return v > h ? v - h : h - v; };
+        if (distance(kHeights[k]) < distance(kHeights[state.height])) {
+            state.height = k;
+        }
+    }
+}
+
+void LoadRecord(EditorState& state)
+{
+    const std::filesystem::path file = state.gameFolder / "UIAnchorsRecord.tsv";
+    std::error_code ec;
+    state.recordTime = std::filesystem::last_write_time(file, ec);
+    state.record = x2::ui_editor::Record::Load(file);
+    state.scenes = state.record.Scenes();
+    if (state.scene > static_cast<int>(state.scenes.size())) {
+        state.scene = 0;
+    }
+    const std::vector<std::string> in =
+        state.scene > 0 ? state.record.ScriptsIn(state.scenes[static_cast<std::size_t>(state.scene - 1)])
+                        : std::vector<std::string>{};
+    state.sceneScripts = {in.begin(), in.end()};
+}
 
 bool ContainsNoCase(const std::string& text, const char* needle)
 {
@@ -88,14 +151,200 @@ void OpenScript(x2::ui_editor::Engine& engine, EditorState& state, const std::st
     state.selected = {index, -1};
 }
 
+// Makes the open dialogs those the game shows, in its order: the ones of the same script kept (the n-th open of a
+// script stands for the game's n-th), the others closed, the missing ones opened; then each takes the game's state.
+void Mirror(x2::ui_editor::Engine& engine, EditorState& state)
+{
+    const auto& wanted = state.live.dialogs;
+    std::vector<std::string> keys;
+    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
+        keys.push_back(Key(engine.DialogScript(i)));
+    }
+    std::vector<int> match(wanted.size(), -1);
+    std::vector<bool> used(keys.size(), false);
+    for (std::size_t w = 0; w < wanted.size(); ++w) {
+        for (std::size_t i = 0; i < keys.size(); ++i) {
+            if (!used[i] && keys[i] == wanted[w].script) {
+                match[w] = static_cast<int>(i);
+                used[i] = true;
+                break;
+            }
+        }
+    }
+    bool closed = false;
+    for (int i = static_cast<int>(keys.size()) - 1; i >= 0; --i) {
+        if (used[static_cast<std::size_t>(i)]) {
+            continue;
+        }
+        engine.CloseDialog(i);
+        closed = true;
+        for (int& m : match) {
+            if (m > i) {
+                --m;
+            }
+        }
+    }
+    std::string failed;
+    for (std::size_t w = 0; w < wanted.size(); ++w) {
+        if (match[w] >= 0) {
+            continue;
+        }
+        const auto listed = state.scriptByKey.find(wanted[w].script);
+        const std::string& script = listed != state.scriptByKey.end() ? listed->second : wanted[w].script;
+        std::string error;
+        match[w] = engine.OpenDialog(script, error);
+        if (match[w] < 0) {
+            failed = error;
+        }
+    }
+    for (std::size_t w = 0; w < wanted.size(); ++w) {
+        engine.ApplyLive(match[w], wanted[w]);
+    }
+    if (closed) {
+        state.selected = {};
+    }
+    ChooseSize(state, state.live.screen[0], state.live.screen[1]);
+    state.message = failed.empty() ? "game: " + (state.live.scene.empty() ? std::string("starting") : state.live.scene)
+                                   : failed;
+}
+
+// Watch game, a few times a second: the snapshot when it changed, and the record the game keeps writing.
+void Poll(x2::ui_editor::Engine& engine, EditorState& state)
+{
+    if (state.game != nullptr && SDL_WaitProcess(state.game, false, nullptr)) {
+        SDL_DestroyProcess(state.game);
+        state.game = nullptr;
+    }
+    const std::uint64_t now = SDL_GetTicks();
+    if (!state.watch || now - state.lastPoll < 250) {
+        return;
+    }
+    state.lastPoll = now;
+    std::error_code ec;
+    const auto recordTime = std::filesystem::last_write_time(state.gameFolder / "UIAnchorsRecord.tsv", ec);
+    if (!ec && recordTime != state.recordTime) {
+        LoadRecord(state);
+    }
+    if (state.freeze) {
+        return;
+    }
+    const std::filesystem::path file = state.gameFolder / "UILive.tsv";
+    const auto liveTime = std::filesystem::last_write_time(file, ec);
+    if (ec || liveTime == state.liveTime) {
+        return;
+    }
+    state.liveTime = liveTime;
+    state.live = x2::ui_editor::LiveSnapshot::Load(file);
+    Mirror(engine, state);
+}
+
+// The client in the game folder, with the live snapshot and the anchor recorder on; its output goes to the editor's.
+void StartGame(EditorState& state)
+{
+    std::filesystem::path program = state.gameFolder / "x2.exe";
+    if (!std::filesystem::exists(program)) {
+        program = state.gameFolder / "x2";
+    }
+    if (!std::filesystem::exists(program)) {
+        state.message = "no x2 in " + state.gameFolder.string() + " (tools/client/install.sh)";
+        return;
+    }
+    const std::string programName = program.string(), folder = state.gameFolder.string();
+    SDL_Environment* environment = SDL_CreateEnvironment(true);
+    SDL_SetEnvironmentVariable(environment, "X2_UI_LIVE", "1", true);
+    SDL_SetEnvironmentVariable(environment, "X2_RECORD_UI_ANCHORS", "1", true);
+    char** variables = SDL_GetEnvironmentVariables(environment);
+    const char* args[] = {programName.c_str(), nullptr};
+    const SDL_PropertiesID properties = SDL_CreateProperties();
+    SDL_SetPointerProperty(properties, SDL_PROP_PROCESS_CREATE_ARGS_POINTER, static_cast<void*>(args));
+    SDL_SetPointerProperty(properties, SDL_PROP_PROCESS_CREATE_ENVIRONMENT_POINTER, static_cast<void*>(variables));
+    SDL_SetStringProperty(properties, SDL_PROP_PROCESS_CREATE_WORKING_DIRECTORY_STRING, folder.c_str());
+    SDL_SetNumberProperty(properties, SDL_PROP_PROCESS_CREATE_STDIN_NUMBER, SDL_PROCESS_STDIO_NULL);
+    SDL_SetNumberProperty(properties, SDL_PROP_PROCESS_CREATE_STDOUT_NUMBER, SDL_PROCESS_STDIO_INHERITED);
+    SDL_SetNumberProperty(properties, SDL_PROP_PROCESS_CREATE_STDERR_NUMBER, SDL_PROCESS_STDIO_INHERITED);
+    state.game = SDL_CreateProcessWithProperties(properties);
+    SDL_DestroyProperties(properties);
+    SDL_free(variables);
+    SDL_DestroyEnvironment(environment);
+    if (state.game == nullptr) {
+        state.message = std::string("starting the game: ") + SDL_GetError();
+        return;
+    }
+    state.watch = true;
+    state.freeze = false;
+    state.message = "game started";
+}
+
+void WatchControls(EditorState& state)
+{
+    if (ImGui::Checkbox("Watch game", &state.watch) && state.watch) {
+        state.liveTime = {};    // mirror the current snapshot at once
+        state.lastPoll = 0;
+    }
+    ImGui::SameLine();
+    ImGui::BeginDisabled(!state.watch);
+    if (ImGui::Checkbox("Freeze", &state.freeze) && !state.freeze) {
+        state.liveTime = {};
+    }
+    ImGui::EndDisabled();
+    ImGui::SameLine();
+    ImGui::BeginDisabled(state.game != nullptr);
+    if (ImGui::SmallButton("Start game")) {
+        StartGame(state);
+    }
+    ImGui::EndDisabled();
+    if (state.watch) {
+        if (state.liveTime == std::filesystem::file_time_type{}) {
+            ImGui::TextDisabled("waiting for UILive.tsv (a client run with X2_UI_LIVE=1)");
+        } else {
+            ImGui::TextDisabled("%s%s, %zu dialogs", state.live.scene.empty() ? "(no state yet)" : state.live.scene.c_str(),
+                                state.freeze ? " (frozen)" : "", state.live.dialogs.size());
+        }
+    }
+}
+
 void DialogsPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
+    WatchControls(state);
+    ImGui::Separator();
+    ImGui::SetNextItemWidth(-FLT_MIN - ImGui::CalcTextSize("Open scene").x - ImGui::GetStyle().FramePadding.x * 4);
+    const char* preview = state.scene == 0 ? "All scripts" : state.scenes[static_cast<std::size_t>(state.scene - 1)].c_str();
+    if (ImGui::BeginCombo("##scene", preview)) {
+        for (int i = 0; i <= static_cast<int>(state.scenes.size()); ++i) {
+            const char* name = i == 0 ? "All scripts" : state.scenes[static_cast<std::size_t>(i - 1)].c_str();
+            if (ImGui::Selectable(name, state.scene == i)) {
+                state.scene = i;
+                LoadRecord(state);
+            }
+        }
+        ImGui::EndCombo();
+    }
+    if (ImGui::IsItemHovered() && state.scenes.empty()) {
+        ImGui::SetTooltip("No scenes recorded: run the game with X2_RECORD_UI_ANCHORS=1 (\"Start game\" does)");
+    }
+    ImGui::SameLine();
+    ImGui::BeginDisabled(state.scene == 0);
+    if (ImGui::Button("Open scene")) {
+        state.watch = false;
+        engine.CloseAll();
+        for (const std::string& script : state.scripts) {
+            if (state.sceneScripts.count(Key(script)) != 0) {
+                OpenScript(engine, state, script);
+            }
+        }
+        state.selected = {};
+    }
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("Every script the recording saw in this game state, at its first recorded position");
+    }
     ImGui::SetNextItemWidth(-FLT_MIN);
     ImGui::InputTextWithHint("##filter", "filter dialogs", state.filter, sizeof(state.filter));
     ImGui::TextDisabled("double-click opens, Ctrl adds to the open ones");
     if (ImGui::BeginChild("scripts", ImVec2(0, ImGui::GetContentRegionAvail().y * 0.6f), ImGuiChildFlags_Borders)) {
         for (const std::string& script : state.scripts) {
-            if (!ContainsNoCase(script, state.filter)) {
+            if (!ContainsNoCase(script, state.filter)
+                || (state.scene > 0 && state.sceneScripts.count(Key(script)) == 0)) {
                 continue;
             }
             const bool recorded = state.record.Positions(script) != nullptr;
@@ -439,18 +688,8 @@ int main(int argc, char** argv)
             toOpen.emplace_back(argv[++i]);
         } else if (std::strcmp(argv[i], "--size") == 0 && i + 1 < argc) {
             unsigned w = 0, h = 0;
-            if (std::sscanf(argv[++i], "%ux%u", &w, &h) == 2 && h > 0) {
-                const float ratio = static_cast<float>(w) / static_cast<float>(h);
-                for (int a = 0; a < static_cast<int>(std::size(kAspects)); ++a) {     // the nearest aspect
-                    if (std::fabs(kAspects[a].ratio - ratio) < std::fabs(kAspects[state.aspect].ratio - ratio)) {
-                        state.aspect = a;
-                    }
-                }
-                for (int k = 0; k < static_cast<int>(std::size(kHeights)); ++k) {
-                    if (kHeights[k] == h) {
-                        state.height = k;
-                    }
-                }
+            if (std::sscanf(argv[++i], "%ux%u", &w, &h) == 2) {
+                ChooseSize(state, w, h);
             }
         } else {
             state.gameFolder = argv[i];
@@ -498,7 +737,10 @@ int main(int argc, char** argv)
         return 1;
     }
     state.scripts = x2::ui_editor::FindDialogScripts(state.gameFolder);
-    state.record = x2::ui_editor::Record::Load(state.gameFolder / "UIAnchorsRecord.tsv");
+    for (const std::string& script : state.scripts) {
+        state.scriptByKey.emplace(Key(script), script);
+    }
+    LoadRecord(state);
     for (const std::string& script : toOpen) {
         OpenScript(*engine, state, script);
     }
@@ -515,6 +757,7 @@ int main(int argc, char** argv)
         const float elapsed = std::min(static_cast<float>(static_cast<double>(now - last) / 1e9), 0.1f);
         last = now;
 
+        Poll(*engine, state);
         const unsigned height = kHeights[state.height];
         if (!engine->Render(WidthFor(height, kAspects[state.aspect].ratio), height, elapsed, error)) {
             std::fprintf(stderr, "%s\n", error.c_str());
@@ -559,6 +802,9 @@ int main(int argc, char** argv)
         }
         gui->Render(*commands, swapchain.texture, {0.08f, 0.08f, 0.09f, 1.0f});
         commands->Submit();
+    }
+    if (state.game != nullptr) {
+        SDL_DestroyProcess(state.game);     // the game keeps running
     }
     engine.reset();
     device->WaitIdle();

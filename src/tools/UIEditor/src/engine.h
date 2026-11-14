@@ -4,6 +4,7 @@
 // device, drawing the opened dialogs into a render target of the chosen size. No X2Lib: the game globals the dialog
 // scripts touch get Lua stubs.
 
+#include "live.h"
 #include "x2/render/render.h"
 
 #include <filesystem>
@@ -80,9 +81,14 @@ public:
     void CloseDialog(int index);
     void CloseAll();
     std::size_t DialogCount() const;
+    // The script an open dialog was opened from, as given to OpenDialog.
+    const std::string& DialogScript(int index) const;
     // Moves an open dialog to a layout position under its anchor, as the game's SetPos.
     void SetDialogPos(int index, float x, float y);
     void SetDialogShown(int index, bool shown);
+    // Puts what the running game shows into an open dialog of the same script (watch game): position, layer, and
+    // what code changed in it (shown flags, textures, texts) where the script built the same controls.
+    void ApplyLive(int index, const LiveSnapshot::Dialog& live);
 
     // Draws every open dialog into the render target, resized to width x height first. False with error set if the
     // frame failed. The texture stays valid until the next Render with another size or the engine is destroyed.
