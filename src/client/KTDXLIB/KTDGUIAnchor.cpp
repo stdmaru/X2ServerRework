@@ -462,8 +462,9 @@ bool CKTDGUIAnchorRecorder::LiveIsOn()
 //     dialog   <script> <x> <y> <layer> <front> <anchor>    the shown dialogs drawn from scripts, back to front;
 //              anchor 0 center, 1 left, 2 right, 3 stretch (UIAnchor), the one in effect: code sets some (T44)
 //     script   <script>                            each script code loaded into it after the first (OpenScriptFile)
-//     control  <index> <shown> <type> <anchor>     every control, those code added included; anchor -1 when the
-//              control declares none (it follows its dialog)
+//     control  <index> <shown> <type> <anchor> <offset x> <offset y>
+//              every control, those code added included; anchor -1 when the control declares none (it follows its
+//              dialog); the offset code moves it by (SetOffsetPos: the menu buttons close the gaps of hidden ones)
 //     picture  <control> <index> <shown> <texture> <key> <8 corners> <8 uv> <r g b a>
 //              every picture of a static; corners and uv left top, right top, left bottom, right bottom
 //     text     <control> <index> <font> <sort flags> <x> <y> <r g b a> <text>    every text of a static, escaped
@@ -546,7 +547,10 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 			const std::string strIndex = std::to_string( i );
 			str += "control\t" + strIndex + '\t' + ( pControl->GetShow() ? "1" : "0" ) + '\t'
 				+ std::to_string( static_cast<int>( pControl->GetType() ) ) + '\t'
-				+ ( pControl->HasAnchor() ? std::to_string( static_cast<int>( pControl->GetAnchor() ) ) : std::string( "-1" ) ) + '\n';
+				+ ( pControl->HasAnchor() ? std::to_string( static_cast<int>( pControl->GetAnchor() ) ) : std::string( "-1" ) );
+			const D3DXVECTOR2 vOffset = pControl->GetOffsetPos();
+			AppendFloats( str, { vOffset.x, vOffset.y } );
+			str += '\n';
 			if ( pControl->GetType() != CKTDGUIControl::UCT_STATIC )
 				continue;
 			CKTDGUIStatic* pStatic = static_cast<CKTDGUIStatic*>( pControl );

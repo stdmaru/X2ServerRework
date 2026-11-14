@@ -16,7 +16,7 @@ TEST_CASE("ui editor: live snapshot, records under their dialog, texts unescaped
         "control\t0\t1\n"    // before any dialog: dropped
         "dialog\tdlg_a.lua\t207\t-12\t3\t1\r\n"
         "control\t0\t1\n"
-        "control\t1\t0\t0\t2\n"    // a static anchored right
+        "control\t1\t0\t0\t2\t-38.5\t4\n"    // a static anchored right, moved by code
         "picture\t1\t0\t0\tDLG_UI_Common.tga\tBg\n"
         "picture\t1\t1\t1\t\t\n"
         "text\t1\t0\tLv.\\t12\\\\x\\nend\n"
@@ -38,6 +38,10 @@ TEST_CASE("ui editor: live snapshot, records under their dialog, texts unescaped
     CHECK(a.anchor == -1);     // not written: older snapshots
     CHECK(a.controls[0].anchor == -1);
     CHECK(a.controls[1].anchor == 2);
+    CHECK_FALSE(a.controls[0].hasOffset);
+    CHECK(a.controls[1].hasOffset);
+    CHECK(a.controls[1].offset[0] == -38.5f);
+    CHECK(a.controls[1].offset[1] == 4.0f);
     REQUIRE(a.pictures.size() == 2);
     CHECK(a.pictures[0].texture == "DLG_UI_Common.tga");
     CHECK(a.pictures[0].key == "Bg");

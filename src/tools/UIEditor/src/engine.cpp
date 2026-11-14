@@ -455,6 +455,9 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
         if (c.anchor >= 0 && c.anchor <= static_cast<int>(UIAnchor::Stretch)) {
             control->SetAnchor(static_cast<UIAnchor>(c.anchor));
         }
+        if (c.hasOffset) {
+            control->SetOffsetPos(D3DXVECTOR2(c.offset[0], c.offset[1]));
+        }
         if (sameType && control->GetType() == CKTDGUIControl::UCT_STATIC) {
             ApplyStatic(*static_cast<CKTDGUIStatic*>(control), live, c.index);
         }
