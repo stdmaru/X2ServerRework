@@ -557,7 +557,8 @@ HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL /*bTrail*/, int *pY )
 
         SIZE size;
 		// GetTextExtentPoint32W 함수의 경우 마지막에 있는 LF를 빼고 세로 사이즈를 재므로 똑같이 처리해 주기 위해 잘라줍니다. by 박진웅
-		if( textMsg.back() == L'\n' )
+		// Original bug fixed: back() of an empty string (the caret at the start, nCP 0; it crashed opening the mailbox).
+		if( !textMsg.empty() && textMsg.back() == L'\n' )
 			textMsg = textMsg.substr( 0, textMsg.size() - 1 );
 		size.cy = m_pFontNode->GetHeight( textMsg.c_str() );
 
