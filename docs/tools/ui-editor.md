@@ -43,7 +43,7 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
   statics code added. The screen takes the nearest of the editor's sizes to the game's resolution. Unchecking "Watch
   game" leaves the screen as it was last, to work on that state; dialogs opened by hand while watching close at the
   next change.
-- "Start game" runs `x2` from the game folder with `X2_UI_LIVE=1` and `X2_RECORD_UI_ANCHORS=1`, its output in the
+- "Start game" runs this platform's client from the game folder (`x2`; `x2.exe` on Windows, so a folder holding both works; before 2026-11-14 it tried `x2.exe` first and failed on Linux) with `X2_UI_LIVE=1` and `X2_RECORD_UI_ANCHORS=1`, its output in the
   editor's terminal; closing the editor leaves it running.
 - Not mirrored: dialogs built in code without a script, controls of other types than statics that code adds (buttons,
   edit boxes), and what code changes in them besides being shown.
