@@ -377,9 +377,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 - [ ] `tools/ui-editor`, after audio (user, 2026-11-13): a UI editor for the user, under the client development suite
       ([T29](decisions.md)), built from the client's own GUI code so it renders dialogs exactly as the game does: view
       any dialog at any resolution and aspect, select a control, and see and edit its anchor, position, texture and
-      UV in a side panel. It replaces the agent reviewing each screen by captures. Open when it starts: how it places
-      the dialogs the C++ positions at run time (the positions recorded by `X2_RECORD_UI_ANCHORS`, or moving that
-      placement out of the game states), and where position/texture edits are saved (anchors go to `UIAnchors.lua`).
+      UV in a side panel. It replaces the agent reviewing each screen by captures ([T46](decisions.md),
+      [UI editor](../tools/ui-editor.md)). Slices, one PR each: (a) viewer with inspection and resolution/aspect
+      switching (PR #74, in progress); (b) anchor/STRETCH editing saved to `UIAnchors.lua`; (c) positions, textures
+      and UV saved to the scripts and `.tet`; then the C++ layout positions migrated into the scripts, screen by screen.
 
 ## Phase 5 — Deep cleanup
 
