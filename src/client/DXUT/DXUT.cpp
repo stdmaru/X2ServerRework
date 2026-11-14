@@ -421,6 +421,8 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
     }
     state.windowClaimed = true;
     SDL_SetWindowMinimumSize(window, 640, 480);     // below it the UI is unreadable
+    // The aspects the UI is laid out for (T44): 4:3 (the original layout) to 21:9 (64:27).
+    SDL_SetWindowAspectRatio(window, 4.0f / 3.0f, 64.0f / 27.0f);
     state.d3dDevice = std::make_unique<x2::d3d9::Device>(*state.device, window);
     if (!state.d3dDevice->Ok()) {
         SDL_Log("DXUT: %s", state.d3dDevice->LastError().c_str());
