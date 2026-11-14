@@ -427,7 +427,7 @@ void CKTDGUIControl::UpdateVertex( VERTEX_UI& vertexLT, VERTEX_UI& vertexRT, VER
 
 
 #if X2_DEV_TOOLS
-	if ( tempColor.a > 0.f && CKTDGUIAnchorRecorder::IsOn() )
+	if ( tempColor.a > 0.f && CKTDGUIAnchorRecorder::TracksDrawnBounds() )
 	{
 		for ( const D3DXVECTOR2& vCorner : { pointData.leftTopPoint, pointData.rightTopPoint, pointData.leftBottomPoint, pointData.rightBottomPoint } )
 		{
