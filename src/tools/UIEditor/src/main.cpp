@@ -253,18 +253,16 @@ void StartGame(EditorState& state)
     SDL_Environment* environment = SDL_CreateEnvironment(true);
     SDL_SetEnvironmentVariable(environment, "X2_UI_LIVE", "1", true);
     SDL_SetEnvironmentVariable(environment, "X2_RECORD_UI_ANCHORS", "1", true);
-    char** variables = SDL_GetEnvironmentVariables(environment);
     const char* args[] = {programName.c_str(), nullptr};
     const SDL_PropertiesID properties = SDL_CreateProperties();
     SDL_SetPointerProperty(properties, SDL_PROP_PROCESS_CREATE_ARGS_POINTER, static_cast<void*>(args));
-    SDL_SetPointerProperty(properties, SDL_PROP_PROCESS_CREATE_ENVIRONMENT_POINTER, static_cast<void*>(variables));
+    SDL_SetPointerProperty(properties, SDL_PROP_PROCESS_CREATE_ENVIRONMENT_POINTER, environment);
     SDL_SetStringProperty(properties, SDL_PROP_PROCESS_CREATE_WORKING_DIRECTORY_STRING, folder.c_str());
     SDL_SetNumberProperty(properties, SDL_PROP_PROCESS_CREATE_STDIN_NUMBER, SDL_PROCESS_STDIO_NULL);
     SDL_SetNumberProperty(properties, SDL_PROP_PROCESS_CREATE_STDOUT_NUMBER, SDL_PROCESS_STDIO_INHERITED);
     SDL_SetNumberProperty(properties, SDL_PROP_PROCESS_CREATE_STDERR_NUMBER, SDL_PROCESS_STDIO_INHERITED);
     state.game = SDL_CreateProcessWithProperties(properties);
     SDL_DestroyProperties(properties);
-    SDL_free(variables);
     SDL_DestroyEnvironment(environment);
     if (state.game == nullptr) {
         state.message = std::string("starting the game: ") + SDL_GetError();
