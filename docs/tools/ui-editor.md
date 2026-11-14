@@ -33,12 +33,12 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
 
 - The client, run in the game folder with `X2_UI_LIVE=1` (a dev build), writes `UILive.tsv` there a few times a second
   ([UI anchors](ui-anchors.md), `CKTDGUIAnchorRecorder::NoteLive`): the game state, its resolution, and the shown
-  dialogs drawn from scripts, back to front, each with its position, layer, the scripts code loaded into it after the
-  first (`OpenScriptFile`: a local map's regions, 2026-11-14), and every control (shown, type); for statics, every
+  dialogs drawn from scripts, back to front, each with its position, layer, anchor in effect (code anchors some at run time, such as the quick slot items after the slot frames; 2026-11-14), the scripts code loaded into it after the
+  first (`OpenScriptFile`: a local map's regions, 2026-11-14), and every control (shown, type, the anchor it declares); for statics, every
   picture (texture, key, corners, texture coordinates, color, shown) and every text (position, font, alignment, color).
 - The editor reads it when it changes (`live.h`) and mirrors it: a dialog stands for the game's when it was built from
   the same scripts (the n-th of them for the game's n-th), the others close, the missing ones open with their scripts,
-  and each takes the game's state (`Engine::ApplyLive`): statics are made what the game holds, so pictures code removed
+  and each takes the game's state (`Engine::ApplyLive`: anchors first, then the position, which is in layout units under the anchor): statics are made what the game holds, so pictures code removed
   (the wake orbs of other classes) go, those it added or resized (gauges, quick slot items, quest marks) come, and so do
   statics code added. The screen takes the game's exact viewport size ("(game)" next to the size; until 2026-11-14 the nearest of the editor's aspects and heights, so with the game at another aspect the anchors placed the script controls for a different aspect than the code had positioned items and icons for). Choosing an aspect or a height returns to the editor's sizes. Unchecking "Watch
   game" leaves the screen as it was last, to work on that state; dialogs opened by hand while watching close at the

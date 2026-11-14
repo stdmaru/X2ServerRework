@@ -16,6 +16,7 @@ struct LiveSnapshot {
         int index = 0;
         bool shown = true;
         int type = -1;              // CKTDGUIControl::CONTROL_TYPE, -1 when not written
+        int anchor = -1;            // UIAnchor the control declares, -1: none (or not written)
     };
     struct Picture {
         int control = 0, index = 0;
@@ -41,6 +42,7 @@ struct LiveSnapshot {
         float pos[2] = {};          // layout units under the dialog's anchor
         int layer = 0;
         bool front = false;
+        int anchor = -1;            // UIAnchor in effect in the game (code sets some, T44), -1 when not written
         std::vector<Control> controls;
         std::vector<Picture> pictures;
         std::vector<Text> texts;

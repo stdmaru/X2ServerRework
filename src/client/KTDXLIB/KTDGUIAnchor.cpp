@@ -459,9 +459,11 @@ bool CKTDGUIAnchorRecorder::LiveIsOn()
 // UILive.tsv, one record per line, tab separated; what follows a dialog line belongs to it:
 //     scene    <XS_* name>
 //     screen   <width> <height>
-//     dialog   <script> <x> <y> <layer> <front>    the shown dialogs drawn from scripts, back to front
+//     dialog   <script> <x> <y> <layer> <front> <anchor>    the shown dialogs drawn from scripts, back to front;
+//              anchor 0 center, 1 left, 2 right, 3 stretch (UIAnchor), the one in effect: code sets some (T44)
 //     script   <script>                            each script code loaded into it after the first (OpenScriptFile)
-//     control  <index> <shown> <type>              every control, those code added included
+//     control  <index> <shown> <type> <anchor>     every control, those code added included; anchor -1 when the
+//              control declares none (it follows its dialog)
 //     picture  <control> <index> <shown> <texture> <key> <8 corners> <8 uv> <r g b a>
 //              every picture of a static; corners and uv left top, right top, left bottom, right bottom
 //     text     <control> <index> <font> <sort flags> <x> <y> <r g b a> <text>    every text of a static, escaped
@@ -532,7 +534,7 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 		const D3DXVECTOR2 vPos = pDialog->GetPos();
 		str += "dialog\t" + ToUtf8( ScriptKey( vecScripts[0].c_str() ) ) + '\t' + std::to_string( std::lround( vPos.x ) ) + '\t'
 			+ std::to_string( std::lround( vPos.y ) ) + '\t' + std::to_string( pDialog->GetLayer() ) + '\t'
-			+ ( pDialog->GetFront() ? "1" : "0" ) + '\n';
+			+ ( pDialog->GetFront() ? "1" : "0" ) + '\t' + std::to_string( static_cast<int>( pDialog->GetAnchor() ) ) + '\n';
 		for ( size_t s = 1; s < vecScripts.size(); ++s )
 			str += "script\t" + ToUtf8( ScriptKey( vecScripts[s].c_str() ) ) + '\n';
 		const std::vector<CKTDGUIControl*>& vecControls = pDialog->GetControlList();
@@ -543,7 +545,8 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 				continue;
 			const std::string strIndex = std::to_string( i );
 			str += "control\t" + strIndex + '\t' + ( pControl->GetShow() ? "1" : "0" ) + '\t'
-				+ std::to_string( static_cast<int>( pControl->GetType() ) ) + '\n';
+				+ std::to_string( static_cast<int>( pControl->GetType() ) ) + '\t'
+				+ ( pControl->HasAnchor() ? std::to_string( static_cast<int>( pControl->GetAnchor() ) ) : std::string( "-1" ) ) + '\n';
 			if ( pControl->GetType() != CKTDGUIControl::UCT_STATIC )
 				continue;
 			CKTDGUIStatic* pStatic = static_cast<CKTDGUIStatic*>( pControl );

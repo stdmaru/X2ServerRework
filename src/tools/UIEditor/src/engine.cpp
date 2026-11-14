@@ -423,6 +423,11 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
         return;
     }
     dialog->SetShowEnable(true, true);
+    // The game's anchor before its position, which is in layout units under it: code anchors some dialogs at run time
+    // (the quick slot items follow the slot frames), so UIAnchors.lua alone does not say (2026-11-14).
+    if (live.anchor >= 0 && live.anchor <= static_cast<int>(UIAnchor::Stretch)) {
+        dialog->SetAnchor(static_cast<UIAnchor>(live.anchor));
+    }
     dialog->SetPos(D3DXVECTOR2(live.pos[0], live.pos[1]));
     if (dialog->GetLayer() != live.layer) {
         dialog->SetLayer(live.layer);
@@ -447,6 +452,9 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
         }
         const bool sameType = c.type < 0 || static_cast<int>(control->GetType()) == c.type;
         control->SetShow(c.shown && sameType);
+        if (c.anchor >= 0 && c.anchor <= static_cast<int>(UIAnchor::Stretch)) {
+            control->SetAnchor(static_cast<UIAnchor>(c.anchor));
+        }
         if (sameType && control->GetType() == CKTDGUIControl::UCT_STATIC) {
             ApplyStatic(*static_cast<CKTDGUIStatic*>(control), live, c.index);
         }
