@@ -258,6 +258,11 @@ std::size_t Engine::DialogCount() const
     return m_state->dialogs.size();
 }
 
+const std::string& Engine::DialogScript(int index) const
+{
+    return m_state->dialogs.at(static_cast<std::size_t>(index)).script;
+}
+
 void Engine::SetDialogPos(int index, float x, float y)
 {
     if (index >= 0 && index < static_cast<int>(m_state->dialogs.size())) {
@@ -274,6 +279,70 @@ void Engine::SetDialogShown(int index, bool shown)
         CKTDGUIDialogType& dialog = m_state->dialogs[static_cast<std::size_t>(index)].dialog;
         if (dialog != NULL) {
             dialog->SetShowEnable(shown, shown);
+        }
+    }
+}
+
+void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
+{
+    if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
+        return;
+    }
+    CKTDGUIDialogType& dialog = m_state->dialogs[static_cast<std::size_t>(index)].dialog;
+    if (dialog == NULL) {
+        return;
+    }
+    dialog->SetShowEnable(true, true);
+    dialog->SetPos(D3DXVECTOR2(live.pos[0], live.pos[1]));
+    if (dialog->GetLayer() != live.layer) {
+        dialog->SetLayer(live.layer);
+    }
+    if (dialog->GetFront() != live.front) {
+        dialog->SetFront(live.front);
+    }
+    const std::vector<CKTDGUIControl*>& controls = dialog->GetControlList();
+    const auto controlAt = [&](int i) -> CKTDGUIControl* {
+        return i >= 0 && i < static_cast<int>(controls.size()) ? controls[static_cast<std::size_t>(i)] : nullptr;
+    };
+    const auto staticAt = [&](int i) -> CKTDGUIStatic* {
+        CKTDGUIControl* control = controlAt(i);
+        return control != nullptr && control->GetType() == CKTDGUIControl::UCT_STATIC
+                   ? static_cast<CKTDGUIStatic*>(control)
+                   : nullptr;
+    };
+    for (const LiveSnapshot::Control& c : live.controls) {
+        if (CKTDGUIControl* control = controlAt(c.index); control != nullptr && control->GetShow() != c.shown) {
+            control->SetShow(c.shown);
+        }
+    }
+    for (const LiveSnapshot::Picture& p : live.pictures) {
+        CKTDGUIStatic* control = staticAt(p.control);
+        CKTDGUIControl::CPictureData* picture =
+            control != nullptr && p.index < control->GetPictureNum() ? control->GetPicture(p.index) : nullptr;
+        if (picture == nullptr) {
+            continue;
+        }
+        picture->SetShow(p.shown);
+        if (p.texture.empty()) {
+            continue;
+        }
+        const std::wstring texture = Wide(p.texture), key = Wide(p.key);
+        if (picture->pTexture == NULL || picture->pTexture->texName != texture || picture->pTexture->keyName != key) {
+            if (key.empty()) {
+                picture->SetTex(texture.c_str());
+            } else {
+                picture->SetTex(texture.c_str(), key.c_str());
+            }
+        }
+    }
+    for (const LiveSnapshot::Text& t : live.texts) {
+        CKTDGUIStatic* control = staticAt(t.control);
+        if (control == nullptr || t.index >= control->GetStringNum()) {
+            continue;
+        }
+        const std::wstring text = Wide(t.text);
+        if (const CKTDGUIControl::UIStringData* string = control->GetString(t.index); string != NULL && string->msg != text) {
+            control->SetString(t.index, text.c_str());
         }
     }
 }

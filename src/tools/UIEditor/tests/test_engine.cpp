@@ -171,3 +171,35 @@ TEST_CASE("ui editor: a static's texts are inspected with their string, position
     CHECK(strings[0].pos[0] == 12.0f);
     CHECK(strings[0].font == 3);
 }
+
+TEST_CASE("ui editor: the game's live state goes into an open dialog of the same script")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Text.lua", error) == 0);
+    CHECK(engine->DialogScript(0) == "DLG_Text.lua");
+
+    x2::ui_editor::LiveSnapshot::Dialog live;
+    live.script = "dlg_text.lua";
+    live.pos[0] = 300.0f;
+    live.pos[1] = 40.0f;
+    live.controls = {{0, false}, {7, true}};     // index 7 does not exist: ignored
+    live.texts = {{0, 0, "Lv. 12"}, {0, 3, "none"}};
+    engine->ApplyLive(0, live);
+    engine->ApplyLive(5, live);                  // no such dialog: ignored
+
+    const auto dialogs = engine->Inspect();
+    REQUIRE(dialogs.size() == 1);
+    CHECK(dialogs[0].pos[0] == 300.0f);
+    CHECK(dialogs[0].pos[1] == 40.0f);
+    REQUIRE(dialogs[0].controls.size() == 1);
+    CHECK_FALSE(dialogs[0].controls[0].shown);
+    REQUIRE(dialogs[0].controls[0].strings.size() == 1);
+    CHECK(dialogs[0].controls[0].strings[0].text == "Lv. 12");
+}
