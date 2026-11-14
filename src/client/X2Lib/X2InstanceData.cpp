@@ -122,7 +122,7 @@ void CX2InstanceData::OnFrameMove( double fTime, float fElapsedTime )
 	if ( !m_fRemainedTimeByForceQuitGame.Verify() )
 	{
 		g_pMain->SetQuitType( NetError::ERR_CLIENT_QUIT_01 );
-		PostQuitMessage(0);
+		DXUTPostQuit();
 	}
 
 	if ( GetVerifyGageManagerTimer() > 0.0f )
@@ -136,7 +136,7 @@ void CX2InstanceData::OnFrameMove( double fTime, float fElapsedTime )
 				// kimhc // 김현철 // 안 나가지면 여기서 직접 처리 하자
 				// 전체 해킹 탐지 쪽 코드 리팩토링 좀 해야겠다...
 				g_pMain->SetQuitType( NetError::ERR_CLIENT_QUIT_01 );
-				PostQuitMessage(0);
+				DXUTPostQuit();
 			}
 		}
 	}

@@ -857,7 +857,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 		if ( m_fAutoQuitTime >= m_fAutoQuitCoolTime )
 		{
 			SetQuitType( NetError::ERR_CLIENT_QUIT_01 );
-			PostQuitMessage(0);
+			DXUTPostQuit();
 		}
 	}
 #endif // _DEBUG
@@ -991,7 +991,7 @@ bool CX2Main::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 #endif // TEMP_CRASH_LOG
 
 
-				PostQuitMessage(0);
+				DXUTPostQuit();
 				return true;
 			}
 			break;

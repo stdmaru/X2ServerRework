@@ -31,6 +31,10 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   `pbNoFurtherProcessing`; if `MsgProc` does not stop the message, DXUT's own handling: `WM_SIZE` minimized/restored (pauses the
   loop), `WM_ACTIVATEAPP` (active flag), Alt+Enter toggles full screen when enabled by `DXUTInit` (on in `X2.cpp`), `WM_CLOSE`
   destroys the window and quits.
+- **Quitting from the game** (`XGM_QUIT_GAME` from the quit button, the forced quits of `CX2InstanceData`) calls
+  `DXUTPostQuit`, an SDL quit event that closes the window as `WM_CLOSE` does. The original called `PostQuitMessage`;
+  on Windows that posts `WM_QUIT` to the thread's queue, which SDL's event loop never reads, so until 2026-11-14 the
+  quit button did nothing there (Linux had a replacement `PostQuitMessage` that pushed the SDL event).
 - `DXUTCreateWindow` creates a **resizable** window, as DXUT's was, at least 640×480, with a 1024×768 client area until
   `DXUTCreateDeviceFromSettings` applies the options' resolution. From 2026-11-12 to 2026-11-14 it was of fixed size, so
   tiling window managers such as Hyprland floated it at the game's resolution; it could not be resized, so other

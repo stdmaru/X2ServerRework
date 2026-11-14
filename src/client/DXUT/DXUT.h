@@ -62,6 +62,10 @@ HRESULT DXUTMainLoop();
 // The window procedure: every translated SDL event goes through it, as DXUT's own WndProc did. Exposed, as in DXUT.
 LRESULT CALLBACK DXUTStaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void DXUTShutdown(int nExitCode = 0);
+// Port addition (2026-11-14): the game's PostQuitMessage, an SDL quit event the main loop closes the window on, on
+// every platform. Win32's PostQuitMessage posts WM_QUIT to the thread's queue, which SDL's event loop never reads, so
+// the client's quit button did nothing on Windows.
+void DXUTPostQuit();
 // Port addition (2026-11-12): keeps the window responsive during long loads on the main thread (at most every 100 ms;
 // no-op on other threads). Without it, compositors flag the client as not responding while it loads.
 void DXUTPumpEventsWhileBusy();

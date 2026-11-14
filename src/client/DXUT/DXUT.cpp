@@ -627,6 +627,13 @@ void DXUTShutdown(int nExitCode)
     state.quit = true;
 }
 
+void DXUTPostQuit()
+{
+    SDL_Event event{};
+    event.type = SDL_EVENT_QUIT;
+    SDL_PushEvent(&event);
+}
+
 void DXUTSetCursorSettings(bool bShowCursorWhenFullScreen, bool bClipCursorWhenFullScreen)
 {
     State().showCursorWhenFullScreen = bShowCursorWhenFullScreen;
