@@ -80,7 +80,9 @@ X2_WIN_HOST=user@host tools/win/winbuild.sh                        # windows-deb
 X2_WIN_HOST=user@host tools/win/winbuild.sh windows-release 4
 ```
 
-- Sends tracked files **including uncommitted edits** (`git ls-files` + `tar` over SSH) to `C:/x2/src` (`X2_WIN_DIR` changes it)
+- Sends tracked files **including uncommitted edits** (`git ls-files` + `tar` over SSH) to `C:/x2/src` (`X2_WIN_DIR` changes it);
+  there `untar_changed.py` writes only the files whose contents changed, with the machine's time (local mtimes older
+  than objects built meanwhile left edits unbuilt, 2026-11-14)
   and runs `cmake`/`ctest` in newest Visual Studio environment with C++ and Clang components (`vswhere -requires`: on 2026-10-31
   VM gained Visual Studio Community without C++, and `-latest` alone began selecting it). `build/` stays on machine and is incremental.
 - There, deletes files removed from git history and no longer tracked. `tar` only adds files, and CMake glob kept compiling
