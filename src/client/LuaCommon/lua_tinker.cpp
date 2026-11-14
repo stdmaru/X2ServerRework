@@ -9,6 +9,16 @@
 //#include "stdafx.h"
 #include "lua_tinker.h"
 
+#include "x2/lua/bytecode.h"
+#include "x2/lua/decompile.h"
+
+#include <cstdint>
+#include <mutex>
+#include <span>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+
 
 /*---------------------------------------------------------------------------*/
 /* init                                                                      */
@@ -175,9 +185,50 @@ bool lua_tinker::dofile(lua_State *L, const char *filename)
 /*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*/
+namespace {
+
+// The original archives hold KOG's LuaJIT 2.0 bytecode ("\x1bKL"), which the port's LuaJIT 2.1 (T21) cannot load: such
+// a chunk is decompiled to source first (x2::lua::Decompile, the decompiler the client_data import uses, checked on
+// every script of the client). Scripts are run many times (a dialog's each time it opens), so the source is kept per
+// bytecode, keyed by its bytes. Release builds read only the archives; dev builds usually find the loose source first.
+// Loading runs on the main and the loading thread, hence the lock.
+bool SourceOfBytecode( lua_State* L, const char* buff, size_t len, const std::string*& source )
+{
+	static std::mutex s_mutex;
+	static std::unordered_map<std::string, std::string> s_sources;
+	const std::span<const std::uint8_t> bytes( reinterpret_cast<const std::uint8_t*>( buff ), len );
+	if( !x2::lua::IsBytecode( bytes ) )
+		return false;
+
+	std::string key( buff, len );
+	const std::scoped_lock lock( s_mutex );
+	auto it = s_sources.find( key );
+	if( it == s_sources.end() )
+	{
+		std::string decompiled;
+		std::string error;
+		if( !x2::lua::Decompile( bytes, decompiled, error ) )
+		{
+			lua_tinker::print_error( L, "bytecode chunk not decompiled: %s", error.c_str() );
+			return false;               // loaded as it is, and LuaJIT reports it
+		}
+		it = s_sources.emplace( std::move( key ), std::move( decompiled ) ).first;
+	}
+	source = &it->second;
+	return true;
+}
+
+}  // namespace
+
 bool lua_tinker::dobuffer(lua_State *L, const char* buff, size_t len)
 {
 	bool bOK = true;
+
+	if( const std::string* pSource = nullptr; SourceOfBytecode( L, buff, len, pSource ) )
+	{
+		buff = pSource->data();         // stable: entries are never removed
+		len = pSource->size();
+	}
 
 	lua_pushcclosure(L, on_error, 0);
 	int errfunc = lua_gettop(L);

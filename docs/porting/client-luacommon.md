@@ -29,6 +29,12 @@ Target `x2::client_luacommon`, compiled warning-free on Linux and Windows agains
 - **Encoding**: KOG's LuaJIT had `lua_getencoding`/`lua_setencoding` (legacy CP949 vs. UTF-8 scripts); upstream has neither.
   `KLuabinder`/`KLuaManager` keep only the UTF-8 branch the client used: a buffer is LuaJIT bytecode (`\033`) or text that must
   start with a UTF-8 BOM, as the client's `.kom` scripts do. `_controlfp_s` (x87 precision) removed.
+- **KOG bytecode is decompiled at load** (2026-11-14). Upstream LuaJIT 2.1 cannot load KOG's 2.0 dumps (`\x1bKL`), and the
+  original archives hold every unedited script as one. `lua_tinker::dobuffer`, which every client script goes through,
+  turns such a chunk into source with [`x2::lua::Decompile`](lua.md) first and keeps the source per bytecode (keyed by its
+  bytes, under a lock: the loading thread runs scripts too). Found when the first release build ran (user, 2026-11-14):
+  release builds read only the archives, every dialog script failed, and the first missing control raised the original's
+  `GetRadioButton_LUA` message box ("guild"). Dev builds had hidden it by preferring the client_data's loose source.
 - `LuaHeaderCommon.h` includes `<lua.hpp>` and defines the Lua 5.0 `lua_ref`/`lua_unref`/`lua_getref` compatibility macros
   KOG's LuaJIT still had, on the registry (`luaL_ref`).
 - `KLuaManager.h` redefines `LUA_OK` as `true` (its own meaning); the upstream `LUA_OK` is undefined first.
