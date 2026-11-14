@@ -24,7 +24,7 @@ if(TARGET x2::luajit)
         LuaCommon/lua_tinker.cpp)
     add_library(x2::client_luacommon ALIAS x2_client_luacommon)
     target_include_directories(x2_client_luacommon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/LuaCommon)
-    target_link_libraries(x2_client_luacommon PUBLIC x2::platform x2::luajit)
+    target_link_libraries(x2_client_luacommon PUBLIC x2::platform x2::luajit PRIVATE x2::lua)
 else()
     message(WARNING "LuaJIT not found: the client's LuaCommon is skipped (docs/project/decisions.md, T21)")
 endif()
@@ -47,7 +47,7 @@ target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXU
 target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app x2::render x2::client_d3d9)
 
 # KTDXLIB's mass file manager (KGCMassFileManager, KGCMassFileBufferManager): the client's files by name from the .kom
-# archives on x2::kom and, with X2_DEV_TOOLS, loose files (decision T35, docs/porting/client-ktdxlib.md#mass-files).
+# archives on x2::kom and, with X2_DEBUG, loose files (decision T35, docs/porting/client-ktdxlib.md#mass-files).
 # KTDXLIB links it.
 add_library(x2_client_massfile STATIC KTDXLIB/KGCMassFileBufferManager.cpp KTDXLIB/KGCMassFileManager.cpp)
 add_library(x2::client_massfile ALIAS x2_client_massfile)
