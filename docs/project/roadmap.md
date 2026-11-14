@@ -379,8 +379,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       any dialog at any resolution and aspect, select a control, and see and edit its anchor, position, texture and
       UV in a side panel. It replaces the agent reviewing each screen by captures ([T46](decisions.md),
       [UI editor](../tools/ui-editor.md)). Slices, one PR each: (a) viewer with inspection and resolution/aspect
-      switching (PR #74; works on the desktop, 2026-11-14), then the recorder noting each dialog's game state so a screen
-      opens whole; (b) anchor/STRETCH editing saved to `UIAnchors.lua`; (c) positions, textures
+      switching (PR #74; works on the desktop, 2026-11-14), with zoom, scenes (the recorder notes each dialog's game
+      state, so a screen opens whole) and "Watch game" mirroring a running client, frozen at will; (b) anchor/STRETCH editing saved to `UIAnchors.lua`; (c) positions, textures
       and UV saved to the scripts and `.tet`; then the C++ layout positions migrated into the scripts, screen by screen.
 
 ## Phase 5 — Deep cleanup
