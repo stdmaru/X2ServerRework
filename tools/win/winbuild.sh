@@ -21,7 +21,10 @@ ssh_opts=(-o BatchMode=yes -o LogLevel=ERROR)
 win=${dir//\//\\}
 
 ssh "${ssh_opts[@]}" "$host" "if not exist $win\\src mkdir $win\\src"
-git -C "$repo" ls-files -z | tar -C "$repo" --null -T - -cf - | ssh "${ssh_opts[@]}" "$host" "tar -xf - -C $dir/src"
+# Only files whose contents changed are written there, with the machine's time (untar_changed.py): the local mtimes
+# could be older than objects built there meanwhile, and ninja would skip them.
+scp -q "${ssh_opts[@]}" "$repo/tools/win/untar_changed.py" "$host:$dir/untar_changed.py"
+git -C "$repo" ls-files -z | tar -C "$repo" --null -T - -cf - | ssh "${ssh_opts[@]}" "$host" "python $win\\untar_changed.py $win\\src"
 # tar only adds: files deleted in the history and no longer tracked are removed there too (a CMake glob would still
 # compile them). Files git never had (the machine's own) are left alone. Windows ignores case, so a deleted path that
 # matches a tracked one in another case (soapClient.cpp / SoapClient.cpp) is the tracked file and stays.
