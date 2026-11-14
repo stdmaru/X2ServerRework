@@ -1479,6 +1479,8 @@ class CX2Main : public CKTDXStage
 		bool			DeleteFile( const WCHAR* pFileName );
 
 		void			StateInLog();
+		// The state's enumerator name (XS_*), as the state log and the UI anchor recorder's scenes write it.
+		static const wchar_t* StateName( X2_STATE eState );
 
 
 

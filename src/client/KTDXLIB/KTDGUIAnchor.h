@@ -7,6 +7,7 @@
 #include <vector>
 
 class CKTDGUIDialog;
+class CKTDGUIDialogManager;
 
 // Horizontal anchors (T44): where a dialog or control sits on a screen wider than 4:3. Center keeps the 1024-wide
 // layout column centered (the default, and the original layout at 4:3); left and right hold it to that edge of the
@@ -81,6 +82,15 @@ class CKTDGUIAnchorRecorder
 public:
 	static bool IsOn();
 	static void Note( CKTDGUIDialog& kDialog );
+	// The game state the dialogs are seen in (CX2Main's XS_* name), written with each record (the editor's scenes) and
+	// in the live snapshot.
+	static void SetScene( const wchar_t* pwszScene );
+	static const std::string& Scene();
+	// The live snapshot (tools/ui-editor's "watch game"): with X2_UI_LIVE=1, a few times a second, the shown dialogs
+	// drawn from scripts, in drawing order, with what code changed in them (shown flags, texts, textures), into
+	// UILive.tsv in the game folder. Called by the dialog manager each frame.
+	static bool LiveIsOn();
+	static void NoteLive( const CKTDGUIDialogManager& kManager );
 	// Whether controls note what they draw (CKTDGUIControl::GetDrawnBounds): while recording, or when a tool asks for
 	// it (the UI editor, tools/ui-editor), which reads the bounds without writing the record file.
 	static bool TracksDrawnBounds() { return IsOn() || s_bToolTracking; }

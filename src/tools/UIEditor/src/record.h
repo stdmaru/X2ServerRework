@@ -5,6 +5,7 @@
 // positions at a recorded position.
 
 #include <filesystem>
+#include <set>
 #include <istream>
 #include <string>
 #include <unordered_map>
@@ -20,6 +21,7 @@ public:
     struct Dialog {
         std::vector<Position> positions;    // in the order first seen
         bool placedByCode = false;
+        std::vector<std::string> scenes;    // the game states it was seen in (XS_*), sorted
     };
 
     // An empty record when the file does not exist.
@@ -31,6 +33,9 @@ public:
     // Only for a recorded script (Positions() not null).
     const Dialog& Of(const std::string& script) const;
     std::size_t Size() const { return m_dialogs.size(); }
+    // Every scene recorded, sorted; and the scripts (lowercase, without folder) seen in one, sorted.
+    std::vector<std::string> Scenes() const;
+    std::vector<std::string> ScriptsIn(const std::string& scene) const;
 
 private:
     static std::string Key(const std::string& script);

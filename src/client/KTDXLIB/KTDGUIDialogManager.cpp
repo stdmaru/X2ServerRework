@@ -846,6 +846,11 @@ HRESULT CKTDGUIDialogManager::OnFrameMove( double fTime, float fElapsedTime )
 
 	KTDXPROFILE_END();
 
+#if X2_DEV_TOOLS
+	if ( CKTDGUIAnchorRecorder::LiveIsOn() )
+		CKTDGUIAnchorRecorder::NoteLive( *this );
+#endif
+
 	return S_OK;
 }
 
