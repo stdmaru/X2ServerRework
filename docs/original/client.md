@@ -43,7 +43,7 @@ The ~22 X2Lib files that call `GetDevice()` need individual review.
 | Window / loop | `KTDXApp`, `DXUT/` | SDL3 |
 | Input | `KTDIDevice*` (DirectInput8 in 6 files), `KTDIDeviceWinKey` | SDL3 |
 | IME (Korean/CJK) | `KTDGUIIMEEditBox`, `KHangulPPWSelector` (`ImmGetContext` in 5 files, `WM_IME_*`) | SDL3 text input/IME; IMM32 emulated on SDL ([Client: IME](../porting/client-ime.md)) |
-| Audio | `KTDSManager`, `KTDXDeviceSound`, `KTDSMP3Play`, `FMOD/` (FMOD Ex), DirectSound | miniaudio / SDL3 audio, or current FMOD Core |
+| Audio | `KTDSManager`, `KTDXDeviceSound`, `KTDSMP3Play`, `FMOD/` (FMOD Ex), DirectSound | miniaudio mixing on an SDL3 audio stream ([T45](../project/decisions.md), [Sound](../porting/client-ktdxlib.md#sound)) |
 | Video | `BandiVideo*` (15 files), `bdvid32.dll`: the 30 character creation movies in `data/movie` (MPEG-1 video in AVI, 400×220, 24 fps, I/P frames, no audio; 2026-11-06) | pl_mpeg ([Client: movies](../porting/client-movie.md)) |
 | Recording | Bandicam (`bandicap.h`, `bdcap32.dll`): Scroll Lock video recording, Print Screen JPEG screenshots into `ScreenCapture/` | removed (2026-11-06, [Client](../porting/client.md#bandi-embedded-browser-and-cximage-2026-11-06-clientvideo-browser-cximage)) |
 | Networking | `KTDNManager`, `KTDNUDP`, `KTDNTransfer`, `X2ServerProtocol/Socket` (IOCP in the client too!) | same networking library as the server (Asio) |
