@@ -236,6 +236,12 @@ Known, left for the migration: screens whose texture does not match its rectangl
 them. The character select background, for example, is a 512×512 texture drawn at 1024×768, so it is stretched 33% in
 the original as well.
 
+## State names (2026-11-14, `tools/ui-editor`)
+
+`CX2Main::StateName` gives a state's `XS_*` name; `StateInLog` writes it, and dev builds pass it to the UI anchor
+recorder at each state change (the [UI editor](../tools/ui-editor.md)'s scenes). Change from the original: the class
+change and arcade states were logged as `XS_INVALID` (missing from `StateInLog`'s switch) and now log their own names.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

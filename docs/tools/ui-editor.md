@@ -10,6 +10,7 @@ files, T35 (3)), when the client and the tools are built.
 
 ```bash
 x2_ui_editor <game folder> [--open DLG_x.lua]... [--size 1920x1080]   # the client folder: .kom and data/ (client_data)
+X2_UI_LIVE=1 X2_RECORD_UI_ANCHORS=1 ./x2                               # in the game folder: what "Start game" runs
 ```
 
 In the build: `build/linux-debug/src/tools/UIEditor/x2_ui_editor`. Like the client, it is static apart from libc, so the
@@ -19,11 +20,29 @@ container's build runs on the desktop.
 
 | Panel | Contents |
 |---|---|
-| Dialogs (left) | Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
-| Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or at 100%. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
+| Dialogs (left) | "Watch game", "Freeze" and "Start game" ([below](#watch-game)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
+| Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or zoomed with the wheel around the pointer (10%–800%, "100%" for one pixel per pixel), panned with the right or middle button. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
 | Inspector (right) | The dialog: script, name, anchor (declared or the default), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor, offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels |
 
 Slice (a) only inspects; editing the anchor (b) and positions, textures and UV (c) follow ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+
+## Watch game
+
+A script alone is not a screen: the game's code opens several dialogs, moves them, hides the statics of the modes not
+in use, fills texts and swaps textures. "Watch game" shows what a running client shows:
+
+- The client, run in the game folder with `X2_UI_LIVE=1` (a dev build), writes `UILive.tsv` there a few times a second
+  ([UI anchors](ui-anchors.md), `CKTDGUIAnchorRecorder::NoteLive`): the game state, its resolution, and the shown
+  dialogs drawn from scripts, back to front, each with its position, layer, and its controls' and pictures' shown
+  flags, textures and texts.
+- The editor reads it when it changes (`live.h`) and mirrors it: the n-th open dialog of a script stands for the
+  game's n-th, the others close, the missing ones open, and each takes the game's state (`Engine::ApplyLive`); the
+  screen takes the nearest of the editor's sizes to the game's resolution. "Freeze" stops following, to work on that
+  state; dialogs opened by hand while watching close at the next change.
+- "Start game" runs `x2` from the game folder with `X2_UI_LIVE=1` and `X2_RECORD_UI_ANCHORS=1`, its output in the
+  editor's terminal; closing the editor leaves it running.
+- Not mirrored: dialogs built in code without a script, controls and pictures code adds after the script, and
+  positions code gives controls (they come in with slice (c)'s migration).
 
 ## How it works
 
@@ -50,15 +69,18 @@ Slice (a) only inspects; editing the anchor (b) and positions, textures and UV (
 - **Positions of dialogs placed by code** (T46 (3)): until a screen's layout positions move into its scripts, a dialog
   recorded by `X2_RECORD_UI_ANCHORS` ([UI anchors](ui-anchors.md)) opens at its first recorded position
   (`record.h` reads `UIAnchorsRecord.tsv` in the game folder); the others are listed in the inspector. A dialog never
-  recorded opens at its script's position.
+  recorded opens at its script's position. The record also gives the scenes; while watching, it is read again when the
+  game rewrites it.
 
 ## Tests (`ctest -R ui_editor`)
 
 `x2_ui_editor_tests`, headless on the null render backend: the script list (sorted, `.kom/` skipped), the record file
-(positions by script without folder or case, each once, placed by code), and the engine on a temporary game folder
+(positions by script without folder or case, each once, placed by code; scenes and their scripts, older records without
+them), the live snapshot (records under their dialog, escaped texts, empty fields), and the engine on a temporary game folder
 with loose files only: a missing script refused; a dialog opened, drawn at 1280×720 and at 1024×768, its controls named
 (`#1` when unnamed), boxes in layout units and pixels, the slot manager stub; moved and closed; a static's text
-inspected (not drawn: the tests have no fonts).
+inspected (not drawn: the tests have no fonts); the game's live state put into a dialog (position, a control hidden,
+a text), indexes it lacks ignored.
 
 ## Status
 
@@ -72,5 +94,7 @@ Texts the game's code fills at run time (names, numbers, counts) are empty in th
 
 Known: the game's own input still reads the system mouse, so a button under the pointer shows its hover picture.
 
-Next ([T46](../project/decisions.md)): the recorder notes the game state each dialog was seen in, so a whole screen
-opens at once; then slices (b) and (c).
+Duplicated texts in a script alone (`DLG_UI_PVP_SETTINGS_MAP.lua`, 2026-11-14) are the statics of every mode, which
+the game's code hides but the one in use: "Watch game" shows them as the game does.
+
+Next ([T46](../project/decisions.md)): slices (b) and (c).

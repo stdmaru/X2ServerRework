@@ -9,10 +9,15 @@ in the original 1024×768 layout. Two parts:
 1. **Recording, in the client** (`X2_DEV_TOOLS` builds only): run the client with `X2_RECORD_UI_ANCHORS=1`. Every
    dialog drawn from a script notes, for each control, the box of what it drew (layout units, relative to the dialog;
    the quads of `CKTDGUIControl::UpdateVertex`, transparent ones skipped) and every position the dialog was drawn at
-   (up to 16), and whether code moved the dialog after its script loaded. Unnamed controls are noted as `#<index>`. The file `UIAnchorsRecord.tsv` in the game folder is rewritten
+   (up to 16), whether code moved the dialog after its script loaded, and the game states it was seen in (`CX2Main`'s
+   `XS_*` names, up to 16; a tenth column, `scenes`, since 2026-11-14, absent in older records). Unnamed controls are
+   noted as `#<index>`. The file `UIAnchorsRecord.tsv` in the game folder is rewritten
    every 2 seconds when something new was seen, merged with what earlier runs recorded, so several play sessions add up
    (`CKTDGUIAnchorRecorder`, `KTDGUIAnchor.cpp`). Controls that draw only text (edit boxes) are not recorded; they
    follow their dialog.
+
+   With `X2_UI_LIVE=1` the client also writes `UILive.tsv` there, a snapshot of the UI on screen for the
+   [UI editor](ui-editor.md#watch-game)'s "Watch game" (format in `CKTDGUIAnchorRecorder::NoteLive`).
 2. **Proposal** (`propose.py`): reads one or more record files and writes a proposed `UIAnchors.lua` with the evidence
    as comments, plus a report on stderr.
 

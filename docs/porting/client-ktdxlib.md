@@ -519,6 +519,11 @@ with the centered HUD too.
 [UI editor](../tools/ui-editor.md) picks and outlines controls with it without writing the record file. The game never
 turns it on.
 
+The recorder also knows the game state (`CKTDGUIAnchorRecorder::SetScene`, set by `CX2Main` at each state change) and,
+with `X2_UI_LIVE=1`, the dialog manager's frame step writes the live snapshot the editor watches
+(`NoteLive`, at most every 200 ms and only when it changed; written to `UILive.tsv.tmp` and renamed over `UILive.tsv`).
+`CKTDGUIDialogManager::GetDialogsInOrder` exposes the managed dialogs for it.
+
 ## Dragging dialogs (2026-11-13, `client/widescreen-screens`)
 
 **Behavior change.** Dialogs that allow it (`SetEnableMoveByDrag`: message boxes, field and world maps, messenger,
