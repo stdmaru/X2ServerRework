@@ -81,5 +81,12 @@ class CKTDGUIAnchorRecorder
 public:
 	static bool IsOn();
 	static void Note( CKTDGUIDialog& kDialog );
+	// Whether controls note what they draw (CKTDGUIControl::GetDrawnBounds): while recording, or when a tool asks for
+	// it (the UI editor, tools/ui-editor), which reads the bounds without writing the record file.
+	static bool TracksDrawnBounds() { return IsOn() || s_bToolTracking; }
+	static void SetToolTracking( bool bOn ) { s_bToolTracking = bOn; }
+
+private:
+	static inline bool s_bToolTracking = false;
 };
 #endif

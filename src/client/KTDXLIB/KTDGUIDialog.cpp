@@ -454,7 +454,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 
 #if X2_DEV_TOOLS
 		const bool bRecord = CKTDGUIAnchorRecorder::IsOn();
-		if ( bRecord )
+		if ( CKTDGUIAnchorRecorder::TracksDrawnBounds() )
 		{
 			for ( CKTDGUIControl* pControl : m_ControlsList )
 				if ( pControl != NULL )
