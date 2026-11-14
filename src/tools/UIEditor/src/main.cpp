@@ -250,10 +250,12 @@ void Poll(x2::ui_editor::Engine& engine, EditorState& state)
 // The client in the game folder, with the live snapshot and the anchor recorder on; its output goes to the editor's.
 void StartGame(EditorState& state)
 {
-    std::filesystem::path program = state.gameFolder / "x2.exe";
-    if (!std::filesystem::exists(program)) {
-        program = state.gameFolder / "x2";
-    }
+    // This platform's client only: a game folder can hold both (the Windows build is run there under Wine too).
+#ifdef _WIN32
+    const std::filesystem::path program = state.gameFolder / "x2.exe";
+#else
+    const std::filesystem::path program = state.gameFolder / "x2";
+#endif
     if (!std::filesystem::exists(program)) {
         state.message = "no x2 in " + state.gameFolder.string() + " (tools/client/install.sh)";
         return;
