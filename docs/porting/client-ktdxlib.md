@@ -513,6 +513,13 @@ Known, not fixed: UI pieces drawn at a fractional pixel with linear filtering pi
 bar's end piece (`EXP_BG_RIGHT_2`, next to a transparent white texel) shows a light 1-pixel column at 1920×1080; it does
 with the centered HUD too.
 
+## Pictures snap with floor (2026-11-14, `tools/ui-editor`)
+
+**Behavior change.** `CKTDGUIControl` snaps a picture's corners to whole pixels before the D3D9 half-pixel offset. The
+original used `(int)x - 0.5f`, which rounds negative positions toward zero: a picture starting left of the screen was
+drawn up to a pixel right of where it belongs, leaving a transparent column at the edge (the HUD portrait the
+client_data puts at -2, user, 2026-11-14). It is `std::floor` now; positive positions snap as before.
+
 ## Drawn bounds for tools (2026-11-14, `tools/ui-editor`)
 
 `CKTDGUIControl` notes the box of what it draws (`GetDrawnBounds`) while the anchor recorder is on

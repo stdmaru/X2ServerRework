@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <cmath>
 #include "x2/platform/file.h"
 #include "./KTDGUIControl.h"
 
@@ -482,17 +483,19 @@ void CKTDGUIControl::UpdateVertex( VERTEX_UI& vertexLT, VERTEX_UI& vertexRT, VER
 
 
 
-	vertexLT.x	= (int)vertexLT.x - 0.5f;
-	vertexLT.y	= (int)vertexLT.y - 0.5f;
+	// Snapped to whole pixels with floor: (int) rounded negative positions toward zero, so a picture starting left of
+	// the screen (the HUD portrait at -2) moved up to a pixel right of the others and left a gap at the edge.
+	vertexLT.x	= std::floor( vertexLT.x ) - 0.5f;
+	vertexLT.y	= std::floor( vertexLT.y ) - 0.5f;
 
-	vertexRT.x	= (int)vertexRT.x - 0.5f;
-	vertexRT.y	= (int)vertexRT.y - 0.5f;
+	vertexRT.x	= std::floor( vertexRT.x ) - 0.5f;
+	vertexRT.y	= std::floor( vertexRT.y ) - 0.5f;
 
-	vertexLB.x	= (int)vertexLB.x - 0.5f;
-	vertexLB.y	= (int)vertexLB.y - 0.5f;
+	vertexLB.x	= std::floor( vertexLB.x ) - 0.5f;
+	vertexLB.y	= std::floor( vertexLB.y ) - 0.5f;
 
-	vertexRB.x	= (int)vertexRB.x - 0.5f;
-	vertexRB.y	= (int)vertexRB.y - 0.5f;
+	vertexRB.x	= std::floor( vertexRB.x ) - 0.5f;
+	vertexRB.y	= std::floor( vertexRB.y ) - 0.5f;
 
 
 
