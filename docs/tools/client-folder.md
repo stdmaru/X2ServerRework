@@ -14,7 +14,7 @@ The ported client runs from a folder laid out as in decision T35 (3) (the launch
 - **`general.ess`**: the string table (UTF-16LE, XORed lines), loose in the original client; without it every
   `GET_STRING` is empty (message boxes without text).
 - **Loose folders** the client reads from disk, outside the archives: `movie/` (the `.avi` of the class creation
-  screen, [Client: movies](../porting/client-movie.md)) and `music/` (`.ogg`; the sound backend is silent for now).
+  screen, [Client: movies](../porting/client-movie.md)) and `music/` (`.ogg`, streamed; [Sound](../porting/client-ktdxlib.md#sound)).
   Both come unchanged from the original client (`_client/data`).
 - **Written by the client** in the game root: `ErrorLog.txt`, `DialogLog.txt`, `OpenScriptFile.log`, `State.log`,
   `MachineId.info` and the user's settings (`GameOptions.lua`, `TutorSystem.lua`, `SelectedServerGroup.lua`). The

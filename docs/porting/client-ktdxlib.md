@@ -173,18 +173,36 @@ cannot be read, as on the devices where the original set `m_bCannotStretchRect`.
 
 ### Sound
 
-A silent backend (`KTDSSoundSystem.h`) in place of FMOD Ex until the [audio step](../project/roadmap.md#phase-4--client-graphics):
-`CKTDSManager` is always initialized, with no system object and no 3D sound; its music player (`CKTDSMP3Play`) always
-exists and keeps the file it was asked to play, loop, volume and pause, so the options and the states that read them
-behave; sound devices (`CKTDXDeviceSound`) load without reading their file and never play (`IsPlaying` is false). Only
-these files and `KTDSSoundSystem.h` change when the real backend comes.
+The sound backend is the client's sound system ([T45](../project/decisions.md); `src/client/Audio`, `x2::client_audio`,
+2026-11-13, `client/audio`): miniaudio 0.11.22 decodes and mixes, an SDL3 audio stream (48 kHz stereo float) pulls the
+mix. `KTDSSoundSystem.h` names it; only `KTDSManager`, `KTDSMP3Play` and `KTDXDeviceSound` use it, with their original
+interfaces, so the 149 files that use sound are unchanged.
+
+- **Effects** (`CKTDXDeviceSound`): the file is decoded once when the device loads (from memory, on whichever thread
+  loads), PCM `.wav` or Vorbis `.ogg`, as FMOD decompressed it into memory. Each `Play` takes a voice of a pool of 128
+  (FMOD's channel count); a full pool gives the voice that started first to the new sound. As with FMOD's single
+  `m_pChannel`, the device follows only its last play: `Wait`, `Stop`, `IsPlaying` and `SetVolume` act on it, earlier
+  plays run to their end, and unloading the device stops all of them (releasing an FMOD sound did).
+- **3D**: when the manager is capable and enabled, the device was opened 3D and `Play` asks for it: linear roll-off
+  from 0.1 to 6 distance units (800, `m_fDistanceUnit`) or the device's `SetMax3DDistance`, no Doppler (the original
+  gave FMOD no velocities), around the listener of `SetListenerData`. The game's space is left-handed (Direct3D, and
+  FMOD's default); miniaudio's is right-handed, so z is mirrored at the boundary. As in the original, `Set3DPosition`
+  is kept for the next play: a playing voice stays where it started.
+- **Music** (`CKTDSMP3Play`): one track, found with `GetPullPath` among the data directories (`data/music/*.ogg`), read
+  into memory and decoded as it plays, with loop, volume and pause. It has its own stream outside the voice pool, so it
+  cannot lose its channel (the original's `FIX_STOLEN_MUSIC_CHANNEL`).
+- **Volume**: the options' levels (effects in [-3000, -500], music in [-3000, -1]) become a gain as the original computed
+  it, `((3000 + level) mod 3000) / 3000` (`x2::audio::GainFromLevel`).
+- **No device**: when SDL cannot open an audio device (no driver, no server), the system runs without output: the
+  client behaves the same, silent, and the reason is logged (`KEM_ERROR366`). `m_bInit` is false only when the mixer
+  itself cannot start, and then there is no music player, as in the original.
 
 ### Behavior changes
 
 | Where | Original | Port | Why |
 |---|---|---|---|
-| `CKTDSManager` | Not initialized when FMOD failed; no music player then | Always initialized, the music player always there | Silent backend |
-| `CKTDSMP3Play::Play` | Recorded the file only when its path resolved | Records it whenever it is given | Nothing to resolve without playback |
+| `CKTDSManager` | 64 channels shared by effects and music (128 with `FIX_STOLEN_MUSIC_CHANNEL`) | 128 voices for effects, the music on its own stream | The music never loses its channel |
+| `CKTDSManager` | Not initialized when the audio device failed | Initialized and silent: the mixer runs without output | The client behaves the same with or without a device |
 | `CKTDXDeviceRenderTargetTexture::EndRender` | Back to the back buffer | Back to the target in use before `BeginRender` | Nested targets keep working |
 | `CKTDXDeviceRenderTargetTexture::RenderQuad` | Drew its XYZ_TEX1 vertices as `DVB_TYPE_XYZRHW_DIFFUSE_TEX1` (wrong layout) | `DVB_TYPE_XYZ_TEX1` | Evident bug |
 | Render target copies | `StretchRect` | Fail quietly | No blit in `x2::render` yet |
@@ -193,7 +211,11 @@ these files and `KTDSSoundSystem.h` change when the real backend comes.
 
 On the null backend ([source](../../src/client/tests/test_ktdxlib.cpp)): the state manager's cache and stack and the
 viewport of a bound target; dynamic vertex data drawn in parts (lists, strips sharing their last vertices, multipass,
-split data); render target textures created, bound and released while bound; the silent sound backend.
+split data); render target textures created, bound and released while bound; the sound manager without an audio device.
+The sound system itself is tested in `x2_client_tests -tc="audio*"` ([source](../../src/client/tests/test_audio.cpp)):
+decoding, voices to their end, looping and paused, the pool taking its oldest voice, 3D roll-off and left/right in the
+game's space, and the music stream. With `X2_MASSFILE_CLIENT_DATA`, every sound of the archives and every music track
+decodes (6,481 and 134 on 2026-11-13, about 20 s on 8 threads).
 
 ## Whole engine (2026-11-06, `client/ktdxlib-build`)
 
