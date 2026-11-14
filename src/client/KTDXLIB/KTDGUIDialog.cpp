@@ -1962,6 +1962,7 @@ bool CKTDGUIDialog::SetAnchor_LUA( const char* pszAnchor )
 	if ( ParseUIAnchor( pszAnchor, eAnchor ) == false )
 		return false;
 	SetAnchor( eAnchor );
+	m_bAnchorFromScript = true;
 	return true;
 }
 

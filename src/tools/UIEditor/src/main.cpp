@@ -1,5 +1,6 @@
-// x2_ui_editor: the client's dialogs drawn by the client's own GUI code, at any resolution and aspect, to inspect (and,
-// in later slices, edit) anchors, positions, textures and UV. Decision T46; docs/tools/ui-editor.md.
+// x2_ui_editor: the client's dialogs drawn by the client's own GUI code, at any resolution and aspect, to inspect them
+// and edit their anchors (UIAnchors.lua); positions, textures and UV in a later slice. Decision T46;
+// docs/tools/ui-editor.md.
 //
 //   x2_ui_editor [<game folder>] [--open DLG_x.lua]... [--size WxH]
 //
@@ -23,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <functional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -30,6 +32,7 @@
 
 namespace {
 
+using x2::ui_editor::AnchorEntry;
 using x2::ui_editor::ControlInfo;
 using x2::ui_editor::DialogInfo;
 
@@ -83,6 +86,13 @@ struct EditorState {
     std::filesystem::file_time_type liveTime{};
     std::uint64_t lastPoll = 0;
     SDL_Process* game = nullptr;        // started by "Start game"
+
+    // UIAnchors.lua, as the inspector edits it. The scripts edited this run get their entry put back into their
+    // dialogs every frame, over what opening or watching the game set (the game reads the file when it starts).
+    x2::ui_editor::AnchorsFile anchors;
+    std::filesystem::path anchorsPath;
+    std::set<std::string> anchorsEdited;    // lowercase
+    bool quitAsked = false;
 };
 
 std::string Key(const std::string& script)
@@ -90,6 +100,52 @@ std::string Key(const std::string& script)
     std::string key = std::filesystem::path(script).filename().string();
     std::transform(key.begin(), key.end(), key.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     return key;
+}
+
+void LoadAnchors(EditorState& state)
+{
+    std::string error;
+    state.anchorsPath = x2::ui_editor::AnchorsFile::Find(state.gameFolder);
+    state.anchors = x2::ui_editor::AnchorsFile::Load(state.anchorsPath, error);
+    state.anchorsEdited.clear();
+    if (!error.empty()) {
+        state.message = error;
+    }
+}
+
+// Changes a script's entry in UIAnchors.lua and puts it into the open dialogs of that script.
+void EditAnchors(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script, const AnchorEntry& entry)
+{
+    const AnchorEntry previous = state.anchors.Get(script);
+    state.anchors.Set(script, entry);
+    const std::string key = Key(script);
+    state.anchorsEdited.insert(key);
+    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
+        if (Key(engine.DialogScript(i)) == key) {
+            engine.ApplyAnchors(i, state.anchors.Get(script), previous);
+        }
+    }
+}
+
+void ReapplyAnchors(x2::ui_editor::Engine& engine, const EditorState& state)
+{
+    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
+        const std::string& script = engine.DialogScript(i);
+        if (state.anchorsEdited.count(Key(script)) != 0) {
+            engine.ApplyAnchors(i, state.anchors.Get(script), {});
+        }
+    }
+}
+
+bool SaveAnchors(EditorState& state)
+{
+    std::string error;
+    if (!state.anchors.Save(state.anchorsPath, error)) {
+        state.message = error;
+        return false;
+    }
+    state.message = "saved " + state.anchorsPath.string();
+    return true;
 }
 
 // The nearest of the editor's aspects and heights to a resolution.
@@ -314,9 +370,27 @@ void WatchControls(EditorState& state)
     }
 }
 
+void AnchorsFileControls(EditorState& state)
+{
+    ImGui::BeginDisabled(!state.anchors.Changed());
+    if (ImGui::SmallButton("Save UIAnchors.lua")) {
+        SaveAnchors(state);
+    }
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("%s\nThe game reads it when it starts.", state.anchorsPath.string().c_str());
+    }
+    ImGui::SameLine();
+    ImGui::TextDisabled("%s", state.anchors.Changed() ? "unsaved changes" : "no changes");
+    if (!state.anchors.Problem().empty()) {
+        ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "UIAnchors.lua, %s", state.anchors.Problem().c_str());
+    }
+}
+
 void DialogsPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     WatchControls(state);
+    AnchorsFileControls(state);
     ImGui::Separator();
     ImGui::SetNextItemWidth(-FLT_MIN - ImGui::CalcTextSize("Open scene").x - ImGui::GetStyle().FramePadding.x * 4);
     const char* preview = state.scene == 0 ? "All scripts" : state.scenes[static_cast<std::size_t>(state.scene - 1)].c_str();
@@ -398,7 +472,8 @@ void DialogsPanel(x2::ui_editor::Engine& engine, EditorState& state)
     }
 }
 
-void PictureTable(const ControlInfo& control)
+// addZone: makes a picture's width a stretch zone of its dialog.
+void PictureTable(const ControlInfo& control, const std::function<void(float, float)>& addZone)
 {
     if (control.pictures.empty()) {
         return;
@@ -411,6 +486,17 @@ void PictureTable(const ControlInfo& control)
                                   (picture.key.empty() ? "" : " / " + picture.key);
         if (ImGui::TreeNode(label.c_str())) {
             ImGui::Text("shown: %s", picture.shown ? "yes" : "no");
+            float lo = picture.points[0][0], hi = lo;
+            for (const auto& point : picture.points) {
+                lo = std::min(lo, point[0]);
+                hi = std::max(hi, point[0]);
+            }
+            if (hi > lo && ImGui::SmallButton("Make its width a stretch zone")) {
+                addZone(lo + control.offset[0], hi + control.offset[0]);
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("The dialog's STRETCH controls grow there: a plain middle between end pieces");
+            }
             ImGui::Text("texture size: %.0f x %.0f", static_cast<double>(picture.textureSize[0]),
                         static_cast<double>(picture.textureSize[1]));
             static const char* const corners[] = {"left top", "right top", "left bottom", "right bottom"};
@@ -468,6 +554,91 @@ void StringTable(const ControlInfo& control)
     }
 }
 
+constexpr const char* kAnchorChoices[] = {"CENTER", "LEFT", "RIGHT", "STRETCH"};
+
+// A choice of `none` or one of the first `count` anchors; true when one was picked.
+bool AnchorCombo(const char* label, const char* none, std::string& value, int count)
+{
+    bool picked = false;
+    if (ImGui::BeginCombo(label, value.empty() ? none : value.c_str())) {
+        if (ImGui::Selectable(none, value.empty())) {
+            value.clear();
+            picked = true;
+        }
+        for (int i = 0; i < count; ++i) {
+            if (ImGui::Selectable(kAnchorChoices[i], value == kAnchorChoices[i])) {
+                value = kAnchorChoices[i];
+                picked = true;
+            }
+        }
+        ImGui::EndCombo();
+    }
+    return picked;
+}
+
+const char* AnchorSource(bool declared, bool fromScript, const char* none)
+{
+    return !declared ? none : fromScript ? " (the script's SetAnchor)" : "";
+}
+
+void DialogAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog)
+{
+    AnchorEntry entry = state.anchors.Get(dialog.script);
+    ImGui::BeginDisabled(dialog.anchorFromScript);
+    if (AnchorCombo("UIAnchors.lua##dialog", "(none: centered)", entry.dialog, 3)) {
+        EditAnchors(engine, state, dialog.script, entry);
+    }
+    ImGui::EndDisabled();
+    if (dialog.anchorFromScript && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("The script sets it (SetAnchor), which wins over UIAnchors.lua");
+    }
+    if (ImGui::TreeNode("zones", "stretch zones: %zu", entry.zones.size())) {
+        ImGui::TextDisabled("where its STRETCH controls grow (layout x from the dialog); none: scaled whole");
+        for (std::size_t z = 0; z < entry.zones.size(); ++z) {
+            ImGui::PushID(static_cast<int>(z));
+            float zone[2] = {entry.zones[z].first, entry.zones[z].second};
+            ImGui::SetNextItemWidth(-FLT_MIN - ImGui::CalcTextSize("x").x - ImGui::GetStyle().FramePadding.x * 4);
+            if (ImGui::DragFloat2("##zone", zone, 1.0f, -4096.0f, 4096.0f, "%.0f") && zone[0] < zone[1]) {
+                entry.zones[z] = {zone[0], zone[1]};
+                EditAnchors(engine, state, dialog.script, entry);
+            }
+            ImGui::SameLine();
+            const bool remove = ImGui::SmallButton("x");
+            ImGui::PopID();
+            if (remove) {
+                entry.zones.erase(entry.zones.begin() + static_cast<std::ptrdiff_t>(z));
+                EditAnchors(engine, state, dialog.script, entry);
+                break;
+            }
+        }
+        if (ImGui::SmallButton("Add zone")) {
+            entry.zones.emplace_back(0.0f, 1024.0f);
+            EditAnchors(engine, state, dialog.script, entry);
+        }
+        ImGui::TreePop();
+    }
+}
+
+void ControlAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog,
+                         const ControlInfo& control)
+{
+    AnchorEntry entry = state.anchors.Get(dialog.script);
+    std::string value = control.named ? entry.Control(control.name) : std::string();
+    ImGui::BeginDisabled(!control.named || control.anchorFromScript);
+    if (AnchorCombo("UIAnchors.lua##control", "(none: the dialog's)", value, 4)) {
+        entry.SetControl(control.name, value);
+        EditAnchors(engine, state, dialog.script, entry);
+    }
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        if (!control.named) {
+            ImGui::SetTooltip("UIAnchors.lua names its controls: this one has no name");
+        } else if (control.anchorFromScript) {
+            ImGui::SetTooltip("The script sets it (SetAnchor), which wins over UIAnchors.lua");
+        }
+    }
+}
+
 void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     const Selection& sel = state.selected;
@@ -482,7 +653,9 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     if (!dialog.loaded) {
         ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "the script failed: see ErrorLog.txt");
     }
-    ImGui::Text("anchor: %s%s", dialog.anchor.c_str(), dialog.anchorDeclared ? "" : " (default)");
+    ImGui::Text("anchor: %s%s", dialog.anchor.c_str(),
+                AnchorSource(dialog.anchorDeclared, dialog.anchorFromScript, " (default)"));
+    DialogAnchorEditor(engine, state, dialog);
     ImGui::Text("position: %.0f, %.0f (drawn at %.0f, %.0f)", static_cast<double>(dialog.pos[0]),
                 static_cast<double>(dialog.pos[1]), static_cast<double>(dialog.canvasPos[0]),
                 static_cast<double>(dialog.canvasPos[1]));
@@ -535,7 +708,9 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     ImGui::SeparatorText("Control");
     ImGui::Text("name: %s%s", control.name.c_str(), control.named ? "" : " (unnamed)");
     ImGui::Text("type: %s", control.typeName.c_str());
-    ImGui::Text("anchor: %s%s", control.anchor.c_str(), control.anchorDeclared ? "" : " (the dialog's)");
+    ImGui::Text("anchor: %s%s", control.anchor.c_str(),
+                AnchorSource(control.anchorDeclared, control.anchorFromScript, " (the dialog's)"));
+    ControlAnchorEditor(engine, state, dialog, control);
     ImGui::Text("shown: %s", control.shown ? "yes" : "no");
     ImGui::Text("offset: %.0f, %.0f", static_cast<double>(control.offset[0]), static_cast<double>(control.offset[1]));
     if (control.drawn) {
@@ -548,7 +723,40 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
         ImGui::TextDisabled("drew nothing in the last frame");
     }
     StringTable(control);
-    PictureTable(control);
+    PictureTable(control, [&](float lo, float hi) {
+        AnchorEntry entry = state.anchors.Get(dialog.script);
+        entry.zones.emplace_back(lo, hi);
+        std::sort(entry.zones.begin(), entry.zones.end());
+        EditAnchors(engine, state, dialog.script, entry);
+    });
+}
+
+// Closing with unsaved UIAnchors.lua changes asks first; true when the editor should close.
+bool QuitPopup(EditorState& state)
+{
+    if (state.quitAsked) {
+        ImGui::OpenPopup("Unsaved changes");
+        state.quitAsked = false;
+    }
+    bool quit = false;
+    if (ImGui::BeginPopupModal("Unsaved changes", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("UIAnchors.lua has unsaved changes.");
+        if (ImGui::Button("Save and close")) {
+            quit = SaveAnchors(state);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close without saving")) {
+            quit = true;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel")) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+    return quit;
 }
 
 // The topmost drawn control under a render target pixel: the last open dialog first, its last control first.
@@ -756,6 +964,7 @@ int main(int argc, char** argv)
         state.scriptByKey.emplace(Key(script), script);
     }
     LoadRecord(state);
+    LoadAnchors(state);
     for (const std::string& script : toOpen) {
         OpenScript(*engine, state, script);
     }
@@ -764,6 +973,10 @@ int main(int argc, char** argv)
     bool running = true;
     while (running) {
         running = x2::app::PollEvents([&](const SDL_Event& event) { gui->ProcessEvent(event); }, window->Id());
+        if (!running && state.anchors.Changed()) {
+            running = true;     // asked first (QuitPopup)
+            state.quitAsked = true;
+        }
         if (window->Minimized()) {
             x2::app::WaitForEvents(100);
             continue;
@@ -773,6 +986,7 @@ int main(int argc, char** argv)
         last = now;
 
         Poll(*engine, state);
+        ReapplyAnchors(*engine, state);
         const unsigned height = state.exact[0] != 0 ? state.exact[1] : kHeights[state.height];
         const unsigned width = state.exact[0] != 0 ? state.exact[0] : WidthFor(height, kAspects[state.aspect].ratio);
         if (!engine->Render(width, height, elapsed, error)) {
@@ -806,6 +1020,9 @@ int main(int argc, char** argv)
             InspectorPanel(*engine, state);
         }
         ImGui::End();
+        if (QuitPopup(state)) {
+            running = false;
+        }
 
         x2::render::CommandBuffer* commands = device->AcquireCommandBuffer();
         x2::render::SwapchainTexture swapchain;

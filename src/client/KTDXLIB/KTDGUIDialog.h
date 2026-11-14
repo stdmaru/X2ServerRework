@@ -161,6 +161,10 @@ class CKTDGUIDialog
 		bool			SetAnchor_LUA( const char* pszAnchor );
 		UIAnchor		GetAnchor() const				{ return m_eAnchor; }
 		bool			IsAnchorDeclared() const		{ return m_bAnchorDeclared; }
+		// Declared by the script itself (SetAnchor in Lua), which UIAnchors.lua does not override.
+		bool			IsAnchorFromScript() const		{ return m_bAnchorFromScript; }
+		// Back to no declared anchor (centered), for the UI editor when an entry of UIAnchors.lua goes.
+		void			ClearAnchor()					{ m_eAnchor = UIAnchor::Center; m_bAnchorDeclared = false; m_bAnchorFromScript = false; }
 		float			GetAnchorShift() const;
 		D3DXVECTOR2		GetCanvasPos() const			{ return D3DXVECTOR2( m_Pos.x + GetAnchorShift(), m_Pos.y ); }
 		void			SetCanvasPos( const D3DXVECTOR2& pos ) { SetPos( D3DXVECTOR2( pos.x - GetAnchorShift(), pos.y ) ); }
@@ -548,6 +552,7 @@ private:
 
 		UIAnchor	m_eAnchor = UIAnchor::Center;
 		bool		m_bAnchorDeclared = false;
+		bool		m_bAnchorFromScript = false;
 		CKTDGUIStretch	m_kStretch;
 
 #ifdef X2_DEBUG

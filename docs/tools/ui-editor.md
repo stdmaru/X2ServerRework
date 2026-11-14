@@ -20,11 +20,33 @@ container's build runs on the desktop.
 
 | Panel | Contents |
 |---|---|
-| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
+| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Save UIAnchors.lua" and whether it has unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
 | Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or zoomed with the wheel around the pointer (10%–800%, "100%" for one pixel per pixel), panned with the right or middle button. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
-| Inspector (right) | The dialog: script, name, anchor (declared or the default), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor, offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels |
+| Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels, with "Make its width a stretch zone" |
 
-Slice (a) only inspects; editing the anchor (b) and positions, textures and UV (c) follow ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+Slice (a) inspects, slice (b) edits the anchors ([below](#editing-anchors)); positions, textures and UV (c) follow ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+
+## Editing anchors
+
+Slice (b), 2026-11-14 (`tools/ui-editor-anchors`). The inspector edits the selected dialog's entry in
+`UIAnchors.lua` ([KTDXLIB](../porting/client-ktdxlib.md#anchors-2026-11-13-clientwidescreen-anchors)), found under the
+client_data (`data/`, any folder; a new one goes to `data/ui/scripts/`):
+
+- **Dialog anchor:** none (centered), `CENTER`, `LEFT` or `RIGHT`. **Control anchor:** none (the dialog's), `CENTER`,
+  `LEFT`, `RIGHT` or `STRETCH`. Unnamed controls cannot be declared (the file names them), and anchors the script sets
+  itself (`SetAnchor` in Lua, `IsAnchorFromScript`) cannot be changed here: they win over the file in the game.
+- **Stretch zones** (`STRETCH_ZONES`, layout x from the dialog): added, dragged or typed (Ctrl + click), removed; a
+  picture's "Make its width a stretch zone" adds the span of that piece (the plain middle of a bar).
+- An edit shows at once in every open dialog of that script (`Engine::ApplyAnchors`, which also clears what the entry
+  no longer declares), and is put back every frame over what opening a dialog or watching the game sets. The running
+  game reads the file when it starts, so it shows a saved change after a restart; while watching, an anchor removed
+  from the file comes back from the game until then.
+- **Saving** writes only what changed (`anchors_file.h`): the file is laid out by hand, with comments and controls
+  grouped by line, so a value is replaced in place, a field is added after the last of its table (on its line) or
+  removed with its line when nothing else is left on it, and an entry left empty is removed. New entries go at the end,
+  under a "Set in the UI editor" comment, on one line or with their controls on lines of their own past 120 columns.
+  A part of the file it cannot read is shown under the save button (the game reports the same on stderr). Closing with
+  unsaved changes asks first.
 
 ## Watch game
 
@@ -78,6 +100,14 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
 
 ## Tests (`ctest -R ui_editor`)
 
+`UIAnchors.lua` (`test_anchors_file.cpp`): entries read by script without folder or case; each kind of edit changes
+only its own text (a value, a control removed from the middle or the end of a line and with its line, added after a
+trailing comma or on one line, a name that needs quotes, the dialog's anchor and the zones added, changed and removed,
+an entry emptied and removed, a comment after it kept); new entries under one section, long ones wrapped; a missing
+file written with its header; text that cannot be read reported. The client_data's own file (2026-11-14) reads
+without problems and is unchanged by setting its entries to what they are.
+The engine: an entry put into an open dialog and cleared, the script's own anchors kept.
+
 `x2_ui_editor_tests`, headless on the null render backend: the script list (sorted, `.kom/` skipped), the record file
 (positions by script without folder or case, each once, placed by code; scenes and their scripts, older records without
 them), the live snapshot (records under their dialog, escaped texts, empty fields, the scripts code loaded, pictures and
@@ -103,4 +133,7 @@ Known: the game's own input still reads the system mouse, so a button under the 
 Duplicated texts in a script alone (`DLG_UI_PVP_SETTINGS_MAP.lua`, 2026-11-14) are the statics of every mode, which
 the game's code hides but the one in use: "Watch game" shows them as the game does.
 
-Next ([T46](../project/decisions.md)): slices (b) and (c).
+2026-11-14: slice (b), anchor editing ([above](#editing-anchors)), built and tested headless; not yet used by the
+user.
+
+Next ([T46](../project/decisions.md)): slice (c).

@@ -4,6 +4,7 @@
 // device, drawing the opened dialogs into a render target of the chosen size. No X2Lib: the game globals the dialog
 // scripts touch get Lua stubs.
 
+#include "anchors_file.h"
 #include "live.h"
 #include "x2/render/render.h"
 
@@ -40,6 +41,7 @@ struct ControlInfo {
     std::string typeName;
     std::string anchor;         // "CENTER" (also when not declared), "LEFT", "RIGHT", "STRETCH"
     bool anchorDeclared = false;
+    bool anchorFromScript = false;  // the script's own SetAnchor, which UIAnchors.lua does not override
     bool shown = true;
     float offset[2] = {};       // the control's offset in the dialog (layout units)
     bool drawn = false;         // drew something in the last frame
@@ -56,6 +58,8 @@ struct DialogInfo {
     float canvasPos[2] = {};    // where it is drawn, in layout units (GetCanvasPos)
     std::string anchor;
     bool anchorDeclared = false;
+    bool anchorFromScript = false;
+    std::vector<std::pair<float, float>> stretchZones;
     bool placedByCode = false;
     bool loaded = false;        // the script ran without error
     std::vector<ControlInfo> controls;
@@ -93,6 +97,10 @@ public:
     // layer, shown flags, and every static as the game holds it (pictures and texts code added, removed or changed;
     // statics code added). Controls of other types code added are left out.
     void ApplyLive(int index, const LiveSnapshot::Dialog& live);
+    // Puts an entry of UIAnchors.lua into an open dialog, as the game does after its script loads, replacing what
+    // `previous` declared: an anchor `previous` had and `entry` has not goes back to none. Anchors the script declares
+    // itself stay (they win in the game). Control names the dialog lacks are skipped.
+    void ApplyAnchors(int index, const AnchorEntry& entry, const AnchorEntry& previous);
 
     // Draws every open dialog into the render target, resized to width x height first. False with error set if the
     // frame failed. The texture stays valid until the next Render with another size or the engine is destroyed.
