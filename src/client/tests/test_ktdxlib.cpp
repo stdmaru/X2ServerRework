@@ -1,5 +1,5 @@
 // KTDXLIB's first engine files on the D3D9 device (docs/porting/client-ktdxlib.md): the state manager, the dynamic
-// vertex data, render target textures and the silent sound backend, headless on the null backend. g_pKTDXApp is the
+// vertex data, render target textures and the sound manager, headless on the null backend. g_pKTDXApp is the
 // real CKTDXApp; the globals X2.cpp defines are in x2_globals.cpp.
 
 #include "KTDX.h"   // not stdafx.h: Windows would find X2ServerProtocol/StdAfx.h first
@@ -10,6 +10,7 @@
 #include "x2/kom/mount.h"
 #include "x2/render/null.h"
 
+#include <SDL3/SDL_hints.h>
 #include <doctest/doctest.h>
 
 #include <algorithm>
@@ -57,6 +58,7 @@ struct Engine {
 
     Engine()
     {
+        SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "x2-none");  // no such driver: the sound manager runs without output
         REQUIRE_MESSAGE(device.Ok(), device.LastError());
         g_pd3dDevice = &device;
         app = std::make_unique<CKTDXApp>(nullptr, nullptr, &device);
@@ -177,25 +179,29 @@ TEST_CASE("ktdxlib: render target textures render into themselves and back")
     CHECK(engine.device.GetRenderTarget() == NULL);
 }
 
-TEST_CASE("ktdxlib: the silent sound backend keeps its state and plays nothing")
+TEST_CASE("ktdxlib: the sound manager runs its system with no audio device")
 {
     Engine engine;
     CKTDSManager* sound = g_pKTDXApp->GetDSManager();
     REQUIRE(sound != NULL);
     CHECK(sound->GetInit());
-    CHECK(sound->GetSystem() == NULL);
-    CHECK_FALSE(sound->GetCapable3DSound());
+    REQUIRE(sound->GetSystem() != NULL);
+    CHECK_FALSE(sound->GetSystem()->HasOutput());  // no audio driver in the tests
+    CHECK(sound->GetCapable3DSound());
     CHECK(sound->OnFrameMove(0.0, 0.016f) == S_OK);
     sound->SetListenerData(D3DXVECTOR3(1, 2, 3));
 
+    // A track that is in no data directory is not taken, as in the original.
     CKTDSMP3Play* music = sound->GetMP3Play();
     REQUIRE(music != NULL);
-    music->Play(L"MusicWin.ogg", false);
-    CHECK(music->GetPlayingFileName() == L"MusicWin.ogg");
+    music->Play(L"NoSuchMusic.ogg", false);
+    CHECK(music->GetPlayingFileName().empty());
     music->SetPaused(true);
     music->SetVolume(-1500);
+    music->SetPaused(false);
     music->Stop();
 
+    // A device that never loaded plays nothing.
     Sound* effect = new Sound(sound->GetSystem(), L"BUTTON.OGG");
     effect->Play(true);
     CHECK_FALSE(effect->IsPlaying());

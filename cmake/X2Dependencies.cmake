@@ -195,6 +195,32 @@ if(X2_BUILD_CLIENT)
     add_library(x2::stb ALIAS x2_stb)
 endif()
 
+# --- miniaudio: the client's audio (T45, docs/porting/client-ktdxlib.md#sound), replacing FMOD Ex ---------------------
+# Single-file C library, pinned to a release (0.11.22) and compiled once into its own target with stb_vorbis from the
+# pinned stb above, without the project's warning options, like the other third-party code. Only what the client uses:
+# no device layer (SDL3 plays the mix), no resource manager (the client decodes from memory), no MP3/FLAC, no encoders.
+if(X2_BUILD_CLIENT)
+    FetchContent_Declare(miniaudio
+        URL https://github.com/mackron/miniaudio/archive/refs/tags/0.11.22.tar.gz
+        URL_HASH SHA256=bcb07bfb27e6fa94d34da73ba2d5642d4940b208ec2a660dbf4e52e6b7cd492f
+        SOURCE_SUBDIR do-not-add)
+    FetchContent_MakeAvailable(miniaudio)
+    set(X2_MINIAUDIO_IMPL ${CMAKE_BINARY_DIR}/generated/miniaudio_impl.c)
+    file(GENERATE OUTPUT ${X2_MINIAUDIO_IMPL}
+        CONTENT "#define STB_VORBIS_HEADER_ONLY\n#include \"stb_vorbis.c\"\n#define MINIAUDIO_IMPLEMENTATION\n#include \"miniaudio.h\"\n#undef STB_VORBIS_HEADER_ONLY\n#include \"stb_vorbis.c\"\n")
+    add_library(x2_miniaudio STATIC ${X2_MINIAUDIO_IMPL})
+    target_include_directories(x2_miniaudio SYSTEM PUBLIC ${miniaudio_SOURCE_DIR})
+    target_include_directories(x2_miniaudio SYSTEM PRIVATE ${stb_SOURCE_DIR})
+    target_compile_definitions(x2_miniaudio PUBLIC
+        MA_NO_DEVICE_IO MA_NO_RESOURCE_MANAGER MA_NO_MP3 MA_NO_FLAC MA_NO_ENCODING)
+    find_package(Threads REQUIRED)
+    target_link_libraries(x2_miniaudio PRIVATE Threads::Threads)
+    if(NOT MSVC)
+        target_link_libraries(x2_miniaudio PRIVATE m)
+    endif()
+    add_library(x2::miniaudio ALIAS x2_miniaudio)
+endif()
+
 # --- FreeType: the client's fonts (KTDXLIB, KTDGFreeTypeFont) ---------------------------------------------------
 # Upstream, pinned and linked statically (the original linked freetype2411.lib, docs/original/libraries.md). Only the
 # core: no zlib/bzip2/PNG/Brotli/HarfBuzz (the client's fonts are plain TrueType).
