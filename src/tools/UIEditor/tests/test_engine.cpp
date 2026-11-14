@@ -50,6 +50,13 @@ g_pPicture2:SetTex("DLG_Test.tga")
 g_pPicture2:SetPoint({ USE_TEXTURE_SIZE = FALSE, LEFT_TOP = D3DXVECTOR2(10, 20), RIGHT_BOTTOM = D3DXVECTOR2(60, 40) })
 g_pCX2SlotManager:AddSlot(g_pCX2SlotManager:CreateItemSlot())
 )lua";
+        // Texts need the game's fonts to draw, which the tests do not have: this one is only inspected.
+        std::ofstream(root / "data" / "ui" / "scripts" / "DLG_Text.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pStatic = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pStatic)
+g_pStatic:SetName("Label")
+g_pStatic:AddString({ STRING = "Hello", FONT_INDEX = 3, POS = D3DXVECTOR2(12, 8) })
+)lua";
         std::ofstream(root / "data" / "ui" / "scripts" / "dlg_another.lua") << "\xEF\xBB\xBFg_pUIDialog:SetName(\"x\")\n";
     }
     ~TempGame()
@@ -76,9 +83,10 @@ TEST_CASE("ui editor: dialog scripts are listed from the data folder, sorted, .k
 {
     TempGame game;
     const auto scripts = x2::ui_editor::FindDialogScripts(game.root);
-    REQUIRE(scripts.size() == 2);
+    REQUIRE(scripts.size() == 3);
     CHECK(scripts[0] == "dlg_another.lua");
     CHECK(scripts[1] == "DLG_Test.lua");
+    CHECK(scripts[2] == "DLG_Text.lua");
 }
 
 TEST_CASE("ui editor: a dialog opens, draws at 16:9 and reports its controls in layout units and pixels")
@@ -140,4 +148,26 @@ TEST_CASE("ui editor: a dialog opens, draws at 16:9 and reports its controls in 
     CHECK(engine->Inspect()[0].pos[0] == 0.0f);
     engine->CloseDialog(0);
     CHECK(engine->DialogCount() == 0);
+}
+
+TEST_CASE("ui editor: a static's texts are inspected with their string, position and font")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Text.lua", error) == 0);
+    const auto dialogs = engine->Inspect();
+    REQUIRE(dialogs.size() == 1);
+    REQUIRE(dialogs[0].controls.size() == 1);
+    const auto& strings = dialogs[0].controls[0].strings;
+    REQUIRE(strings.size() == 1);
+    CHECK(strings[0].text == "Hello");
+    CHECK(strings[0].stringId == -1);
+    CHECK(strings[0].pos[0] == 12.0f);
+    CHECK(strings[0].font == 3);
 }

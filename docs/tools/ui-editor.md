@@ -21,7 +21,7 @@ container's build runs on the desktop.
 |---|---|
 | Dialogs (left) | Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
 | Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or at 100%. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
-| Inspector (right) | The dialog: script, name, anchor (declared or the default), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor, offset, what it drew; for statics, each picture's texture, `.tet` key, corner points and UV in texels |
+| Inspector (right) | The dialog: script, name, anchor (declared or the default), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor, offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels |
 
 Slice (a) only inspects; editing the anchor (b) and positions, textures and UV (c) follow ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
 
@@ -34,11 +34,15 @@ Slice (a) only inspects; editing the anchor (b) and positions, textures and UV (
   buffer. A size change goes through `CKTDXApp::OnResetDevice`, so the viewport, the UI canvas (T44) and the projection
   follow it as in the game.
 - **Start-up**, as `CX2Main`'s: the working folder becomes the game folder, the archives mount (`AddMassFiles`, with
-  dev builds preferring the client_data), then `Enum.lua`, `DungeonEnum.lua`, `StringID_def.lua` and
-  `Config_INTERNAL.lua` (its fonts) run. X2Lib is not linked: `g_pMain` is a Lua stub whose `InstallFont` installs the
+  dev builds preferring the client_data), then `Enum.lua`, `DungeonEnum.lua` and `StringID_def.lua` run, the default
+  font (`Gulim.ttc`, which every other font falls back to for Hangul) is installed and `Config_INTERNAL.lua` (its fonts)
+  runs. The device manager's loading thread starts suspended and is resumed last, as `CX2Main` does; a size change
+  (`OnResetDevice`) waits for it. X2Lib is not linked: `g_pMain` is a Lua stub whose `InstallFont` installs the
   font and whose other methods do nothing; `g_pCX2SlotManager` and the other game globals a few scripts touch
   (2026-11-14: `g_pData`, `g_pState`, `g_pCouponBox`, `g_pMapSelectWindow`, `g_pPostBoxInventory`) accept any call, so
   item-slot dialogs build everything but their slots.
+- **ImGui and SDL_GPU**: the screen is drawn with `ImGuiLayer::TextureId`, which turns an `x2::render` texture into
+  ImGui's texture identifier, so the tool stays off the SDL_GPU API (T36's boundary, checked by `ctest -R render`).
 - **Control boxes**: `CKTDGUIControl` notes what it draws (its quads, transparent ones skipped) when the anchor recorder
   is on or a tool asks for it (`CKTDGUIAnchorRecorder::SetToolTracking`); the editor reads them without writing the
   record file. Boxes are in layout units relative to the dialog and are mapped to pixels with the control's anchor and
@@ -53,8 +57,20 @@ Slice (a) only inspects; editing the anchor (b) and positions, textures and UV (
 `x2_ui_editor_tests`, headless on the null render backend: the script list (sorted, `.kom/` skipped), the record file
 (positions by script without folder or case, each once, placed by code), and the engine on a temporary game folder
 with loose files only: a missing script refused; a dialog opened, drawn at 1280×720 and at 1024×768, its controls named
-(`#1` when unnamed), boxes in layout units and pixels, the slot manager stub; moved and closed.
+(`#1` when unnamed), boxes in layout units and pixels, the slot manager stub; moved and closed; a static's text
+inspected (not drawn: the tests have no fonts).
 
 ## Status
 
-2026-11-14: slice (a), the viewer, in progress (`tools/ui-editor`, PR #74).
+2026-11-14: slice (a), the viewer, works on the desktop (`tools/ui-editor`, PR #74): the login screen and the menu bar
+drawn at 1920×1080 and 2560×1080 as in the game (login centered, menu buttons right, EXP and vigor bars stretched),
+a click selects the control under the pointer (the Quest button, `RIGHT`) and the inspector shows it.
+
+Texts: a static's text comes from its script (`AddString`: `MSG = STR_ID_*`, an index into `general.ess`, or a
+literal `STRING`), with its position, font, alignment and color; 1,642 `MSG = STR_ID_*` in 474 scripts (2026-11-14).
+Texts the game's code fills at run time (names, numbers, counts) are empty in the script and so in the editor.
+
+Known: the game's own input still reads the system mouse, so a button under the pointer shows its hover picture.
+
+Next ([T46](../project/decisions.md)): the recorder notes the game state each dialog was seen in, so a whole screen
+opens at once; then slices (b) and (c).

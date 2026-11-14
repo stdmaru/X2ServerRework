@@ -6,7 +6,7 @@ target_include_directories(x2_ui_editor_core PUBLIC src)
 target_link_libraries(x2_ui_editor_core PUBLIC x2::render PRIVATE x2::client_ktdxlib)
 
 add_executable(x2_ui_editor src/main.cpp)
-target_link_libraries(x2_ui_editor PRIVATE x2_ui_editor_core x2::app_imgui x2::render_sdlgpu)
+target_link_libraries(x2_ui_editor PRIVATE x2_ui_editor_core x2::app_imgui)
 set_target_properties(x2_ui_editor PROPERTIES WIN32_EXECUTABLE TRUE)  # SDL_main.h provides WinMain
 
 if(X2_BUILD_TESTS)

@@ -7,6 +7,7 @@
 #include "x2/app/app.h"
 #include "x2/render/render.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -47,6 +48,10 @@ public:
     ImGuiLayer& operator=(const ImGuiLayer&) = delete;
 
     const std::string& FontFile() const { return m_fontFile; }
+
+    // The ImTextureID that draws `texture` (a sampled texture of the same device) with ImGui::Image; 0 when it is
+    // none or not on this device. Keeps tools off the SDL_GPU API (T36).
+    std::uint64_t TextureId(render::Texture texture) const;
 
     void ProcessEvent(const SDL_Event& event);
     void NewFrame();
