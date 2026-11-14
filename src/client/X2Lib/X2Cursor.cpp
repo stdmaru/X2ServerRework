@@ -198,6 +198,11 @@ HRESULT CX2Cursor::OnFrameRender()
 		{
 			if( NULL != m_pCursorDraggingTex )
 			{
+				// The dragged dialog follows the pointer between steps, so the drag cursor is drawn where the pointer
+				// is now, not where it was at the last step.
+				POINT point;
+				if ( GetCursorPos( &point ) && ScreenToClient( g_pKTDXApp->GetHWND(), &point ) )
+					m_Pos = D3DXVECTOR2( static_cast<float>( point.x ), static_cast<float>( point.y ) );
 				DXUTSetCursor( NULL );
 				m_pCursorDraggingTex->SetDeviceTexture();
 				DrawFace(m_Pos.x, m_Pos.y, m_Size.x, m_Size.y);

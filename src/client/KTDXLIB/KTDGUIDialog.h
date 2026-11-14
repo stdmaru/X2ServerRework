@@ -476,8 +476,7 @@ class CKTDGUIDialog
 
 		map< int, CKTDGUIRadioButton::RadioButtonGroupInfo* > m_mapRadioButtonGroupInfo;
 
-		int							m_PrevMousePointX;
-		int							m_PrevMousePointY;
+		D3DXVECTOR2					m_vDragGrab;	// the pointer relative to the dialog when a drag starts (layout units)
 
 
 		D3DXVECTOR2					m_vSize;
