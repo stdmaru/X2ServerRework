@@ -32,6 +32,9 @@ class CKTDGUIDialogManager : public CKTDXStage
 		//std::vector<CKTDGUIDialogType>& GetDialogList() { return m_vecDialog; }
 //}} robobeg : 2009-01-07
 
+		// The managed dialogs, back to front.
+		const CKTDGUIDialogList& GetDialogsInOrder() const { return m_listDialog; }
+
 		bool	CheckDlg( CKTDGUIDialogType pDialog );
 		bool	CheckModalDlg();
 		bool	CheckFrontModalDlg( CKTDGUIDialogType pPivotDialog ); //해당 다이얼로그 앞에 모달 다이얼로그가 있는지 확인

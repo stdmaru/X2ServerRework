@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cwctype>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <set>
@@ -242,6 +243,8 @@ namespace
 		return str;
 	}
 
+	std::string s_strScene;	// CKTDGUIAnchorRecorder::SetScene
+
 	// One control of one dialog script: what it drew, relative to the dialog, and where the dialog was.
 	struct AnchorRecord
 	{
@@ -249,6 +252,7 @@ namespace
 		float fMinX = 0.f, fMinY = 0.f, fMaxX = 0.f, fMaxY = 0.f;
 		std::set<std::pair<int, int>> setDialogPos;
 		bool bPlacedByCode = false;
+		std::set<std::string> setScenes;	// the game states it was seen in
 	};
 
 	class AnchorRecordFile
@@ -256,11 +260,12 @@ namespace
 	public:
 		static constexpr const char* kFileName = "UIAnchorsRecord.tsv";
 		static constexpr size_t kMaxPositions = 16;
+		static constexpr size_t kMaxScenes = 16;
 
 		AnchorRecordFile() { Read(); }
 
 		void Note( const std::string& strScript, const std::string& strControl, int iType, const D3DXVECTOR2& vMin,
-			const D3DXVECTOR2& vMax, const D3DXVECTOR2& vDialogPos, bool bPlacedByCode )
+			const D3DXVECTOR2& vMax, const D3DXVECTOR2& vDialogPos, bool bPlacedByCode, const std::string& strScene )
 		{
 			const std::string strKey = strScript + '\t' + strControl;
 			auto [it, bNew] = m_mapRecords.try_emplace( strKey );
@@ -290,6 +295,8 @@ namespace
 			}
 			if ( kRecord.setDialogPos.size() < kMaxPositions && kRecord.setDialogPos.insert( kPos ).second )
 				m_bDirty = true;
+			if ( strScene.empty() == false && kRecord.setScenes.size() < kMaxScenes && kRecord.setScenes.insert( strScene ).second )
+				m_bDirty = true;
 		}
 
 		void FlushIfDue()
@@ -301,7 +308,7 @@ namespace
 			m_bDirty = false;
 
 			std::ofstream kFile( kFileName, std::ios::trunc );
-			kFile << "# script\tcontrol\ttype\tmin_x\tmin_y\tmax_x\tmax_y\tdialog_positions\tplaced_by_code (layout units; control box relative to the dialog)\n";
+			kFile << "# script\tcontrol\ttype\tmin_x\tmin_y\tmax_x\tmax_y\tdialog_positions\tplaced_by_code\tscenes (layout units; control box relative to the dialog)\n";
 			for ( const auto& [strKey, kRecord] : m_mapRecords )
 			{
 				kFile << strKey << '\t' << kRecord.iType << '\t' << kRecord.fMinX << '\t' << kRecord.fMinY << '\t'
@@ -312,7 +319,14 @@ namespace
 					kFile << ( bFirst ? "" : ";" ) << x << ',' << y;
 					bFirst = false;
 				}
-				kFile << '\t' << ( kRecord.bPlacedByCode ? 1 : 0 ) << '\n';
+				kFile << '\t' << ( kRecord.bPlacedByCode ? 1 : 0 ) << '\t';
+				bFirst = true;
+				for ( const std::string& strScene : kRecord.setScenes )
+				{
+					kFile << ( bFirst ? "" : "," ) << strScene;
+					bFirst = false;
+				}
+				kFile << '\n';
 			}
 		}
 
@@ -333,9 +347,19 @@ namespace
 					continue;
 				kLine >> std::ws;
 				std::getline( kLine, strPositions, '\t' );
-				int iPlacedByCode = 0;
-				if ( kLine >> iPlacedByCode )
-					kRecord.bPlacedByCode = iPlacedByCode != 0;
+				std::string strPlacedByCode, strScenes;
+				std::getline( kLine, strPlacedByCode, '\t' );
+				kRecord.bPlacedByCode = strPlacedByCode.empty() == false && strPlacedByCode[0] != '0';
+				std::getline( kLine, strScenes, '\t' );
+				std::istringstream kScenes( strScenes );
+				std::string strScene;
+				while ( std::getline( kScenes, strScene, ',' ) )
+				{
+					while ( strScene.empty() == false && ( strScene.back() == '\r' || strScene.back() == ' ' ) )
+						strScene.pop_back();
+					if ( strScene.empty() == false )
+						kRecord.setScenes.insert( strScene );
+				}
 				std::istringstream kPositions( strPositions );
 				std::string strPos;
 				while ( std::getline( kPositions, strPos, ';' ) )
@@ -387,8 +411,136 @@ void CKTDGUIAnchorRecorder::Note( CKTDGUIDialog& kDialog )
 			continue;
 		const std::wstring wstrName = pControl->GetName() != NULL ? pControl->GetName() : L"";
 		const std::string strControl = wstrName.empty() ? "#" + std::to_string( i ) : ToUtf8( wstrName );
-		kFile.Note( strScript, strControl, static_cast<int>( pControl->GetType() ), vMin, vMax, kDialog.GetPos(), kDialog.GetPlacedByCode() );
+		kFile.Note( strScript, strControl, static_cast<int>( pControl->GetType() ), vMin, vMax, kDialog.GetPos(), kDialog.GetPlacedByCode(), s_strScene );
 	}
 	kFile.FlushIfDue();
+}
+
+void CKTDGUIAnchorRecorder::SetScene( const wchar_t* pwszScene )
+{
+	s_strScene = ToUtf8( pwszScene != NULL ? pwszScene : L"" );
+}
+
+const std::string& CKTDGUIAnchorRecorder::Scene()
+{
+	return s_strScene;
+}
+
+namespace
+{
+	// Texts in the live snapshot: tabs, line breaks and backslashes escaped, so a line stays one record.
+	void AppendEscaped( std::string& strOut, const std::string& str )
+	{
+		for ( const char c : str )
+		{
+			switch ( c )
+			{
+			case '\\': strOut += "\\\\"; break;
+			case '\t': strOut += "\\t"; break;
+			case '\n': strOut += "\\n"; break;
+			case '\r': strOut += "\\r"; break;
+			default: strOut += c; break;
+			}
+		}
+	}
+}
+
+bool CKTDGUIAnchorRecorder::LiveIsOn()
+{
+	static const bool s_bOn = []
+	{
+		const char* pszValue = std::getenv( "X2_UI_LIVE" );
+		return pszValue != NULL && pszValue[0] != '\0' && pszValue[0] != '0';
+	}();
+	return s_bOn;
+}
+
+// UILive.tsv, one record per line, tab separated:
+//     scene    <XS_* name>
+//     screen   <width> <height>
+//     dialog   <script> <x> <y> <layer> <front>           the shown dialogs drawn from scripts, back to front
+//     control  <index> <shown>                            of the dialog above
+//     picture  <control> <index> <shown> <texture> <key>  of a static
+//     text     <control> <index> <text>                   of a static, escaped
+// Written to a temporary file and renamed over the last one, and only when it changed.
+void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
+{
+	static std::chrono::steady_clock::time_point s_tLast{};
+	static std::string s_strLast;
+	const auto tNow = std::chrono::steady_clock::now();
+	if ( tNow - s_tLast < std::chrono::milliseconds( 200 ) )
+		return;
+	s_tLast = tNow;
+
+	std::string str;
+	str += "scene\t" + s_strScene + '\n';
+	if ( g_pKTDXApp != NULL )
+	{
+		const D3DVIEWPORT9& kViewport = g_pKTDXApp->GetViewport();
+		str += "screen\t" + std::to_string( kViewport.Width ) + '\t' + std::to_string( kViewport.Height ) + '\n';
+	}
+	for ( CKTDGUIDialogType pDialog : kManager.GetDialogsInOrder() )
+	{
+		if ( pDialog == NULL || pDialog->GetShow() == false )
+			continue;
+		const std::wstring wstrScript = pDialog->GetScriptFileName();
+		if ( wstrScript.empty() )
+			continue;
+		const D3DXVECTOR2 vPos = pDialog->GetPos();
+		str += "dialog\t" + ToUtf8( ScriptKey( wstrScript.c_str() ) ) + '\t' + std::to_string( std::lround( vPos.x ) ) + '\t'
+			+ std::to_string( std::lround( vPos.y ) ) + '\t' + std::to_string( pDialog->GetLayer() ) + '\t'
+			+ ( pDialog->GetFront() ? "1" : "0" ) + '\n';
+		const std::vector<CKTDGUIControl*>& vecControls = pDialog->GetControlList();
+		for ( size_t i = 0; i < vecControls.size(); ++i )
+		{
+			CKTDGUIControl* pControl = vecControls[i];
+			if ( pControl == NULL )
+				continue;
+			const std::string strIndex = std::to_string( i );
+			str += "control\t" + strIndex + '\t' + ( pControl->GetShow() ? "1" : "0" ) + '\n';
+			if ( pControl->GetType() != CKTDGUIControl::UCT_STATIC )
+				continue;
+			CKTDGUIStatic* pStatic = static_cast<CKTDGUIStatic*>( pControl );
+			for ( int p = 0; p < pStatic->GetPictureNum(); ++p )
+			{
+				CKTDGUIControl::CPictureData* pPicture = pStatic->GetPicture( p );
+				if ( pPicture == NULL )
+					continue;
+				str += "picture\t" + strIndex + '\t' + std::to_string( p ) + '\t' + ( pPicture->GetShow() ? "1" : "0" ) + '\t';
+				if ( pPicture->pTexture != NULL )
+				{
+					AppendEscaped( str, ToUtf8( pPicture->pTexture->texName ) );
+					str += '\t';
+					AppendEscaped( str, ToUtf8( pPicture->pTexture->keyName ) );
+				}
+				else
+					str += '\t';
+				str += '\n';
+			}
+			for ( int t = 0; t < pStatic->GetStringNum(); ++t )
+			{
+				const CKTDGUIControl::UIStringData* pString = pStatic->GetString( t );
+				if ( pString == NULL )
+					continue;
+				str += "text\t" + strIndex + '\t' + std::to_string( t ) + '\t';
+				AppendEscaped( str, ToUtf8( pString->msg ) );
+				str += '\n';
+			}
+		}
+	}
+	if ( str == s_strLast )
+		return;
+	s_strLast = str;
+
+	static constexpr const char* kFileName = "UILive.tsv";
+	static constexpr const char* kTempName = "UILive.tsv.tmp";
+	{
+		std::ofstream kFile( kTempName, std::ios::binary | std::ios::trunc );
+		kFile << str;
+		if ( !kFile )
+			return;
+	}
+	std::error_code ec;
+	std::filesystem::rename( kTempName, kFileName, ec );
 }
 #endif

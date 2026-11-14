@@ -2631,6 +2631,9 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 
 		m_NowStateID = (X2_STATE)stateID;
 		StateInLog();
+#if X2_DEV_TOOLS
+		CKTDGUIAnchorRecorder::SetScene( StateName( m_NowStateID ) );
+#endif
 		AllDeleteServerPacket();
 
 		//{{ ????? : [2009/7/21] //	????? ????? ? ??????
@@ -4549,98 +4552,45 @@ void CX2Main::BuySuperEqipLevel_LUA( int level )
 }
 
 
+const wchar_t* CX2Main::StateName( X2_STATE eState )
+{
+	switch( eState )
+	{
+	case XS_START_UP:			return L"XS_START_UP";
+	case XS_LOGIN:				return L"XS_LOGIN";
+	case XS_JOIN:				return L"XS_JOIN";
+	case XS_LOADING:			return L"XS_LOADING";
+	case XS_SERVER_SELECT:		return L"XS_SERVER_SELECT";
+	case XS_CREATE_UNIT:		return L"XS_CREATE_UNIT";
+	case XS_PVP_LOBBY:			return L"XS_PVP_LOBBY";
+	case XS_PVP_ROOM:			return L"XS_PVP_ROOM";
+	case XS_PVP_GAME:			return L"XS_PVP_GAME";
+	case XS_DUNGEON_ROOM:		return L"XS_DUNGEON_ROOM";
+	case XS_DUNGEON_GAME:		return L"XS_DUNGEON_GAME";
+	case XS_PVP_RESULT:			return L"XS_PVP_RESULT";
+	case XS_DUNGEON_RESULT:		return L"XS_DUNGEON_RESULT";
+	case XS_VILLAGE_MAP:		return L"XS_VILLAGE_MAP";
+	case XS_SQUARE_GAME:		return L"XS_SQUARE_GAME";
+	case XS_TRAINING_SCHOOL:	return L"XS_TRAINING_SCHOOL";
+	case XS_TRAINING_GAME:		return L"XS_TRAINING_GAME";
+	case XS_TRAINING_RESULT:	return L"XS_TRAINING_RESULT";
+	case XS_CLASS_CHANGE:		return L"XS_CLASS_CHANGE";
+	case XS_ARCADE_RESULT:		return L"XS_ARCADE_RESULT";
+	case XS_ARCADE_GAME:		return L"XS_ARCADE_GAME";
+	case XS_ARCADE_LOBBY:		return L"XS_ARCADE_LOBBY";
+	case XS_ARCADE_ROOM:		return L"XS_ARCADE_ROOM";
+	case XS_BATTLE_FIELD:		return L"XS_BATTLE_FIELD";
+	case XS_WEDDING_GAME:		return L"XS_WEDDING_GAME";
+	default:					return L"XS_INVALID";
+	}
+}
+
 void CX2Main::StateInLog()
 {
 	if( NULL == g_pMain )
 		return;
 
-	switch( m_NowStateID )
-	{
-	default:
-	case XS_INVALID:
-		StateLog( L"XS_INVALID");
-		break;
-
-	case XS_START_UP:
-		StateLog( L"XS_START_UP");
-		break;
-
-	case XS_LOGIN:
-		StateLog( L"XS_LOGIN");
-		break;
-
-	case XS_JOIN:
-		StateLog( L"XS_JOIN");
-		break;
-
-	case XS_LOADING:
-		StateLog( L"XS_LOADING");
-		break;
-
-	case XS_SERVER_SELECT:
-		StateLog( L"XS_SERVER_SELECT");
-		break;
-
-	case XS_CREATE_UNIT:
-		StateLog( L"XS_CREATE_UNIT");
-		break;
-
-	case XS_PVP_LOBBY:
-		StateLog( L"XS_PVP_LOBBY");
-		break;
-
-	case XS_PVP_ROOM:
-		StateLog( L"XS_PVP_ROOM");
-		break;
-
-	case XS_PVP_GAME:
-		StateLog( L"XS_PVP_GAME");
-		break;
-
-	case XS_DUNGEON_ROOM:
-		StateLog( L"XS_DUNGEON_ROOM");
-		break;
-
-	case XS_DUNGEON_GAME:
-		StateLog( L"XS_DUNGEON_GAME");
-		break;
-
-	case XS_PVP_RESULT:
-		StateLog( L"XS_PVP_RESULT");
-		break;
-
-	case XS_DUNGEON_RESULT:
-		StateLog( L"XS_DUNGEON_RESULT");
-		break;
-
-	case XS_VILLAGE_MAP:
-		StateLog( L"XS_VILLAGE_MAP");
-		break;
-
-	case XS_SQUARE_GAME:
-		StateLog( L"XS_SQUARE_GAME");
-		break;
-
-	case XS_TRAINING_SCHOOL:
-		StateLog( L"XS_TRAINING_SCHOOL");
-		break;
-
-	case XS_TRAINING_GAME:
-		StateLog( L"XS_TRAINING_GAME");
-		break;
-
-	case XS_TRAINING_RESULT:
-		StateLog( L"XS_TRAINING_RESULT");
-		break;
-
-	case XS_BATTLE_FIELD:
-		StateLog( L"XS_BATTLE_FIELD");
-		break;
-
-	case XS_WEDDING_GAME:
-		StateLog( L"XS_WEDDING_GAME");
-		break;
-	}
+	StateLog( StateName( m_NowStateID ) );
 }
 
 

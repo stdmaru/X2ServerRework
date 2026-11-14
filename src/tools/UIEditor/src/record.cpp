@@ -28,7 +28,8 @@ Record Record::Load(const std::filesystem::path& file)
     return Parse(in);
 }
 
-// script, control, type, min_x, min_y, max_x, max_y, dialog_positions ("x,y;x,y"), placed_by_code; '#' comments.
+// script, control, type, min_x, min_y, max_x, max_y, dialog_positions ("x,y;x,y"), placed_by_code, scenes ("XS_A,XS_B",
+// absent in older records); '#' comments.
 Record Record::Parse(std::istream& in)
 {
     Record record;
@@ -50,6 +51,15 @@ Record Record::Parse(std::istream& in)
         }
         Dialog& dialog = record.m_dialogs[Key(fields[0])];
         dialog.placedByCode = dialog.placedByCode || fields[8] == "1";
+        if (fields.size() > 9) {
+            std::stringstream scenes(fields[9]);
+            for (std::string scene; std::getline(scenes, scene, ',');) {
+                const auto at = std::lower_bound(dialog.scenes.begin(), dialog.scenes.end(), scene);
+                if (!scene.empty() && (at == dialog.scenes.end() || *at != scene)) {
+                    dialog.scenes.insert(at, scene);
+                }
+            }
+        }
         std::stringstream positions(fields[7]);
         for (std::string pair; std::getline(positions, pair, ';');) {
             const std::size_t comma = pair.find(',');
@@ -76,6 +86,27 @@ const std::vector<Record::Position>* Record::Positions(const std::string& script
 const Record::Dialog& Record::Of(const std::string& script) const
 {
     return m_dialogs.at(Key(script));
+}
+
+std::vector<std::string> Record::Scenes() const
+{
+    std::set<std::string> all;
+    for (const auto& [script, dialog] : m_dialogs) {
+        all.insert(dialog.scenes.begin(), dialog.scenes.end());
+    }
+    return {all.begin(), all.end()};
+}
+
+std::vector<std::string> Record::ScriptsIn(const std::string& scene) const
+{
+    std::vector<std::string> out;
+    for (const auto& [script, dialog] : m_dialogs) {
+        if (std::binary_search(dialog.scenes.begin(), dialog.scenes.end(), scene)) {
+            out.push_back(script);
+        }
+    }
+    std::sort(out.begin(), out.end());
+    return out;
 }
 
 }  // namespace x2::ui_editor
