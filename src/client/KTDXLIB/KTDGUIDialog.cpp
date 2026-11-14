@@ -340,8 +340,9 @@ HRESULT	CKTDGUIDialog::OnFrameMove( double fTime, float fElapsedTime )
 	// dialog dragging 범위 제한
 	if( m_bEnableMoveByDrag == true && m_bEnableDraggingRange == true )
 	{
-		D3DXVECTOR2 vRightBottom	= m_vDraggingRangeCenter + m_vDraggingRange * 0.5f - m_vSize * 0.5f;
-		D3DXVECTOR2 vLeftTop		= m_vDraggingRangeCenter - m_vDraggingRange * 0.5f - m_vSize * 0.5f;
+		const D3DXVECTOR2 vRange	= GetDraggingRange();
+		D3DXVECTOR2 vRightBottom	= m_vDraggingRangeCenter + vRange * 0.5f - m_vSize * 0.5f;
+		D3DXVECTOR2 vLeftTop		= m_vDraggingRangeCenter - vRange * 0.5f - m_vSize * 0.5f;
 
 		if( m_Pos.x < vLeftTop.x )
 		{
@@ -1964,6 +1965,19 @@ bool CKTDGUIDialog::SetAnchor_LUA( const char* pszAnchor )
 	SetAnchor( eAnchor );
 	m_bAnchorFromScript = true;
 	return true;
+}
+
+D3DXVECTOR2 CKTDGUIDialog::GetDraggingRange() const
+{
+	D3DXVECTOR2 vRange = m_vDraggingRange;
+	if ( m_eAnchor != UIAnchor::Center )
+		return vRange;
+	const D3DXVECTOR2 vCanvas = g_pKTDXApp->GetUICanvasSize();
+	if ( m_vSize.x > CKTDXApp::kUILayoutWidth )
+		vRange.x = std::max( vRange.x - ( vCanvas.x - CKTDXApp::kUILayoutWidth ), 0.f );
+	if ( m_vSize.y > CKTDXApp::kUILayoutHeight )
+		vRange.y = std::max( vRange.y - ( vCanvas.y - CKTDXApp::kUILayoutHeight ), 0.f );
+	return vRange;
 }
 
 float CKTDGUIDialog::GetAnchorShift() const

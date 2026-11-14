@@ -380,7 +380,7 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       UV in a side panel. It replaces the agent reviewing each screen by captures ([T46](decisions.md),
       [UI editor](../tools/ui-editor.md)). Slices, one PR each: (a) viewer with inspection and resolution/aspect
       switching (done 2026-11-14, PR #74), with zoom, scenes (the recorder notes each dialog's game
-      state, so a screen opens whole) and "Watch game" mirroring a running client (statics in full, scripts code loads); (b) anchor/STRETCH editing saved to `UIAnchors.lua` (`tools/ui-editor-anchors`, in progress 2026-11-14: built and tested headless); (c) positions, textures
+      state, so a screen opens whole) and "Watch game" mirroring a running client (statics in full, scripts code loads); (b) anchor/STRETCH editing saved to `UIAnchors.lua` (done 2026-11-14, PR #75, with undo); (c) positions, textures
       and UV saved to the scripts and `.tet`; then the C++ layout positions migrated into the scripts, screen by screen.
 - [ ] **Later** (user, 2026-11-14: after the UI editor): a loading screen when moving between village and field and when
       entering a channel, where the original shows the map loading in place. The original already has the pieces:
