@@ -54,6 +54,7 @@ struct EditorState {
     int aspect = 2;     // 16:9
     int height = 4;     // 1080
     bool fit = true;
+    float zoom = 1.0f;      // screen pixels per render target pixel when not fitted
     bool showBounds = false;
     Selection selected;
     std::vector<DialogInfo> inspected;
@@ -333,6 +334,13 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
     ImGui::SameLine();
     ImGui::Checkbox("fit", &state.fit);
     ImGui::SameLine();
+    if (ImGui::SmallButton("100%")) {
+        state.fit = false;
+        state.zoom = 1.0f;
+    }
+    ImGui::SameLine();
+    ImGui::TextDisabled("%.0f%%", static_cast<double>(state.zoom * 100.0f));
+    ImGui::SameLine();
     ImGui::Checkbox("all boxes", &state.showBounds);
     if (!state.message.empty()) {
         ImGui::SameLine();
@@ -343,13 +351,33 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
     if (texture == 0) {
         return;
     }
-    if (ImGui::BeginChild("screen", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar)) {
+    // The wheel zooms around the pointer, the right or middle button drags the view (the wheel does not scroll).
+    if (ImGui::BeginChild("screen", ImVec2(0, 0), ImGuiChildFlags_None,
+                          ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
         const float tw = static_cast<float>(engine.TargetWidth()), th = static_cast<float>(engine.TargetHeight());
         const ImVec2 avail = ImGui::GetContentRegionAvail();
-        float zoom = 1.0f;
         if (state.fit) {
-            zoom = std::min(avail.x / tw, avail.y / th);
+            state.zoom = std::min(avail.x / tw, avail.y / th);
         }
+        if (ImGui::IsWindowHovered()) {
+            const ImGuiIO& io = ImGui::GetIO();
+            if (io.MouseWheel != 0.0f) {
+                const ImVec2 start(ImGui::GetWindowPos().x + ImGui::GetStyle().WindowPadding.x,
+                                   ImGui::GetWindowPos().y + ImGui::GetStyle().WindowPadding.y);
+                const ImVec2 local(io.MousePos.x - start.x, io.MousePos.y - start.y);
+                const float px = (local.x + ImGui::GetScrollX()) / state.zoom;  // the target pixel under the pointer
+                const float py = (local.y + ImGui::GetScrollY()) / state.zoom;
+                state.zoom = std::clamp(state.zoom * std::pow(1.15f, io.MouseWheel), 0.1f, 8.0f);
+                state.fit = false;
+                ImGui::SetScrollX(px * state.zoom - local.x);
+                ImGui::SetScrollY(py * state.zoom - local.y);
+            }
+            if (ImGui::IsMouseDragging(ImGuiMouseButton_Right) || ImGui::IsMouseDragging(ImGuiMouseButton_Middle)) {
+                ImGui::SetScrollX(ImGui::GetScrollX() - io.MouseDelta.x);
+                ImGui::SetScrollY(ImGui::GetScrollY() - io.MouseDelta.y);
+            }
+        }
+        const float zoom = state.zoom;
         const ImVec2 size(tw * zoom, th * zoom);
         const ImVec2 origin = ImGui::GetCursorScreenPos();
         ImGui::Image(ImTextureRef(static_cast<ImTextureID>(texture)), size);
