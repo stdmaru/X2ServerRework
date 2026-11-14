@@ -524,7 +524,9 @@ The recorder also knows the game state (`CKTDGUIAnchorRecorder::SetScene`, set b
 with `X2_UI_LIVE=1`, the dialog manager's frame step writes the live snapshot the editor watches
 (`NoteLive`, at most every 200 ms and only when it changed; written to `UILive.tsv.tmp` and renamed over `UILive.tsv`).
 `CKTDGUIDialogManager::GetDialogsInOrder` exposes the managed dialogs for it, and `CKTDGUIDialog::GetOpenedScripts` the
-scripts loaded into each (the first and those code adds with `OpenScriptFile`).
+scripts loaded into each (the first and those code adds with `OpenScriptFile`). The record file skips a dialog while a
+`Move` animation runs (2026-11-14): the HUD gauge (`CX2MyGageUI::CrashMyStateGageUI`) shakes a few units on a hit and
+comes back to (0, 0), and those passing positions were recorded as places the dialog is put at.
 
 Fixed from the original (2026-11-14): `CKTDGUIDialogManager::UnmanageDlg` had an unused `_DEBUG` block that
 dereferenced `m_listDialog.rend()` (undefined behavior); MSVC's debug library stops there, so closing any dialog

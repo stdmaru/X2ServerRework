@@ -400,6 +400,8 @@ void CKTDGUIAnchorRecorder::Note( CKTDGUIDialog& kDialog )
 	const std::wstring wstrScript = kDialog.GetScriptFileName();
 	if ( wstrScript.empty() )
 		return;	// built in code: nothing to declare anchors for
+	if ( kDialog.GetIsMoving() )
+		return;	// a Move animation (the gauge's shake on a hit) passes through positions the dialog does not rest at
 	const std::string strScript = ToUtf8( ScriptKey( wstrScript.c_str() ) );
 
 	AnchorRecordFile& kFile = RecordFile();
