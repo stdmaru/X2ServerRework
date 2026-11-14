@@ -92,11 +92,13 @@ LiveSnapshot LiveSnapshot::Parse(std::istream& in)
             d.pos[1] = std::strtof(f[3].c_str(), nullptr);
             d.layer = Int(f[4]);
             d.front = f[5] == "1";
+            d.anchor = f.size() > 6 ? Int(f[6]) : -1;
             snapshot.dialogs.push_back(std::move(d));
         } else if (kind == "script" && dialog != nullptr && f.size() >= 2) {
             dialog->extraScripts.push_back(f[1]);
         } else if (kind == "control" && dialog != nullptr && f.size() >= 3) {
-            dialog->controls.push_back({Int(f[1]), f[2] == "1", f.size() > 3 ? Int(f[3]) : -1});
+            dialog->controls.push_back({Int(f[1]), f[2] == "1", f.size() > 3 ? Int(f[3]) : -1,
+                                        f.size() > 4 ? Int(f[4]) : -1});
         } else if (kind == "picture" && dialog != nullptr && f.size() >= 4) {
             Picture p;
             p.control = Int(f[1]);
