@@ -176,7 +176,8 @@ void SdlMessageTranslator::Translate(const SDL_Event& event, const TranslateCont
     case SDL_EVENT_MOUSE_MOTION:
         if (ForWindow(event.motion.windowID, context)) {
             out.push_back({WM_MOUSEMOVE, m_buttons | ModifierKeys(context.mod),
-                           PointParam(event.motion.x * context.pixelDensity, event.motion.y * context.pixelDensity)});
+                           PointParam(event.motion.x * context.pixelDensity - context.clientX,
+                                      event.motion.y * context.pixelDensity - context.clientY)});
         }
         break;
 
@@ -403,7 +404,8 @@ void SdlMessageTranslator::Button(const SDL_MouseButtonEvent& button, const Tran
     // Key state after the change (down includes the button, up no longer does), plus the X button in the high word.
     const WPARAM keys = m_buttons | ModifierKeys(context.mod);
     out.push_back({message, xbutton ? MAKEWPARAM(keys, xbutton) : keys,
-                   PointParam(button.x * context.pixelDensity, button.y * context.pixelDensity)});
+                   PointParam(button.x * context.pixelDensity - context.clientX,
+                              button.y * context.pixelDensity - context.clientY)});
 }
 
 }  // namespace x2::dxut

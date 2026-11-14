@@ -81,9 +81,7 @@ BOOL GetClientRect(HWND /*hWnd*/, RECT* lpRect)
     }
     int width = 0;
     int height = 0;
-    if (SDL_Window* window = DXUTGetSDLWindow(); window != nullptr) {
-        SDL_GetWindowSizeInPixels(window, &width, &height);
-    }
+    DXUTGetClientArea(nullptr, nullptr, &width, &height);
     *lpRect = RECT{0, 0, width, height};
     return TRUE;
 }
@@ -174,8 +172,10 @@ BOOL ScreenToClient(HWND /*hWnd*/, POINT* lpPoint)
     int x = 0, y = 0;
     if (lpPoint == nullptr || window == nullptr || !SDL_GetWindowPosition(window, &x, &y))
         return FALSE;
-    lpPoint->x -= x;
-    lpPoint->y -= y;
+    int areaX = 0, areaY = 0;               // the letterbox bars are outside the client area
+    DXUTGetClientArea(&areaX, &areaY, nullptr, nullptr);
+    lpPoint->x -= x + areaX;
+    lpPoint->y -= y + areaY;
     return TRUE;
 }
 

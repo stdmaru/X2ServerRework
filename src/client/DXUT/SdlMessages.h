@@ -35,6 +35,8 @@ struct TranslateContext {
     int windowY = 0;
     int pixelWidth = 0;         // client size in pixels, for WM_SIZE
     int pixelHeight = 0;
+    int clientX = 0;            // where the client area starts in the window, in pixels (letterbox bars, DXUTGetClientArea)
+    int clientY = 0;
     SDL_Keymod mod = SDL_KMOD_NONE;  // modifiers for MK_SHIFT/MK_CONTROL of mouse messages
 };
 

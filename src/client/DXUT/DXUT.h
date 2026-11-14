@@ -94,6 +94,10 @@ bool      DXUTIsMouseButtonDown(BYTE vButton);  // VK_LBUTTON, VK_RBUTTON, VK_MB
 // into it (created and destroyed with the window, backend from X2_RENDER_BACKEND; null without a window), and the keyboard and mouse state
 // the main loop keeps for KTDXLIB's DirectInput layer (SdlInput.h, docs/porting/client-input.md).
 SDL_Window* DXUTGetSDLWindow();
+// The game's part of the window, in pixels: the whole window, or less with bars around it when the window's aspect is
+// outside 4:3..21:9 (x2::d3d9::BackBufferRectIn). The client size, the back buffer and the mouse are this rectangle's;
+// all zero without a window.
+void DXUTGetClientArea(int* x, int* y, int* width, int* height);
 namespace x2::render {
 class Device;
 }

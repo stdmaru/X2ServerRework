@@ -107,7 +107,7 @@ x2::dxut::TranslateContext ContextOf(SDL_Window* window)
         context.pixelDensity = 1.0f;
     }
     SDL_GetWindowPosition(window, &context.windowX, &context.windowY);
-    SDL_GetWindowSizeInPixels(window, &context.pixelWidth, &context.pixelHeight);
+    DXUTGetClientArea(&context.clientX, &context.clientY, &context.pixelWidth, &context.pixelHeight);
     context.mod = SDL_GetModState();
     return context;
 }
@@ -197,7 +197,7 @@ void ResetIfResized(DxutState& state)
     }
     int width = 0;
     int height = 0;
-    SDL_GetWindowSizeInPixels(state.window->Handle(), &width, &height);
+    DXUTGetClientArea(nullptr, nullptr, &width, &height);
     if (width <= 0 || height <= 0 || (width == state.resetWidth && height == state.resetHeight)) {
         return;
     }
@@ -421,7 +421,9 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
     }
     state.windowClaimed = true;
     SDL_SetWindowMinimumSize(window, 640, 480);     // below it the UI is unreadable
-    // The aspects the UI is laid out for (T44): 4:3 (the original layout) to 21:9 (64:27).
+    // The aspects the UI is laid out for (T44): 4:3 (the original layout) to 21:9 (64:27). A hint only: a tiling window
+    // manager (Hyprland, sway) gives a tiled window any size, and the device then letterboxes the game inside it
+    // (x2::d3d9::BackBufferRectIn, DXUTGetClientArea).
     SDL_SetWindowAspectRatio(window, 4.0f / 3.0f, 64.0f / 27.0f);
     state.d3dDevice = std::make_unique<x2::d3d9::Device>(*state.device, window);
     if (!state.d3dDevice->Ok()) {
@@ -700,7 +702,7 @@ const D3DSURFACE_DESC* DXUTGetBackBufferSurfaceDesc()
     static D3DSURFACE_DESC desc;
     int width = 0;
     int height = 0;
-    SDL_GetWindowSizeInPixels(window, &width, &height);
+    DXUTGetClientArea(nullptr, nullptr, &width, &height);
     desc = {};
     desc.Format = D3DFMT_A8R8G8B8;
     desc.Usage = D3DUSAGE_RENDERTARGET;
@@ -718,6 +720,28 @@ bool DXUTGetDeviceObjectsReset()
 SDL_Window* DXUTGetSDLWindow()
 {
     return State().window ? State().window->Handle() : nullptr;
+}
+
+void DXUTGetClientArea(int* x, int* y, int* width, int* height)
+{
+    x2::d3d9::BackBufferRect rect;
+    if (SDL_Window* window = DXUTGetSDLWindow(); window != nullptr) {
+        int w = 0, h = 0;
+        SDL_GetWindowSizeInPixels(window, &w, &h);
+        rect = x2::d3d9::BackBufferRectIn(w, h);
+    }
+    if (x) {
+        *x = rect.x;
+    }
+    if (y) {
+        *y = rect.y;
+    }
+    if (width) {
+        *width = rect.width;
+    }
+    if (height) {
+        *height = rect.height;
+    }
 }
 
 x2::dxut::InputState& DXUTGetInputState()

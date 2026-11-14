@@ -316,8 +316,8 @@ void InputState::Handle(const SDL_Event& event, const TranslateContext& context)
         break;
     case SDL_EVENT_MOUSE_MOTION:
         if (ForWindow(event.motion.windowID, context)) {
-            m_cursor.x = static_cast<LONG>(std::lround(event.motion.x * context.pixelDensity));
-            m_cursor.y = static_cast<LONG>(std::lround(event.motion.y * context.pixelDensity));
+            m_cursor.x = static_cast<LONG>(std::lround(event.motion.x * context.pixelDensity)) - context.clientX;
+            m_cursor.y = static_cast<LONG>(std::lround(event.motion.y * context.pixelDensity)) - context.clientY;
             m_deltaX += event.motion.xrel * context.pixelDensity;
             m_deltaY += event.motion.yrel * context.pixelDensity;
         }
@@ -325,8 +325,8 @@ void InputState::Handle(const SDL_Event& event, const TranslateContext& context)
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
     case SDL_EVENT_MOUSE_BUTTON_UP:
         if (ForWindow(event.button.windowID, context)) {
-            m_cursor.x = static_cast<LONG>(std::lround(event.button.x * context.pixelDensity));
-            m_cursor.y = static_cast<LONG>(std::lround(event.button.y * context.pixelDensity));
+            m_cursor.x = static_cast<LONG>(std::lround(event.button.x * context.pixelDensity)) - context.clientX;
+            m_cursor.y = static_cast<LONG>(std::lround(event.button.y * context.pixelDensity)) - context.clientY;
             if (const int index = ButtonIndex(event.button.button); index >= 0) {
                 m_buttons[index] = Button(event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
             }
