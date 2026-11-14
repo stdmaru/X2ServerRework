@@ -387,10 +387,11 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
     options.title = strWindowTitle ? x2::platform::WideToUtf8(strWindowTitle) : std::string("X2");
     options.width = 1024;
     options.height = 768;
-    // Fixed size (WS_OVERLAPPEDWINDOW was resizable): the game draws at the resolution of its options, which
-    // DXUTCreateDeviceFromSettings applies. Tiling window managers (Hyprland, sway) float a window of fixed size, so the
-    // game opens at its own size instead of a tile's (2026-11-12).
-    options.resizable = false;
+    // Resizable, as DXUT's WS_OVERLAPPEDWINDOW was: the game opens at the resolution of its options
+    // (DXUTCreateDeviceFromSettings), and a size the window manager gives it later resets the device to it
+    // (ResetIfResized), so any windowed size can be tried. A tiling window manager (Hyprland, sway) tiles it unless told
+    // to float it; a fixed size would float it but could not be resized (2026-11-14).
+    options.resizable = true;
     std::string error;
     state.window = x2::app::Window::Create(options, error);
     if (!state.window) {
@@ -419,6 +420,7 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
         return E_FAIL;
     }
     state.windowClaimed = true;
+    SDL_SetWindowMinimumSize(window, 640, 480);     // below it the UI is unreadable
     state.d3dDevice = std::make_unique<x2::d3d9::Device>(*state.device, window);
     if (!state.d3dDevice->Ok()) {
         SDL_Log("DXUT: %s", state.d3dDevice->LastError().c_str());

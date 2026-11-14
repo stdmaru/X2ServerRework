@@ -31,9 +31,11 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   `pbNoFurtherProcessing`; if `MsgProc` does not stop the message, DXUT's own handling: `WM_SIZE` minimized/restored (pauses the
   loop), `WM_ACTIVATEAPP` (active flag), Alt+Enter toggles full screen when enabled by `DXUTInit` (on in `X2.cpp`), `WM_CLOSE`
   destroys the window and quits.
-- `DXUTCreateWindow` creates a **fixed-size** window (since 2026-11-12; DXUT's was resizable) with a 1024×768 client area. Tiling window managers
-  such as Hyprland float a fixed-size window, so the game opens at its resolution; the options still change it through
-  `DXUTCreateDeviceFromSettings`. The window gets (what `X2.cpp` asks of `DXUTCreateDevice`) and starts
+- `DXUTCreateWindow` creates a **resizable** window, as DXUT's was, at least 640×480, with a 1024×768 client area until
+  `DXUTCreateDeviceFromSettings` applies the options' resolution. From 2026-11-12 to 2026-11-14 it was of fixed size, so
+  tiling window managers such as Hyprland floated it at the game's resolution; it could not be resized, so other
+  windowed sizes could not be tried (user, 2026-11-14). Now Hyprland tiles it unless told to float it, and the device
+  follows the size it gets (`ResetIfResized`; checked 2026-11-14, a 938×1018 tile). The window gets (what `X2.cpp` asks of `DXUTCreateDevice`) and starts
   SDL text input; it binds the translator's IME context for the IME edit box's IMM32 calls, and `DXUTInit` sets
   `SDL_HINT_IME_IMPLEMENTED_UI` so the client draws the composition and the candidates.
 - **Resolution and full screen** (2026-11-12, `client/resolution`): `DXUTCreateDeviceFromSettings` keeps the game's
@@ -43,8 +45,8 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   `ResetIfResized`: whenever the window's pixel size is not the one the callbacks last saw (after those calls, and once per
   loop for a resize by the window manager) it runs `DeviceLost` then `DeviceReset`, where the game sets its viewport,
   projection, UI scale and render targets. Before, the window changed size but the game kept drawing for the old one.
-  Hyprland ignores a window's own size requests (fixed or resizable, 2026-11-12), so there the windowed resolution stays at
-  the size the window opened with; full screen works.
+  Hyprland ignores a window's own size requests (fixed or resizable, 2026-11-12), so there the windowed size is the
+  one the window manager gives (a tile, or a floating window resized by hand); full screen works.
 - Main loop: events → messages → frame (`CDXUTTimer` → `FrameMove` → `FrameRender`); while minimized it waits for events (100 ms).
   The frame is drawn by the callbacks through the D3D9 device; a frame they do not draw is presented cleared to black
   (2026-11-06); after `FrameRender` it presents through KTDXLIB's [D3D9 device](client-d3d9.md), which the callbacks receive (`DXUTGetD3DDevice()`; 2026-11-06, T38).
