@@ -370,7 +370,9 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           screen must match the original.
 - [ ] **Audio, next** (user, 2026-11-05; **moved ahead of the rest of the widescreen migration**, user, 2026-11-13: a
       long-pending, self-contained task): replace the silent backend with a real one, FMOD Ex / DirectSound →
-      miniaudio/SDL3 audio (or current cross-platform FMOD Core); only those files change.
+      miniaudio mixing on an SDL3 audio stream ([T45](decisions.md)); only those files change. In progress
+      (`client/audio`, 2026-11-13): music (134 `.ogg` files in `data/music`) and effects (6,415 `.ogg` and 67 PCM `.wav`
+      in the `.kom` archives, counted 2026-11-13).
 - [ ] `tools/ui-editor`, after audio (user, 2026-11-13): a UI editor for the user, under the client development suite
       ([T29](decisions.md)), built from the client's own GUI code so it renders dialogs exactly as the game does: view
       any dialog at any resolution and aspect, select a control, and see and edit its anchor, position, texture and
