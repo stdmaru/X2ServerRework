@@ -314,7 +314,11 @@ class CKTDGUIDialog
 		void SetEnableDraggingRange(bool val) { m_bEnableDraggingRange = val; }
 		D3DXVECTOR2 GetDraggingRangeCenter() const { return m_vDraggingRangeCenter; }
 		void SetDraggingRangeCenter( float x, float y ) { m_vDraggingRangeCenter = D3DXVECTOR2(x, y ); }
-		D3DXVECTOR2 GetDraggingRange() const { return m_vDraggingRange; }
+		// The dragging range on this screen. A dialog larger than the 1024x768 layout is a picture panned over the
+		// screen (the field and world maps), whose script gives the range as its size less 1024x768, the travel at
+		// 4:3: on a wider (or taller) screen, the travel shrinks by what the canvas adds, so the picture covers the
+		// screen at both ends (none when the screen is wider than the picture: it stays centered). 2026-11-14.
+		D3DXVECTOR2 GetDraggingRange() const;
 		void SetDraggingRange( float fWidth, float fHeight ) { m_vDraggingRange = D3DXVECTOR2(fWidth, fHeight); }
 
 		void ShowGuideDesc( CKTDGUIControl* pControl );

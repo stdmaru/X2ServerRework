@@ -68,6 +68,15 @@ g_pFree = g_pUIDialog:CreateStatic()
 g_pUIDialog:AddControl(g_pFree)
 g_pFree:SetName("Free")
 )lua";
+        // A picture wider than the screen panned over it, as the field maps (DLG_UI_FIELD_MAP_*.lua).
+        std::ofstream(root / "data" / "ui" / "scripts" / "DLG_Pan.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pUIDialog:SetPos(0, 0)
+g_pUIDialog:SetEnableMoveByDrag(true)
+g_pUIDialog:SetSize(1536, 768)
+g_pUIDialog:SetEnableDraggingRange(true)
+g_pUIDialog:SetDraggingRangeCenter(512, 384)
+g_pUIDialog:SetDraggingRange(512, 0)
+)lua";
         std::ofstream(root / "data" / "ui" / "scripts" / "dlg_another.lua") << "\xEF\xBB\xBFg_pUIDialog:SetName(\"x\")\n";
     }
     ~TempGame()
@@ -94,11 +103,12 @@ TEST_CASE("ui editor: dialog scripts are listed from the data folder, sorted, .k
 {
     TempGame game;
     const auto scripts = x2::ui_editor::FindDialogScripts(game.root);
-    REQUIRE(scripts.size() == 4);
+    REQUIRE(scripts.size() == 5);
     CHECK(scripts[0] == "DLG_Anchored.lua");
     CHECK(scripts[1] == "dlg_another.lua");
-    CHECK(scripts[2] == "DLG_Test.lua");
-    CHECK(scripts[3] == "DLG_Text.lua");
+    CHECK(scripts[2] == "DLG_Pan.lua");
+    CHECK(scripts[3] == "DLG_Test.lua");
+    CHECK(scripts[4] == "DLG_Text.lua");
 }
 
 TEST_CASE("ui editor: a dialog opens, draws at 16:9 and reports its controls in layout units and pixels")
@@ -324,4 +334,37 @@ TEST_CASE("ui editor: UIAnchors.lua entries go into open dialogs, the script's o
     CHECK(dialogs[1].controls[0].anchor == "LEFT");
     CHECK(dialogs[1].controls[1].anchor == "RIGHT");
     CHECK_FALSE(dialogs[1].controls[1].anchorFromScript);
+}
+
+TEST_CASE("ui editor: a picture wider than the screen pans only as far as it still covers the screen")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Pan.lua", error) == 0);
+
+    // At 4:3 the script's range holds: from 0 (its left end at the screen's left) to -512.
+    REQUIRE(engine->Render(1024, 768, 0.016f, error));
+    CHECK(engine->Inspect()[0].pos[0] == doctest::Approx(0.0));
+    engine->SetDialogPos(0, -600.0f, 0.0f);
+    REQUIRE(engine->Render(1024, 768, 0.016f, error));
+    CHECK(engine->Inspect()[0].pos[0] == doctest::Approx(-512.0));
+
+    // At 16:9 the canvas is 1365.3 wide, 170.7 to each side of the column: the picture's ends stop at its edges.
+    engine->SetDialogPos(0, 0.0f, 0.0f);
+    REQUIRE(engine->Render(1280, 720, 0.016f, error));
+    CHECK(engine->Inspect()[0].pos[0] == doctest::Approx(-170.67).epsilon(0.001));
+    engine->SetDialogPos(0, -600.0f, 0.0f);
+    REQUIRE(engine->Render(1280, 720, 0.016f, error));
+    CHECK(engine->Inspect()[0].pos[0] == doctest::Approx(1024.0 + 170.67 - 1536.0).epsilon(0.001));
+
+    // Wider than the picture (21:9, 1820 wide): it stays centered.
+    engine->SetDialogPos(0, 0.0f, 0.0f);
+    REQUIRE(engine->Render(2560, 1080, 0.016f, error));
+    CHECK(engine->Inspect()[0].pos[0] == doctest::Approx(-256.0));
 }

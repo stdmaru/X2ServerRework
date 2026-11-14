@@ -555,6 +555,17 @@ user info; the main windows never did) move with the pointer in `CKTDGUIDialog::
   keeps the grab point (the pointer relative to the dialog when the button goes down) and follows the pointer until
   the button is released, wherever the pointer is.
 
+## Panned pictures cover the screen (2026-11-14, `client/widescreen-map-pan`)
+
+**Behavior change.** A dialog larger than the 1024×768 layout that the player drags or the code scrolls (the 40 field
+maps of the "M" map, 1536×768; the world map, 1712×1336; one more of 1800×1200) is limited by its dragging range, which
+its script gives as its size less 1024×768: how far it travels at 4:3. On a wider canvas that let the picture stop
+with its end at the centered column's edge, and the strip between it and the screen's edge (171 units each side at
+16:9) stayed uncovered until the map scrolled. `CKTDGUIDialog::GetDraggingRange` now takes off what the canvas adds
+(width and height, centered dialogs only, never below 0), so the picture's ends stop at the screen's edges. Wider than
+the picture (the field maps at 21:9: 1820 units), it stays centered with a strip each side. Checked headless in the UI
+editor's tests (`ctest -R ui_editor`).
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

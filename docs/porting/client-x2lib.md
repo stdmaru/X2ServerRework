@@ -251,6 +251,15 @@ random points and back to (0, 0), its script's position; it now shakes around th
 that moves it keeps it there (the client_data puts it at (-2, -2) to reach the screen edges,
 [client_data](../tools/client-data.md#content-changes-t42)). With the original script it behaves the same.
 
+## Field map scroll (2026-11-14, `client/widescreen-map-pan`)
+
+`CX2WorldFieldMap::CalcPosForScroll` moves the "M" field map with the character: at 4:3 from 0 (the map's left end on
+screen) to the far end of its dragging range. The range now shrinks on a wider screen
+([KTDXLIB](client-ktdxlib.md#panned-pictures-cover-the-screen-2026-11-14-clientwidescreen-map-pan)), so both ends move:
+it goes between them instead of from 0, which at 4:3 is the same. Before, the map's left end sat at the centered
+column's edge while the character was in the left part of a field, leaving the screen's left strip uncovered (user,
+2026-11-14).
+
 ## State names (2026-11-14, `tools/ui-editor`)
 
 `CX2Main::StateName` gives a state's `XS_*` name; `StateInLog` writes it, and dev builds pass it to the UI anchor

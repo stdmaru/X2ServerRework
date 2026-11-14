@@ -503,9 +503,15 @@ D3DXVECTOR2 CX2WorldFieldMap::CalcPosForScroll( const D3DXVECTOR2& vPos_ )
 
 		if ( false == m_pFieldDLG->GetMouseDownForDrag() && NULL != pWorldMapUI && false == pWorldMapUI->GetDragNaviMap() )
 		{
-			vRightBottom = m_pFieldDLG->GetDraggingRangeCenter() - m_pFieldDLG->GetDraggingRange() * 0.5f - m_pFieldDLG->GetSize() * 0.5f;
-			vWindowPos.x = vRightBottom.x * vPos_.x / m_pFieldDLG->GetSize().x;
-			vWindowPos.y = vRightBottom.y * vPos_.y / m_pFieldDLG->GetSize().y;
+			// From the picture's left end in view (the highest x) to its right end (the lowest), with where the
+			// character is on it. The original went from 0, the left end at 4:3; on a wider screen the range is
+			// smaller (CKTDGUIDialog::GetDraggingRange) and both ends move.
+			const D3DXVECTOR2 vCenter = m_pFieldDLG->GetDraggingRangeCenter() - m_pFieldDLG->GetSize() * 0.5f;
+			const D3DXVECTOR2 vHalfRange = m_pFieldDLG->GetDraggingRange() * 0.5f;
+			vRightBottom = vCenter - vHalfRange;
+			const D3DXVECTOR2 vLeftEnd = vCenter + vHalfRange;
+			vWindowPos.x = vLeftEnd.x + ( vRightBottom.x - vLeftEnd.x ) * vPos_.x / m_pFieldDLG->GetSize().x;
+			vWindowPos.y = vLeftEnd.y + ( vRightBottom.y - vLeftEnd.y ) * vPos_.y / m_pFieldDLG->GetSize().y;
 			m_pFieldDLG->SetPos( vWindowPos );
 
 			pWorldMapUI->UpdateFieldMap();
