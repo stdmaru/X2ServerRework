@@ -244,6 +244,13 @@ with the resolution (`ConvertSizeByResolution` in the particle system). On a sma
 NPC; on a large screen they crowded it (user, 2026-11-14). The offsets now go through `ConvertSizeByResolution` too, so
 every resolution looks as 1024×768 did. Other 2D marks placed with pixel offsets from a projected point may need the same.
 
+## HUD gauge shake (2026-11-14, `tools/ui-editor`)
+
+`CX2MyGageUI::CrashMyStateGageUI` shakes the player's portrait and bars on a hit. The original moved the dialog to
+random points and back to (0, 0), its script's position; it now shakes around the dialog's own position, so a script
+that moves it keeps it there (the client_data puts it at (-1, -3) to reach the screen edges,
+[client_data](../tools/client-data.md#content-changes-t42)). With the original script it behaves the same.
+
 ## State names (2026-11-14, `tools/ui-editor`)
 
 `CX2Main::StateName` gives a state's `XS_*` name; `StateInLog` writes it, and dev builds pass it to the UI anchor

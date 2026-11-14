@@ -1206,15 +1206,14 @@ CX2MyGageUI::CX2MyGageUI( CX2GageData* pGageData_, const CX2Unit::UNIT_CLASS eOw
 {
 	if ( NULL != m_pDLGMyUnit && m_pDLGMyUnit->GetIsMoving() == false )
 	{
-		D3DXVECTOR2 vPosToMove = RandomNumber( _min, _max );
-		m_pDLGMyUnit->Move( vPosToMove, changeColor, 0.05f, true );
-		m_pDLGMyUnit->Move( D3DXVECTOR2(0,0) , changeColor, 0.05f, false );
-		vPosToMove = RandomNumber( _min, _max );
-		m_pDLGMyUnit->Move( vPosToMove, changeColor, 0.05f, false);
-		m_pDLGMyUnit->Move( D3DXVECTOR2(0,0), D3DXCOLOR( 1, 1, 1, 1), 0.05f, false);
-		vPosToMove = RandomNumber( _min, _max );
-		m_pDLGMyUnit->Move( vPosToMove, changeColor, 0.05f, false);
-		m_pDLGMyUnit->Move( D3DXVECTOR2(0,0), D3DXCOLOR( 1, 1, 1, 1), 0.05f, false);
+		// Shakes around where the script put the dialog (the original went back to (0, 0), its script's position)
+		const D3DXVECTOR2 vRest = m_pDLGMyUnit->GetPos();
+		m_pDLGMyUnit->Move( vRest + RandomNumber( _min, _max ), changeColor, 0.05f, true );
+		m_pDLGMyUnit->Move( vRest, changeColor, 0.05f, false );
+		m_pDLGMyUnit->Move( vRest + RandomNumber( _min, _max ), changeColor, 0.05f, false);
+		m_pDLGMyUnit->Move( vRest, D3DXCOLOR( 1, 1, 1, 1), 0.05f, false);
+		m_pDLGMyUnit->Move( vRest + RandomNumber( _min, _max ), changeColor, 0.05f, false);
+		m_pDLGMyUnit->Move( vRest, D3DXCOLOR( 1, 1, 1, 1), 0.05f, false);
 	}
 }
 
