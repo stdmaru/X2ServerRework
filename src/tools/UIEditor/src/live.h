@@ -17,6 +17,8 @@ struct LiveSnapshot {
         bool shown = true;
         int type = -1;              // CKTDGUIControl::CONTROL_TYPE, -1 when not written
         int anchor = -1;            // UIAnchor the control declares, -1: none (or not written)
+        float offset[2] = {};       // what code moved it by (SetOffsetPos), layout units
+        bool hasOffset = false;     // written (older snapshots do not)
     };
     struct Picture {
         int control = 0, index = 0;

@@ -34,7 +34,7 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
 - The client, run in the game folder with `X2_UI_LIVE=1` (a dev build), writes `UILive.tsv` there a few times a second
   ([UI anchors](ui-anchors.md), `CKTDGUIAnchorRecorder::NoteLive`): the game state, its resolution, and the shown
   dialogs drawn from scripts, back to front, each with its position, layer, anchor in effect (code anchors some at run time, such as the quick slot items after the slot frames; 2026-11-14), the scripts code loaded into it after the
-  first (`OpenScriptFile`: a local map's regions, 2026-11-14), and every control (shown, type, the anchor it declares); for statics, every
+  first (`OpenScriptFile`: a local map's regions, 2026-11-14), and every control (shown, type, the anchor it declares, the offset code moved it by: the menu buttons close the gaps of hidden ones); for statics, every
   picture (texture, key, corners, texture coordinates, color, shown) and every text (position, font, alignment, color).
 - The editor reads it when it changes (`live.h`) and mirrors it: a dialog stands for the game's when it was built from
   the same scripts (the n-th of them for the game's n-th), the others close, the missing ones open with their scripts,
