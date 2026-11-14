@@ -236,6 +236,14 @@ Known, left for the migration: screens whose texture does not match its rectangl
 them. The character select background, for example, is a 512×512 texture drawn at 1024×768, so it is stretched 33% in
 the original as well.
 
+## NPC marks follow the resolution (2026-11-14, `tools/ui-editor`)
+
+`CX2TFieldNpc` puts its marks (quest `!`/`?`, event, name) at the NPC's projected head plus offsets that were pixels at
+1024×768 (`+60,+30` for quests, `-50,+20` for events, `-37`/`-40` for the name), while the sprites themselves are scaled
+with the resolution (`ConvertSizeByResolution` in the particle system). On a small window the marks drifted away from the
+NPC; on a large screen they crowded it (user, 2026-11-14). The offsets now go through `ConvertSizeByResolution` too, so
+every resolution looks as 1024×768 did. Other 2D marks placed with pixel offsets from a projected point may need the same.
+
 ## State names (2026-11-14, `tools/ui-editor`)
 
 `CX2Main::StateName` gives a state's `XS_*` name; `StateInLog` writes it, and dev builds pass it to the UI anchor

@@ -419,6 +419,10 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 	D3DXVECTOR3 vInAreaPos = m_vBasePos;
 	vInAreaPos.y += 70.f;
 	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos( vInAreaPos );
+	// The marks' offsets from the head were pixels at the original's 1024x768 while their sprites are scaled with the
+	// resolution (ConvertSizeByResolution), so on smaller screens the marks drifted away from the NPC: the offsets are
+	// scaled the same way (2026-11-14).
+	auto Offset = []( float x, float y ) { const D3DXVECTOR2 v = g_pKTDXApp->ConvertSizeByResolution( x, y ); return D3DXVECTOR3( v.x, v.y, 0 ); };
 
 	// 퀘스트 정보 출력
 	CKTDGParticleSystem::CParticleEventSequence* pSeqQuest = NULL;
@@ -429,9 +433,9 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
     if ( pSeqNpcInArea != NULL )
     {
 	    if(m_NpcHouseID == CX2LocationManager::HI_POSTBOX)
-		    pSeqNpcInArea->SetPosition( D3DXVECTOR3( finalPos.x, finalPos.y - 40.f, 0 ) );
+		    pSeqNpcInArea->SetPosition( D3DXVECTOR3( finalPos.x, finalPos.y, 0 ) + Offset( 0.f, -40.f ) );
 	    else
-		    pSeqNpcInArea->SetPosition( D3DXVECTOR3( finalPos.x, finalPos.y - 37.f, 0 ) );
+		    pSeqNpcInArea->SetPosition( D3DXVECTOR3( finalPos.x, finalPos.y, 0 ) + Offset( 0.f, -37.f ) );
     }//if
 
 
@@ -497,7 +501,7 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 			{
 				if(pSeqQuest != NULL)
 				{
-					pSeqQuest->SetPosition( D3DXVECTOR3( finalPos.x + 60.f, finalPos.y + 30.f, 0 ) );
+					pSeqQuest->SetPosition( D3DXVECTOR3( finalPos.x, finalPos.y, 0 ) + Offset( 60.f, 30.f ) );
 					pSeqQuest->SetShowObject(true);
 				}
 			}
@@ -509,7 +513,7 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 				pSeqEvent = GetUiParticle()->GetInstanceSequence( m_hNpcEvent );
                 if ( pSeqEvent != NULL )
                 {
-				    pSeqEvent->SetPosition( D3DXVECTOR3( finalPos.x - 50.f, finalPos.y + 20.f, 0 ) );
+				    pSeqEvent->SetPosition( D3DXVECTOR3( finalPos.x, finalPos.y, 0 ) + Offset( -50.f, 20.f ) );
 				    pSeqEvent->SetShowObject(true);
                 }//if
 			}
