@@ -1765,7 +1765,7 @@ case SMUCM_FACEBOOK_MOVE:
 		} break;
 	case SMUCM_SHOW_AERIA_USER_SUPPORT:
 		{
-#if !X2_DEV_TOOLS // 본섭
+#ifndef X2_DEBUG // 본섭
 			std::wstring wstrURL = L"https://api.elswordonline.com/aeria/auth/gamesupport?SID=";
 #else // 테섭
 			std::wstring wstrURL = L"http://apitest.elswordonline.com/aeria/auth/gamesupport?SID=";
@@ -2578,7 +2578,7 @@ bool CX2StateMenu::ShortCutKeyProcess()
 	if ( CX2State::ShortCutKeyProcess() == true )
 		return true;
 
-#if !X2_DEV_TOOLS /// 사내에서는 제외
+#ifndef X2_DEBUG /// 사내에서는 제외
 	if( NULL != g_pMain && true == g_pMain->GetIsPlayingFreeTraining() )
 	{
 		CameraZoomInAndOutKeyProcess();

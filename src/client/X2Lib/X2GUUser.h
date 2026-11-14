@@ -247,7 +247,7 @@ class CX2GUUser : public CX2GameUnit
 {
 public:
 	//{{ Public Variable Start
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	DECLARE_HELP_SYSTEM( CX2GUUser );
 #endif // KHELP_SYSTEM_TEST
 
@@ -2655,7 +2655,7 @@ public:
 			m_FrameDataFuture.stateParam.bCanPassUnit = bFlag_;
 		}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void SetScriptFileName();
 #endif //REALTIME_SCRIPT_PATCH
 

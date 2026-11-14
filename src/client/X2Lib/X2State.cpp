@@ -508,7 +508,7 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 				pGameEdit->SetEnable( !pGameEdit->GetEnable() );
 			}
 
-#if X2_DEV_TOOLS //JHKang
+#ifdef X2_DEBUG //JHKang
 			else if ( g_pMain->GetNowStateID() == CX2Main::XS_VILLAGE_MAP &&
 					  g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState( DIK_SEMICOLON ) == TRUE )
 			{
@@ -517,7 +517,7 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 #endif //CHEAT_CLASS_CHANGE
 			pGameEdit->OnFrameMove( fTime, fElapsedTime );
 		}
-#if X2_DEV_TOOLS //임시. 추후 본섭 적용 시에는 옵션으로 뺄 예정
+#ifdef X2_DEBUG //임시. 추후 본섭 적용 시에는 옵션으로 뺄 예정
 		if ( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState( DIK_PRIOR ) == TRUE )
 		{
 			bool bShowOnlyMyDamage = !g_pMain->GetGameOption().GetShowOnlyMyDamage();
@@ -536,7 +536,7 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 		}
 #endif //SHOW_ONLY_MY_DAMAGE
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( CX2Main::XS_VILLAGE_MAP == g_pMain->GetNowStateID()
 			|| CX2Main::XS_BATTLE_FIELD == g_pMain->GetNowStateID())
 		{
@@ -613,7 +613,7 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 	}
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetAuthLevel() < CX2User::XUAL_OPERATOR )
 #endif
 	{
@@ -825,7 +825,7 @@ bool CX2State::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 	//주의! 고칠 경우, X2StateMenu에 있는 MsgProc도 고쳐줘야한다.
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 /*
 	switch( uMsg )
 	{
@@ -933,7 +933,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 	if ( NULL != g_pData->GetMyUser() &&
 		CX2User::XUAL_OPERATOR <= g_pData->GetMyUser()->GetAuthLevel() )
 	{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( true == g_pInstanceData->GetItemCheatPopup().UICustomEventProc( hWnd, uMsg, wParam, lParam ) )
 			return true;
 #endif //ITEM_CHEAT_POPUP_TEST
@@ -1781,14 +1781,14 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		break;
 		//}} kimhc // 2010.02.09 // 일정시간마다 퀘스트가 업데이트 되는 시스템 구현
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	case EGS_HACKING_TOOL_LIST_NOT:
 		{
 			return Handler_EGS_HACKING_TOOL_LIST_NOT( hWnd, uMsg, wParam, lParam );
 		}
 		break;
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	case EGS_EXPAND_SKILL_NOTE_PAGE_NUM_NOT:
@@ -2038,7 +2038,7 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			Handler_EGS_UPDATE_CODE_EVENT_NOT( hWnd, uMsg, wParam, lParam );
 		} break;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 #endif //_IN_HOUSE_
 
 	case EGS_CHANGE_GAME_STAT_INFO_IN_ROOM_NOT:
@@ -2116,7 +2116,7 @@ bool CX2State::UIServerTimeOutProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam,
 
 	std::wstring packetExplain = KEvent::GetIDStr( (unsigned short)wParam );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	{
 		packetExplain += L"(";
 		WCHAR wszNum[128] = L"";
@@ -2929,7 +2929,7 @@ bool CX2State::ShortCutKeyProcess()
 	// oasis907 : 김상윤 [2010.7.14] //
 
 	//오현빈//2012-12-14// 사내는 훈련소에서 단축키 먹히도록 수정
-	#if !X2_DEV_TOOLS
+	#ifndef X2_DEBUG
 	if( g_pMain->GetIsPlayingFreeTraining() == true )
 	{
 		return false;		/// CX2StateMenu::ShortCutKeyProcess() 에서 카메라 줌 기능 검사하기 위해 수정
@@ -3044,7 +3044,7 @@ bool CX2State::ShortCutKeyProcess()
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != g_pData &&
 		NULL != g_pData->GetMyUser() &&
 		g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
@@ -6051,7 +6051,7 @@ void CX2State::OnFrameMove_GameServerConnect( double /*fTime*/, float fElapsedTi
 		if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 		{
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			g_pData->GetServerProtocol()->SendID( E_DISABLE_HB_CHECK_REQ );
 
 			x2::platform::OpenDebugConsole();
@@ -6060,7 +6060,7 @@ void CX2State::OnFrameMove_GameServerConnect( double /*fTime*/, float fElapsedTi
 		}
 		else
 		{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			x2::platform::CloseDebugConsole();
 #endif
 		}
@@ -6533,7 +6533,7 @@ bool CX2State::Handler_EGS_EVENT_QUEST_CHECK_FOR_ADMIN_NOT( HWND /*hWnd*/, UINT 
 
 bool CX2State::Handler_EGS_HACKING_TOOL_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	//THEMIDA_VM_START
@@ -6553,7 +6553,7 @@ bool CX2State::Handler_EGS_HACKING_TOOL_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, 
 	g_pMain->SetHackToolTime(0.f);
 	//THEMIDA_VM_END
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	return true;
@@ -6564,7 +6564,7 @@ bool CX2State::Handler_EGS_HACKING_TOOL_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, 
 void CX2State::SendLoadedModuleList(bool bForce)
 {
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	//THEMIDA_VM_START
@@ -6609,7 +6609,7 @@ void CX2State::SendLoadedModuleList(bool bForce)
 
 	//THEMIDA_VM_END
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 }
@@ -9098,7 +9098,7 @@ bool CX2State::Handler_EGS_GET_ACTIVE_LAGCHECK_ACK( HWND hWnd, UINT uMsg, WPARAM
 }
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK_VER2
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 #endif //_IN_HOUSE_
 
 

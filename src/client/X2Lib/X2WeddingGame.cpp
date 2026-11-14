@@ -542,7 +542,7 @@ void CX2WeddingGame::KeyProcess()
 		g_pChatBox->SendEmotionId( GET_STRING( STR_ID_2501 ) );
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	// 사내 테스트용 위치 변경 치트
 	if ( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_1) == TRUE )
 	{

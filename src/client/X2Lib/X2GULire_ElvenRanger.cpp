@@ -4437,7 +4437,7 @@ RENDER_HINT CX2GULire_ElvenRanger::CommonRender_Prepare()
 
 /*virtual*/ bool CX2GULire_ElvenRanger::SpecialAttackEventProcess( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition /*= CX2SkillTree::ASUT_ONLY_ON_LINE*/ )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -4488,7 +4488,7 @@ RENDER_HINT CX2GULire_ElvenRanger::CommonRender_Prepare()
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 #endif // _SERVICE_
 	{
@@ -4602,7 +4602,7 @@ RENDER_HINT CX2GULire_ElvenRanger::CommonRender_Prepare()
 	m_bSpecialAttackEventProcessedAtThisFrame = true;
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	Send_SKILL_USE_REQ( pSkillTemplet->m_eID );

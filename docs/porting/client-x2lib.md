@@ -10,7 +10,7 @@ the glue to the network library (`X2Main`, `X2Data`). Uses Direct3D mostly as a 
 
 - Module `client-x2lib` ([report](../../tools/import/reports/client-x2lib/REPORT.md)): files of `X2Lib/` compiled by
   `X2Lib.vcxproj` (`US_INTERNAL|Win32`) and their headers: **552 files** (270 `.cpp`), 722k lines written; 27,462 `#if` groups
-  resolved, 189k lines removed; 517 blocks became `X2_DEV_TOOLS`; 472 include spellings fixed. Encoding: 405 CP949, 93 ASCII,
+  resolved, 189k lines removed; 517 blocks became `X2_DEV_TOOLS` (now `X2_DEBUG`, T47); 472 include spellings fixed. Encoding: 405 CP949, 93 ASCII,
   53 UTF-8, 1 CP949 with invalid bytes (`X2StateServerSelect.cpp`). Largest: the unit files `X2GUUser.cpp` (29k),
   `X2GuEve.cpp` (27k), `X2GUNPC.cpp` (23k), `X2GUChung.cpp` (21k), `X2GURaven.cpp` (20k).
 - **Not imported**: `X2UDPPacket.*`, already in `src/server/X2Lib` (T33, [Client](client.md#code-shared-with-the-servers-t33)).
@@ -113,7 +113,7 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
     intended fallthroughs;
   - virtual destructors (`TimeLimited`, `RoomSimpleInfo`, `CEffect`, `CX2PETAI`), about 30 private fields that were
     only initialized, `#pragma once` in `.cpp` files, trigraphs in strings and comments;
-  - `[[maybe_unused]]` on locals and parameters that only `X2_DEV_TOOLS` code reads.
+  - `[[maybe_unused]]` on locals and parameters that only `X2_DEBUG` code reads.
 - **Strings.** `GET_STRING` goes through `CKTDXStringTable::GetDisplayString()`, which caches the debug text in
   `m_mapDebugInfoString`, so the pointer it returns outlives the call.
 - **`KProtectedType<float>`** computes its check value with `std::bit_cast` instead of writing through an `int*` (same

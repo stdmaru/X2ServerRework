@@ -17,7 +17,7 @@ bool CX2Game::m_sbRenderNPCName = true;
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 IMPLEMENT_HELP_SYSTEM( CX2Game )
 {
 	WCHAR   wbuffer[1024];
@@ -394,7 +394,7 @@ m_TeamScoreAdvBlue( 0 )
 
 	m_pCinematicUI = new CinematicUI();
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != GetMajorXMeshPlayer() )
 		GetMajorXMeshPlayer()->SetShowAttackBox( false );
 #endif //SHOW_ATTACK_BOX_DUMMY
@@ -1366,7 +1366,7 @@ void CX2Game::SystemLoading()
 	m_pMajorXMeshPlayer->OpenScriptFile( L"GameMajorXMeshPlayer.txt" );
 	m_pMinorXMeshPlayer->OpenScriptFile( L"GameMinorXMeshPlayer.txt" );*/
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	switch( g_pMain->GetNowStateID() )
 	{
 	case CX2Main::XS_TRAINING_GAME:
@@ -2031,7 +2031,7 @@ HRESULT	CX2Game::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_RCONTROL) == TRUE && g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
 	{
 		if( m_bGameWait == true )
@@ -2068,7 +2068,7 @@ HRESULT	CX2Game::OnFrameMove( double fTime, float fElapsedTime )
 
 	if( m_bGameWait == true )
 	{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( null != m_optrFocusUnit )
 			m_optrFocusUnit->OnCameraMove();
 
@@ -3313,7 +3313,7 @@ bool CX2Game::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 		m_FPSCamera.HandleMessages(hWnd, uMsg, wParam, lParam);
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	if( uMsg == WM_NCLBUTTONDOWN || uMsg == WM_NCRBUTTONDOWN || uMsg == WM_NCMBUTTONDOWN )
 		return true;
 #endif
@@ -4340,7 +4340,7 @@ void CX2Game::KeyProcess()
 				{
 					pMyGUUser->ChargeMpAndEtcInTrainingGame();
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 					if( NULL != GetMajorXMeshPlayer() )
 					{
 						GetMajorXMeshPlayer()->ToggleShowAttackBox();
@@ -4357,7 +4357,7 @@ void CX2Game::KeyProcess()
 				}
 			}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_SPECIAL_USER && g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_F6) == TRUE )
 			{
 				if ( g_pMain->GetNowStateID() != CX2Main::XS_TRAINING_GAME )
@@ -4365,7 +4365,7 @@ void CX2Game::KeyProcess()
 					pMyGUUser->SetNowHp( pMyGUUser->GetMaxHp() );
 				}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				if( NULL != GetMajorXMeshPlayer() )
 				{
 					GetMajorXMeshPlayer()->ToggleShowAttackBox();
@@ -4429,7 +4429,7 @@ void CX2Game::KeyProcess()
 						}
 					}
 				}
-	#if X2_DEV_TOOLS
+	#ifdef X2_DEBUG
 				switch( g_pMain->GetNowStateID() )
 				{
 				case CX2Main::XS_DUNGEON_GAME:
@@ -4481,7 +4481,7 @@ void CX2Game::KeyProcess()
 							}
 							CX2RidingPetManager::GetInstance()->RefreshRidingPetScript();
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 							if ( g_pMain->ResetDeveloperScriptSet( L"DevScriptTable.lua" ) == true )
 							{
 								g_pChatBox->AddChatLog( L"DevScriptTable 세팅 완료", KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
@@ -7945,7 +7945,7 @@ void CX2Game::PauseNPCAI( float fTime )
 // 운영자 이상 치트용으로만 사용
 void CX2Game::KillAllNPC_LUA( [[maybe_unused]] bool bActiveOnly /* = true */ )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
 	{
 		if( NULL != GetMyUnit() )
@@ -7963,7 +7963,7 @@ void CX2Game::KillAllNPC_LUA( [[maybe_unused]] bool bActiveOnly /* = true */ )
 
 void CX2Game::KillAllNPC( [[maybe_unused]] bool bActiveOnly /* = true */, [[maybe_unused]] CX2GameUnit* pAttackerGameUnit_ /*= NULL*/, [[maybe_unused]] bool bExceptGate /*= false*/ )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( IsHost() == true )
 	{
 		for( int i=0; i<GetNPCUnitListSize(); i++ )
@@ -8125,7 +8125,7 @@ void CX2Game::SetFreeCamera( bool bFreeCamera )
 		m_FPSCamera.SetViewParams( &vEye, &vLookAt, &vUpVec );
 
 	}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	else
 	{
 		GetX2Camera()->CalcManualCameraPosition( GetFocusUnit(), *m_FPSCamera.GetEyePt() );
@@ -11860,7 +11860,7 @@ void CX2Game::BuffAllNPC( int statType, float fStatVal, float fStatTime )
 //
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	void CX2Game::EnableManualCameraPosition( bool bEnabled )
 	{
 		if( NULL == GetX2Camera() )
@@ -14555,7 +14555,7 @@ void CX2Game::DisplayDamageInformation( IN const float fDamageValue_, IN const D
 
 void CX2Game::ChatBoxLog( [[maybe_unused]] const CHAR* pLog, [[maybe_unused]] float fLog)
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != g_pChatBox )
 	{
 		wstring wstrStateName = L"";

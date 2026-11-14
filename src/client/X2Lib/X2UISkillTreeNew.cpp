@@ -2059,7 +2059,7 @@ void CX2UISkillTreeNew::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID );
 		if(pSkillTemplet == NULL)
 		{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			WCHAR buf[256] = {0,};
 			//wsprintf(buf, L"Skill ID : %d\nExist in SkillTreeTemplet but NULL SkillTemplet", (int)eSkillID);
 			StringCchPrintf(buf, 256, L"Skill ID : %d\nExist in SkillTreeTemplet but NULL SkillTemplet", (int)eSkillID);
@@ -2513,7 +2513,7 @@ void CX2UISkillTreeNew::UpdateBlind()
 		if ( usSelectPage > 0 )
 			usUsingPage = usSelectPage - 1;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		/// ������ ��� - ��ų ��� �����ؾ� �� ��, �����ε� ó�� ����
 
 		int iLearnSkillNum	= 0;		/// ���� ��� ��ų ��
@@ -2605,7 +2605,7 @@ void CX2UISkillTreeNew::UpdateBlind()
 				pStaticBlind->GetString( 0 )->msg = GET_STRING( STR_ID_29929 );
 			}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			/// ������ ��� - ��ų ��� �����ؾ� �� ��, �����ε� ó�� ����
 			if( true == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 			{
@@ -3675,7 +3675,7 @@ void CX2UISkillTreeNew::GetSkillEffectiveDesc( OUT wstring& wstrDesc, IN int iSk
 		}
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	/// ������ ��� - ��ų ���̵� ���
 	if( true == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 	{
@@ -5828,7 +5828,7 @@ void CX2UISkillTreeNew::SetBlindSelectSkill()
 				return;
 			}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			/// ������ ��� - ���� ��� ��ų�� �����ִٸ�, �����ε� ����
 			if( true == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 			{

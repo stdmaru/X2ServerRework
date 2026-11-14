@@ -1,7 +1,7 @@
 #pragma once
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	//class CX2ItemCheatPopUp;
 	#include "./X2ItemCheatPopUp.h"
 #endif // ITEM_CHEAT_POPUP_TEST
@@ -24,7 +24,7 @@ public:
 	void OnFrameMove( double fTime, float fElapsedTime );
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	CX2ItemCheatPopUp& GetItemCheatPopup() { return m_ItemCheatPopup; }
 #endif // ITEM_CHEAT_POPUP_TEST
 
@@ -90,7 +90,7 @@ public:
 #endif // EXTEND_SERVER_GROUP_MASK
 	wstring GetChannelServerName( int ChannelID );		// 09.04.20 태완
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	bool GetFrameScale() const { return m_bFrameScale; }
 	void SetFrameScale(bool val) { m_bFrameScale = val; }
 #endif
@@ -351,7 +351,7 @@ private:
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	CX2ItemCheatPopUp m_ItemCheatPopup;
 
@@ -361,7 +361,7 @@ private:
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	bool	m_bFrameScale;
 #endif
 

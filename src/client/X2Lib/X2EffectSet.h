@@ -79,7 +79,7 @@ public:
 		CMinMax<float>	m_LookAtMoveSpeed;
 		CMinMax<float>	m_LookAtMoveRange;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // #ifdef EFFECT_TOOL
 		static bool IsSamef_( float a, float b = 0.f )
 		{
@@ -186,7 +186,7 @@ public:
 		// 이펙트셋보다 지정된 거리 이상 멀어지면 생성하지 않도록 하기 위한 거리 값 저장 변수
 		float			m_fLimitDistanceSq;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // #ifdef EFFECT_TOOL
 		static bool IsSamef_( float a, float b = 0.f )
 		{
@@ -277,7 +277,7 @@ public:
 
 		//bool			m_bDeleteWhenTraceTargetDead;			// m_pTraceTargetGameUnit이 죽거나 없어지면 이펙트도 사라진다
 		int				m_iDeleteShakeCount;					// 0보다 클 때 유효하고 이 회수만큼 흔들면 이펙트도 사라진다
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // #ifdef EFFECT_TOOL
 		bool operator==( const EffectSetData& rhs_) const
 		{
@@ -451,7 +451,7 @@ public:
 		D3DXVECTOR3				m_vecTargetMeshZVector;		/// 타겟 매시의 Z 벡터 ( 처음 생성시 유닛의 Z 벡터 값 )
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		set<wstring>					m_setEmptyBoneName;
 #endif //ADD_RESOURCE_ERROR_LOG
 
@@ -605,7 +605,7 @@ public:
 	}
 
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 public :
 	typedef std::map< std::wstring, EffectSetData* > EffectSetDataMap;
 	EffectSetDataMap & GetMapEffectSetTemplet(){ return m_mapEffectSetTemplet;}
@@ -638,7 +638,7 @@ private:
     CX2PET *pPet = NULL
     );
 
-#if !X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifndef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 	typedef std::map< std::wstring, EffectSetData* > EffectSetDataMap;
 #endif // f EXPAND_DEVELOPER_SCRIPT	  // 김종훈, 개발자 스크립트 확장 기능 추가
 	EffectSetDataMap					m_mapEffectSetTemplet;

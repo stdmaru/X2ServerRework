@@ -6,7 +6,7 @@ The ported client runs from a folder laid out as in decision T35 (3) (the launch
 
 ```
 <client>/data/            game root: x2 (x2.exe), data*.kom, general.ess, movie/, music/, and what the client writes
-<client>/data/data/       client_data, loose files read only by X2_DEV_TOOLS builds (preferred over the .kom)
+<client>/data/data/       client_data, loose files read only by X2_DEBUG builds (preferred over the .kom)
 ```
 
 - **`.kom`**: packed from a client_data with `x2_assets pack <client_data> <client>/data`
@@ -32,7 +32,7 @@ The user's folder (2026-11-12): `/media/games/X2ReworkClient/data`, with its cli
 
 ## Running
 
-From the game root (`X2_DEV_TOOLS` builds need no arguments; release builds need the patcher's `PATCHER_RUN_ONLY` last).
+From the game root (`X2_DEBUG` builds need no arguments; release builds need the patcher's `PATCHER_RUN_ONLY` last).
 The first start asks (Yes/No) whether to pick the graphics options automatically, as the original did when
 `GameOptions.lua` is missing. Headless, for start-up checks: `SDL_VIDEO_DRIVER=dummy X2_RENDER_BACKEND=null ./x2`
 ([Client: DXUT](../porting/client-dxut.md)).

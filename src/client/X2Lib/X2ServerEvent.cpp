@@ -4,7 +4,7 @@
 #undef _ENUM
 #define _ENUM( id ) L ## #id,
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 const WCHAR*  CX2ServerEvent::SERVER_EVENT_ID_STR[] = {
 #   include "EventID_System.h"
 #   include "EventID_Client.h"

@@ -19,7 +19,7 @@ class CX2GameEdit
 //#endif //MODIFY_GAME_EDIT_CAMERA
 		};
 
-#if X2_DEV_TOOLS //JHKang
+#ifdef X2_DEBUG //JHKang
 		enum UI_CHANGE_CLASS_CHEAT_MSG
 		{
 			UCCCM_CLOSE					= 60000,
@@ -28,7 +28,7 @@ class CX2GameEdit
 
 #endif //CHEAT_CLASS_CHANGE
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		enum EFFECT_LOG_LEVEL
 		{
 			ELL_NONE,
@@ -46,7 +46,7 @@ class CX2GameEdit
 
 		void HotKeyProcess();
 		void HotKeyProcess_BossRaid();
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void HotKeyProcess_FreeTraining();
 #endif // SUMMON_MONSTER_BY_PRESS_KEY_AT_TRAINING_GAME
 
@@ -60,7 +60,7 @@ class CX2GameEdit
 
 
 		bool ExecCommand( const WCHAR* pCommandString );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void ExecuteLastCommand();
 #endif // CHEAT_COMMAND_SHORT_CUT_KEY_TEST
 
@@ -111,7 +111,7 @@ class CX2GameEdit
 
 		void RefreshDailyQuest();
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void ItemViewCheat( int itemID );
 #endif // ITEM_VIEW_CHEAT
 
@@ -147,12 +147,12 @@ class CX2GameEdit
 
 		void FullChargeRidingStamina( int iValue_ );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void SetEffectLogLevel( EFFECT_LOG_LEVEL eLogLevel ) { m_eShowEffetLogLevel = eLogLevel; }
 		EFFECT_LOG_LEVEL GetEffectLogLevel() const { return m_eShowEffetLogLevel; }
 #endif // EFFECT_USE_LOG
 
-#if X2_DEV_TOOLS //JHKang
+#ifdef X2_DEBUG //JHKang
 		void ToggleClassChangeCheat();
 #endif //CHEAT_CLASS_CHANGE
 
@@ -191,11 +191,11 @@ class CX2GameEdit
 		wstring							m_wstrOperatorHelp;
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		EFFECT_LOG_LEVEL				m_eShowEffetLogLevel;
 #endif // EFFECT_USE_LOG
 
-#if X2_DEV_TOOLS //JHKang
+#ifdef X2_DEBUG //JHKang
 		CKTDGUIDialogType				m_pDLGClassChangeCheat;
 		bool							m_bShowClassChangeCheat;
 #endif //CHEAT_CLASS_CHANGE

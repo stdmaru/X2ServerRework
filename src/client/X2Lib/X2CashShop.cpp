@@ -53,7 +53,7 @@ CX2CashShop::CX2CashShop( CKTDXStage* pStage, const WCHAR* wszFileName )
 	m_UnitClickPos		= D3DXVECTOR2(33,75);
 	m_UnitClickSize		= D3DXVECTOR2(287,352);
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	CategoryDataParsing( L"CashShopCategory.lua" );
 #else
 	CategoryDataParsing( L"CashShopCategory_Test.lua" );
@@ -1919,7 +1919,7 @@ void CX2CashShop::CategoryDataParsing( const WCHAR* pFileName )
 			else
 			{
 				ErrorLog( XEM_ERROR129 )
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 					MessageBox( g_pKTDXApp->GetHWND(), L"CX2LocationManager CASH_SHOP_REAL_CATEGORY_ID ���̵� ������ �ֳ�", L"Error", MB_OK );
 #endif
 			}
@@ -1931,7 +1931,7 @@ void CX2CashShop::CategoryDataParsing( const WCHAR* pFileName )
 	else
 	{
 		ErrorLog( XEM_ERROR128 );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		MessageBox( g_pKTDXApp->GetHWND(), L"CX2CashShop CASH_SHOP_REAL_CATEGORY_ID BeginTable", L"Error", MB_OK );
 
 #endif
@@ -6165,7 +6165,7 @@ bool CX2CashShop::BuyItemPopup:: RestCashCheck()
 				break;
 			}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			return true;
 #else // defined(_IN_HOUSE_) && ( defined(SERV_COUNTRY_US) || defined( CLIENT_COUNTRY_ID ) )
 			if ( restCash >= 0 )
@@ -7341,7 +7341,7 @@ std::wstring CX2CashShop::GetWstrConnectChargePage()
 {
 	std::wstring wstrURL = L"";
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	switch(g_pMain->GetNationFlag())
 	{
 	// ����

@@ -1950,7 +1950,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 		slotItemDesc += wstrBuff ;
 #endif //SHOW_ITEM_TYPE_AT_TOOLTIP
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( NULL != pkItemTemplet )
 		{
 			slotItemDesc += L"ModelName :";

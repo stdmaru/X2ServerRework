@@ -1366,7 +1366,7 @@ void CX2Data::LoadPicChar10()
 
 void CX2Data::LoadPicCharAll_LUA()
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
 	{
@@ -1580,7 +1580,7 @@ CX2ServerProtocol* CX2Data::ResetServerProtocol()
 	SAFE_DELETE( m_pServerProtocol );
 
 	bool bIsSERVICE = false;
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	bIsSERVICE = false;
 #else
 	bIsSERVICE = true;

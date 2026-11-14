@@ -33,7 +33,7 @@ finally, the client.
 - **Keep the protocol compatible with the original client** (`x2.exe`): do not change packet formats, sizes, or cryptography
   without a recorded decision. Types sent over the network must have fixed sizes (`int32_t`, `char16_t`, ...). See
   [Protocol](docs/original/protocol.md).
-- **Only one variant: US / `_SERVICE_`.** Debug/dev/admin tools are gated by `X2_DEV_TOOLS` (see
+- **Only one variant: US / `_SERVICE_`.** Debug/dev/admin behavior is gated by `X2_DEBUG` (`src/define.h`) and the development tools by `X2_DEV_TOOLS` (see
   [Debug and development](docs/original/debug-and-development.md)). Discard other countries, anti-cheat, publisher integrations,
   and legacy code.
 - **64-bit only: x86_64 on Windows and Linux, and arm64 on Linux.** Linux builds use Clang (GCC is an additional check);
@@ -45,6 +45,14 @@ finally, the client.
 - Modules marked `frozen = true` in `tools/import/modules/` have already been ported by hand; the importer refuses to write
   to them.
 - Builds must be warning-free (GCC, Clang, and clang-cl). Fix new warnings; do not suppress them.
+- **The command line says what is compiled; `src/define.h` says how the program behaves** (decision T47). Only macros
+  that select the code to compile go on the command line (`X2_DEV_TOOLS` from the CMake option/presets, and platform or
+  toolchain macros). Behavior switches go in `src/define.h`, one header for the servers, the client and the tools, as
+  the original's `ServerDefine.h`/`Always.h`; a switch for one side is marked by a comment. Switches are defined or not
+  (`#define NAME` / `//#define NAME`) and tested with `#ifdef`/`#ifndef`, never `#if NAME`.
+- **Feedback over screenshots.** To check something visual or interactive, ask the user (what they see, what they did)
+  instead of taking screenshots. Screenshots are an expensive resource: take one only when the user's feedback is not
+  enough to debug the problem.
 - **Database may be adjusted do match server protocol.** As the backups we have are slightly (months) outdated comparing to the source code and may already be modded by third party, there is a chance that we'll be needing to fine-tune some of it to match our code demands and work properly. When in this situation, put .sql script patches in tools/database/patches/<database_name>/<date>_<fix_name>.sql
 
 ## Layout

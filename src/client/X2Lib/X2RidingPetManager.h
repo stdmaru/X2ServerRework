@@ -359,7 +359,7 @@ public:
 
 	float GetRecoveryTimePerOne();
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	void RefreshRidingPetScript();
 #endif // REALTIME_SCRIPT_PATCH
 

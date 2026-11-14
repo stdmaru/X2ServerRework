@@ -1825,7 +1825,7 @@ bool CX2ItemManager::GetIceHeaterItemData( int iIceHeaterItemID_, CX2Unit::UNIT_
 
 bool CX2ItemManager::AddPetPreViewData_LUA( int iCashShopItemID_, int iPetUnitID_, PREVIEW_PET_TYPE ePetType_ /*= PPT_PET*/)
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	// 오류 팝업 1회만 보여주도록 수정
 	static bool bHasInvalidData = false;
 
@@ -1835,7 +1835,7 @@ bool CX2ItemManager::AddPetPreViewData_LUA( int iCashShopItemID_, int iPetUnitID
 
 	if( iCashShopItemID_ <= 0 || iPetUnitID_ <= 0 )
 	{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300),
 								L"PetPreview.lua 오류 : 아이템ID 또는 펫 ID를 확인 해 주세요.",
 								(CKTDXStage*)g_pMain->GetNowState() );
@@ -1848,7 +1848,7 @@ bool CX2ItemManager::AddPetPreViewData_LUA( int iCashShopItemID_, int iPetUnitID
 	// 패키지 정보
 	m_vecPetPreViewData.push_back( PREVIEW_PET_DATA( iCashShopItemID_, iPetUnitID_, ePetType_ ) );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	const CX2Item::ItemTemplet* pItemTemplet = GetItemTemplet( iCashShopItemID_ );
 	if ( NULL == pItemTemplet )
 	{

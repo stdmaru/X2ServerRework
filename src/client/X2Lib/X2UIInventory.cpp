@@ -793,7 +793,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			return true;
 			//}} kimhc // �ǽð� ���ҵ� �� �ǽð� ������ ������
 		} break;
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	case UIM_SELL_CATEGORY_ALL:
 		{
 			if( CX2User::XUAL_DEV == g_pData->GetMyUser()->GetAuthLevel()
@@ -8198,7 +8198,7 @@ bool CX2UIInventory::Handler_EGS_RESTORE_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/,
 
 			UpdateInventorySlotList( kEvent.m_vecKInventorySlotInfo );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			if( CX2User::XUAL_DEV != g_pData->GetMyUser()->GetAuthLevel() )
 			{
 				g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_828 ), g_pMain->GetNowState() );

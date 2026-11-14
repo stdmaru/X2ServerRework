@@ -52,11 +52,13 @@ cmake --build --preset windows-debug
 ctest --preset windows-debug
 ```
 
-| Preset | Type | Dev tools (`X2_DEV_TOOLS`) |
-|---|---|---|
-| `windows-debug` | Debug | yes |
-| `windows-development` | RelWithDebInfo | yes |
-| `windows-release` | Release | no |
+| Preset | Type | Dev tools (`X2_DEV_TOOLS`) | Debug behavior (`X2_DEBUG`) |
+|---|---|---|---|
+| `windows-debug` | Debug | yes | yes |
+| `windows-release` | Release | no | no |
+
+See [Building on Linux](building-linux.md) for what the two switches mean (the `*-development` presets were removed on
+2026-11-14).
 
 - Dependencies (zlib, LuaJIT, Asio, doctest) are downloaded by CMake on first configure, which requires internet.
   LuaJIT is built using its `msvcbuild.bat` (T25).

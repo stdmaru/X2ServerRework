@@ -30,7 +30,7 @@ class CKTDXDeviceManager :
 {
 	public:
 
-#if X2_DEV_TOOLS // 2008-10-24
+#ifdef X2_DEBUG // 2008-10-24
         DECLARE_HELP_SYSTEM( CKTDXDeviceManager );
 #endif // KHELP_SYSTEM_TEST // 2008-10-24
 
@@ -65,7 +65,7 @@ class CKTDXDeviceManager :
 		void AddHighTexName( const WCHAR* highTexName ){ m_HighTexName.push_back( highTexName ); }
 
 		CKTDXDeviceTexture*				OpenTexture( wstring deviceID, D3DFORMAT texFormat = D3DFMT_UNKNOWN, bool bAlwaysHigh = false
-										#if X2_DEV_TOOLS
+										#ifdef X2_DEBUG
 													, bool bLog = true
 										#endif // ADD_RESOURCE_ERROR_LOG
 													);
@@ -234,7 +234,7 @@ class CKTDXDeviceManager :
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		set<wstring>					m_setEmptyDeviceID;
 #endif //ADD_RESOURCE_ERROR_LOG
 

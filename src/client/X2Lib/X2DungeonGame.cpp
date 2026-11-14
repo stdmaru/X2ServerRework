@@ -745,7 +745,7 @@ void CX2DungeonGame::StageStart()
 		}
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	dbg::clog << L"StageStart! Index: " << m_pDungeon->GetNowStageIndex() << L" WORLD ID : " << (int)m_pDungeon->GetNowStage()->GetStageData()->m_WorldID << dbg::endl;
 #endif
 	wstringstream dungeonStageIndex;
@@ -884,7 +884,7 @@ void CX2DungeonGame::SubStageLoading( int subStageNum )
 
 void CX2DungeonGame::SubStageStart()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	//장막을 열고 서브 스테이지를 시작한다
 	m_bLastKillCheck		= false;
@@ -1060,7 +1060,7 @@ void CX2DungeonGame::SubStageStart()
 
 	g_pKTDXApp->SkipFrame();
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -1583,7 +1583,7 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ( int beforeStage,
 	g_pData->GetServerProtocol()->SendPacket( EGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ, kPacket );
 	g_pMain->AddServerPacket( EGS_DUNGEON_SUB_STAGE_GO_NEXT_ACK, 60.0f );
 
-#	if !X2_DEV_TOOLS
+#	ifndef X2_DEBUG
 	// checked
 #	endif
 
@@ -1606,7 +1606,7 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ( int beforeStage,
 
 	m_bCheckSubStageGoNext = false;
 
-#	if !X2_DEV_TOOLS
+#	ifndef X2_DEBUG
 #	endif
 
 
@@ -1645,7 +1645,7 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT( KEGS_DUNGEON
 
 bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -1676,7 +1676,7 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ()
 	g_pMain->AddServerPacket( EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_ACK, 60.0f );
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	return true;

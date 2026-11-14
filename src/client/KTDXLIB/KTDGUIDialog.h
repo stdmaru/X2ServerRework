@@ -550,7 +550,7 @@ private:
 		bool		m_bAnchorDeclared = false;
 		CKTDGUIStretch	m_kStretch;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		wstring		m_strScriptFileName;
 		wstring		m_strMouseOverStaticName;
 		bool		m_bShowScriptName;

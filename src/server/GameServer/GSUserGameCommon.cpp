@@ -142,7 +142,7 @@ _IMPL_ON_FUNC( DBE_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK, KEGS_MY_UNIT_AND_INVENTO
 					<< BUILD_LOGc( kPacket_.m_vecUnitInfo[i].m_cUnitClass )
 					<< END_LOG;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				continue;
 #endif
 
@@ -6410,7 +6410,7 @@ IMPL_ON_FUNC( EGS_CHARACTER_LIST_ACK )
                         << BUILD_LOGc( vit->m_cUnitClass )
                         << END_LOG;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
                     continue;
 #endif
 

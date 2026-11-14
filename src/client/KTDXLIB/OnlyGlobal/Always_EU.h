@@ -4,7 +4,7 @@
 // undef 끝
 
 // x2.exe 바로 실행을 막는 코드
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #define PATCHER_RUN_ONLY "pxk19slammsu286nfha02kpqnf729ck"		// argv[]의 제일 뒤가 이 스트링이 맞아야 통과.
 #endif // _SERVICE_
 
@@ -12,7 +12,7 @@
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 
 
 
@@ -257,7 +257,7 @@
 // 작업시작날짜: 2013-01-04
 // 패치날짜: 2013-01-04
 // 작업내용: 게임내 정보 스트링을 엑셀파일로 출력. '?' 버튼 클릭 시 동작 (퀘스트창, 스킬창, 캐릭터의 칭호창, 펫 창)
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 //#define PRINT_INGAMEINFO_TO_EXCEL
 #endif //!_SERVICE_
 //////////////////////////////////////////////////////////////////////////

@@ -105,7 +105,7 @@ CKTDGUIDialog::CKTDGUIDialog( CKTDXStage* pStage, const WCHAR* wstrScriptFileNam
 	if( NULL != wstrScriptFileName && wcslen( wstrScriptFileName ) > 0 )
 	{
 		m_bSuccessInitOpenScript = OpenScriptFile( wstrScriptFileName );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		m_strScriptFileName = wstrScriptFileName;
 		m_strMouseOverStaticName = L"";
 		m_bShowScriptName = false;
@@ -452,7 +452,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 
         CKTDGStateManager::PushStates( g_pKTDXApp->GetDGManager()->GetRSICKTDGUIDialog() );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 		const bool bRecord = CKTDGUIAnchorRecorder::IsOn();
 		if ( CKTDGUIAnchorRecorder::TracksDrawnBounds() )
 		{
@@ -490,7 +490,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 					pControl->OnFrameRenderEnd();
 			}
 	    }
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 		if ( bRecord )
 			CKTDGUIAnchorRecorder::Note( *this );
 #endif
@@ -582,7 +582,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 		g_pKTDXApp->SetViewTransform( &matView );
 	}
 	KD3DEND()
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( true == m_bShowScriptName )
 	{
 		if (g_pKTDXApp->GetDIManager()->Getkeyboard()->GetPureKeyState(DIK_LCONTROL) == TRUE )
@@ -742,7 +742,7 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 				if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
 					return true;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				m_bShowScriptName = (NULL != m_pControlMouseOverStatic);
 #endif //LOG_LOAD_DLG_SCRIPT
 
@@ -2011,7 +2011,7 @@ float CKTDGUIDialog::GetControlAnchorShift( const CKTDGUIControl* pControl ) con
 void CKTDGUIDialog::SetPos( const D3DXVECTOR2& pos )
 {
 	KTDXPROFILE();
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 	if ( m_bLoadingScript == false )
 		m_bPlacedByCode = true;
 #endif
@@ -2235,7 +2235,7 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 	if ( pFilename == NULL )
 		return false;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	static wstring wstrPreFilename = L"";
 	if( 0 != wstrPreFilename.compare( pFilename ) )
 	{
@@ -2256,12 +2256,12 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 	m_bLoadingScript = true;
 	m_vecOpenedScripts.emplace_back( pFilename );
 #endif
 	bool bResult = g_pKTDXApp->LoadLuaTinker( pFilename );
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 	m_bLoadingScript = false;
 #endif
 	if ( bResult == true )

@@ -407,7 +407,7 @@ class CX2Data : public CKTDXStage
 		CX2GlobalMissionManager* GetGlobalMissionManager() { return m_pGlobalMissionManager; }
 		//}} 2012.09.08	임홍락	글로벌 미션 매니저
 	public:
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 		vector<CX2EffectSet*>		m_vecGameEFfectSet;
 		vector<CKTDGXMeshPlayer*>	m_vecGameMajorXMeshPlayer;
 #endif // EXPAND_DEVELOPER_SCRIPT  // 김종훈, 개발자 스크립트 확장 기능 추가

@@ -206,7 +206,11 @@ std::unique_ptr<Engine> Engine::Create(render::Device& render, const EngineOptio
         }
     }
     InstallFont(FT_DEFAULT_FONTNAME, "Gulim.ttc");     // CX2Main's default font, before the config's
-    const wchar_t* config = X2_DEV_TOOLS ? L"Config_INTERNAL.lua" : L"Config_SERVICE.lua";
+#ifdef X2_DEBUG
+    const wchar_t* config = L"Config_INTERNAL.lua";
+#else
+    const wchar_t* config = L"Config_SERVICE.lua";
+#endif
     if (files->IsValidFile(config)) {
         state->app->LoadLuaTinker(config);
     }

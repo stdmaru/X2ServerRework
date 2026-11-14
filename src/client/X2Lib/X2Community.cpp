@@ -3834,7 +3834,7 @@ wstring CX2Community::ConvertFullName( const WCHAR* pNickName )
 #ifdef EXTEND_SERVER_GROUP_MASK
 	tempName = pNickName;
 #else
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 				if(g_pInstanceData != NULL)
 				{
 					SERVER_GROUP_ID iServer = g_pInstanceData->GetServerGroupID();
@@ -8680,7 +8680,7 @@ bool CX2Community::Handler_EGS_RENAME_FRIEND_GROUP_ACK( HWND /*hWnd*/, UINT /*uM
 				return true;
 			}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			// 패킷은 맞는데 그룹을 못 찾았습니다
 			WCHAR buf[256] = {0};
 			StringCchPrintf(buf, 256, L"Handler_EGS_RENAME_FRIEND_GROUP_ACK\nPacket Valid, Group Not Found.\nGroupID : %d", (int)kEvent.m_cGroupID);
@@ -8749,7 +8749,7 @@ bool CX2Community::Handler_EGS_DELETE_FRIEND_GROUP_ACK( HWND /*hWnd*/, UINT /*uM
 				}
 			}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			// 패킷은 맞는데 그룹을 못 지웠습니다. 어라?
 			WCHAR buf[256] = {0};
 			StringCchPrintf(buf, 256, L"EGS_DELETE_FRIEND_GROUP_ACK\nPacket Valid, Group Delete Failed.\nGroupID : %d", GroupID);

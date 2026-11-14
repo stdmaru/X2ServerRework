@@ -24,7 +24,7 @@ _IDENT_RE = re.compile(r"\b[A-Za-z_]\w*\b")
 
 def value(flags: condres.Flags, name: str) -> str:
     st = flags.state(name)
-    return {"dev": "X2_DEV_TOOLS", "dev_not": "!X2_DEV_TOOLS", None: "unknown"}.get(st, st)
+    return {"dev": "X2_DEBUG", "dev_not": "not X2_DEBUG", None: "unknown"}.get(st, st)
 
 
 def tested(path: Path) -> dict[str, list[int]]:

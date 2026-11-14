@@ -54,7 +54,7 @@ static bool g_bRenderEtc = false;	// whether to render the debug text (toggle fu
 double			g_fTotalFrame = 0.0f;
 int				g_RenderCount = 0;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // The memory lines of the debug text, refreshed every 10 seconds.
 static float	g_fLastUpdateTime_MemInfo = 10000.f;
 DWORD			g_iAvailableTextureMem = 0;
@@ -65,7 +65,7 @@ std::size_t		g_uiTotalPhysicalMem = 0;
 std::size_t		g_uiAvailablePhysicalMem = 0;
 std::size_t		g_uiProcessMem = 0;
 std::size_t		g_uiPeakProcessMem = 0;
-#endif // X2_DEV_TOOLS
+#endif // X2_DEBUG
 //--------------------------------------------------------------------------------------
 // UI control IDs
 //--------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ int main( int argc, char* argv[] )
 {
 	DXUTSetCommandLine( argc, argv );
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// The patcher puts PATCHER_RUN_ONLY last on the command line.
 	if( argc < 2 || strcmp( argv[argc - 1], PATCHER_RUN_ONLY ) != 0 )
 	{
@@ -112,7 +112,7 @@ int main( int argc, char* argv[] )
 	{
 		return 0;
 	}
-#endif // !X2_DEV_TOOLS
+#endif // !X2_DEBUG
 
 	CKTDXApp::StartUp();
 
@@ -314,11 +314,11 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, double /*fTime*/, flo
 			KTDXPROFILE_END();
 		}
 
-#if X2_DEV_TOOLS // 2008-10-23
+#ifdef X2_DEBUG // 2008-10-23
         _KHelpSystem.DisplayHelp();
 #endif // KHELP_SYSTEM_TEST // 2008-10-23
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( g_pMain != NULL && g_pData != NULL && g_pData->GetMyUser() != NULL &&
 			g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR &&
 			g_pData->GetDungeonResultInfo() != NULL && g_pX2Room != NULL )
@@ -510,7 +510,7 @@ void RenderText(float /*fElapsedTime*/)
 			iCurrentOnLineIndex = g_pX2Game->GetMyUnit()->GetLastTouchLineIndex();
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	swprintf_s( appData2, L"프레임무브 FPS: %f 지연시간: %f  프레임무브: %d회  랜더: %d회 \n",
 		g_pKTDXApp->GetFrameMoveFPS(), g_pKTDXApp->GetElapsedTime(), g_pKTDXApp->GetFrameMoveCount(), g_pKTDXApp->GetRenderCount() );
 	wcscat( appData, appData2 );
@@ -655,7 +655,7 @@ void RenderText(float /*fElapsedTime*/)
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 	if( g_pKTDXApp != NULL && g_pKTDXApp->GetDevice() != NULL )
 	{
@@ -862,7 +862,7 @@ void CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool /*bAltDown*/, void* 
 			}
 			break;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
         case VK_PRIOR:
 			if ( g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
 			{

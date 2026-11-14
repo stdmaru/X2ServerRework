@@ -26,7 +26,7 @@ This page is reference material; decisions based on it are recorded in [Project 
 | Page | Contents |
 |---|---|
 | [Feature flags](feature-flags.md) | `SERV_*`, countries, environments: the largest volume of dead code |
-| [Debug and development](debug-and-development.md) | Debug/admin tools to retain (`X2_DEV_TOOLS`) |
+| [Debug and development](debug-and-development.md) | Debug/admin tools to retain (`X2_DEBUG`) |
 | [Encoding](encoding.md) | CP949, line endings, original code conventions |
 | [Original bugs](bugs.md) | Original incorrect behavior retained in the port: Phase 5 backlog |
 

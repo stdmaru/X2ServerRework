@@ -226,7 +226,7 @@ HRESULT CX2StateDungeonRoom::OnFrameMove( double fTime, float fElapsedTime )
 	}
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	if( ( GET_KEY_STATE( GA_PARTYREADY )  == TRUE
 		|| g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_F8) == TRUE )
 		&& g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == false

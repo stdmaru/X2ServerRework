@@ -198,7 +198,7 @@ bool CX2SkillTree::AddSkillTemplet_LUA()
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	if( true == bInHouseTestOnly )
 		return false;
 #endif // defined( _SERVICE_ ) || defined( _OPEN_TEST_ ) || defined( _FOREIGN_ ) || defined( _IN_HOUSE_SERVICE_READY_QA_ )
@@ -550,7 +550,7 @@ const CX2SkillTree::SkillTreeTemplet* CX2SkillTree::GetGuildSkillTreeTemplet( in
 
 int CX2SkillTree::GetMaxSkillLevel( int iUnitClass, SKILL_ID eSkillID )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	/// ������ ��� - 30�������� ���� �����ϵ��� ����
 	if( true == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 	{

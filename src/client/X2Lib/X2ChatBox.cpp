@@ -825,7 +825,7 @@ bool CX2ChatBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam,
 
 			if(bEmotionCommand == false)
 			{
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 				if( m_AntiChatSpam.GetSpamBlockingTimeLeft() > 0.f )
 				{
 					switch( GetChatWindowMode() )
@@ -2484,7 +2484,7 @@ bool CX2ChatBox::Handler_EGS_CHAT_REQ( KEGS_CHAT_REQ::CHAT_PACKET_TYPE eChatPack
 		if( pPet != NULL && g_pData->GetPetManager()->GetPetStatus( pPet->GetPetInfo() ) > 0 )
 		{
 			CX2PET::PET_ACTION_COMMAND eActionCommand = g_pData->GetPetManager()->GetPetActionCommand( wstrMsg );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			if( eActionCommand == CX2PET::PAC_ATTACK )
 			{
 				pPet->StateChange( pPet->m_AttackState );

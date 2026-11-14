@@ -22,7 +22,7 @@
 //}} seojt // 2008-10-22, 14:22
 
 
-#if X2_DEV_TOOLS // 2008-10-24
+#ifdef X2_DEBUG // 2008-10-24
 IMPLEMENT_HELP_SYSTEM( CKTDXDeviceManager )
 {
     CKTDXDeviceManager* pDeviceManager = g_pKTDXApp->GetDeviceManager();
@@ -63,7 +63,7 @@ CKTDXDeviceData::~CKTDXDeviceData()
 // constructor.
 CKTDXDeviceManager::CKTDXDeviceManager( IDirect3DDevice9* /*pd3dDevice*/ )
 {
-	// The game folder's subfolders for user files, music and movies; with X2_DEV_TOOLS also its data/ loose assets.
+	// The game folder's subfolders for user files, music and movies; with X2_DEBUG also its data/ loose assets.
 	m_MassFileManager.SetSubDirectory();
 	m_TexDetailLevel = CKTDXDeviceTexture::DL_HIGH;
 	m_HighTexName.clear();
@@ -575,7 +575,7 @@ CKTDXDevice*    CKTDXDeviceManager::CreateAndPendDevice( CKTDXDevice* pDevice, E
 
 
 CKTDXDeviceTexture*	CKTDXDeviceManager::OpenTexture( wstring deviceID, D3DFORMAT texFormat, bool bAlwaysHigh
-	#if X2_DEV_TOOLS
+	#ifdef X2_DEBUG
 	, bool bLog /*= true*/
 	#endif // ADD_RESOURCE_ERROR_LOG
 	)
@@ -608,7 +608,7 @@ CKTDXDeviceTexture*	CKTDXDeviceManager::OpenTexture( wstring deviceID, D3DFORMAT
 
 	ASSERT( NULL == pTexture || CKTDXDevice::DT_TEXTURE == pTexture->GetDeviceType() );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( true == bLog && NULL == pTexture )
 	{
 		if( m_setEmptyDeviceID.end() == m_setEmptyDeviceID.find( deviceID ) )
@@ -644,7 +644,7 @@ CKTDXDeviceXSkinMesh* CKTDXDeviceManager::OpenXSkinMesh( wstring deviceID, wstri
 
 	ASSERT( NULL == pXSkinMesh || CKTDXDevice::DT_XSKIN_MESH == pXSkinMesh->GetDeviceType() );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL == pXSkinMesh )
 	{
 		if( m_setEmptyDeviceID.end() == m_setEmptyDeviceID.find( deviceID ) )
@@ -689,7 +689,7 @@ CKTDXDeviceXMesh* CKTDXDeviceManager::OpenXMesh( wstring deviceID )
 
 	ASSERT( NULL == pXMesh || CKTDXDevice::DT_XMESH == pXMesh->GetDeviceType() );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL == pXMesh )
 	{
 		if( m_setEmptyDeviceID.end() == m_setEmptyDeviceID.find( deviceID ) )
@@ -779,7 +779,7 @@ CKTDXDeviceXET*	CKTDXDeviceManager::OpenXET( wstring deviceID, bool bWithoutFile
             pXET = static_cast<CKTDXDeviceXET*>( CreateAndOpenDevice( pXET ) );
 		}
 	}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL == pXET )
 	{
 		if( m_setEmptyDeviceID.end() == m_setEmptyDeviceID.find( deviceID ) )

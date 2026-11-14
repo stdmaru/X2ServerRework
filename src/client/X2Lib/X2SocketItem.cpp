@@ -79,7 +79,7 @@ bool CX2SocketItem::AddSocketData_LUA()
             wstringstream strstm;
             strstm << iSocketID;
             ErrorLogMsg( XEM_ERROR127, strstm.str().c_str() );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		    MessageBox( g_pKTDXApp->GetHWND(), strstm.str().c_str(), L"SocketItem Error", MB_OK );
 #endif
             return false;

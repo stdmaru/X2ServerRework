@@ -4820,7 +4820,7 @@ RENDER_HINT CX2GUEve::CommonRender_Prepare()
 		fMPConsume	= 0.f;
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 #endif // _SERVICE_
 	{

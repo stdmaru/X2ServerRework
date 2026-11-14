@@ -151,7 +151,7 @@ void CX2EffectSet::OnFrameMove_CreateEffect( double fTime, float fElapsedTime )
 				NULL != g_pX2Game &&
 				NULL != g_pX2Game->GetMyUnit() )
 			{
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				if( ET_DAMAGE_EFFECT == pEffectData->m_eEffectType )
 					DISPLAY_ERROR(L" DamageEffect에는 LIMIT_DISTANCE를 설정 하지 마세요! ");
 #endif // _IN_HOUSE_
@@ -734,7 +734,7 @@ void CX2EffectSet::OnFrameMove_CreateEffect( double fTime, float fElapsedTime )
 						if ( pEffectData->m_bUseSubAttackListSet && null != pEffectSetInstance->m_optrGameUnit )
 							pEffectSetInstance->m_optrGameUnit->InsertPairSubAttackListSet( pEffectInstance->m_hMeshPlayer, pMeshInstance->GetXSkinAnim() );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 						//{{AFX
 						if( true == pEffectInstance->m_pEffectData->m_bApplyUnitRotation &&
 							CKTDGMatrix::BT_NONE != pMeshInstance->GetTempletData()->billBoardType )
@@ -1544,7 +1544,7 @@ CX2EffectSet::Handle CX2EffectSet::PlayEffectSet( const wstring& wstrEffectSetNa
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != g_pMain->GetGameEdit() &&
 		CX2GameEdit::ELL_EFFECT_LOG_1 <= g_pMain->GetGameEdit()->GetEffectLogLevel() )
 	{
@@ -1599,7 +1599,7 @@ CX2EffectSet::Handle CX2EffectSet::PlayEffectSet( const wstring& wstrEffectSetNa
     if ( pEffectSetInstance == NULL )
         return INVALID_EFFECTSET_HANDLE;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != g_pMain->GetGameEdit() &&
 		CX2GameEdit::ELL_EFFECT_LOG_1 <= g_pMain->GetGameEdit()->GetEffectLogLevel() )
 	{
@@ -2740,7 +2740,7 @@ void CX2EffectSet::StopEffectSet_LUA( CX2EffectSet::Handle hHandle )
 //}} kimhc // 2010.4.19 // 비밀던전 작업
 
 
-#if X2_DEV_TOOLS // 김종훈, 개발자 스크립트 확장 기능 추가
+#ifdef X2_DEBUG // 김종훈, 개발자 스크립트 확장 기능 추가
 bool CX2EffectSet::MergeEffectSetTemplet( EffectSetData* pNewEffectSetTemplet_, EffectSetData* pOrgEffectSetTemplet_ )
 {
 	if ( NULL != pNewEffectSetTemplet_ )
@@ -2761,7 +2761,7 @@ bool CX2EffectSet::MergeEffectSetTemplet( EffectSetData* pNewEffectSetTemplet_, 
 }
 #endif // EXPAND_DEVELOPER_SCRIPT  // 김종훈, 개발자 스크립트 확장 기능 추가
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // #ifdef EFFECT_TOOL
 
 bool CX2EffectSet::CreateEffectSetTemplet( EffectSetData* pEffectSetData_ )
@@ -2783,7 +2783,7 @@ bool CX2EffectSet::CreateEffectSetTemplet( EffectSetData* pEffectSetData_ )
 
 #endif // defined(EFFECT_TOOL) || defined(EXPAND_DEVELOPER_SCRIPT)
 
-	#if X2_DEV_TOOLS
+	#ifdef X2_DEBUG
 	bool CX2EffectSet::DeleteEffectSetTemplet( EffectSetData* pEffectSetData_ )
 	{
 		// 존재 여부 체크.

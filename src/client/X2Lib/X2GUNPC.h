@@ -884,7 +884,7 @@ class CX2GUNPC : public CX2GameUnit
                 FLAG_DYING_END_IMMEDIATE,
                 FLAG_SET_FLY_AI,
                 FLAG_SET_FLY_AI_VALUE,
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
                 FLAG_SET_ZERO_DAMAGE,
 #endif // DAMAGE_ZERO
                 FLAG_SET_ABSORB_MAGIC_VALUE,
@@ -2193,7 +2193,7 @@ class CX2GUNPC : public CX2GameUnit
 		//}} kimhc // 2010.6.29 // 스테이트들 중에서 특정 데미지 스테이트를 다른 스테이트로 변경
 
 		//{{ kimhc // 2010.6.29 // 피격 모션등은 실행되고, 받는 데미지는 모두 0가 되게하는 기능으로 몬스터 state table 내에서 사용
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		bool GetZeroDamage() const { return m_bZeroDamage; }
 		void SetZeroDamage(bool val) { m_bZeroDamage = val; }
 #endif // DAMAGE_ZERO
@@ -2233,7 +2233,7 @@ class CX2GUNPC : public CX2GameUnit
 		void SetFocusCameraForce(bool bVal) { m_bFocusCameraForce = bVal; }
 		//}} kimhc // 2010.8.7 // 무조건 NPC에게 카메라가 가도록 하는 기능
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void EnumerateStateAndAnimationName( std::vector<std::string>& vecStateName, std::vector< std::wstring>& vecAnimationName );
 #endif // MONSTER_STATE_LIST_TEST
 
@@ -3247,7 +3247,7 @@ class CX2GUNPC : public CX2GameUnit
 		D3DXVECTOR2		m_vpassiveSpeedBackup;
 
 //{{ kimhc // 2010.6.29 // 피격 모션등은 실행되고, 받는 데미지는 모두 0가 되게하는 기능으로 몬스터 state table 내에서 사용
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		bool			m_bZeroDamage;
 #endif // DAMAGE_ZERO
 //}} kimhc // 2010.6.29 // 피격 모션등은 실행되고, 받는 데미지는 모두 0가 되게하는 기능으로 몬스터 state table 내에서 사용

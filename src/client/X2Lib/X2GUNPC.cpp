@@ -4099,7 +4099,7 @@ void    CX2GUNPC::LoadStateData( StateData& nowStateData, InitData& OutInit_, KL
 			    while ( luaManager_.GetValue( iTableCount, uiDeleteConditionType ) == true )
 			    {	// 값이 있다면, 테이블 카운터 증가시키고 종료 조건을 벡터에 넣어준다.
 				// 얻어온 값이 범위에 벗어난다면, ASSERT 를 띄운다.
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				// 사내 일 경우, 해당 종료 조건이 중복되는지 체크한다.
 				    ASSERT( vecDeleteCondition.end() == find ( vecDeleteCondition.begin(), vecDeleteCondition.end(), static_cast<CX2GameUnit::DELETE_CONDITION_EFFECT_SET> (uiDeleteConditionType) ) );
 #endif // _IN_HOUSE_
@@ -4299,7 +4299,7 @@ void    CX2GUNPC::LoadStateData( StateData& nowStateData, InitData& OutInit_, KL
 	LUA_GET_VALUE( luaManager_, "ENABLE_HEIGHT_FIX",		bTemp,		false );
     NOWSTATE_SET_FLAG( ENABLE_HEIGHT_FIX, bTemp );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	LUA_GET_VALUE( luaManager_, "ZERO_DAMAGE",				bTemp,			false );
     NOWSTATE_SET_FLAG( SET_ZERO_DAMAGE, bTemp );
 #endif // DAMAGE_ZERO
@@ -6170,7 +6170,7 @@ HRESULT CX2GUNPC::OnFrameMove( double fTime, float fElapsedTime )
 		DamageDoubleAttack();
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( m_pXSkinAnim != NULL && g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV && g_pInstanceData->GetFrameScale() == true)
 	{
         CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame = m_pFrame_Bip01_Head_Real;
@@ -6533,7 +6533,7 @@ bool CX2GUNPC::StateChange( const char* state, bool bDirectChange )
 void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 {
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	KTDXPROFILE();
 
@@ -7066,7 +7066,7 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
         }
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	bool bShowDamageReact = true;
 	// 2013-01-30 // 오현빈
 	// 옵션에서 내가 준 데미지만 보여 주도록 켜져 있는데
@@ -7197,7 +7197,7 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 	if( true == IsDamagedReaction( pDamageData ) &&
 		false == pDamageData->m_bNoDamage
 		//{{ kimhc // 2010.6.29 // 피격 모션등은 실행되고, 받는 데미지는 모두 0가 되게하는 기능
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			&& false == GetZeroDamage()
 #endif // DAMAGE_ZERO
 	//}} kimhc // 2010.6.29 // 피격 모션등은 실행되고, 받는 데미지는 모두 0가 되게하는 기능
@@ -7356,7 +7356,7 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 						fFinalDamage *= fCritical;
 				}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				if( true == bShowDamageReact )
 #endif //SHOW_ONLY_MY_DAMAGE
 				{
@@ -7429,7 +7429,7 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		}
 
 		if( bCanDrainHp == true
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			&& true == bShowDamageReact
 #endif //SHOW_ONLY_MY_DAMAGE
 			)
@@ -7456,7 +7456,7 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		}
 
 		if( pDamageData->m_fDrainMpByReact > 0.f
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			&& true == bShowDamageReact
 #endif //SHOW_ONLY_MY_DAMAGE
 			)
@@ -7533,7 +7533,7 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 
 		// 데미지가 보여야 하는 경우 (아토믹 실드에 맞은 경우에는 보이지 않아야 함)
 		if ( true == m_bDamageOutScreen
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			&& true == bShowDamageReact
 #endif //SHOW_ONLY_MY_DAMAGE
 			)
@@ -7754,7 +7754,7 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 
 	PostProcessEnchantDamage( pDamageData );
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 
@@ -7822,7 +7822,7 @@ void CX2GUNPC::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageDat
 
 	KTDXPROFILE();
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	if( NULL == pDamageData )
@@ -7950,7 +7950,7 @@ void CX2GUNPC::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageDat
 		}
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 
@@ -9593,7 +9593,7 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 
 void CX2GUNPC::AttackResult()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	KTDXPROFILE();
@@ -9860,7 +9860,7 @@ void CX2GUNPC::AttackResult()
 		UpNowHp( fFinalDamage );
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 		/// 일반 공격 타격시 이펙트 셋 생성하는 함수 검사
@@ -10039,7 +10039,7 @@ bool CX2GUNPC::IsFocusUnit() const
 
 void CX2GUNPC::DyingStart()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
         const StateData& nowStateData = GetNowStateData();
@@ -10079,7 +10079,7 @@ void CX2GUNPC::DyingStart()
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -10247,7 +10247,7 @@ void CX2GUNPC::DyingStart()
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -10279,7 +10279,7 @@ void CX2GUNPC::DyingStart()
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 		ClearStartOfDelayedFiringData();		/// 사망시 지연의 신호탄 적용 정보 삭제
@@ -10530,7 +10530,7 @@ void CX2GUNPC::CommonStateStart()
 		WCHAR wszText[1024] = L"";
 		swprintf( wszText, ARRAY_SIZE(wszText), L"NPC Motion Error. LuaFileName : %s, Motion Name : %s ", GetNPCTemplet().m_LuaFileName.c_str(), animName.c_str() );
 		StateLog(wszText);
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		g_pChatBox->AddChatLog( wszText,
 			KEGS_CHAT_REQ::CPT_TOTAL, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
 #endif //_IN_HOUSE_
@@ -10999,7 +10999,7 @@ void CX2GUNPC::CommonStateStart()
 
 
     //{{ kimhc // 2010.6.29 // 피격 모션등은 실행되고, 받는 데미지는 모두 0가 되게하는 기능으로 몬스터 state table 내에서 사용
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
     SetZeroDamage( NOWSTATE_FLAG( SET_ZERO_DAMAGE ) );
 #endif // DAMAGE_ZERO
     //}} kimhc // 2010.6.29 // 피격 모션등은 실행되고, 받는 데미지는 모두 0가 되게하는 기능으로 몬스터 state table 내에서 사용
@@ -19187,7 +19187,7 @@ void CX2GUNPC::RenderName()
 		}
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 	{
 		//vPosName = vRenderPos + D3DXVECTOR3( 0, -100, 0 );
@@ -20869,7 +20869,7 @@ void CX2GUNPC::SetUnCloaking()
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CX2GUNPC::EnumerateStateAndAnimationName( std::vector<std::string>& vecStateName, std::vector<std::wstring>& vecAnimationName )
 {
 	vecStateName.resize(0);
@@ -22387,7 +22387,7 @@ bool    CX2GUNPC::ProcessCanPassUnit( const CX2GameUnit* pGameUnit_, const D3DXV
             if ( fStartAnimationTime < 0.f )
                 continue;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
             for( unsigned u = 0; u < vecStateInsertBuffFactor.size(); ++u )
             {
                 if ( vecStateInsertBuffFactor[ u ].m_uiBuffFactorID == uiBuffFactorID )

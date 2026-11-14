@@ -74,8 +74,8 @@ Not tested yet: against the running ported servers (needs `X2Lib`).
 ## Import (2026-11-05)
 
 - Module `client-serverprotocol` ([report](../../tools/import/reports/client-serverprotocol/REPORT.md)): **37 files**, 5.4k lines
-  written; 13 `#if` groups resolved; 9 blocks became `X2_DEV_TOOLS`. Encoding: 29 CP949, 9 ASCII. 27 of them were deleted on
+  written; 13 `#if` groups resolved; 9 blocks became `X2_DEV_TOOLS` (now `X2_DEBUG`, T47). Encoding: 29 CP949, 9 ASCII. 27 of them were deleted on
   2026-11-05 (T34); 10 remain.
 - The original `Release_US` builds this project as `X2TOOL|Win32`, where `ServerDefine.h` turns on `_IN_HOUSE_`. The port resolves
-  it with the client set, so its 9 `#ifdef _IN_HOUSE_` blocks became `X2_DEV_TOOLS`. All of them are logging.
+  it with the client set, so its 9 `#ifdef _IN_HOUSE_` blocks became `X2_DEV_TOOLS` (now `X2_DEBUG`, T47). All of them are logging.
 - **Excluded**: `KncUidType.h`, an older copy of the shared `Common` header (T33, [Client](client.md#code-shared-with-the-servers-t33)).

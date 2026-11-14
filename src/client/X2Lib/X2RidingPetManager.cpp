@@ -1695,7 +1695,7 @@ float CX2RidingPetManager::GetRecoveryTimePerOne()
 	return lua_tinker::call<float>( g_pKTDXApp->GetLuaBinder()->GetLuaState(), "GET_RECOVERY_TIME_PER_ONE" );
 }
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CX2RidingPetManager::RefreshRidingPetScript()
 {
 	GetInstance()->OpenScriptFile( L"RidingPetTemplet.lua" );

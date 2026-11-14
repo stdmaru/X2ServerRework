@@ -31,7 +31,7 @@ public:
 		//{{ 2010. 11. 17	최육사	오토핵 검증 기능
 		LOG_ABUSER_MORNITORING,
 		//}}
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		LOG_UNDEFINED_QUEST_TEMPLET,
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 

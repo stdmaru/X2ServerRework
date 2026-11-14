@@ -921,7 +921,7 @@ class CKTDGUIControl : private x2::NonCopyable
 		D3DXVECTOR2			m_OffsetPos;
 		UIAnchor			m_eAnchor = UIAnchor::Center;
 		bool				m_bAnchorDeclared = false;
-#if X2_DEV_TOOLS
+#ifdef X2_DEV_TOOLS
 	public:
 		// What the control drew this frame, in layout units relative to its dialog (CKTDGUIAnchorRecorder).
 		void				ResetDrawnBounds()					{ m_bDrawn = false; }

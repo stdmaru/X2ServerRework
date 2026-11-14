@@ -541,7 +541,7 @@ void CX2AdditionalStatByBuff::UpdateResultValue()
 			= ( 1 + GetPassiveSum() ) * GetPassiveMultiple() * m_fArrayResultValueByChangeType[BCT_PERCENT];
 		if ( fMultiplier > 0.0f )	/// 효과가 감소되는 경우에는 0보다 크고 1.0보다 작음, 증가되는 경우 1.0보다 큼
 			fResultValue += GetBasicStatValue() * (fMultiplier - 1.0f);
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		else
 		{
 			// 오현빈 // 2013-08-16

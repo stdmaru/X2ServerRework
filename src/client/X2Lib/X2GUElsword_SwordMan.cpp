@@ -4177,7 +4177,7 @@ RENDER_HINT CX2GUElsword_SwordMan::CommonRender_Prepare()
 		}
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 #endif // _SERVICE_
 	{

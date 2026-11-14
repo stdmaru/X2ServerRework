@@ -36,7 +36,7 @@ m_hLogoBack(INVALID_PARTICLE_SEQUENCE_HANDLE)
 	// 초기화 ////////////////////////////////////////////////////////////////////////
 	//}}AFX
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 	//////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +92,7 @@ m_hLogoBack(INVALID_PARTICLE_SEQUENCE_HANDLE)
 
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 	// checked
 #endif
 
@@ -108,7 +108,7 @@ m_hLogoBack(INVALID_PARTICLE_SEQUENCE_HANDLE)
 
 	ConnectToChannelServer();
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 
@@ -446,7 +446,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 		}
@@ -493,7 +493,7 @@ bool CX2StateLoading::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	if ( CX2State::UIServerEventProc( hWnd, uMsg, wParam, lParam ) == true )
 		return true;
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	switch( wParam )
@@ -504,7 +504,7 @@ bool CX2StateLoading::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		return Handler_ECH_DISCONNECT_ACK( hWnd, uMsg, wParam, lParam );
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	//{{AFX

@@ -3,7 +3,7 @@
 #include "KHelpSystem.h"
 
 
-#if X2_DEV_TOOLS // 2008-10-23
+#ifdef X2_DEBUG // 2008-10-23
 
 IMPLEMENT_HELP_SYSTEM( CX2World )
 {

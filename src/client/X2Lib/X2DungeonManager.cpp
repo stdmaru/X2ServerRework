@@ -532,7 +532,7 @@ bool CX2DungeonManager::IsActiveDungeon( int iDungeonID, int iDiffLevel )
 	}
 
 	// 몬스터 테스트용 던전은 개발자에게만
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pData->GetMyUser()->GetAuthLevel() < CX2User::XUAL_DEV )
 	{
 		if( iDungeonID == (int)SEnum::DI_MONSTER_TEST_NORMAL ||

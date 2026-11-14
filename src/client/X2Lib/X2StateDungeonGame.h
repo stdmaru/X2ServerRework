@@ -1,7 +1,7 @@
 #pragma once
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 class ItemViewListDialog
 {
@@ -79,7 +79,7 @@ protected:
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 class CreateMonsterListDialog
 {
 public:
@@ -154,7 +154,7 @@ protected:
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 // class MonsterStateListDialog
 // {
 // public:
@@ -798,11 +798,11 @@ private:
 	bool							m_bAutoShowOffArcadeMission;
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	CreateMonsterListDialog	m_CreateMonsterListDialog;
 #endif // CREATE_MONSTER_LIST_TEST
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	MonsterStateListDialog m_MonsterStateListDialog;
 #endif // MONSTER_STATE_LIST_TEST
 

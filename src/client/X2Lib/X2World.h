@@ -16,7 +16,7 @@ struct WORLDMESH_SYNC
 
 class CX2World
 {
-#if X2_DEV_TOOLS // 2008-10-23
+#ifdef X2_DEBUG // 2008-10-23
 
 public:
     DECLARE_HELP_SYSTEM( CX2World );

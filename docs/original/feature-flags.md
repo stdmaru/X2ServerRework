@@ -35,7 +35,7 @@ Server resolved: [Flags and verification](../tools/flags.md) (736 true, 423 fals
 5. Compile and compare behavior (smoke test) before and after.
 
 **Debug exception:** whitelisted development macros and direct `_SERVICE_`/`_IN_HOUSE_` checks are not resolved;
-they become `#if X2_DEV_TOOLS`. See [Debug and development](debug-and-development.md).
+they become `#ifdef X2_DEBUG`. See [Debug and development](debug-and-development.md).
 
 Precautions:
 - Macros used in expressions in `#if` (`defined(A) && !defined(B)`) — `coan` handles them well; `unifdef` does too.

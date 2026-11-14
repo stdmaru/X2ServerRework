@@ -2857,7 +2857,7 @@ class CX2UnitManager
         NPCUnitInfoMap                                  m_mapNPCUnitInfo;
         FileNPCInitDataMap                              m_mapFileNPCInitData;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		std::set<NPC_UNIT_ID>                           m_setNPCStatCheck;
 #endif // _SERVICE_
 

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 
 class CX2ItemCheatPopUp

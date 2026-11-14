@@ -710,7 +710,7 @@ int CX2Item::GetIEchantedItemLevel( IN CX2Unit::UNIT_TYPE eUnitType_, IN CX2Unit
 */
 BYTE CX2Item::GetbyAddedSocketSlot() const
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( m_kItemData.m_byAddedSocketSlot > 1 )
 	{
 		ASSERT(!L"m_byAddedSocketSlot Error!");

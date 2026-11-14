@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 		#define NEXON_KOREA_ELSWORD_GAMECODE 0x00017010
 #else
 		#define NEXON_KOREA_ELSWORD_GAMECODE 0x0001F00B

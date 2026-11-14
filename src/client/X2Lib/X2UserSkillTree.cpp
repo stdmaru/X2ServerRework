@@ -2080,7 +2080,7 @@ bool CX2UserSkillTree::IsGuildSkill( CX2SkillTree::SKILL_ID eSkillID ) const
 
 bool CX2UserSkillTree::GetEqipSkillMemo(int iSkillMemo) const
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pInstanceData != NULL )
 	{
 		if( g_pInstanceData->GetFrameScale() == true )

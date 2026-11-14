@@ -621,7 +621,7 @@ HRESULT	CX2PET::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( m_bCheat == true )
 	{
 		m_pXSkinAnim->OnFrameMove( fTime, fElapsedTime );

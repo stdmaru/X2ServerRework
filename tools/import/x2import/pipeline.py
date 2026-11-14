@@ -395,7 +395,7 @@ def _report(mod, records, report_dir: Path, excluded_refs, unresolved, outside, 
     L.append("")
 
     dev = [(r, b) for r in recs for b in r.result.dev_blocks]
-    L += ["## Blocks rewritten to `X2_DEV_TOOLS` (triage)", ""]
+    L += ["## Blocks rewritten to `X2_DEBUG` (triage)", ""]
     L += [f"- `{r.dest.relative_to(REPO).as_posix()}:{b.line}` `{b.original}` -> `{b.emitted}`" for r, b in dev] or ["(none)"]
     L.append("")
 

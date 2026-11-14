@@ -77,7 +77,7 @@ class CX2StateLogin : public CX2State
 		void InitManualLogin();
 
 //{{ kimhc // 2010.5.11 // 사내에서 자동 로그인 할 수 있는 기능
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		void ReadIDAndPassword();
 #endif // AUTO_LOGIN_IN_HOUSE
 //}} kimhc // 2010.5.11 // 사내에서 자동 로그인 할 수 있는 기능

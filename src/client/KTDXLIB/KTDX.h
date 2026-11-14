@@ -64,7 +64,7 @@
 
 // 패키지 암호화는 무조건 !! - robobeg, 2014-01-21
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 		//#define _ENCRIPT_SCRIPT_
 
 //	#define NO_GAMEGUARD	// 해외팀 제거
@@ -86,7 +86,7 @@
 
 
 
-#elif X2_DEV_TOOLS
+#elif defined(X2_DEBUG)
     //#define CHECK_NP_HACKUSER // 사내에서는 전사용자 대상으로 게임가드 실행
 	//#define _USE_NEXON_MSG_INHOUSE // 사내에서 본섭 넥슨메신져 열결 (왠만해선 사용하지 말자.)
 
@@ -118,7 +118,7 @@
 
 // New_Village -----------------------------------------------------------------
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 //#define CHECK_OPENED_DEVICE
 //#define MEMORY_LEAK_DETECTION_TEST
 #endif
@@ -236,7 +236,7 @@
 // 언팩방지 적용... 패키지 옵션임 : robobeg, 2014-01-17
 
 
-    #if !X2_DEV_TOOLS
+    #ifndef X2_DEBUG
     #endif // defined(_SERVICE_) || defined(_IN_HOUSE_SERVICE_READY_QA_)
     #if !defined(DEBUG) && !defined(_DEBUG)
     #endif
@@ -263,7 +263,7 @@
 // 베스마 돌 떨어지는 연출신에서 크래쉬 버그 수정
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 // 로컬 파일에 대해서는 xor encrypt 적용되지 않도록 수정
 //#define X2OPTIMIZE_VERIFY_NPC_SCRIPT_CONSISTENCY
@@ -303,7 +303,7 @@
 // -----------------------------------------------------------------------------
 
 // InHouse ---------------------------------------------------------------------
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
  	#include "InHouseEtc.h"	// 사내 툴 및 기타 기능들....
  	#include "InHouse1.h"	// 김종훈
@@ -829,7 +829,7 @@ extern double g_NowTime;
 
 //}} dmlee 2008.05.14 checksum 검사를 별도 스레드에서
 
-#if X2_DEV_TOOLS // 2008-10-23
+#ifdef X2_DEBUG // 2008-10-23
 #include "KHelpSystem.h"
 #endif // KHELP_SYSTEM_TEST // 2008-10-23
 

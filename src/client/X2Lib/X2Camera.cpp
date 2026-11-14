@@ -3,7 +3,7 @@
 
 CX2Camera::CX2Camera(void)
     : m_kCamera( g_pKTDXApp->GetDGManager()->GetCamera() )
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	, m_bEnabledManualCameraPosition( false )
 	, m_vManualCameraPosition( 0, 0, 0 )
 #endif // IN_GAME_MANUAL_CAMERA_POSITION_TEST
@@ -280,7 +280,7 @@ void CX2Camera::PlayLuaCamera( CX2GameUnit* pFocusUnit, KLuaManager& luaManger )
 }
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 void CX2Camera::CalcManualCameraPosition( CX2GameUnit* pFocusUnit, const D3DXVECTOR3& vEyePosition )
 {
@@ -362,7 +362,7 @@ void CX2Camera::NomalTrackingCamera( CX2GameUnit* pFocusUnit, float distance, fl
 	if( m_bNpcTrackingCamera == true )
 		return;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( true == m_bEnabledManualCameraPosition )
 	{
 		ManualTrackingCamera( pFocusUnit, distance, m_vManualCameraPosition );
@@ -1769,7 +1769,7 @@ void CX2Camera::DeleteKeyFrame()
 
 void CX2Camera::WorldCameraKeyProcess()
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if(false == m_bWorldCameraEdit)
 	{
 		// oasis907 : 김상윤 [2010.12.28] // 스크립트의 월드 카메라 재생

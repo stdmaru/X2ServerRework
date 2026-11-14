@@ -73,7 +73,7 @@ namespace KBenchMark_LINPACK
 	  float total;
 	  float *x;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  timestamp ( );
 	  cout << "\n";
 	  cout << "LINPACK_BENCH_S\n";
@@ -125,7 +125,7 @@ namespace KBenchMark_LINPACK
 
 	  if ( info != 0 )
 	  {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		cout << "\n";
 		cout << "LINPACK_BENCH_S - Fatal error!\n";
 		cout << "  The matrix A is apparently singular.\n";
@@ -204,7 +204,7 @@ namespace KBenchMark_LINPACK
 	  time[4] = 2.0 / time[3];
 	  time[5] = total / cray;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  cout << "     Norm. Resid      Resid           MACHEP         X[1]          X[N]\n";
 	  cout << "\n";
@@ -231,7 +231,7 @@ namespace KBenchMark_LINPACK
 	  delete [] rhs;
 	  delete [] x;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << "\n";
 	  cout << "LINPACK_BENCH_S\n";
 	  cout << "  Normal end of execution.\n";
@@ -260,7 +260,7 @@ namespace KBenchMark_LINPACK
 	  //else
 		 // iScore = 2;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	  cout << fScore << "\n";
 #endif //_SERVICE_
 

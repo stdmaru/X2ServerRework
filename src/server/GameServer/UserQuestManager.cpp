@@ -43,7 +43,7 @@ void KUserQuestManager::SetUnitQuest( IN OUT std::vector< KQuestInstance >& vecQ
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-#if X2_DEV_TOOLS // 퀘스트 템플릿 부재
+#ifdef X2_DEBUG // 퀘스트 템플릿 부재
 			CTime kRegDate = CTime::GetCurrentTime();
 			KE_LOCAL_LOG_UNDEFINED_QUEST_TEMPLET_NOT kNot;
 			kNot.m_iQuestID	= kQuestInstance.m_iID;

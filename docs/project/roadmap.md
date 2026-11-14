@@ -30,7 +30,7 @@ Importer steps:
 3. **Freeze feature flags** with `coan` using the final US/`_SERVICE_` macro set
    (~1,175 `SERV_*` flags, ~58,000 `#if*` lines). See [Feature flags and variants](../original/feature-flags.md).
    **Exception:** whitelisted debug/dev macros and direct environment checks (`#ifndef _SERVICE_`, `_IN_HOUSE_`)
-   become `#if X2_DEV_TOOLS` and are included in the report for triage. See [Debug, development, and administration tools](../original/debug-and-development.md).
+   become `#ifdef X2_DEBUG` and are included in the report for triage. See [Debug, development, and administration tools](../original/debug-and-development.md).
 4. **Exclusions**: explicit list of folders/files not to bring in (other countries, anti-cheat, SOAP, proprietary binaries, DXUT...).
 5. **Destination map**: path in `_reference` → path in `src/` (where folder reorganization happens).
 6. Report imported/discarded files and resolved flags.

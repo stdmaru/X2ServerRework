@@ -13,7 +13,7 @@
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 IMPLEMENT_HELP_SYSTEM( CX2GUUser )
 {
 	WCHAR   wbuffer[1024];
@@ -1713,7 +1713,7 @@ void CX2GUUser::InitDevice()
 
 void CX2GUUser::InitSystem()
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	SetScriptFileName();
 #endif //REALTIME_SCRIPT_PATCH
 	CX2GameUnit::InitSystem();
@@ -4500,7 +4500,7 @@ const CX2SkillTree::SkillTemplet* CX2GUUser::GetEquippedActiveSkillTemplet( CX2S
 
 bool CX2GUUser::GetEqippedSkillMemo(CX2SkillTree::SKILL_MEMO_ID eMemoId) const
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pInstanceData != NULL )
 	{
 		if( g_pInstanceData->GetFrameScale() == true )
@@ -5798,7 +5798,7 @@ bool CX2GUUser::StateChange( int state, int subState, bool bDirectChange /* = fa
 
 void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	KTDXPROFILE();
@@ -7469,7 +7469,7 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 
 	PostProcessEnchantDamage( pDamageData );
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 
@@ -7521,7 +7521,7 @@ void CX2GUUser::DamageDoubleAttack()
 // @bApplyExtraDamageOfAttacker: pDamageData->pAttackerUnit�� damagedata�� �������� ����
 void CX2GUUser::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageData, bool bApplyExtraDamageOfAttacker )
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	if( NULL == pDamageData )
@@ -7635,7 +7635,7 @@ void CX2GUUser::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageDa
 		}
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 }
 
@@ -9268,7 +9268,7 @@ void CX2GUUser::ProcessAttackResult()
 
 void CX2GUUser::AttackResult()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	KTDXPROFILE();
@@ -9723,7 +9723,7 @@ void CX2GUUser::AttackResult()
 	SetSubZoomCameraTimer();
 #endif
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	if( NULL != g_pX2Game && true == g_pX2Game->IsHost() )
@@ -10680,7 +10680,7 @@ void CX2GUUser::CommonStateStart()
 	if( pSkillTemplet != NULL )
 	{
 		g_pX2Game->SetStateString( pSkillTemplet->m_wstrName );
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 		if( true == IsMyUnit() )
 		{
 			g_pChatBox->AddChatLog( pSkillTemplet->m_wstrName.c_str(), KEGS_CHAT_REQ::CPT_SYSTEM);
@@ -11011,7 +11011,7 @@ void CX2GUUser::CommonStateStart()
 
 
 	// ������ �׽�Ʈ��
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( NULL != g_pData->GetMyUser() &&
 		g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR &&
 		true == this->IsMyUnit() &&
@@ -11632,7 +11632,7 @@ void CX2GUUser::CommonFrameMoveFuture()
 
 void CX2GUUser::CommonFrameMoveFuture_ExtraDamage()
 {
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 	//Ư�������� üũ
@@ -11698,7 +11698,7 @@ void CX2GUUser::CommonFrameMoveFuture_ExtraDamage()
 			CX2GageManager::GetInstance()->CrashMyStateGageUI( D3DXVECTOR2( -7, -7 ), D3DXVECTOR2( 7, 7 ), D3DXCOLOR( 0, 0, 1, 1) );
 	}
 
-#if !X2_DEV_TOOLS
+#ifndef X2_DEBUG
 #endif
 
 }
@@ -15396,7 +15396,7 @@ void CX2GUUser::PhysicProcess()
 
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 #ifdef _DEBUG
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
@@ -17188,7 +17188,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 	}
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 	{
 		if( true == CX2Game::GetRenderNPCName() )
@@ -21970,7 +21970,7 @@ void CX2GUUser::SetPos( D3DXVECTOR3 vPos )
 
 void CX2GUUser::SetPositionOnLine( [[maybe_unused]] const D3DXVECTOR3& vPosition, [[maybe_unused]] const int iLineIndex )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	ASSERT( NULL != g_pX2Game );
 	ASSERT( NULL != g_pX2Game->GetWorld() );
 	ASSERT( NULL != g_pX2Game->GetWorld()->GetLineMap() );
@@ -22485,7 +22485,7 @@ void CX2GUUser::SetUnitReForm()
 	[[maybe_unused]] D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
 	[[maybe_unused]] D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	// �ǽð� �׽�Ʈ��
 	FILE *fp = fopen("reform.txt", "r");
 	if(fp != NULL)
@@ -25966,7 +25966,7 @@ void CX2GUUser::SetDamageExceptionProcess( CX2DamageManager::DamageData* pDamage
 }
 
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 void CX2GUUser::SetScriptFileName()
 {
 	if( NULL == GetUnit() )
@@ -27762,7 +27762,7 @@ bool CX2GUUser::RidingPetSpecialAttackEventProcess( CX2SkillTree::ACTIVE_SKILL_U
 
 	fCoolTime = pRidingPetManager->GetSkillSlot()->GetSkillCoolTime( iSkillNum );
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	if( false == g_pMain->IsMyAuthLevelHigherThan( CX2User::XUAL_DEV ) )
 #endif //_IN_HOUSE_
 	{
@@ -28134,7 +28134,7 @@ void CX2GUUser::ForceDownAndDetonationProcess()
 				if( 0 == uiBuffFactorID )
 					break;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				if( m_mapStateInsertBuffFactor.end() != m_mapStateInsertBuffFactor.find( uiBuffFactorID ) )
 				{
 					DISPLAY_ERROR(L"BuffFactor Duplication Error!");
@@ -28165,7 +28165,7 @@ void CX2GUUser::ForceDownAndDetonationProcess()
 			if( 0 == uiBuffFactorID )
 				break;
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 			if( m_mapStateInsertBuffFactor.end() != m_mapStateInsertBuffFactor.find( uiBuffFactorID ) )
 			{
 				DISPLAY_ERROR(L"BuffFactor Duplication Error!");
@@ -28935,7 +28935,7 @@ void CX2GUUser::LoadEffectSetFromScript( IN KLuaManager& luaManager, IN const bo
 				while ( luaManager.GetValue( iTableCount, uiDeleteConditionType ) == true )
 				{	// ���� �ִٸ�, ���̺� ī���� ������Ű�� ���� ������ ���Ϳ� �־��ش�.
 					// ���� ���� ������ ����ٸ�, ASSERT �� ����.
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 					// �系 �� ���, �ش� ���� ������ �ߺ��Ǵ��� üũ�Ѵ�.
 					ASSERT( vecDeleteCondition.end() == find ( vecDeleteCondition.begin(), vecDeleteCondition.end(), static_cast<CX2GameUnit::DELETE_CONDITION_EFFECT_SET> (uiDeleteConditionType) ) );
 #endif // _IN_HOUSE_
@@ -28985,7 +28985,7 @@ void CX2GUUser::LoadEffectSetFromScript( IN KLuaManager& luaManager, IN const bo
 			while ( luaManager.GetValue( iTableCount, uiDeleteConditionType ) == true )
 			{	// ���� �ִٸ�, ���̺� ī���� ������Ű�� ���� ������ ���Ϳ� �־��ش�.
 				// ���� ���� ������ ����ٸ�, ASSERT �� ����.
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				// �系 �� ���, �ش� ���� ������ �ߺ��Ǵ��� üũ�Ѵ�.
 				ASSERT( vecDeleteCondition.end() == find ( vecDeleteCondition.begin(), vecDeleteCondition.end(), static_cast<CX2GameUnit::DELETE_CONDITION_EFFECT_SET> (uiDeleteConditionType) ) );
 #endif // _IN_HOUSE_

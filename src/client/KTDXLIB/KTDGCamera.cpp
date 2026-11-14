@@ -173,7 +173,7 @@ void CKTDGCamera::UpVecRel( float XAdd, float YAdd, float ZAdd )
 
 void CKTDGCamera::UpdateCamera( float fElapsedTime )
 {
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 	// X2_INTERP_TRACE (see KTDGXSkinAnim.cpp): the camera's tracking each step.
 	static const bool s_bTrace = std::getenv( "X2_INTERP_TRACE" ) != NULL;
 	if( s_bTrace )

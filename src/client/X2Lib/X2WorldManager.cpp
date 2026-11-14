@@ -2,7 +2,7 @@
 #include "./X2WorldManager.h"
 
 
-#if X2_DEV_TOOLS // 2008-10-24
+#ifdef X2_DEBUG // 2008-10-24
 IMPLEMENT_HELP_SYSTEM( CX2WorldManager )
 {
     WCHAR   wbuffer[1024];

@@ -251,7 +251,7 @@ bool KGCMassFileManager::SetSubDirectory(const fs::path& root)
 
     AddDataDirectory(PathWide(root));
     AddSubDirectories(root, looseFolder);
-#if X2_DEV_TOOLS
+#if defined(X2_DEBUG) || defined(X2_DEV_TOOLS)  // the UI editor reads the client_data too
     if (!looseFolder.empty())
         return SetLooseFileFolder(looseFolder);
 #endif
@@ -348,7 +348,7 @@ fs::path KGCMassFileManager::FindLocalFile(std::wstring_view wstrFileName) const
                 return found;
         }
     }
-#if X2_DEV_TOOLS
+#if defined(X2_DEBUG) || defined(X2_DEV_TOOLS)  // the UI editor reads the client_data too
     if (!relative.has_parent_path())
         return FindLooseFile(Key(name));
 #endif
@@ -427,7 +427,7 @@ bool KGCMassFileManager::LoadEntry(const std::wstring& wstrFileName, bool bRealD
     if (wstrFileName.empty())
         return false;
     const std::string key = Resolve(Key(wstrFileName));
-#if X2_DEV_TOOLS
+#if defined(X2_DEBUG) || defined(X2_DEV_TOOLS)  // the UI editor reads the client_data too
     const fs::path loose = FindLooseFile(key);
     if (!loose.empty())
         return LoadFromDisk(loose, out);
@@ -572,7 +572,7 @@ bool KGCMassFileManager::ExistsInArchivesOrLoose(const std::string& key) const
 {
     if (m_pMount->Find(key))
         return true;
-#if X2_DEV_TOOLS
+#if defined(X2_DEBUG) || defined(X2_DEV_TOOLS)  // the UI editor reads the client_data too
     return !FindLooseFile(key).empty();
 #else
     return false;

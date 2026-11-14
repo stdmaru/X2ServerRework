@@ -145,7 +145,7 @@ class CX2StatePVPRoom : public CX2StateMenu
 
 				void ResetSelectedMapButton();
 
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 
 				void OpenPVPMapSelectWindowForDebug( bool bOpen );
 				void UpdatePVPMapSelectWindowForDebug();
@@ -157,7 +157,7 @@ class CX2StatePVPRoom : public CX2StateMenu
 
 				CKTDGUIDialogType				m_pDLGBack;
 				vector< CKTDGUIDialogType >	m_vecpDLGMap;
-#if X2_DEV_TOOLS
+#ifdef X2_DEBUG
 				CKTDGUIDialogType m_pDLGPVPMapSelectionWindowForDebug;
 #endif // FREE_SELECT_PVP_MAP
 
