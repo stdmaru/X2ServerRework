@@ -40,7 +40,7 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
   the same scripts (the n-th of them for the game's n-th), the others close, the missing ones open with their scripts,
   and each takes the game's state (`Engine::ApplyLive`): statics are made what the game holds, so pictures code removed
   (the wake orbs of other classes) go, those it added or resized (gauges, quick slot items, quest marks) come, and so do
-  statics code added. The screen takes the nearest of the editor's sizes to the game's resolution. Unchecking "Watch
+  statics code added. The screen takes the game's exact viewport size ("(game)" next to the size; until 2026-11-14 the nearest of the editor's aspects and heights, so with the game at another aspect the anchors placed the script controls for a different aspect than the code had positioned items and icons for). Choosing an aspect or a height returns to the editor's sizes. Unchecking "Watch
   game" leaves the screen as it was last, to work on that state; dialogs opened by hand while watching close at the
   next change.
 - "Start game" runs this platform's client from the game folder (`x2`; `x2.exe` on Windows, so a folder holding both works; before 2026-11-14 it tried `x2.exe` first and failed on Linux) with `X2_UI_LIVE=1` and `X2_RECORD_UI_ANCHORS=1`, its output in the
