@@ -57,7 +57,6 @@ BOOL SetForegroundWindow(HWND hWnd);  // raises the DXUT window
 HWND SetFocus(HWND hWnd);  // raises the DXUT window; returns the window that had the focus
 BOOL SetWindowTextW(HWND hWnd, LPCWSTR lpString);  // the window title
 #define SetWindowText SetWindowTextW
-void PostQuitMessage(int nExitCode);  // an SDL quit event: the main loop closes the window
 
 #endif
 

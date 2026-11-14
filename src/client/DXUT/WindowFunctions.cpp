@@ -224,13 +224,6 @@ BOOL SetWindowTextW(HWND /*hWnd*/, LPCWSTR lpString)
     return window != nullptr && lpString != nullptr && SDL_SetWindowTitle(window, x2::platform::WideToUtf8(lpString).c_str()) ? TRUE : FALSE;
 }
 
-void PostQuitMessage(int /*nExitCode*/)
-{
-    SDL_Event event{};
-    event.type = SDL_EVENT_QUIT;
-    SDL_PushEvent(&event);
-}
-
 #endif
 
 std::wstring DXUTGetClipboardText()
