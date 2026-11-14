@@ -7,6 +7,9 @@ row lower (Ara, Elesis, Add, Code: Sariel), and M_KNIGHT_STATE's key starts a co
 draws every portrait at the same point, so they did not line up, and none could touch the screen corner. This moves
 each key's left edge so the frame starts FRAME_X texels in, and its top edge to the frame's first row; size follows
 (SetSizeAsTextureSize). DLG_PVP_Game_My_State_NEW.lua then puts the dialog FRAME_X units left and 2 up.
+Their textures' transparent texels are white, so linear filtering drew a light seam along the frame at the screen's
+edge; each fully transparent texel within BLEED texels of a visible one takes the average color of its visible
+neighbours (alpha stays 0: nothing new shows). The .tga files stay uncompressed 32-bit, only those color bytes change.
 Running it again changes nothing.
     python3 tools/assets/crop_portraits.py <client_data> [--dry-run]
 """
@@ -33,6 +36,7 @@ EL_FACE EL_SPK_FACE EL_SSK_FACE EL_SBH_FACE EL_SGM_FACE ADD_FACE ADD_ALP_FACE AD
 """.split()
 
 FRAME_X = 2   # where the frame starts in most portraits, kept
+BLEED = 2
 HEADER = struct.Struct("<III")
 UV = struct.Struct("<10f")   # leftTop, rightBottom, leftBottom, rightTop, rectSize (texels)
 
@@ -43,6 +47,42 @@ def solid_start(alpha: np.ndarray) -> int:
         if np.count_nonzero(alpha[i] >= 200) * 2 >= alpha.shape[1]:
             return i
     return 0
+
+
+def bleed_colors(tga_path: str, dry_run: bool) -> int:
+    """Gives transparent texels near visible ones their neighbours' color; returns how many changed."""
+    data = bytearray(open(tga_path, "rb").read())
+    if data[2] != 2 or data[16] != 32:
+        print(f"{tga_path}: not an uncompressed 32-bit TGA, left as it is")
+        return 0
+    width, height = struct.unpack_from("<HH", data, 12)
+    start = 18 + data[0]
+    pixels = np.frombuffer(data, dtype=np.uint8, count=width * height * 4, offset=start).reshape(height, width, 4)
+    color = pixels[:, :, :3].astype(np.float64)
+    known = pixels[:, :, 3] > 0
+    out = pixels.copy()
+    for _ in range(BLEED):
+        total = np.zeros_like(color)
+        count = np.zeros((height, width))
+        for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)):
+            shifted = np.zeros_like(known)
+            shifted_color = np.zeros_like(color)
+            ys, yd = (slice(max(dy, 0), height + min(dy, 0)), slice(max(-dy, 0), height + min(-dy, 0)))
+            xs, xd = (slice(max(dx, 0), width + min(dx, 0)), slice(max(-dx, 0), width + min(-dx, 0)))
+            shifted[yd, xd] = known[ys, xs]
+            shifted_color[yd, xd] = color[ys, xs]
+            total += shifted_color * shifted[:, :, None]
+            count += shifted
+        grow = ~known & (count > 0)
+        color[grow] = total[grow] / count[grow][:, None]
+        known = known | grow
+    near = (pixels[:, :, 3] == 0) & known
+    out[near, :3] = np.rint(color[near]).astype(np.uint8)
+    changed = int(np.count_nonzero(np.any(out != pixels, axis=2)))
+    if changed and not dry_run:
+        data[start:start + width * height * 4] = out.tobytes()
+        open(tga_path, "wb").write(data)
+    return changed
 
 
 def main() -> int:
@@ -90,6 +130,7 @@ def main() -> int:
                 changed = True
         if changed and not args.dry_run:
             open(tet_path, "wb").write(data)
+        print(f"texture{number}: {bleed_colors(tga_path, args.dry_run)} transparent texels recolored")
     for key in sorted(remaining):
         print(f"{key}: not found")
     return 0
