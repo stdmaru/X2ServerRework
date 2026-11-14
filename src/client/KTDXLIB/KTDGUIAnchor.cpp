@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cwctype>
 #include <filesystem>
+#include <initializer_list>
 #include <fstream>
 #include <map>
 #include <set>
@@ -455,14 +456,56 @@ bool CKTDGUIAnchorRecorder::LiveIsOn()
 	return s_bOn;
 }
 
-// UILive.tsv, one record per line, tab separated:
+// UILive.tsv, one record per line, tab separated; what follows a dialog line belongs to it:
 //     scene    <XS_* name>
 //     screen   <width> <height>
-//     dialog   <script> <x> <y> <layer> <front>           the shown dialogs drawn from scripts, back to front
-//     control  <index> <shown>                            of the dialog above
-//     picture  <control> <index> <shown> <texture> <key>  of a static
-//     text     <control> <index> <text>                   of a static, escaped
+//     dialog   <script> <x> <y> <layer> <front>    the shown dialogs drawn from scripts, back to front
+//     script   <script>                            each script code loaded into it after the first (OpenScriptFile)
+//     control  <index> <shown> <type>              every control, those code added included
+//     picture  <control> <index> <shown> <texture> <key> <8 corners> <8 uv> <r g b a>
+//              every picture of a static; corners and uv left top, right top, left bottom, right bottom
+//     text     <control> <index> <font> <sort flags> <x> <y> <r g b a> <text>    every text of a static, escaped
 // Written to a temporary file and renamed over the last one, and only when it changed.
+namespace
+{
+	void AppendFloats( std::string& str, std::initializer_list<float> afValues )
+	{
+		char szBuffer[32];
+		for ( const float f : afValues )
+		{
+			std::snprintf( szBuffer, sizeof( szBuffer ), "\t%.6g", static_cast<double>( f ) );
+			str += szBuffer;
+		}
+	}
+
+	void AppendPicture( std::string& str, CKTDGUIControl::CPictureData& kPicture )
+	{
+		str += kPicture.GetShow() ? "\t1\t" : "\t0\t";
+		const CKTDGUIControl::UITextureData* pTexture = kPicture.pTexture;
+		if ( pTexture != NULL )
+		{
+			AppendEscaped( str, ToUtf8( pTexture->texName ) );
+			str += '\t';
+			AppendEscaped( str, ToUtf8( pTexture->keyName ) );
+		}
+		else
+			str += '\t';
+		const CKTDGUIControl::UIPointData* pPoint = kPicture.pPoint;
+		if ( pPoint != NULL )
+			AppendFloats( str, { pPoint->leftTopPoint.x, pPoint->leftTopPoint.y, pPoint->rightTopPoint.x, pPoint->rightTopPoint.y,
+				pPoint->leftBottomPoint.x, pPoint->leftBottomPoint.y, pPoint->rightBottomPoint.x, pPoint->rightBottomPoint.y } );
+		else
+			AppendFloats( str, { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f } );
+		if ( pTexture != NULL )
+			AppendFloats( str, { pTexture->uvTexture[0].x, pTexture->uvTexture[0].y, pTexture->uvTexture[1].x, pTexture->uvTexture[1].y,
+				pTexture->uvTexture[2].x, pTexture->uvTexture[2].y, pTexture->uvTexture[3].x, pTexture->uvTexture[3].y } );
+		else
+			AppendFloats( str, { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f } );
+		const D3DXCOLOR kColor = pPoint != NULL ? pPoint->color : D3DXCOLOR( 1.f, 1.f, 1.f, 1.f );
+		AppendFloats( str, { kColor.r, kColor.g, kColor.b, kColor.a } );
+	}
+}
+
 void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 {
 	static std::chrono::steady_clock::time_point s_tLast{};
@@ -483,13 +526,15 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 	{
 		if ( pDialog == NULL || pDialog->GetShow() == false )
 			continue;
-		const std::wstring wstrScript = pDialog->GetScriptFileName();
-		if ( wstrScript.empty() )
-			continue;
+		const std::vector<std::wstring>& vecScripts = pDialog->GetOpenedScripts();
+		if ( vecScripts.empty() )
+			continue;	// built in code alone: nothing for the editor to open
 		const D3DXVECTOR2 vPos = pDialog->GetPos();
-		str += "dialog\t" + ToUtf8( ScriptKey( wstrScript.c_str() ) ) + '\t' + std::to_string( std::lround( vPos.x ) ) + '\t'
+		str += "dialog\t" + ToUtf8( ScriptKey( vecScripts[0].c_str() ) ) + '\t' + std::to_string( std::lround( vPos.x ) ) + '\t'
 			+ std::to_string( std::lround( vPos.y ) ) + '\t' + std::to_string( pDialog->GetLayer() ) + '\t'
 			+ ( pDialog->GetFront() ? "1" : "0" ) + '\n';
+		for ( size_t s = 1; s < vecScripts.size(); ++s )
+			str += "script\t" + ToUtf8( ScriptKey( vecScripts[s].c_str() ) ) + '\n';
 		const std::vector<CKTDGUIControl*>& vecControls = pDialog->GetControlList();
 		for ( size_t i = 0; i < vecControls.size(); ++i )
 		{
@@ -497,7 +542,8 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 			if ( pControl == NULL )
 				continue;
 			const std::string strIndex = std::to_string( i );
-			str += "control\t" + strIndex + '\t' + ( pControl->GetShow() ? "1" : "0" ) + '\n';
+			str += "control\t" + strIndex + '\t' + ( pControl->GetShow() ? "1" : "0" ) + '\t'
+				+ std::to_string( static_cast<int>( pControl->GetType() ) ) + '\n';
 			if ( pControl->GetType() != CKTDGUIControl::UCT_STATIC )
 				continue;
 			CKTDGUIStatic* pStatic = static_cast<CKTDGUIStatic*>( pControl );
@@ -506,15 +552,8 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 				CKTDGUIControl::CPictureData* pPicture = pStatic->GetPicture( p );
 				if ( pPicture == NULL )
 					continue;
-				str += "picture\t" + strIndex + '\t' + std::to_string( p ) + '\t' + ( pPicture->GetShow() ? "1" : "0" ) + '\t';
-				if ( pPicture->pTexture != NULL )
-				{
-					AppendEscaped( str, ToUtf8( pPicture->pTexture->texName ) );
-					str += '\t';
-					AppendEscaped( str, ToUtf8( pPicture->pTexture->keyName ) );
-				}
-				else
-					str += '\t';
+				str += "picture\t" + strIndex + '\t' + std::to_string( p );
+				AppendPicture( str, *pPicture );
 				str += '\n';
 			}
 			for ( int t = 0; t < pStatic->GetStringNum(); ++t )
@@ -522,7 +561,11 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 				const CKTDGUIControl::UIStringData* pString = pStatic->GetString( t );
 				if ( pString == NULL )
 					continue;
-				str += "text\t" + strIndex + '\t' + std::to_string( t ) + '\t';
+				str += "text\t" + strIndex + '\t' + std::to_string( t ) + '\t' + std::to_string( pString->fontIndex ) + '\t'
+					+ std::to_string( static_cast<unsigned long>( pString->sortFlag ) );
+				AppendFloats( str, { pString->pos.x, pString->pos.y, pString->color.r, pString->color.g, pString->color.b,
+					pString->color.a } );
+				str += '\t';
 				AppendEscaped( str, ToUtf8( pString->msg ) );
 				str += '\n';
 			}

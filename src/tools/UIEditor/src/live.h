@@ -15,24 +15,38 @@ struct LiveSnapshot {
     struct Control {
         int index = 0;
         bool shown = true;
+        int type = -1;              // CKTDGUIControl::CONTROL_TYPE, -1 when not written
     };
     struct Picture {
         int control = 0, index = 0;
         bool shown = true;
         std::string texture, key;   // empty texture: none
+        float points[4][2] = {};    // left top, right top, left bottom, right bottom (layout units, as the picture holds them)
+        float uv[4][2] = {};
+        float color[4] = {1, 1, 1, 1};
+        bool full = false;          // points, uv and color written
     };
     struct Text {
         int control = 0, index = 0;
         std::string text;
+        int font = 0;
+        unsigned sortFlag = 0;
+        float pos[2] = {};
+        float color[4] = {1, 1, 1, 1};
+        bool full = false;          // font, alignment, position and color written
     };
     struct Dialog {
         std::string script;         // lowercase, without folder
+        std::vector<std::string> extraScripts;   // loaded into it by code after the first, in order
         float pos[2] = {};          // layout units under the dialog's anchor
         int layer = 0;
         bool front = false;
         std::vector<Control> controls;
         std::vector<Picture> pictures;
         std::vector<Text> texts;
+
+        // What tells two of the game's dialogs apart for the editor: the scripts it was built from.
+        std::string Key() const;
     };
 
     std::string scene;              // XS_*, empty before the first state

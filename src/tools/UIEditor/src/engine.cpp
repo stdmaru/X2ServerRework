@@ -121,6 +121,7 @@ struct Engine::State {
     std::unique_ptr<d3d9::Texture> target;
     struct Open {
         std::string script;
+        std::vector<std::string> extraScripts;   // loaded into it after the first (LoadScriptInto)
         CKTDGUIDialogType dialog;
         bool loaded = false;
     };
@@ -230,7 +231,7 @@ int Engine::OpenDialog(const std::string& script, std::string& error)
         return -1;
     }
     auto* dialog = new CKTDGUIDialog(m_state->stage, name.c_str(), 0.0f);
-    State::Open open{script, dialog, dialog->GetIsSuccessInitOpenScript()};
+    State::Open open{script, {}, dialog, dialog->GetIsSuccessInitOpenScript()};
     g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg(open.dialog);
     if (!open.loaded) {
         error = script + ": the script failed (ErrorLog.txt in the game folder)";
@@ -288,6 +289,126 @@ void Engine::SetDialogShown(int index, bool shown)
     }
 }
 
+bool Engine::LoadScriptInto(int index, const std::string& script, std::string& error)
+{
+    if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
+        return false;
+    }
+    State::Open& open = m_state->dialogs[static_cast<std::size_t>(index)];
+    const std::wstring name = Wide(script);
+    if (open.dialog == NULL || !g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->IsValidFile(name)) {
+        error = script + ": no such file in client_data or the archives";
+        return false;
+    }
+    open.extraScripts.push_back(script);
+    if (!open.dialog->OpenScriptFile(name.c_str())) {
+        error = script + ": the script failed (ErrorLog.txt in the game folder)";
+        return false;
+    }
+    return true;
+}
+
+const std::vector<std::string>& Engine::DialogExtraScripts(int index) const
+{
+    return m_state->dialogs.at(static_cast<std::size_t>(index)).extraScripts;
+}
+
+namespace {
+
+// A picture as the game holds it: texture and key, corners, texture coordinates, color, shown.
+void ApplyPicture(CKTDGUIControl::CPictureData& picture, const LiveSnapshot::Picture& live)
+{
+    picture.SetShow(live.shown);
+    if (!live.texture.empty()) {
+        const std::wstring texture = Wide(live.texture), key = Wide(live.key);
+        if (picture.pTexture == NULL || picture.pTexture->texName != texture || picture.pTexture->keyName != key) {
+            if (key.empty()) {
+                picture.SetTex(texture.c_str());
+            } else {
+                picture.SetTex(texture.c_str(), key.c_str());
+            }
+        }
+    }
+    if (!live.full) {
+        return;
+    }
+    if (picture.pPoint == NULL) {
+        picture.SetPoint(new CKTDGUIControl::UIPointData());
+    }
+    CKTDGUIControl::UIPointData& point = *picture.pPoint;
+    point.bUseTextureSize = false;
+    D3DXVECTOR2* corners[4] = {&point.leftTopPoint, &point.rightTopPoint, &point.leftBottomPoint, &point.rightBottomPoint};
+    for (int k = 0; k < 4; ++k) {
+        *corners[k] = D3DXVECTOR2(live.points[k][0], live.points[k][1]);
+    }
+    point.color = D3DXCOLOR(live.color[0], live.color[1], live.color[2], live.color[3]);
+    if (picture.pTexture != NULL) {
+        for (int k = 0; k < 4; ++k) {
+            picture.pTexture->uvTexture[k] = D3DXVECTOR2(live.uv[k][0], live.uv[k][1]);
+        }
+    }
+}
+
+// A static's pictures and texts as the game holds them: what code removed goes, what it added comes.
+void ApplyStatic(CKTDGUIStatic& control, const LiveSnapshot::Dialog& live, int index)
+{
+    int pictures = 0;
+    for (const LiveSnapshot::Picture& p : live.pictures) {
+        if (p.control == index) {
+            pictures = std::max(pictures, p.index + 1);
+        }
+    }
+    while (control.GetPictureNum() > pictures) {
+        control.RemovePictureByIndex(control.GetPictureNum() - 1);
+    }
+    while (control.GetPictureNum() < pictures) {
+        auto* picture = new CKTDGUIControl::CPictureData();
+        picture->SetShow(false);
+        control.AddPicture(picture);
+    }
+    for (const LiveSnapshot::Picture& p : live.pictures) {
+        if (p.control == index) {
+            if (CKTDGUIControl::CPictureData* picture = control.GetPicture(p.index); picture != NULL) {
+                ApplyPicture(*picture, p);
+            }
+        }
+    }
+
+    int texts = 0;
+    for (const LiveSnapshot::Text& t : live.texts) {
+        if (t.control == index) {
+            texts = std::max(texts, t.index + 1);
+        }
+    }
+    if (control.GetStringNum() != texts) {
+        control.RemoveAllString();
+        for (int t = 0; t < texts; ++t) {
+            control.AddString(new CKTDGUIControl::UIStringData());
+        }
+    }
+    for (const LiveSnapshot::Text& t : live.texts) {
+        if (t.control != index) {
+            continue;
+        }
+        CKTDGUIControl::UIStringData* string = control.GetString(t.index);
+        if (string == NULL) {
+            continue;
+        }
+        if (t.full) {
+            string->fontIndex = t.font;
+            string->sortFlag = t.sortFlag;
+            string->pos = D3DXVECTOR2(t.pos[0], t.pos[1]);
+            string->color = D3DXCOLOR(t.color[0], t.color[1], t.color[2], t.color[3]);
+        }
+        const std::wstring text = Wide(t.text);
+        if (string->msg != text) {
+            control.SetString(t.index, text.c_str());
+        }
+    }
+}
+
+}  // namespace
+
 void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
 {
     if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
@@ -305,49 +426,25 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
     if (dialog->GetFront() != live.front) {
         dialog->SetFront(live.front);
     }
-    const std::vector<CKTDGUIControl*>& controls = dialog->GetControlList();
-    const auto controlAt = [&](int i) -> CKTDGUIControl* {
-        return i >= 0 && i < static_cast<int>(controls.size()) ? controls[static_cast<std::size_t>(i)] : nullptr;
-    };
-    const auto staticAt = [&](int i) -> CKTDGUIStatic* {
-        CKTDGUIControl* control = controlAt(i);
-        return control != nullptr && control->GetType() == CKTDGUIControl::UCT_STATIC
-                   ? static_cast<CKTDGUIStatic*>(control)
-                   : nullptr;
-    };
+    // Controls code added after the scripts: statics, rebuilt from what they hold; the others are left out (an
+    // empty static keeps the indexes of those after them).
     for (const LiveSnapshot::Control& c : live.controls) {
-        if (CKTDGUIControl* control = controlAt(c.index); control != nullptr && control->GetShow() != c.shown) {
-            control->SetShow(c.shown);
+        while (c.index >= static_cast<int>(dialog->GetControlList().size())) {
+            auto* added = new CKTDGUIStatic();
+            added->SetShow(false);
+            dialog->AddControl(added);
         }
     }
-    for (const LiveSnapshot::Picture& p : live.pictures) {
-        CKTDGUIStatic* control = staticAt(p.control);
-        CKTDGUIControl::CPictureData* picture =
-            control != nullptr && p.index < control->GetPictureNum() ? control->GetPicture(p.index) : nullptr;
-        if (picture == nullptr) {
+    const std::vector<CKTDGUIControl*>& controls = dialog->GetControlList();
+    for (const LiveSnapshot::Control& c : live.controls) {
+        CKTDGUIControl* control = c.index >= 0 ? controls[static_cast<std::size_t>(c.index)] : nullptr;
+        if (control == nullptr) {
             continue;
         }
-        picture->SetShow(p.shown);
-        if (p.texture.empty()) {
-            continue;
-        }
-        const std::wstring texture = Wide(p.texture), key = Wide(p.key);
-        if (picture->pTexture == NULL || picture->pTexture->texName != texture || picture->pTexture->keyName != key) {
-            if (key.empty()) {
-                picture->SetTex(texture.c_str());
-            } else {
-                picture->SetTex(texture.c_str(), key.c_str());
-            }
-        }
-    }
-    for (const LiveSnapshot::Text& t : live.texts) {
-        CKTDGUIStatic* control = staticAt(t.control);
-        if (control == nullptr || t.index >= control->GetStringNum()) {
-            continue;
-        }
-        const std::wstring text = Wide(t.text);
-        if (const CKTDGUIControl::UIStringData* string = control->GetString(t.index); string != NULL && string->msg != text) {
-            control->SetString(t.index, text.c_str());
+        const bool sameType = c.type < 0 || static_cast<int>(control->GetType()) == c.type;
+        control->SetShow(c.shown && sameType);
+        if (sameType && control->GetType() == CKTDGUIControl::UCT_STATIC) {
+            ApplyStatic(*static_cast<CKTDGUIStatic*>(control), live, c.index);
         }
     }
 }

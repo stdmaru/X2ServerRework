@@ -32,7 +32,22 @@ int Int(const std::string& field)
     return static_cast<int>(std::strtol(field.c_str(), nullptr, 10));
 }
 
+float Float(const std::string& field)
+{
+    return std::strtof(field.c_str(), nullptr);
+}
+
 }  // namespace
+
+std::string LiveSnapshot::Dialog::Key() const
+{
+    std::string key = script;
+    for (const std::string& extra : extraScripts) {
+        key += '+';
+        key += extra;
+    }
+    return key;
+}
 
 LiveSnapshot LiveSnapshot::Load(const std::filesystem::path& file)
 {
@@ -78,8 +93,10 @@ LiveSnapshot LiveSnapshot::Parse(std::istream& in)
             d.layer = Int(f[4]);
             d.front = f[5] == "1";
             snapshot.dialogs.push_back(std::move(d));
+        } else if (kind == "script" && dialog != nullptr && f.size() >= 2) {
+            dialog->extraScripts.push_back(f[1]);
         } else if (kind == "control" && dialog != nullptr && f.size() >= 3) {
-            dialog->controls.push_back({Int(f[1]), f[2] == "1"});
+            dialog->controls.push_back({Int(f[1]), f[2] == "1", f.size() > 3 ? Int(f[3]) : -1});
         } else if (kind == "picture" && dialog != nullptr && f.size() >= 4) {
             Picture p;
             p.control = Int(f[1]);
@@ -87,9 +104,35 @@ LiveSnapshot LiveSnapshot::Parse(std::istream& in)
             p.shown = f[3] == "1";
             p.texture = f.size() > 4 ? Unescape(f[4]) : std::string();
             p.key = f.size() > 5 ? Unescape(f[5]) : std::string();
+            if (f.size() >= 26) {
+                for (int k = 0; k < 8; ++k) {
+                    p.points[k / 2][k % 2] = Float(f[6 + static_cast<std::size_t>(k)]);
+                    p.uv[k / 2][k % 2] = Float(f[14 + static_cast<std::size_t>(k)]);
+                }
+                for (int k = 0; k < 4; ++k) {
+                    p.color[k] = Float(f[22 + static_cast<std::size_t>(k)]);
+                }
+                p.full = true;
+            }
             dialog->pictures.push_back(std::move(p));
         } else if (kind == "text" && dialog != nullptr && f.size() >= 3) {
-            dialog->texts.push_back({Int(f[1]), Int(f[2]), f.size() > 3 ? Unescape(f[3]) : std::string()});
+            Text t;
+            t.control = Int(f[1]);
+            t.index = Int(f[2]);
+            if (f.size() >= 12) {
+                t.font = Int(f[3]);
+                t.sortFlag = static_cast<unsigned>(std::strtoul(f[4].c_str(), nullptr, 10));
+                t.pos[0] = Float(f[5]);
+                t.pos[1] = Float(f[6]);
+                for (int k = 0; k < 4; ++k) {
+                    t.color[k] = Float(f[7 + static_cast<std::size_t>(k)]);
+                }
+                t.text = Unescape(f[11]);
+                t.full = true;
+            } else {
+                t.text = f.size() > 3 ? Unescape(f[3]) : std::string();
+            }
+            dialog->texts.push_back(std::move(t));
         }
     }
     return snapshot;
