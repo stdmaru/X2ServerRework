@@ -60,6 +60,10 @@ struct EditorState {
     char filter[128] = {};
     int aspect = 2;     // 16:9
     int height = 4;     // 1080
+    // An exact size instead of aspect x height: the game's viewport while mirroring it, so the anchors place the
+    // script controls for the same aspect the code positioned the rest for (any window size, 2026-11-14). Choosing an
+    // aspect or a height clears it.
+    unsigned exact[2] = {};
     bool fit = true;
     float zoom = 1.0f;      // screen pixels per render target pixel when not fitted
     bool showBounds = false;
@@ -216,6 +220,8 @@ void Mirror(x2::ui_editor::Engine& engine, EditorState& state)
         state.selected = {};
     }
     ChooseSize(state, state.live.screen[0], state.live.screen[1]);
+    state.exact[0] = state.live.screen[0];
+    state.exact[1] = state.live.screen[1];
     state.message = failed.empty() ? "game: " + (state.live.scene.empty() ? std::string("starting") : state.live.scene)
                                    : failed;
 }
@@ -566,8 +572,9 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
     ImGui::SetNextItemWidth(90);
     if (ImGui::BeginCombo("aspect", kAspects[state.aspect].name)) {
         for (int i = 0; i < static_cast<int>(std::size(kAspects)); ++i) {
-            if (ImGui::Selectable(kAspects[i].name, state.aspect == i)) {
+            if (ImGui::Selectable(kAspects[i].name, state.aspect == i && state.exact[0] == 0)) {
                 state.aspect = i;
+                state.exact[0] = state.exact[1] = 0;
             }
         }
         ImGui::EndCombo();
@@ -577,14 +584,15 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
     const std::string heightLabel = std::to_string(kHeights[state.height]);
     if (ImGui::BeginCombo("height", heightLabel.c_str())) {
         for (int i = 0; i < static_cast<int>(std::size(kHeights)); ++i) {
-            if (ImGui::Selectable(std::to_string(kHeights[i]).c_str(), state.height == i)) {
+            if (ImGui::Selectable(std::to_string(kHeights[i]).c_str(), state.height == i && state.exact[0] == 0)) {
                 state.height = i;
+                state.exact[0] = state.exact[1] = 0;
             }
         }
         ImGui::EndCombo();
     }
     ImGui::SameLine();
-    ImGui::Text("%u x %u", engine.TargetWidth(), engine.TargetHeight());
+    ImGui::Text("%u x %u%s", engine.TargetWidth(), engine.TargetHeight(), state.exact[0] != 0 ? " (game)" : "");
     ImGui::SameLine();
     ImGui::Checkbox("fit", &state.fit);
     ImGui::SameLine();
@@ -695,6 +703,8 @@ int main(int argc, char** argv)
             unsigned w = 0, h = 0;
             if (std::sscanf(argv[++i], "%ux%u", &w, &h) == 2) {
                 ChooseSize(state, w, h);
+                state.exact[0] = w;
+                state.exact[1] = h;
             }
         } else {
             state.gameFolder = argv[i];
@@ -763,8 +773,9 @@ int main(int argc, char** argv)
         last = now;
 
         Poll(*engine, state);
-        const unsigned height = kHeights[state.height];
-        if (!engine->Render(WidthFor(height, kAspects[state.aspect].ratio), height, elapsed, error)) {
+        const unsigned height = state.exact[0] != 0 ? state.exact[1] : kHeights[state.height];
+        const unsigned width = state.exact[0] != 0 ? state.exact[0] : WidthFor(height, kAspects[state.aspect].ratio);
+        if (!engine->Render(width, height, elapsed, error)) {
             std::fprintf(stderr, "%s\n", error.c_str());
             break;
         }
