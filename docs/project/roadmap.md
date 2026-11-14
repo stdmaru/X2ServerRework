@@ -382,6 +382,13 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       switching (PR #74; works on the desktop, 2026-11-14), with zoom, scenes (the recorder notes each dialog's game
       state, so a screen opens whole) and "Watch game" mirroring a running client (statics in full, scripts code loads); (b) anchor/STRETCH editing saved to `UIAnchors.lua`; (c) positions, textures
       and UV saved to the scripts and `.tet`; then the C++ layout positions migrated into the scripts, screen by screen.
+- [ ] **Later** (user, 2026-11-14: after the UI editor): a loading screen when moving between village and field and when
+      entering a channel, where the original shows the map loading in place. The original already has the pieces:
+      `CX2TFieldGame::LoadUI` shows `DLG_PVP_Game_Loading_State.lua` with the area's pictures, but only after a warp or a
+      channel change; `CX2BattleFieldGame::CreateLoadingUI` does the same only for boss raids, and both close after a
+      fixed 3 s. Proposed: show it on every entry and close it when loading really ends (loading thread idle,
+      `EGS_FIELD_LOADING_COMPLETE_ACK`, units loaded), with a minimum time, a fade and a safety limit, behind a
+      `src/define.h` switch (T47). Estimated about a day; its own branch.
 
 ## Phase 5 — Deep cleanup
 
