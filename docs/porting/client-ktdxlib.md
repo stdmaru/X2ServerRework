@@ -490,6 +490,20 @@ Known, not fixed: UI pieces drawn at a fractional pixel with linear filtering pi
 bar's end piece (`EXP_BG_RIGHT_2`, next to a transparent white texel) shows a light 1-pixel column at 1920×1080; it does
 with the centered HUD too.
 
+## Dragging dialogs (2026-11-13, `client/widescreen-screens`)
+
+**Behavior change.** Dialogs that allow it (`SetEnableMoveByDrag`: message boxes, field and world maps, messenger,
+user info; the main windows never did) move with the pointer in `CKTDGUIDialog::MsgProc`. Two problems are fixed:
+
+- **Choppy movement.** The original moved the dialog by the polled mouse position. `CKTDIManager` is a stage, so it reads
+  the mouse once per step (60 Hz, [T41](../project/decisions.md)). With frame pacing the cursor moves every frame, so the
+  dialog lagged behind it in steps. The dialog now follows the message's own pointer (`lParam`), and the drag cursor
+  (`CX2Cursor`, `DLG_Drag_Cursor.tga`) is drawn at the live pointer.
+- **Lost drags.** The original moved the dialog by deltas measured on the control under the pointer. A fast move that
+  left the control before the dialog caught up found none, and the unhandled message cancelled the drag. The dialog now
+  keeps the grab point (the pointer relative to the dialog when the button goes down) and follows the pointer until
+  the button is released, wherever the pointer is.
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

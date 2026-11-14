@@ -57,8 +57,7 @@ CKTDGUIDialog::CKTDGUIDialog( CKTDXStage* pStage, const WCHAR* wstrScriptFileNam
 	m_ControlsMap.clear();
 	//m_ControlsMap_MB.clear();
 
-	m_PrevMousePointX = 0;
-	m_PrevMousePointY = 0;
+	m_vDragGrab = D3DXVECTOR2( 0.f, 0.f );
 
 
 	m_vSize = D3DXVECTOR2( 0, 0 );
@@ -790,39 +789,21 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					}
 				}
 
-				//다이얼로그 움직이기..
-				if ( GetEnableMoveByDrag() == true && uMsg == WM_MOUSEMOVE /*&& s_pControlFocus != NULL*/)
+				// Moving the dialog by dragging. The dialog keeps the grab point (the pointer relative to the dialog, in
+				// layout units) from the last move before the button went down, and follows the pointer from there. The
+				// pointer is the message's own: the polled position is read once per step, so a dialog moved with it
+				// went in steps while the cursor moved smoothly. The original also needed a control under the pointer
+				// on every move, so a fast drag that left it before the dialog caught up dropped the dialog.
+				if ( GetEnableMoveByDrag() == true && ( uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONDOWN ) )
 				{
-
-					CKTDGUIControl* pControl = s_pControlFocus;
-					if ( pControl == NULL )
+					const D3DXVECTOR2 vPointer = g_pKTDXApp->MouseConvertByResolution(
+						static_cast<float>( GET_X_LPARAM( lParam ) ), static_cast<float>( GET_Y_LPARAM( lParam ) ) );
+					if ( uMsg == WM_MOUSEMOVE && m_bMouseDownForDrag == true )
 					{
-						pControl = GetControlAtPointForStatic( mousePoint );
+						SetPos( vPointer - m_vDragGrab );
+						return true;
 					}
-/*
-					// dragging 되는 dialog, 즉 static control의 크기가 작은 경우에 대한 예외 처리
-					if( true == m_bMouseDownForDrag && pControl == NULL )
-					{
-						pControl = GetControl(0);
-					}
-*/
-					if ( pControl != NULL )
-					{
-
-						const POINT mousePointFinal = ToControlPoint( mousePoint, pControl );
-
-						int deltaX = mousePointFinal.x - m_PrevMousePointX;
-						int deltaY = mousePointFinal.y - m_PrevMousePointY;
-
-						if ( m_bMouseDownForDrag == true )
-						{
-							SetPos( D3DXVECTOR2( GetPos().x + deltaX, GetPos().y + deltaY) );
-							return true;
-						}
-
-						m_PrevMousePointX = (int)mousePointFinal.x;
-						m_PrevMousePointY = (int)mousePointFinal.y;
-					}
+					m_vDragGrab = vPointer - m_Pos;
 				}
 
 				if ( HandleMouse( uMsg, mousePoint, wParam, lParam ) == true )

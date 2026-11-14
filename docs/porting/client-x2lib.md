@@ -228,6 +228,10 @@ are per control. Those pictures are statics of their own in the client_data, and
 - `CX2StateCreateUnit::OnFrameMove` keeps the daily creation notice (`Creative_Character_Notice`, centered) shown with the
   panel (`Creative_Character`).
 
+The NPC talk shade (`CX2TFieldGame::NpcJoinShadow`) is two 2D particles from `UIMajorParticle.txt` (`JoinNpcTop`,
+`JoinNpcBottom`), 1024 wide and centered on the layout's middle. On a wide canvas they darkened only the middle column.
+`NpcJoinShadow::OnFrameMove` now sizes them to the canvas width every frame (2026-11-13, `client/widescreen-screens`).
+
 Known, left for the migration: screens whose texture does not match its rectangle's aspect stay as the original drew
 them. The character select background, for example, is a 512×512 texture drawn at 1024×768, so it is stretched 33% in
 the original as well.
