@@ -20,7 +20,7 @@ container's build runs on the desktop.
 
 | Panel | Contents |
 |---|---|
-| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Save UIAnchors.lua" and whether it has unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
+| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Undo", "Redo", "Save UIAnchors.lua" and whether it has unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
 | Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or zoomed with the wheel around the pointer (10%–800%, "100%" for one pixel per pixel), panned with the right or middle button. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
 | Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels, with "Make its width a stretch zone" |
 
@@ -47,6 +47,10 @@ client_data (`data/`, any folder; a new one goes to `data/ui/scripts/`):
   under a "Set in the UI editor" comment, on one line or with their controls on lines of their own past 120 columns.
   A part of the file it cannot read is shown under the save button (the game reports the same on stderr). Closing with
   unsaved changes asks first.
+- **Undo and redo** (user's request after trying it, 2026-11-14): "Undo" / "Redo" beside the save button, or Ctrl+Z
+  and Ctrl+Y (Ctrl+Shift+Z) when no text field is being typed in. Each step is a script's entry before and after an
+  edit, so it is undone in the open dialogs as well; one drag of a stretch zone is one step. Loading the file again
+  clears the history.
 
 ## Watch game
 
@@ -133,7 +137,6 @@ Known: the game's own input still reads the system mouse, so a button under the 
 Duplicated texts in a script alone (`DLG_UI_PVP_SETTINGS_MAP.lua`, 2026-11-14) are the statics of every mode, which
 the game's code hides but the one in use: "Watch game" shows them as the game does.
 
-2026-11-14: slice (b), anchor editing ([above](#editing-anchors)), built and tested headless; not yet used by the
-user.
+2026-11-14: slice (b), anchor editing ([above](#editing-anchors)), checked by the user on the desktop ("worked perfectly"); undo and redo added after.
 
 Next ([T46](../project/decisions.md)): slice (c).

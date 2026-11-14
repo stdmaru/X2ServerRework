@@ -92,6 +92,14 @@ struct EditorState {
     x2::ui_editor::AnchorsFile anchors;
     std::filesystem::path anchorsPath;
     std::set<std::string> anchorsEdited;    // lowercase
+    // Undo and redo of the edits: a script's entry before and after each. Steps of one drag (merge: the dragged
+    // item) are one.
+    struct AnchorStep {
+        std::string script;
+        AnchorEntry before, after;
+        unsigned merge = 0;
+    };
+    std::vector<AnchorStep> undo, redo;
     bool quitAsked = false;
 };
 
@@ -108,13 +116,15 @@ void LoadAnchors(EditorState& state)
     state.anchorsPath = x2::ui_editor::AnchorsFile::Find(state.gameFolder);
     state.anchors = x2::ui_editor::AnchorsFile::Load(state.anchorsPath, error);
     state.anchorsEdited.clear();
+    state.undo.clear();
+    state.redo.clear();
     if (!error.empty()) {
         state.message = error;
     }
 }
 
 // Changes a script's entry in UIAnchors.lua and puts it into the open dialogs of that script.
-void EditAnchors(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script, const AnchorEntry& entry)
+void SetAnchors(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script, const AnchorEntry& entry)
 {
     const AnchorEntry previous = state.anchors.Get(script);
     state.anchors.Set(script, entry);
@@ -125,6 +135,38 @@ void EditAnchors(x2::ui_editor::Engine& engine, EditorState& state, const std::s
             engine.ApplyAnchors(i, state.anchors.Get(script), previous);
         }
     }
+}
+
+// An edit from the inspector, which undo takes back. merge: an id that joins the steps of one drag (0: none).
+void EditAnchors(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script, const AnchorEntry& entry,
+                 unsigned merge = 0)
+{
+    const AnchorEntry before = state.anchors.Get(script);
+    if (before == entry) {
+        return;
+    }
+    if (merge != 0 && !state.undo.empty() && state.undo.back().merge == merge && state.undo.back().script == script) {
+        state.undo.back().after = entry;
+    } else {
+        state.undo.push_back({script, before, entry, merge});
+    }
+    state.redo.clear();
+    SetAnchors(engine, state, script, entry);
+}
+
+void UndoAnchors(x2::ui_editor::Engine& engine, EditorState& state, bool redo)
+{
+    auto& from = redo ? state.redo : state.undo;
+    auto& to = redo ? state.undo : state.redo;
+    if (from.empty()) {
+        return;
+    }
+    EditorState::AnchorStep step = std::move(from.back());
+    from.pop_back();
+    step.merge = 0;
+    SetAnchors(engine, state, step.script, redo ? step.after : step.before);
+    state.message = std::string(redo ? "redone: " : "undone: ") + step.script;
+    to.push_back(std::move(step));
 }
 
 void ReapplyAnchors(x2::ui_editor::Engine& engine, const EditorState& state)
@@ -370,8 +412,29 @@ void WatchControls(EditorState& state)
     }
 }
 
-void AnchorsFileControls(EditorState& state)
+void AnchorsFileControls(x2::ui_editor::Engine& engine, EditorState& state)
 {
+    const bool typing = ImGui::GetIO().WantTextInput;
+    ImGui::BeginDisabled(state.undo.empty());
+    if (ImGui::SmallButton("Undo") || (!typing && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Z))) {
+        UndoAnchors(engine, state, false);
+    }
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("Ctrl+Z: %s", state.undo.empty() ? "nothing to undo" : state.undo.back().script.c_str());
+    }
+    ImGui::SameLine();
+    ImGui::BeginDisabled(state.redo.empty());
+    if (ImGui::SmallButton("Redo") || (!typing && (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Y) ||
+                                                   ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Z)))) {
+        UndoAnchors(engine, state, true);
+    }
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("Ctrl+Y or Ctrl+Shift+Z: %s",
+                          state.redo.empty() ? "nothing to redo" : state.redo.back().script.c_str());
+    }
+    ImGui::SameLine();
     ImGui::BeginDisabled(!state.anchors.Changed());
     if (ImGui::SmallButton("Save UIAnchors.lua")) {
         SaveAnchors(state);
@@ -390,7 +453,7 @@ void AnchorsFileControls(EditorState& state)
 void DialogsPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     WatchControls(state);
-    AnchorsFileControls(state);
+    AnchorsFileControls(engine, state);
     ImGui::Separator();
     ImGui::SetNextItemWidth(-FLT_MIN - ImGui::CalcTextSize("Open scene").x - ImGui::GetStyle().FramePadding.x * 4);
     const char* preview = state.scene == 0 ? "All scripts" : state.scenes[static_cast<std::size_t>(state.scene - 1)].c_str();
@@ -600,7 +663,10 @@ void DialogAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, const
             ImGui::SetNextItemWidth(-FLT_MIN - ImGui::CalcTextSize("x").x - ImGui::GetStyle().FramePadding.x * 4);
             if (ImGui::DragFloat2("##zone", zone, 1.0f, -4096.0f, 4096.0f, "%.0f") && zone[0] < zone[1]) {
                 entry.zones[z] = {zone[0], zone[1]};
-                EditAnchors(engine, state, dialog.script, entry);
+                EditAnchors(engine, state, dialog.script, entry, ImGui::GetItemID());
+            }
+            if (ImGui::IsItemDeactivated() && !state.undo.empty()) {
+                state.undo.back().merge = 0;    // the drag ended: the next one is a step of its own
             }
             ImGui::SameLine();
             const bool remove = ImGui::SmallButton("x");
