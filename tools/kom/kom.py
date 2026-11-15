@@ -33,16 +33,22 @@ in the client source).  XORCRC is a CRC-32 table driven stream cipher:
             crc  = (crc >> 8) ^ ((T[s] & 0xffffff00) | s)
   T is the standard reflected CRC-32 table (poly 0x04c11db7).
 Algorithm 3: blob = XORCRC3(prefix[4] + z), z = zlib(data) without its adler32
-trailer, used by the later (2016) data files such as data036_br.kom.  The
-client inflates from byte 6 (raw deflate after the zlib header) and never reads
-the prefix, whose meaning is unknown (not an adler32/crc32 of the data or of z);
-pack writes adler32(z) there, like JunePack.  XORCRC3 is XORCRC with
-  key20  = FD E1 08 EC 0D 09 02 DC DE 4C 8C 64 16 62 7D E4 97 16 FF DC
-  and the prefix run through the decrypt update (comp/s/crc as below, output
-  discarded) instead of the plain CRC update.
-Reverse engineered by the Elsword-V5.0318.6_3 repository (KTDXCommonFunc.h
-XORCRCDecryptAlgo3, tools/kpcrack/JuneExtract.cs and JunePack.cs); not in the
-2014 client source.
+trailer, used by the data036.kom files of mid 2014 on.  The client inflates
+from byte 6 (raw deflate after the zlib header) and never reads the prefix,
+whose meaning is unknown (not an adler32/crc32 of the data or of z); pack
+writes adler32(z) there, like JunePack.  XORCRC3 is XORCRC with another key20
+and the prefix run through the decrypt update (comp/s/crc as below, output
+discarded) instead of the plain CRC update.  The key changes with the client
+(ALGO3_KEYS); unpack tries each one and records the one that worked in the
+manifest, so pack reuses it:
+  2014-08     FD E1 08 EC 0D 09 02 DC DE 4C 8C 64 16 62 7D E4 97 16 FF DC
+              reverse engineered by the Elsword-V5.0318.6_3 repository
+              (KTDXCommonFunc.h XORCRCDecryptAlgo3, tools/kpcrack/JuneExtract.cs
+              and JunePack.cs) from that client's executable
+  br-2014-08  9C 2A C4 E8 14 4A 14 CE D0 18 92 E6 30 A2 A4 46 46 D6 88 C4
+              recovered from the Brazilian data036.kom alone by keyrecover.py
+              (known-plaintext attack; see that file for how to add a key)
+Neither is in the 2014 client source.
 Algorithm 1 (zlib + Blowfish, unused by current clients) is kept as an opaque
 "name.SIZE.1.___" file, like the original komextract did.
 
@@ -60,10 +66,13 @@ as the client's loader requires).  The decompiler was validated on all 4553
 scripts of the client: recompiling the output with the client's own LuaJIT
 gives equivalent bytecode for every one of them.
 
-pack --format keep (the default) writes each entry with the algorithm and
-bytecode layout it was unpacked with; --format 2014-03 or 2014-08 converts every
-encrypted entry (algorithm 2 <-> 3) and every Lua bytecode (0x81 <-> 0x82) to
-that format.  Plain entries (algorithm 0) stay plain.
+pack --format keep (the default) writes each entry with the algorithm, key and
+bytecode layout it was unpacked with; --format 2014-03, 2014-08 or br-2014-08
+converts every encrypted entry (algorithm 2 <-> 3, and the key) and every Lua
+bytecode (0x81 <-> 0x82) to that format.  Plain entries (algorithm 0) stay plain.
+
+unblob reads a folder written by the old komextract (plain files plus the
+encrypted entries as "name.SIZE.ALG.___" blobs) and extracts it like unpack.
 
 unpack writes <out>/.kom/manifest.json and keeps each decompiled script's
 original bytecode in <out>/.kom/bytecode/.  pack then
@@ -119,9 +128,17 @@ CRC_INV = {t & 0xff: i for i, t in enumerate(CRC_T)}   # low bytes are a permuta
 XOR_KEYS = (0xcc3d4ffb, 0x593cdeaf, 0xcf4235de, 0xde34bd78, 0x52b34a75)
 KEY20 = b"".join(struct.pack("<I", k ^ 0x38d2dfa4) for k in XOR_KEYS)
 KEY20_ALGO3 = bytes.fromhex("FDE108EC0D0902DCDE4C8C6416627DE49716FFDC")
+# Algorithm 3 keys by client, tried in this order when an archive does not say which one it uses.  The br-2014-08 key
+# was recovered on 2026-11-15 by keyrecover.py from the Brazilian data036.kom of August 2014; it is one of the keys
+# equivalent to the client's (every key of its class decrypts every entry identically).
+ALGO3_KEYS = {
+    "2014-08": KEY20_ALGO3,
+    "br-2014-08": bytes.fromhex("9c2ac4e8144a14ced01892e630a2a44646d688c4"),
+}
 
 
-def _xorcrc_setup(name, size, algorithm=2):
+def xorcrc_prefix(name, size):
+    """The bytes the cipher state is set up with: the lower-cased name, then the blob size."""
     pre = bytearray()
     for ch in name.lower():
         v = ord(ch)
@@ -134,23 +151,28 @@ def _xorcrc_setup(name, size, algorithm=2):
             break
         pre.append(s & 0xff)
         s >>= 8
+    return bytes(pre)
+
+
+def _xorcrc_setup(name, size, algorithm=2, key20=None):
+    pre = xorcrc_prefix(name, size)
     crc = 0xFFFFFFFF
     if algorithm == 3:
-        key20 = KEY20_ALGO3
+        key20 = key20 or KEY20_ALGO3
         for i, b in enumerate(pre):
             comp = (crc & 0xff) ^ key20[i % 20]
             s = b ^ 0xff ^ comp
             crc = (crc >> 8) ^ ((CRC_T[s] & 0xFFFFFF00) | s)
     else:
-        key20 = KEY20
+        key20 = key20 or KEY20
         for i, b in enumerate(pre):
             crc = (crc >> 8) ^ CRC_T[(crc & 0xff) ^ b ^ key20[i % 20]]
     r = len(pre) % 20
     return crc, key20[r:] + key20[:r]
 
 
-def xorcrc_decrypt(data, name, algorithm=2):
-    crc, key = _xorcrc_setup(name, len(data), algorithm)
+def xorcrc_decrypt(data, name, algorithm=2, key20=None):
+    crc, key = _xorcrc_setup(name, len(data), algorithm, key20)
     out = bytearray(len(data))
     T = CRC_T
     for i, c in enumerate(data):
@@ -162,8 +184,8 @@ def xorcrc_decrypt(data, name, algorithm=2):
     return bytes(out)
 
 
-def xorcrc_encrypt(data, name, algorithm=2):
-    crc, key = _xorcrc_setup(name, len(data), algorithm)
+def xorcrc_encrypt(data, name, algorithm=2, key20=None):
+    crc, key = _xorcrc_setup(name, len(data), algorithm, key20)
     out = bytearray(len(data))
     T, INV = CRC_T, CRC_INV
     for i, p in enumerate(data):
@@ -181,6 +203,7 @@ class Entry(object):
         self.name, self.size, self.csize = name, size, csize
         self.checksum, self.filetime, self.algorithm = checksum, filetime, algorithm
         self.blob = blob
+        self.key = None     # Algorithm 3 key that decoded the entry (ALGO3_KEYS)
 
 
 def read_kom(path):
@@ -237,26 +260,45 @@ def write_kom(path, entries):
     os.replace(tmp, path)
 
 
-def decode_entry(e):
-    """Return the decoded data, or None for algorithms we keep opaque."""
+def _decode_algo3(e, key20):
+    d = xorcrc_decrypt(e.blob, e.name, 3, key20)
+    inf = zlib.decompressobj(-zlib.MAX_WBITS)    # like the client: raw deflate from byte 6
+    out = inf.decompress(d[6:]) + inf.flush()
+    if len(out) != e.size:
+        raise zlib.error("size %d, header says %d" % (len(out), e.size))
+    return out
+
+
+def decode_entry(e, key=None):
+    """Return the decoded data, or None for algorithms we keep opaque.
+
+    key names the Algorithm 3 key (ALGO3_KEYS); None tries them all and leaves the one that worked in e.key."""
     if e.algorithm == 0:
         return zlib.decompress(e.blob)
     if e.algorithm == 2:
         return zlib.decompress(xorcrc_decrypt(e.blob, e.name))
     if e.algorithm == 3:
-        d = xorcrc_decrypt(e.blob, e.name, 3)
-        inf = zlib.decompressobj(-zlib.MAX_WBITS)    # like the client: raw deflate from byte 6
-        return inf.decompress(d[6:]) + inf.flush()
+        names = [key] if key else list(ALGO3_KEYS)
+        for i, k in enumerate(names):
+            try:
+                data = _decode_algo3(e, ALGO3_KEYS[k])
+            except zlib.error:
+                if i == len(names) - 1:
+                    raise
+                continue
+            e.key = k
+            return data
     return None
 
 
-def encode_entry(name, data, algorithm, filetime=None):
+def encode_entry(name, data, algorithm, filetime=None, key=None):
     z = zlib.compress(data, 9)
     if algorithm == 2:
         blob = xorcrc_encrypt(z, name)
     elif algorithm == 3:
         z = z[:-4]
-        blob = xorcrc_encrypt(struct.pack("<I", zlib.adler32(z) & 0xFFFFFFFF) + z, name, 3)
+        blob = xorcrc_encrypt(struct.pack("<I", zlib.adler32(z) & 0xFFFFFFFF) + z, name, 3,
+                              ALGO3_KEYS[key or "2014-08"])
     else:
         blob = z
     ck = zlib.adler32(blob) & 0xFFFFFFFF
@@ -313,8 +355,9 @@ def bytecode_to(data, version):
 
 # pack --format: algorithm of the encrypted entries and layout of the Lua bytecode
 FORMATS = {
-    "2014-03": (2, 0x81),   # our client's data036.kom
-    "2014-08": (3, 0x82),   # data036.kom of August 2014
+    "2014-03": (2, 0x81, None),          # our client's data036.kom
+    "2014-08": (3, 0x82, "2014-08"),     # data036.kom of August 2014
+    "br-2014-08": (3, 0x82, "br-2014-08"),   # Brazilian data036.kom of August 2014
 }
 
 
@@ -385,18 +428,57 @@ def cmd_list(args):
 
 
 def cmd_unpack(args):
-    entries = read_kom(args.kom)
-    out = args.out
+    unpack_entries(read_kom(args.kom), args.out, os.path.basename(args.kom), args.key, args.no_decompile)
+
+
+def read_blob_dir(src):
+    """Entries of a folder written by the old komextract: plain files plus encrypted "name.SIZE.ALG.___" blobs."""
+    entries = []
+    for f in sorted(os.listdir(src)):
+        path = os.path.join(src, f)
+        if not os.path.isfile(path):
+            continue
+        with open(path, "rb") as fp:
+            data = fp.read()
+        legacy = _parse_legacy(f) if f.endswith(".___") else None
+        if legacy:
+            name, size, alg = legacy
+            entries.append(Entry(name, size, len(data), zlib.adler32(data) & 0xFFFFFFFF, 0, alg, data))
+        else:
+            blob = zlib.compress(data, 9)
+            entries.append(Entry(f, len(data), len(blob), zlib.adler32(blob) & 0xFFFFFFFF, 0, 0, blob))
+    return entries
+
+
+def cmd_unblob(args):
+    unpack_entries(read_blob_dir(args.dir), args.out, os.path.basename(os.path.normpath(args.dir)),
+                   args.key, args.no_decompile)
+
+
+def unpack_entries(entries, out, source, key=None, no_decompile=False):
     meta = os.path.join(out, META_DIR)
     bcdir = os.path.join(meta, "bytecode")
     os.makedirs(bcdir, exist_ok=True)
-    manifest = {"source": os.path.basename(args.kom), "entries": []}
+    manifest = {"source": source, "entries": []}
     stats = {"decompiled": 0, "bytecode": 0, "plain": 0, "raw": 0}
+    hint, keys = None, {}
     for e in entries:
         if os.path.basename(e.name) != e.name or e.name in ("", ".", "..", META_DIR):
             raise SystemExit("error: refusing unsafe entry name %r" % e.name)
-        data = decode_entry(e)
+        try:
+            data = decode_entry(e, key or hint)
+        except zlib.error:
+            if key:
+                raise SystemExit("error: %s does not decode with the %s key" % (e.name, key))
+            try:
+                data = decode_entry(e)
+            except zlib.error:
+                raise SystemExit("error: %s does not decode with any known Algorithm 3 key (%s); see keyrecover.py"
+                                 % (e.name, ", ".join(ALGO3_KEYS)))
         rec = {"name": e.name, "algorithm": e.algorithm, "size": e.size, "filetime": e.filetime}
+        if e.key:
+            rec["key"] = hint = e.key
+            keys[e.key] = keys.get(e.key, 0) + 1
         if data is None:
             fname = "%s.%d.%d.___" % (e.name, e.size, e.algorithm)
             payload, rec["kind"] = e.blob, "raw"
@@ -406,7 +488,7 @@ def cmd_unpack(args):
             fname, payload, rec["kind"] = e.name, data, "plain"
             if e.name.lower().endswith(".lua") and is_bytecode(data):
                 rec["kind"] = "bytecode"
-                if not args.no_decompile:
+                if not no_decompile:
                     try:
                         payload = BOM + decompile(bytecode_to_81(data)).encode("utf-8", "surrogateescape")
                         rec["kind"] = "decompiled"
@@ -424,6 +506,8 @@ def cmd_unpack(args):
         json.dump(manifest, fp, indent=1, ensure_ascii=False)
     print("%d entries: %d decompiled Lua, %d Lua kept as bytecode, %d plain, %d opaque"
           % (len(entries), stats["decompiled"], stats["bytecode"], stats["plain"], stats["raw"]))
+    if keys:
+        print("Algorithm 3 keys: " + ", ".join("%s (%d entries)" % kv for kv in sorted(keys.items())))
 
 
 def _parse_legacy(fname):
@@ -465,7 +549,7 @@ def cmd_pack(args):
                 plan.append(("blob", Entry(name, size, len(data), zlib.adler32(data) & 0xFFFFFFFF,
                                            0, alg, data)))
             elif data:
-                plan.append(("data", f, data, 0, None))
+                plan.append(("data", f, data, 0, None, None))
             continue
         name, alg, kind = rec["name"], rec["algorithm"], rec["kind"]
         same = sha256(data) == rec["sha256"]
@@ -479,7 +563,7 @@ def cmd_pack(args):
                 data = fp.read()
         elif kind in ("decompiled", "bytecode") and not is_bytecode(data):
             recompile[name] = data
-        plan.append(("data", name, data, alg, ftime))
+        plan.append(("data", name, data, alg, ftime, rec.get("key")))
 
     compiled = compile_lua(find_luajit(args.luajit), recompile)
     fmt = FORMATS.get(args.format)
@@ -491,7 +575,7 @@ def cmd_pack(args):
                       % (p[1].name, p[1].algorithm, args.format), file=sys.stderr)
             entries.append(p[1])
             continue
-        _, name, data, alg, ftime = p
+        _, name, data, alg, ftime, key = p
         if name in compiled:
             data = compiled[name]
             orig = os.path.join(meta, "bytecode", name)
@@ -501,11 +585,11 @@ def cmd_pack(args):
                         data = bytecode_remap(data, OP81_TO_82, 0x82)
         if fmt is not None:
             if alg in (2, 3):
-                alg = fmt[0]
+                alg, key = fmt[0], fmt[2]
             data = bytecode_to(data, fmt[1])
         if ftime is None:
             edited += 1
-        entries.append(encode_entry(name, data, alg, ftime))
+        entries.append(encode_entry(name, data, alg, ftime, key))
     write_kom(args.out, entries)
     print("%s: %d entries (%d new or changed, %d Lua recompiled)"
           % (args.out, len(entries), edited, len(compiled)))
@@ -533,14 +617,22 @@ def main():
     p.add_argument("kom")
     p.add_argument("out")
     p.add_argument("--no-decompile", action="store_true", help="write Lua bytecode as is")
+    p.add_argument("--key", choices=sorted(ALGO3_KEYS), help="Algorithm 3 key (default: try them all)")
     p.set_defaults(func=cmd_unpack)
+    p = sub.add_parser("unblob", help='extract a folder written by the old komextract ("name.SIZE.ALG.___" blobs)')
+    p.add_argument("dir")
+    p.add_argument("out")
+    p.add_argument("--no-decompile", action="store_true", help="write Lua bytecode as is")
+    p.add_argument("--key", choices=sorted(ALGO3_KEYS), help="Algorithm 3 key (default: try them all)")
+    p.set_defaults(func=cmd_unblob)
     p = sub.add_parser("pack", help="build a .kom from a directory")
     p.add_argument("dir")
     p.add_argument("out")
     p.add_argument("--luajit", help="client LuaJIT used to recompile edited scripts")
     p.add_argument("--format", choices=["keep"] + sorted(FORMATS), default="keep",
                    help="keep: each entry as it was unpacked (default); 2014-03: algorithm 2 and Lua "
-                        "bytecode 0x81 (our client's data036.kom); 2014-08: algorithm 3 and bytecode 0x82")
+                        "bytecode 0x81 (our client's data036.kom); 2014-08: algorithm 3 and bytecode 0x82; "
+                        "br-2014-08: likewise with the Brazilian key")
     p.set_defaults(func=cmd_pack)
     p = sub.add_parser("decompile", help="decompile one LuaJIT bytecode file")
     p.add_argument("input")
