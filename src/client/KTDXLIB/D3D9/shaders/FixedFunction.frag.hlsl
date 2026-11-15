@@ -20,6 +20,7 @@ cbuffer FragmentUniforms : register(b0, space3)
     float4 textureFactor;   // D3DRS_TEXTUREFACTOR
     float4 alphaTest;       // D3DRS_ALPHAFUNC (D3DCMP_ALWAYS when the test is off), D3DRS_ALPHAREF, alpha-to-coverage
     float4 fogColor;        // D3DRS_FOGCOLOR; w: 1 with D3DRS_FOGENABLE, else 0
+    float4 stage0Rect;      // Device::SetTextureRect: stage 0's coordinates kept in xy-zw; off when x > z
 };
 
 struct Input
@@ -119,7 +120,12 @@ float4 main(Input input) : SV_Target0
     float4 current = input.diffuse;
     // A disabled stage disables the ones after it.
     if (colorStage[0].x != TOP_DISABLE) {
-        const float4 texel0 = texture0.Sample(sampler0, TexCoords(texCoordIndex.x, input));
+        float2 uv0 = TexCoords(texCoordIndex.x, input);
+        if (stage0Rect.x <= stage0Rect.z) {
+            // A sprite of an atlas: linear filtering reads no texel outside its rectangle.
+            uv0 = clamp(uv0, stage0Rect.xy, stage0Rect.zw);
+        }
+        const float4 texel0 = texture0.Sample(sampler0, uv0);
         current = Stage(0, current, input.diffuse, texel0);
         if (colorStage[1].x != TOP_DISABLE) {
             const float4 texel1 = texture1.Sample(sampler1, TexCoords(texCoordIndex.y, input));

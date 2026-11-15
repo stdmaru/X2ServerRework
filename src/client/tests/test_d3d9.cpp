@@ -687,3 +687,66 @@ TEST_CASE("d3d9: pixels on a GPU (skipped without one)")
     CHECK(at(15, 15) == D3DCOLOR_ARGB(255, 0, 0, 255));
     CHECK(at(11, 13) == D3DCOLOR_ARGB(255, 0, 0, 0));
 }
+
+TEST_CASE("d3d9: a sprite's rectangle keeps linear filtering inside it (skipped without a GPU)")
+{
+    if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
+        MESSAGE("no video (" << SDL_GetError() << "): skipped");
+        return;
+    }
+    struct Quit {
+        ~Quit() { SDL_QuitSubSystem(SDL_INIT_VIDEO); }
+    } quit;
+    std::string error;
+    x2::render::DeviceOptions options;
+    options.backend = x2::render::Backend::SdlGpu;
+    auto render = x2::render::Device::Create(options, error);
+    if (!render) {
+        MESSAGE("no GPU device (" << error << "): skipped");
+        return;
+    }
+    x2::d3d9::Device device(*render, nullptr);
+    REQUIRE_MESSAGE(device.Ok(), device.LastError());
+    auto target = device.CreateTexture(8, 2, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT);
+    REQUIRE(target);
+    // An atlas row: a transparent gutter, a two-texel opaque key, a transparent gutter (as DLG_UI_Common_Texture08).
+    auto texture = device.CreateTexture(4, 1, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED);
+    D3DLOCKED_RECT locked;
+    REQUIRE(texture->LockRect(0, &locked, nullptr, 0));
+    const DWORD texels[4] = {0, D3DCOLOR_ARGB(255, 255, 0, 0), D3DCOLOR_ARGB(255, 255, 0, 0), 0};
+    std::memcpy(locked.pBits, texels, sizeof(texels));
+    texture->UnlockRect(0);
+
+    device.SetRenderTarget(0, target.get());
+    device.SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
+    device.SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+    device.SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    device.SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+    device.SetFVF(kScreenFvf);
+    device.SetTexture(0, texture.get());
+    REQUIRE(device.BeginScene());
+    device.Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 0, 255), 1.0f, 0);
+    // The key (u 0.25 to 0.75) on 7 pixels, 3.5 times its size: row 0 with its rectangle, row 1 without.
+    ScreenVertex quad[4];
+    for (int row = 0; row < 2; ++row) {
+        Quad(quad, -0.5f, row - 0.5f, 6.5f, row + 0.5f, 0xFFFFFFFF);
+        for (ScreenVertex& v : quad) {
+            v.u = v.u == 0 ? 0.25f : 0.75f;
+        }
+        const float rect[4] = {0.25f, 0.0f, 0.75f, 1.0f};
+        device.SetTextureRect(row == 0 ? rect : nullptr);
+        REQUIRE(device.DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(ScreenVertex)));
+    }
+    device.SetTextureRect(nullptr);
+    device.EndScene();
+    REQUIRE(device.Present());
+
+    const std::vector<std::uint8_t> pixels = ReadBack(device, *target);
+    auto alpha = [&](int x, int y) { return pixels[(static_cast<std::size_t>(y) * 8 + x) * 4 + 3]; };
+    for (int x = 0; x < 7; ++x) {
+        CHECK_MESSAGE(alpha(x, 0) == 255, "pixel " << x);
+    }
+    // Without it the edge pixels take some of the gutter.
+    CHECK(alpha(0, 1) < 255);
+    CHECK(alpha(6, 1) < 255);
+}

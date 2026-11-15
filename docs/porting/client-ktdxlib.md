@@ -511,9 +511,17 @@ tooltips and hover detection follow, and the first loading bar fills the width w
 held: the original's full-screen pictures hid it. On a wide canvas the margins beside the centered column showed it,
 so the loading percentage (anchored to the right edge) sat on stray pixels. It now clears to black first.
 
-Known, not fixed: UI pieces drawn at a fractional pixel with linear filtering pick up their atlas neighbours. The vigor
-bar's end piece (`EXP_BG_RIGHT_2`, next to a transparent white texel) shows a light 1-pixel column at 1920×1080; it does
-with the centered HUD too.
+UI pieces scaled with linear filtering picked up their atlas neighbours (the vigor bar's end piece, `EXP_BG_RIGHT_2`,
+showed a light 1-pixel column at 1920×1080); fixed on 2026-11-15, see the next sections.
+
+## Pictures sample only their key (2026-11-15, `client/ui-atlas-clamp`, [T49](../project/decisions.md))
+
+**Behavior change.** `CKTDGUIControl::RenderVertex` (every textured UI picture) gives the device the bounding box of
+the quad's four UVs as a [sprite rectangle](client-d3d9.md#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49) for the
+draw. The original sampled past the key's edge whenever the UI was scaled (any resolution but 1024×768), so a window's
+slices showed seams where the atlas has a transparent texel between keys (the message box, `DLG_UI_MsgBox.lua`, at
+1920×1080). At 1024×768 nothing changes. Text (`CKTDGFontManager`) and full textures drawn by `CKTDXDeviceTexture`
+are not affected.
 
 ## Pictures snap with floor (2026-11-14, `tools/ui-editor`)
 
