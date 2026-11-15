@@ -107,18 +107,23 @@ SDL_Surface* LoadIcoImage(const unsigned char* ico, std::size_t size, std::strin
     std::size_t bestOffset = 0;
     std::size_t bestBytes = 0;
     std::uint32_t bestArea = 0;
+    std::uint32_t bestBits = 0;
     for (std::size_t i = 0; i < count && 6 + 16 * (i + 1) <= size; ++i) {
         const std::size_t entry = 6 + 16 * i;
         const std::uint32_t width = ico[entry] ? ico[entry] : 256;
         const std::uint32_t height = ico[entry + 1] ? ico[entry + 1] : 256;
+        const std::uint32_t bits = u16(entry + 6);
         const std::size_t bytes = u32(entry + 8);
         const std::size_t offset = u32(entry + 12);
         if (offset > size || bytes > size - offset || bytes < sizeof(kPngSignature) ||
             std::memcmp(ico + offset, kPngSignature, sizeof(kPngSignature)) != 0) {
             continue;
         }
-        if (width * height > bestArea) {
-            bestArea = width * height;
+        // Largest, then deepest (Elsword.ico has a black 24-bit 256x256 entry before its 32-bit one), then biggest.
+        const std::uint32_t area = width * height;
+        if (area > bestArea || (area == bestArea && (bits > bestBits || (bits == bestBits && bytes > bestBytes)))) {
+            bestArea = area;
+            bestBits = bits;
             bestOffset = offset;
             bestBytes = bytes;
         }

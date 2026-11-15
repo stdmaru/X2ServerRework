@@ -382,10 +382,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       switching (done 2026-11-14, PR #74), with zoom, scenes (the recorder notes each dialog's game
       state, so a screen opens whole) and "Watch game" mirroring a running client (statics in full, scripts code loads); (b) anchor/STRETCH editing saved to `UIAnchors.lua` (done 2026-11-14, PR #75, with undo); (c) positions, textures
       and UV saved to the scripts and `.tet`; then the C++ layout positions migrated into the scripts, screen by screen.
-- [ ] `client/linux-icon` (user, 2026-11-14; started): the game's icon on Linux, in the taskbar while it runs. The window
-      sets its Wayland `app_id` / X11 class and its own icon (`SDL_SetWindowIcon`, from `src/client/X2/Elsword.ico`, which
-      Windows builds already embed), and `tools/client/install.sh` installs a `.desktop` entry and the icon, which
-      Wayland bars (Hyprland, waybar) look up by `app_id`.
+- [x] `client/linux-icon` (user, 2026-11-14; done 2026-11-14, PR #79): the game's icon on Linux, in the taskbar while
+      it runs. The window sets its Wayland `app_id` / X11 class `x2` and its own icon (from `src/client/X2/Elsword.ico`),
+      and `tools/client/install.sh` installs `x2.desktop` and the icon. On the user's Hyprland + quickshell bar the
+      embedded icon alone was not enough; the theme icon `x2` is what shows ([Client folder](../tools/client-folder.md)).
 - [ ] **Later** (user, 2026-11-14: after the UI editor): a loading screen when moving between village and field and when
       entering a channel, where the original shows the map loading in place. The original already has the pieces:
       `CX2TFieldGame::LoadUI` shows `DLG_PVP_Game_Loading_State.lua` with the area's pictures, but only after a warp or a
