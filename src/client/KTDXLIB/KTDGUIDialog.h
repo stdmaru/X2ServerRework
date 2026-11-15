@@ -150,7 +150,7 @@ class CKTDGUIDialog
 		const WCHAR*	GetName() const         { return m_Name.c_str(); }
 
 		void		SetPos( const D3DXVECTOR2& pos );
-		void		SetPos_LUA( float x, float y )	{ SetPos( D3DXVECTOR2(x,y) ); }
+		void		SetPos_LUA( float x, float y );
 
 		D3DXVECTOR2 GetPos() const              { return m_Pos; }
 
@@ -586,7 +586,35 @@ private:
 		bool		m_bPlacedByCode = false;
 	public:
 		wstring GetMouseOverStaticName() { return m_strMouseOverStaticName; }
-#endif //LOG_LOAD_DLG_SCRIPT
+#endif //X2_DEBUG
+
+#ifdef X2_DEV_TOOLS
+	public:
+		// Where the dialog's scripts set what the UI editor edits (tools/ui-editor): each setter call a script made while
+		// it loaded into the dialog, with the object it set and the call's line. Noted only while a tool tracks
+		// (CKTDGUIAnchorRecorder::SetToolTracking).
+		enum class ScriptCallKind : unsigned char
+		{
+			DialogPos,		// g_pUIDialog:SetPos(x, y); the object is the dialog
+			Point,			// a point table (SetPoint, SetNormalPoint, ...); the object is the picture or control it was set on
+			String,			// AddString; the object is the static
+		};
+		struct ScriptCall
+		{
+			const void*		pObject = nullptr;
+			ScriptCallKind	eKind = ScriptCallKind::Point;
+			unsigned		uScript = 0;	// index into GetOpenedScripts()
+			int				iLine = 0;		// 1-based, the line of the call's '('
+		};
+		const std::vector<ScriptCall>& GetScriptCalls() const { return m_vecScriptCalls; }
+		// Called by the setters a script reaches through lua_tinker: notes the running Lua call (its `self` is argument
+		// 1) into the dialog whose script is loading.
+		static void NoteScriptCall( ScriptCallKind eKind );
+	private:
+		std::vector<ScriptCall> m_vecScriptCalls;
+		static inline CKTDGUIDialog* s_pLoadingDialog = nullptr;
+	public:
+#endif
 
 		bool						m_bFadeInOut;
 

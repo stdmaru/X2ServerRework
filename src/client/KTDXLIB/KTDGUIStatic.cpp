@@ -359,6 +359,9 @@ bool CKTDGUIStatic::CanHaveFocus()
 
 void CKTDGUIStatic::AddString_LUA()
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::String );
+#endif
 	CKTDGUIControl::UIStringData* pString = SetStringData_();
 	AddString( pString );
 }

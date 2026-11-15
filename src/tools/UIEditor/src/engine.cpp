@@ -9,7 +9,11 @@
 
 #include <algorithm>
 #include <cctype>
+#include <map>
+#include <optional>
 #include <system_error>
+#include <tuple>
+#include <unordered_map>
 
 // The engine's globals that the client's executable defines (X2/X2.cpp), set up as its device callbacks do.
 LPDIRECT3DDEVICE9 g_pd3dDevice = NULL;
@@ -37,6 +41,61 @@ std::wstring Wide(const std::string& text)
     std::wstring out;
     ConvertUtf8ToWCHAR(out, text.c_str());
     return out;
+}
+
+std::string Lower(std::string text)
+{
+    std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    return text;
+}
+
+// A script's name without folder, lowercase: how scripts are matched, as the game does.
+std::string ScriptKey(const std::string& script)
+{
+    return Lower(std::filesystem::path(script).filename().string());
+}
+
+// What a dialog's scripts placed, before any game state is put into it: its position, and per control the left top
+// corner of each picture and the position of each text. An edit's move is the difference of two of these.
+struct ScriptLayout {
+    D3DXVECTOR2 pos{0, 0};
+    std::vector<std::vector<D3DXVECTOR2>> pictures;     // [control][picture]
+    std::vector<std::vector<D3DXVECTOR2>> strings;      // [control][string]
+};
+
+ScriptLayout CaptureLayout(CKTDGUIDialog& dialog)
+{
+    ScriptLayout layout;
+    layout.pos = dialog.GetPos();
+    const std::vector<CKTDGUIControl*>& controls = dialog.GetControlList();
+    layout.pictures.resize(controls.size());
+    layout.strings.resize(controls.size());
+    for (std::size_t c = 0; c < controls.size(); ++c) {
+        if (controls[c] == NULL || controls[c]->GetType() != CKTDGUIControl::UCT_STATIC) {
+            continue;
+        }
+        auto* control = static_cast<CKTDGUIStatic*>(controls[c]);
+        for (int p = 0; p < control->GetPictureNum(); ++p) {
+            const CKTDGUIControl::CPictureData* picture = control->GetPicture(p);
+            layout.pictures[c].push_back(picture != NULL && picture->pPoint != NULL ? picture->pPoint->leftTopPoint
+                                                                                    : D3DXVECTOR2(0, 0));
+        }
+        for (int t = 0; t < control->GetStringNum(); ++t) {
+            const CKTDGUIControl::UIStringData* string = control->GetString(t);
+            layout.strings[c].push_back(string != NULL ? string->pos : D3DXVECTOR2(0, 0));
+        }
+    }
+    return layout;
+}
+
+// b - a for one item, (0, 0) when either lacks it.
+D3DXVECTOR2 Moved(const std::vector<std::vector<D3DXVECTOR2>>& a, const std::vector<std::vector<D3DXVECTOR2>>& b,
+                  std::size_t control, std::size_t item)
+{
+    if (control >= a.size() || control >= b.size() || item >= a[control].size() || item >= b[control].size()) {
+        return D3DXVECTOR2(0, 0);
+    }
+    return b[control][item] - a[control][item];
 }
 
 const char* AnchorName(UIAnchor anchor)
@@ -124,9 +183,34 @@ struct Engine::State {
         std::vector<std::string> extraScripts;   // loaded into it after the first (LoadScriptInto)
         CKTDGUIDialogType dialog;
         bool loaded = false;
+        ScriptLayout layout;                       // what its scripts placed, as last loaded
+        std::optional<LiveSnapshot::Dialog> live;  // the game's state last put into it
+
+        // The dialog's scripts, as the live snapshot keys them.
+        std::string Key() const
+        {
+            std::string key = ScriptKey(script);
+            for (const std::string& extra : extraScripts) {
+                key += '+' + ScriptKey(extra);
+            }
+            return key;
+        }
     };
     std::vector<Open> dialogs;
     double time = 0.0;
+    // Script edits not saved (SetScriptText), by ScriptKey.
+    std::unordered_map<std::string, std::string> scriptTexts;
+    // What each set of scripts placed when first loaded this run (Open::Key): the game, started before the edits,
+    // drew that, so the game's state put into a dialog is moved by what the edits moved since (ApplyLive).
+    std::map<std::string, ScriptLayout> firstLayouts;
+
+    void NoteLoaded(Open& open)
+    {
+        if (CKTDGUIDialog* dialog = CKTDGUIDialog::GetObjectByUID(open.dialog.GetHandle()); dialog != nullptr) {
+            open.layout = CaptureLayout(*dialog);
+            firstLayouts.try_emplace(open.Key(), open.layout);
+        }
+    }
 
     explicit State(render::Device& device) : render(device) {}
 
@@ -150,6 +234,7 @@ struct Engine::State {
         SAFE_RELEASE(g_pEffectStateManager);
         g_pd3dDevice = NULL;
         CKTDGUIAnchorRecorder::SetToolTracking(false);
+        CKTDXApp::s_fnScriptOverride = nullptr;
     }
 };
 
@@ -178,6 +263,14 @@ std::unique_ptr<Engine> Engine::Create(render::Device& render, const EngineOptio
     state->app = std::make_unique<CKTDXApp>(nullptr, nullptr, state->device.get());
     CKTDGStateManager::RestoreDeviceObjects();
     CKTDGUIAnchorRecorder::SetToolTracking(true);
+    State* raw = state.get();
+    CKTDXApp::s_fnScriptOverride = [raw](const WCHAR* fileName) -> const std::string* {
+        if (raw->scriptTexts.empty() || fileName == nullptr) {
+            return nullptr;
+        }
+        const auto it = raw->scriptTexts.find(ScriptKey(Utf8(fileName)));
+        return it != raw->scriptTexts.end() ? &it->second : nullptr;
+    };
 
     CKTDXDeviceManager* devices = state->app->GetDeviceManager();
     devices->AddHighTexName(L"DLG_");
@@ -235,12 +328,13 @@ int Engine::OpenDialog(const std::string& script, std::string& error)
         return -1;
     }
     auto* dialog = new CKTDGUIDialog(m_state->stage, name.c_str(), 0.0f);
-    State::Open open{script, {}, dialog, dialog->GetIsSuccessInitOpenScript()};
+    State::Open open{script, {}, dialog, dialog->GetIsSuccessInitOpenScript(), {}, {}};
     g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg(open.dialog);
     if (!open.loaded) {
         error = script + ": the script failed (ErrorLog.txt in the game folder)";
     }
-    m_state->dialogs.push_back(open);
+    m_state->NoteLoaded(open);
+    m_state->dialogs.push_back(std::move(open));
     return static_cast<int>(m_state->dialogs.size()) - 1;
 }
 
@@ -305,8 +399,91 @@ bool Engine::LoadScriptInto(int index, const std::string& script, std::string& e
         return false;
     }
     open.extraScripts.push_back(script);
-    if (!open.dialog->OpenScriptFile(name.c_str())) {
+    const bool ok = open.dialog->OpenScriptFile(name.c_str());
+    m_state->NoteLoaded(open);
+    if (!ok) {
         error = script + ": the script failed (ErrorLog.txt in the game folder)";
+        return false;
+    }
+    return true;
+}
+
+void Engine::SetScriptText(const std::string& script, const std::string* text)
+{
+    if (text != nullptr) {
+        m_state->scriptTexts[ScriptKey(script)] = *text;
+    } else {
+        m_state->scriptTexts.erase(ScriptKey(script));
+    }
+}
+
+bool Engine::ScriptText(const std::string& script, std::string& text, std::string& error) const
+{
+    if (const auto it = m_state->scriptTexts.find(ScriptKey(script)); it != m_state->scriptTexts.end()) {
+        text = it->second;
+        return true;
+    }
+    const auto info = g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile(Wide(script));
+    if (info == NULL || info->pRealData == NULL || info->size <= 0) {
+        error = script + ": no such file in client_data or the archives";
+        return false;
+    }
+    text.assign(info->pRealData, static_cast<std::size_t>(info->size));
+    if (!text.empty() && text[0] == '\033') {
+        error = script + " is compiled Lua: edit its source in the client_data";
+        return false;
+    }
+    return true;
+}
+
+bool Engine::DialogUses(int index, const std::string& script) const
+{
+    if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
+        return false;
+    }
+    const State::Open& open = m_state->dialogs[static_cast<std::size_t>(index)];
+    const std::string key = ScriptKey(script);
+    return ScriptKey(open.script) == key ||
+           std::any_of(open.extraScripts.begin(), open.extraScripts.end(),
+                       [&](const std::string& extra) { return ScriptKey(extra) == key; });
+}
+
+bool Engine::ReloadDialog(int index, std::string& error)
+{
+    if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
+        return false;
+    }
+    State::Open& open = m_state->dialogs[static_cast<std::size_t>(index)];
+    CKTDGUIDialogManager* manager = g_pKTDXApp->GetDGManager()->GetDialogManager();
+    D3DXVECTOR2 drawnPos(0, 0);
+    bool shown = true;
+    if (CKTDGUIDialog* old = CKTDGUIDialog::GetObjectByUID(open.dialog.GetHandle()); old != nullptr) {
+        drawnPos = old->GetPos();
+        shown = old->GetShow();
+    }
+    const D3DXVECTOR2 scriptPos = open.layout.pos;
+    if (open.dialog != NULL) {
+        manager->DeleteDlg(open.dialog);
+    }
+    const std::wstring name = Wide(open.script);
+    auto* dialog = new CKTDGUIDialog(m_state->stage, name.c_str(), 0.0f);
+    open.dialog = dialog;
+    open.loaded = dialog->GetIsSuccessInitOpenScript();
+    manager->AddDlg(open.dialog);
+    for (const std::string& extra : open.extraScripts) {
+        const std::wstring extraName = Wide(extra);
+        open.loaded = dialog->OpenScriptFile(extraName.c_str()) && open.loaded;
+    }
+    open.layout = CaptureLayout(*dialog);
+    if (open.live) {
+        const LiveSnapshot::Dialog live = *open.live;
+        ApplyLive(index, live);
+    } else {
+        dialog->SetPos(drawnPos + (open.layout.pos - scriptPos));
+        dialog->SetShowEnable(shown, shown);
+    }
+    if (!open.loaded) {
+        error = open.script + ": the script failed (ErrorLog.txt in the game folder)";
         return false;
     }
     return true;
@@ -418,17 +595,22 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
     if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
         return;
     }
-    CKTDGUIDialogType& dialog = m_state->dialogs[static_cast<std::size_t>(index)].dialog;
+    State::Open& open = m_state->dialogs[static_cast<std::size_t>(index)];
+    CKTDGUIDialogType& dialog = open.dialog;
     if (dialog == NULL) {
         return;
     }
+    open.live = live;
+    // The game drew what the scripts placed when it started; what the edits moved since moves with it.
+    const auto first = m_state->firstLayouts.find(open.Key());
+    const ScriptLayout& before = first != m_state->firstLayouts.end() ? first->second : open.layout;
     dialog->SetShowEnable(true, true);
     // The game's anchor before its position, which is in layout units under it: code anchors some dialogs at run time
     // (the quick slot items follow the slot frames), so UIAnchors.lua alone does not say (2026-11-14).
     if (live.anchor >= 0 && live.anchor <= static_cast<int>(UIAnchor::Stretch)) {
         dialog->SetAnchor(static_cast<UIAnchor>(live.anchor));
     }
-    dialog->SetPos(D3DXVECTOR2(live.pos[0], live.pos[1]));
+    dialog->SetPos(D3DXVECTOR2(live.pos[0], live.pos[1]) + (open.layout.pos - before.pos));
     if (dialog->GetLayer() != live.layer) {
         dialog->SetLayer(live.layer);
     }
@@ -459,7 +641,26 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
             control->SetOffsetPos(D3DXVECTOR2(c.offset[0], c.offset[1]));
         }
         if (sameType && control->GetType() == CKTDGUIControl::UCT_STATIC) {
-            ApplyStatic(*static_cast<CKTDGUIStatic*>(control), live, c.index);
+            auto* picturesOf = static_cast<CKTDGUIStatic*>(control);
+            ApplyStatic(*picturesOf, live, c.index);
+            // Only where the game's corners and positions replaced the script's (full records).
+            const auto ci = static_cast<std::size_t>(c.index);
+            for (const LiveSnapshot::Picture& p : live.pictures) {
+                CKTDGUIControl::CPictureData* picture = p.control == c.index && p.full ? picturesOf->GetPicture(p.index) : NULL;
+                const D3DXVECTOR2 moved = Moved(before.pictures, open.layout.pictures, ci, static_cast<std::size_t>(p.index));
+                if (picture != NULL && picture->pPoint != NULL && (moved.x != 0 || moved.y != 0)) {
+                    picture->pPoint->leftTopPoint += moved;
+                    picture->pPoint->rightTopPoint += moved;
+                    picture->pPoint->leftBottomPoint += moved;
+                    picture->pPoint->rightBottomPoint += moved;
+                }
+            }
+            for (const LiveSnapshot::Text& t : live.texts) {
+                CKTDGUIControl::UIStringData* string = t.control == c.index && t.full ? picturesOf->GetString(t.index) : NULL;
+                if (string != NULL) {
+                    string->pos += Moved(before.strings, open.layout.strings, ci, static_cast<std::size_t>(t.index));
+                }
+            }
         }
     }
 }
@@ -602,6 +803,45 @@ std::vector<DialogInfo> Engine::Inspect() const
         info.stretchZones = dialog->GetStretch().GetZones();
         info.placedByCode = dialog->GetPlacedByCode();
 
+        // The script calls the dialog noted while it loaded, and how many objects each call set.
+        using Call = CKTDGUIDialog::ScriptCall;
+        using Kind = CKTDGUIDialog::ScriptCallKind;
+        const std::vector<Call>& calls = dialog->GetScriptCalls();
+        const std::vector<std::wstring>& scripts = dialog->GetOpenedScripts();
+        std::map<std::tuple<unsigned, int, Kind>, int> uses;
+        for (const Call& call : calls) {
+            ++uses[{call.uScript, call.iLine, call.eKind}];
+        }
+        const auto ref = [&](const Call& call) {
+            SourceRef r;
+            r.script = call.uScript < scripts.size() ? Utf8(scripts[call.uScript]) : std::string();
+            r.line = call.iLine;
+            r.kind = call.eKind == Kind::DialogPos ? CallKind::DialogPos
+                     : call.eKind == Kind::String  ? CallKind::String
+                                                   : CallKind::Point;
+            r.shared = uses[{call.uScript, call.iLine, call.eKind}];
+            return r;
+        };
+        // The objects a call set, by what lua_tinker held: a control may be held as its own class.
+        std::unordered_multimap<const void*, const Call*> callsOf;
+        for (const Call& call : calls) {
+            callsOf.emplace(call.pObject, &call);
+        }
+        const auto callsFor = [&](const void* object, Kind kind) {
+            std::vector<const Call*> found;
+            const auto [begin, end] = callsOf.equal_range(object);
+            for (auto it = begin; it != end; ++it) {
+                if (it->second->eKind == kind) {
+                    found.push_back(it->second);
+                }
+            }
+            std::sort(found.begin(), found.end());  // in call order: the calls are a vector
+            return found;
+        };
+        if (const auto found = callsFor(dialog, Kind::DialogPos); !found.empty()) {
+            info.posSource = ref(*found.back());
+        }
+
         const std::vector<CKTDGUIControl*>& controls = dialog->GetControlList();
         for (std::size_t i = 0; i < controls.size(); ++i) {
             CKTDGUIControl* control = controls[i];
@@ -615,6 +855,15 @@ std::vector<DialogInfo> Engine::Inspect() const
             c.name = c.named ? Utf8(name) : "#" + std::to_string(i);
             c.type = static_cast<int>(control->GetType());
             c.typeName = TypeName(c.type);
+            const void* self = dynamic_cast<const void*>(control);
+            for (const void* object : {static_cast<const void*>(control), self}) {
+                for (const Call* call : callsFor(object, Kind::Point)) {
+                    c.points.push_back(ref(*call));
+                }
+                if (self == static_cast<const void*>(control)) {
+                    break;
+                }
+            }
             c.anchor = AnchorName(control->GetAnchor());
             c.anchorDeclared = control->HasAnchor();
             c.anchorFromScript = control->IsAnchorFromScript();
@@ -656,6 +905,9 @@ std::vector<DialogInfo> Engine::Inspect() const
                             pi.uv[k][1] = picture->pTexture->uvTexture[k].y;
                         }
                     }
+                    if (const auto found = callsFor(picture, Kind::Point); !found.empty()) {
+                        pi.point = ref(*found.back());
+                    }
                     if (picture->pPoint != NULL) {
                         const D3DXVECTOR2 corners[4] = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint,
                                                         picture->pPoint->leftBottomPoint,
@@ -667,12 +919,16 @@ std::vector<DialogInfo> Engine::Inspect() const
                     }
                     c.pictures.push_back(std::move(pi));
                 }
+                const std::vector<const Call*> added = callsFor(picturesOf, Kind::String);
                 for (int t = 0; t < picturesOf->GetStringNum(); ++t) {
                     const CKTDGUIControl::UIStringData* string = picturesOf->GetString(t);
                     if (string == NULL) {
                         continue;
                     }
                     StringInfo si;
+                    if (static_cast<std::size_t>(t) < added.size()) {
+                        si.source = ref(*added[static_cast<std::size_t>(t)]);
+                    }
                     si.text = Utf8(string->msg);
                     si.stringId = string->stringTableID == STR_ID_EMPTY ? -1 : string->stringTableID;
                     si.pos[0] = string->pos.x;
@@ -722,6 +978,25 @@ std::vector<std::string> FindDialogScripts(const std::filesystem::path& gameFold
     });
     out.erase(std::unique(out.begin(), out.end()), out.end());
     return out;
+}
+
+std::filesystem::path FindLooseScript(const std::filesystem::path& gameFolder, const std::string& script)
+{
+    const std::string key = ScriptKey(script);
+    std::error_code ec;
+    for (auto it = std::filesystem::recursive_directory_iterator(
+             gameFolder / "data", std::filesystem::directory_options::skip_permission_denied, ec);
+         !ec && it != std::filesystem::recursive_directory_iterator(); it.increment(ec)) {
+        const std::string name = it->path().filename().string();
+        if (it->is_directory(ec) && !name.empty() && name[0] == '.') {
+            it.disable_recursion_pending();     // client_data's .kom/
+            continue;
+        }
+        if (Lower(name) == key && it->is_regular_file(ec)) {
+            return it->path();
+        }
+    }
+    return {};
 }
 
 }  // namespace x2::ui_editor

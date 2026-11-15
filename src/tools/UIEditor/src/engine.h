@@ -6,6 +6,7 @@
 
 #include "anchors_file.h"
 #include "live.h"
+#include "script_edit.h"
 #include "x2/render/render.h"
 
 #include <filesystem>
@@ -15,6 +16,17 @@
 
 namespace x2::ui_editor {
 
+// Where a script set something: the call on `line` of `script` (CKTDGUIDialog::GetScriptCalls). `shared`: how many
+// objects that call set (more than one when it runs in a loop or a function the script calls several times).
+struct SourceRef {
+    std::string script;         // as the dialog loaded it
+    int line = 0;               // 0: not set by a script call the engine saw
+    CallKind kind = CallKind::Point;
+    int shared = 1;
+
+    bool Known() const { return line > 0; }
+};
+
 struct PictureInfo {
     std::string texture;        // file name, empty when none
     std::string key;            // the .tet key, empty when the whole texture is drawn
@@ -22,6 +34,7 @@ struct PictureInfo {
     float uv[4][2] = {};        // texture coordinates of the same corners
     float textureSize[2] = {};  // the texture's size in texels (0 when not loaded)
     bool shown = true;
+    SourceRef point;            // its SetPoint
 };
 
 struct StringInfo {
@@ -31,6 +44,7 @@ struct StringInfo {
     int font = 0;               // the font index (XUF_*)
     unsigned sortFlag = 0;      // DT_* alignment flags
     float color[4] = {};        // r, g, b, a
+    SourceRef source;           // its AddString
 };
 
 struct ControlInfo {
@@ -49,6 +63,7 @@ struct ControlInfo {
     float pixelMin[2] = {}, pixelMax[2] = {};   // the same box in render target pixels (anchors and stretch applied)
     std::vector<PictureInfo> pictures;
     std::vector<StringInfo> strings;
+    std::vector<SourceRef> points;  // the point tables set on the control itself (a button's normal, over, down, ...)
 };
 
 struct DialogInfo {
@@ -62,6 +77,7 @@ struct DialogInfo {
     std::vector<std::pair<float, float>> stretchZones;
     bool placedByCode = false;
     bool loaded = false;        // the script ran without error
+    SourceRef posSource;        // its SetPos (the last one)
     std::vector<ControlInfo> controls;
 };
 
@@ -102,6 +118,17 @@ public:
     // itself stay (they win in the game). Control names the dialog lacks are skipped.
     void ApplyAnchors(int index, const AnchorEntry& entry, const AnchorEntry& previous);
 
+    // Script edits not saved yet (docs/tools/ui-editor.md#editing-positions): a script with text set here runs from it
+    // instead of its file, in every dialog loaded after. nullptr goes back to the file.
+    void SetScriptText(const std::string& script, const std::string* text);
+    // The script's text: the one set, or its file's (with its BOM). False with `error` when there is no such file.
+    bool ScriptText(const std::string& script, std::string& text, std::string& error) const;
+    // Builds an open dialog again from its scripts (after SetScriptText), keeping where it is drawn, whether it is
+    // shown and the game's state last put into it (ApplyLive), moved by what the edit moved in its scripts.
+    bool ReloadDialog(int index, std::string& error);
+    // Whether an open dialog was built from the script (first or extra).
+    bool DialogUses(int index, const std::string& script) const;
+
     // Draws every open dialog into the render target, resized to width x height first. False with error set if the
     // frame failed. The texture stays valid until the next Render with another size or the engine is destroyed.
     bool Render(unsigned width, unsigned height, float elapsed, std::string& error);
@@ -125,5 +152,7 @@ private:
 
 // The dialog scripts (DLG_*.lua) under the game folder's data/ (client_data), sorted by name, without folders.
 std::vector<std::string> FindDialogScripts(const std::filesystem::path& gameFolder);
+// A script's loose file under the game folder's data/, matched without case; empty when there is none.
+std::filesystem::path FindLooseScript(const std::filesystem::path& gameFolder, const std::string& script);
 
 }  // namespace x2::ui_editor

@@ -792,6 +792,9 @@ CKTDGUIControl::UIPointData* CKTDGUIControl::SetPointData_()
 
 
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Point );
+#endif
 
 	UIPointData* pPointData = new UIPointData();
 

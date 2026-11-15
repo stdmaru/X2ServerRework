@@ -97,6 +97,7 @@ public:
 	// it (the UI editor, tools/ui-editor), which reads the bounds without writing the record file.
 	static bool TracksDrawnBounds() { return IsOn() || s_bToolTracking; }
 	static void SetToolTracking( bool bOn ) { s_bToolTracking = bOn; }
+	static bool IsToolTracking() { return s_bToolTracking; }
 
 private:
 	static inline bool s_bToolTracking = false;
