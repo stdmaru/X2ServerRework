@@ -12,17 +12,23 @@
 
 namespace x2::ui_editor {
 
-// One script's entry: ["DLG_x.lua"] = { DIALOG = "LEFT", STRETCH_ZONES = { { 49, 494 } }, CONTROLS = { A = "RIGHT" } }.
+// One script's entry: ["DLG_x.lua"] = { DIALOG = "LEFT", STRETCH_ZONES = { { 49, 494 } }, BACKDROPS = { Bg = 64 },
+// CONTROLS = { A = "RIGHT" } }.
 struct AnchorEntry {
     std::string dialog;     // "CENTER", "LEFT", "RIGHT" or "STRETCH"; empty when not declared
     std::vector<std::pair<float, float>> zones;
+    std::vector<std::pair<std::string, float>> backdrops;       // name -> fade width, in the file's order
     std::vector<std::pair<std::string, std::string>> controls;   // name -> anchor, in the file's order
 
-    bool Empty() const { return dialog.empty() && zones.empty() && controls.empty(); }
+    bool Empty() const { return dialog.empty() && zones.empty() && backdrops.empty() && controls.empty(); }
     // The anchor declared for a control, empty when none.
     std::string Control(const std::string& name) const;
     // Declares a control's anchor; an empty anchor removes it.
     void SetControl(const std::string& name, const std::string& anchor);
+    // The fade width of a control declared a backdrop, negative when it is not one.
+    float Backdrop(const std::string& name) const;
+    // Declares a control a backdrop with that fade width; a negative one removes it.
+    void SetBackdrop(const std::string& name, float fade);
     bool operator==(const AnchorEntry&) const = default;
 };
 

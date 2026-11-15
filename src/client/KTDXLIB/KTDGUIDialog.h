@@ -325,6 +325,9 @@ class CKTDGUIDialog
 		// Such a picture narrower (or shorter) than the screen: black bars fill the screen beside it, as the letterbox
 		// around the game (T48), instead of what lies behind showing through (21:9, 2026-11-14).
 		void DrawPannedPictureBars() const;
+		// After a backdrop control (CKTDGUIControl::IsBackdrop) draws, under its anchor: black beside its pictures where
+		// the screen is wider, and their outer edges faded into it.
+		void DrawBackdropEdges( CKTDGUIControl& kControl ) const;
 		void SetDraggingRange( float fWidth, float fHeight ) { m_vDraggingRange = D3DXVECTOR2(fWidth, fHeight); }
 
 		void ShowGuideDesc( CKTDGUIControl* pControl );

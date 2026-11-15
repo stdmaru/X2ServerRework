@@ -448,9 +448,15 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 				{
 					const CKTDXApp::UIAnchorScope kControlAnchor( *g_pKTDXApp, pControl->GetAnchor(), &m_kStretch, m_Pos.x );
 					pControl->OnFrameRender();
+					if ( pControl->IsBackdrop() )
+						DrawBackdropEdges( *pControl );
 				}
 				else
+				{
 					pControl->OnFrameRender();
+					if ( pControl->IsBackdrop() )
+						DrawBackdropEdges( *pControl );
+				}
 			}
 	    }
 
@@ -1986,6 +1992,84 @@ void CKTDGUIDialog::DrawPannedPictureBars() const
 	add( fLeft, vRB.y, fRight, vScreenRB.y );					// bottom
 	if ( dwBars > 0 )
 		g_pKTDXApp->GetDevice()->Clear( dwBars, akBars, D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.f, 0 );
+}
+
+void CKTDGUIDialog::DrawBackdropEdges( CKTDGUIControl& kControl ) const
+{
+	if ( kControl.GetShow() == false || kControl.GetType() != CKTDGUIControl::UCT_STATIC )
+		return;
+	const float fAlpha = m_Color.a * kControl.GetColor().a;
+	if ( fAlpha <= 0.f )
+		return;
+
+	// The pictures' box, in layout units relative to the control.
+	CKTDGUIStatic& kStatic = static_cast<CKTDGUIStatic&>( kControl );
+	bool bAny = false;
+	D3DXVECTOR2 vMin( 0.f, 0.f ), vMax( 0.f, 0.f );
+	for ( int i = 0; i < kStatic.GetPictureNum(); ++i )
+	{
+		CKTDGUIControl::CPictureData* pPicture = kStatic.GetPicture( i );
+		if ( pPicture == NULL || pPicture->pPoint == NULL || pPicture->GetShow() == false )
+			continue;
+		const CKTDGUIControl::UIPointData& kPoint = *pPicture->pPoint;
+		for ( const D3DXVECTOR2& v : { kPoint.leftTopPoint, kPoint.rightTopPoint, kPoint.leftBottomPoint, kPoint.rightBottomPoint } )
+		{
+			if ( bAny == false )
+			{
+				vMin = vMax = v;
+				bAny = true;
+			}
+			vMin.x = std::min( vMin.x, v.x );
+			vMin.y = std::min( vMin.y, v.y );
+			vMax.x = std::max( vMax.x, v.x );
+			vMax.y = std::max( vMax.y, v.y );
+		}
+	}
+	if ( bAny == false )
+		return;
+
+	// Screen pixels, snapped as the pictures' corners are (CKTDGUIControl::UpdateVertex).
+	const D3DXVECTOR2 vBase = m_Pos + kControl.GetOffsetPos();
+	const auto snap = []( float f ) { return std::floor( f ) - 0.5f; };
+	const D3DXVECTOR2 vCanvasMin = g_pKTDXApp->GetUICanvasMin();
+	const D3DXVECTOR2 vScreenLT = g_pKTDXApp->ConvertByResolution( vCanvasMin );
+	const D3DXVECTOR2 vScreenRB = g_pKTDXApp->ConvertByResolution( vCanvasMin + g_pKTDXApp->GetUICanvasSize() );
+	const float fScreenL = snap( vScreenLT.x ), fScreenR = snap( vScreenRB.x ) + 1.f;
+	const float fTop = snap( vScreenLT.y ), fBottom = snap( vScreenRB.y ) + 1.f;
+	const float fLeft = snap( g_pKTDXApp->ConvertByResolution( vMin + vBase ).x );
+	const float fRight = snap( g_pKTDXApp->ConvertByResolution( vMax + vBase ).x );
+	const float fFade = std::min( g_pKTDXApp->ConvertSizeByResolution( kControl.GetBackdropFade(), 0.f ).x, ( fRight - fLeft ) * 0.5f );
+
+	const D3DCOLOR dwOpaque = D3DCOLOR_ARGB( static_cast<int>( std::lround( std::clamp( fAlpha, 0.f, 1.f ) * 255.f ) ), 0, 0, 0 );
+	const D3DCOLOR dwClear = D3DCOLOR_ARGB( 0, 0, 0, 0 );
+	const auto quad = [&]( float fL, float fR, D3DCOLOR dwL, D3DCOLOR dwR )
+	{
+		if ( fR <= fL )
+			return;
+		CKTDGUIControl::VERTEX_UI akVertex[4] =
+		{
+			CKTDGUIControl::VERTEX_UI( fL, fTop, 1.f, 1.f, dwL, 0.f, 0.f ),
+			CKTDGUIControl::VERTEX_UI( fR, fTop, 1.f, 1.f, dwR, 0.f, 0.f ),
+			CKTDGUIControl::VERTEX_UI( fL, fBottom, 1.f, 1.f, dwL, 0.f, 0.f ),
+			CKTDGUIControl::VERTEX_UI( fR, fBottom, 1.f, 1.f, dwR, 0.f, 0.f ),
+		};
+		g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1, D3DPT_TRIANGLESTRIP, 2, akVertex );
+	};
+
+	const bool bLeft = fLeft > fScreenL, bRight = fRight < fScreenR;
+	if ( bLeft == false && bRight == false )
+		return;	// the pictures cover the screen's width: a narrower screen crops them
+	g_pKTDXApp->GetDevice()->SetTexture( 0, NULL );	// no texture: the vertex color
+	if ( bLeft )
+	{
+		quad( fScreenL, fLeft, dwOpaque, dwOpaque );
+		quad( fLeft, fLeft + fFade, dwOpaque, dwClear );
+	}
+	if ( bRight )
+	{
+		quad( fRight - fFade, fRight, dwClear, dwOpaque );
+		quad( fRight, fScreenR, dwOpaque, dwOpaque );
+	}
 }
 
 D3DXVECTOR2 CKTDGUIDialog::GetDraggingRange() const

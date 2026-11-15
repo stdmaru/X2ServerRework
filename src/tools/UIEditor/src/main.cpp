@@ -1685,6 +1685,7 @@ void StringTable(EditorState& state, const ControlInfo& control, const MoveFunct
 }
 
 constexpr const char* kAnchorChoices[] = {"CENTER", "LEFT", "RIGHT", "STRETCH"};
+constexpr float kDefaultBackdropFade = 64.0f;   // a new backdrop's fade width, in layout units
 
 // A choice of `none` or one of the first `count` anchors; true when one was picked.
 bool AnchorCombo(const char* label, const char* none, std::string& value, int count)
@@ -1768,6 +1769,39 @@ void ControlAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, cons
             ImGui::SetTooltip("UIAnchors.lua names its controls: this one has no name");
         } else if (control.anchorFromScript) {
             ImGui::SetTooltip("The script sets it (SetAnchor), which wins over UIAnchors.lua");
+        }
+    }
+
+    // BACKDROPS: a static whose pictures are a full-screen image.
+    if (control.typeName != "static") {
+        return;
+    }
+    float fade = control.named ? entry.Backdrop(control.name) : -1.0f;
+    bool backdrop = fade >= 0.0f;
+    ImGui::BeginDisabled(!control.named);
+    if (ImGui::Checkbox("full-screen backdrop", &backdrop)) {
+        entry.SetBackdrop(control.name, backdrop ? kDefaultBackdropFade : -1.0f);
+        EditAnchors(engine, state, dialog.script, entry);
+    }
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip(control.named ? "BACKDROPS in UIAnchors.lua: black beside its pictures where the screen is "
+                                          "wider, their edges faded into it;\nnarrower screens crop them. Try the "
+                                          "21:9 and 4:3 sizes."
+                                        : "UIAnchors.lua names its controls: this one has no name");
+    }
+    if (backdrop) {
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(ImGui::GetFontSize() * 6);
+        if (ImGui::DragFloat("fade##backdrop", &fade, 1.0f, 0.0f, 512.0f, "%.0f")) {
+            entry.SetBackdrop(control.name, std::max(fade, 0.0f));
+            EditAnchors(engine, state, dialog.script, entry, ImGui::GetItemID());
+        }
+        if (ImGui::IsItemDeactivated() && !state.undo.empty()) {
+            state.undo.back().merge = 0;    // the drag ended: the next one is a step of its own
+        }
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("How far into the picture its edges fade, in layout units (0: a hard edge)");
         }
     }
 }

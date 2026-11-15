@@ -62,6 +62,7 @@ struct ControlInfo {
     std::string anchor;         // "CENTER" (also when not declared), "LEFT", "RIGHT", "STRETCH"
     bool anchorDeclared = false;
     bool anchorFromScript = false;  // the script's own SetAnchor, which UIAnchors.lua does not override
+    float backdropFade = -1.0f;     // a backdrop's fade width (BACKDROPS in UIAnchors.lua); negative: not a backdrop
     bool shown = true;
     float offset[2] = {};       // the control's offset in the dialog (layout units)
     bool drawn = false;         // drew something in the last frame

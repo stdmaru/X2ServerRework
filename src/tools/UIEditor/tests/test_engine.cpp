@@ -309,8 +309,13 @@ TEST_CASE("ui editor: UIAnchors.lua entries go into open dialogs, the script's o
     entry.zones = {{10.0f, 50.0f}};
     entry.SetControl("Panel", "STRETCH");
     entry.SetControl("Missing", "RIGHT");   // skipped
+    entry.SetBackdrop("Panel", 48.0f);
+    entry.SetBackdrop("Missing", 10.0f);    // skipped
     engine->ApplyAnchors(0, entry, {});
+    REQUIRE(engine->Render(2520, 1080, 0.016f, error));    // 21:9: the backdrop's bars and fades draw
     auto dialogs = engine->Inspect();
+    CHECK(dialogs[0].controls[0].backdropFade == 48.0f);
+    CHECK(dialogs[0].controls[1].backdropFade < 0.0f);
     CHECK(dialogs[0].anchor == "LEFT");
     CHECK(dialogs[0].anchorDeclared);
     CHECK_FALSE(dialogs[0].anchorFromScript);
@@ -325,6 +330,7 @@ TEST_CASE("ui editor: UIAnchors.lua entries go into open dialogs, the script's o
     CHECK(dialogs[0].anchor == "CENTER");
     CHECK(dialogs[0].stretchZones.empty());
     CHECK_FALSE(dialogs[0].controls[0].anchorDeclared);
+    CHECK(dialogs[0].controls[0].backdropFade < 0.0f);
 
     CHECK(dialogs[1].anchor == "RIGHT");
     CHECK(dialogs[1].anchorFromScript);

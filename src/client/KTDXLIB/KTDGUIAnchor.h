@@ -52,10 +52,12 @@ struct UIStretchState
 //     {
 //         ["DLG_UI_Quick_Slot.lua"] = { DIALOG = "LEFT", CONTROLS = { Static_Exp = "STRETCH" } },
 //         ["DLG_Menu_Button_NEW.lua"] = { STRETCH_ZONES = { { 49, 494 }, { 569, 1011 } }, CONTROLS = { ... } },
+//         ["DLG_Login_Back.lua"] = { BACKDROPS = { Login = 64 } },
 //     }
 //
-// Read once, at the first dialog script. A script's own SetAnchor calls take precedence; what neither declares is
-// centered.
+// BACKDROPS: controls whose pictures are a full-screen image (control name -> fade width in layout units; see
+// CKTDGUIControl::SetBackdropFade). Read once, at the first dialog script. A script's own SetAnchor calls take
+// precedence; what neither declares is centered.
 class CKTDGUIAnchors
 {
 public:
@@ -68,6 +70,7 @@ public:
 		UIAnchor eDialog = UIAnchor::Center;
 		std::unordered_map<std::wstring, UIAnchor> mapControls;
 		std::vector<std::pair<float, float>> vecStretchZones;
+		std::unordered_map<std::wstring, float> mapBackdrops;	// control -> fade width
 	};
 
 private:
