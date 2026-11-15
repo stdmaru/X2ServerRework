@@ -59,6 +59,37 @@ class Keys(unittest.TestCase):
             self.assertEqual(kom.decode_entry(entries["A.txt"], "2014-08"), files["A.txt"])
 
 
+class ContainerV4(unittest.TestCase):
+    def test_round_trip_keeps_header_and_mapped_id(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            e = kom.encode_entry("Quest.lua", b"q" * 500, 3, key="br-2014-08")
+            e.attrs = {"MappedID": "74^2*h58"}
+            plain = kom.encode_entry("Plain.xml", b"<x/>", 0)
+            src = os.path.join(tmp, "v4.kom")
+            kom.write_kom(src, [e, plain], 4)
+            with open(src, "rb") as fp:
+                raw = fp.read()
+            self.assertTrue(raw.startswith(kom.MAGIC_V4))
+            self.assertNotIn(b"<Files>", raw)               # the header is XORed
+            info = {}
+            back = kom.read_kom(src, info)
+            self.assertEqual(info["version"], 4)
+            self.assertEqual(back[0].attrs, {"MappedID": "74^2*h58"})
+            out = os.path.join(tmp, "out")
+            run("unpack", src, out)
+            repacked = os.path.join(tmp, "again.kom")
+            run("pack", out, repacked)
+            info = {}
+            again = kom.read_kom(repacked, info)
+            self.assertEqual(info["version"], 4)
+            self.assertEqual(again[0].attrs, {"MappedID": "74^2*h58"})
+            self.assertEqual(kom.decode_entry(again[0], "br-2014-08"), b"q" * 500)
+            v3 = os.path.join(tmp, "v3.kom")
+            run("pack", out, v3, "--container", "3")
+            with open(v3, "rb") as fp:
+                self.assertTrue(fp.read().startswith(kom.MAGIC_V3))
+
+
 class Recover(unittest.TestCase):
     def test_random_keys(self):
         rnd = random.Random(7)
