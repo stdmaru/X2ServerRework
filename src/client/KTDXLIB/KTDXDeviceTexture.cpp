@@ -652,3 +652,15 @@ void CKTDXDeviceTexture::Draw( float fX, float fY, float fWidth, float fHeight, 
 //
 // 	return true;
 // }//CKTDXDeviceTexture::LoadTET()
+
+#ifdef X2_DEV_TOOLS
+bool CKTDXDeviceTexture::ReplaceTET( const BYTE* pbData, int iSize )
+{
+    CKTDXDeviceTET_Preprocessing proxy;
+    if ( proxy.OpenFile( pbData, iSize, m_DeviceID ) == false )
+        return false;
+    CSLock locker( m_csDeviceState );
+    m_tet.Swap( proxy );
+    return true;
+}
+#endif

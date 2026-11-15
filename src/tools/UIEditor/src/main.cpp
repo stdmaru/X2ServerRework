@@ -1,6 +1,6 @@
 // x2_ui_editor: the client's dialogs drawn by the client's own GUI code, at any resolution and aspect, to inspect them,
-// edit their anchors (UIAnchors.lua) and move what their scripts place (the scripts' own numbers); textures and UV
-// next. Decision T46; docs/tools/ui-editor.md.
+// edit their anchors (UIAnchors.lua), move what their scripts place (the scripts' own numbers), and change a picture's
+// texture, key and UV rectangle (the scripts' SetTex and the textures' .tet). Decision T46; docs/tools/ui-editor.md.
 //
 //   x2_ui_editor [<game folder>] [--open DLG_x.lua]... [--size WxH]
 //
@@ -10,6 +10,7 @@
 #include "engine.h"
 #include "live.h"
 #include "record.h"
+#include "tet_file.h"
 
 #include "x2/app/imgui_layer.h"
 
@@ -37,7 +38,10 @@ namespace {
 using x2::ui_editor::AnchorEntry;
 using x2::ui_editor::ControlInfo;
 using x2::ui_editor::DialogInfo;
+using x2::ui_editor::PictureInfo;
 using x2::ui_editor::SourceRef;
+using x2::ui_editor::TetFile;
+using x2::ui_editor::TetRect;
 
 struct Aspect {
     const char* name;
@@ -98,6 +102,23 @@ struct EditorState {
     // Dialog scripts as the inspector moved what they place (docs/tools/ui-editor.md#editing-positions), by Key:
     // the text, the file's text when first edited or last saved, and the name as the dialog loaded it.
     std::unordered_map<std::string, std::string> scriptTexts, scriptSaved, scriptNames;
+    // Textures' .tet files as the inspector changed their UV rectangles and keys
+    // (docs/tools/ui-editor.md#editing-textures-and-uv), by Key of the texture: the bytes, the file's when first
+    // edited or last saved, and the texture's name as the scripts give it.
+    std::unordered_map<std::string, std::string> tetBytes, tetSaved, tetTextures;
+    // The script lines that name a texture's key (FindKeyUses), by "texture|key" lowercase, and the keys whose UV the
+    // user chose to change in place although others use them.
+    std::unordered_map<std::string, std::vector<x2::ui_editor::KeyUse>> keyUses;
+    std::set<std::string> keysInPlace;
+    std::set<std::string> noTet;    // textures without a .tet the game reads (Key), not looked for again
+    // A shared key's UV about to change: asks whether in place or in a new key (KeyPopup).
+    struct KeyAsk {
+        bool open = false;
+        std::string texture, key, dialog;
+        SourceRef texSource;
+        std::vector<x2::ui_editor::KeyUse> uses;
+        char name[96] = {};
+    } keyAsk;
 
     // Undo and redo of the edits: a script's UIAnchors.lua entry, or the texts of the scripts a move changed, before
     // and after each. Steps of one drag (merge: the dragged item) are one.
@@ -106,7 +127,8 @@ struct EditorState {
         std::string script;                 // anchors: the entry's script; texts: the first script changed
         AnchorEntry before, after;
         struct Text {
-            std::string script, before, after;
+            std::string script, before, after;  // tet: the texture whose .tet bytes these are
+            bool tet = false;
         };
         std::vector<Text> texts;
         unsigned merge = 0;
@@ -126,7 +148,14 @@ struct EditorState {
             return saved == scriptSaved.end() || saved->second != text.second;
         });
     }
-    bool Changed() const { return anchors.Changed() || ScriptsChanged(); }
+    bool TetsChanged() const
+    {
+        return std::any_of(tetBytes.begin(), tetBytes.end(), [this](const auto& bytes) {
+            const auto saved = tetSaved.find(bytes.first);
+            return saved == tetSaved.end() || saved->second != bytes.second;
+        });
+    }
+    bool Changed() const { return anchors.Changed() || ScriptsChanged() || TetsChanged(); }
 };
 
 std::string Key(const std::string& script)
@@ -202,6 +231,24 @@ void SetScript(x2::ui_editor::Engine& engine, EditorState& state, const std::str
     }
 }
 
+// Makes a texture's .tet these bytes in the engine, and builds again the open dialogs with pictures of it.
+void SetTet(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture, const std::string& bytes)
+{
+    const std::string key = Key(texture);
+    state.tetBytes[key] = bytes;
+    state.tetTextures.try_emplace(key, texture);
+    std::string error;
+    if (!engine.SetTet(texture, bytes, error)) {
+        state.message = error;
+        return;
+    }
+    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
+        if (engine.DialogUsesTexture(i, texture) && !engine.ReloadDialog(i, error)) {
+            state.message = error;
+        }
+    }
+}
+
 void Undo(x2::ui_editor::Engine& engine, EditorState& state, bool redo)
 {
     auto& from = redo ? state.redo : state.undo;
@@ -216,11 +263,55 @@ void Undo(x2::ui_editor::Engine& engine, EditorState& state, bool redo)
         SetAnchors(engine, state, step.script, redo ? step.after : step.before);
     } else {
         for (const EditorState::Step::Text& text : step.texts) {
-            SetScript(engine, state, text.script, redo ? text.after : text.before);
+            if (text.tet) {
+                SetTet(engine, state, text.script, redo ? text.after : text.before);
+            } else {
+                SetScript(engine, state, text.script, redo ? text.after : text.before);
+            }
         }
     }
     state.message = std::string(redo ? "redone: " : "undone: ") + step.script;
     to.push_back(std::move(step));
+}
+
+void ApplyTexts(x2::ui_editor::Engine& engine, EditorState& state, const std::vector<EditorState::Step::Text>& texts,
+                unsigned merge);
+
+// A script's text as edited, or its file's (noted as the saved one). False with the message set when it has none.
+bool CurrentScript(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script, std::string& text)
+{
+    const std::string key = Key(script);
+    if (const auto it = state.scriptTexts.find(key); it != state.scriptTexts.end()) {
+        text = it->second;
+        return true;
+    }
+    std::string error;
+    if (!engine.ScriptText(script, text, error)) {
+        state.message = error;
+        return false;
+    }
+    state.scriptSaved.try_emplace(key, text);
+    return true;
+}
+
+// A texture's .tet as edited, or its file's (noted as the saved one). False with the message set when it has none.
+bool CurrentTet(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture, std::string& bytes,
+                TetFile& file)
+{
+    const std::string key = Key(texture);
+    std::string error;
+    if (const auto it = state.tetBytes.find(key); it != state.tetBytes.end()) {
+        bytes = it->second;
+    } else if (!engine.TetBytes(texture, bytes, error)) {
+        state.message = error;
+        return false;
+    }
+    if (!TetFile::Parse(bytes, file, error)) {
+        state.message = x2::ui_editor::TetName(texture) + ": " + error;
+        return false;
+    }
+    state.tetSaved.try_emplace(key, bytes);
+    return true;
 }
 
 // Moves what the script calls set by (dx, dy) layout units, in the scripts' text (x2::ui_editor::MoveCall), and builds
@@ -247,13 +338,8 @@ bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::v
     std::vector<EditorState::Step::Text> texts;
     for (const auto& [key, entry] : calls) {
         std::string text, error;
-        if (const auto it = state.scriptTexts.find(key); it != state.scriptTexts.end()) {
-            text = it->second;
-        } else if (!engine.ScriptText(entry.first, text, error)) {
-            state.message = error;
+        if (!CurrentScript(engine, state, entry.first, text)) {
             return false;
-        } else {
-            state.scriptSaved.try_emplace(key, text);
         }
         const std::string before = text;
         for (const auto& [line, kind] : entry.second) {
@@ -264,12 +350,21 @@ bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::v
         }
         texts.push_back({entry.first, before, text});
     }
+    ApplyTexts(engine, state, texts, merge);
+    return true;
+}
+
+// The texts of an edit (scripts, .tet files) made so, as one step of undo; merge: an id that joins the steps of one
+// drag (0: none).
+void ApplyTexts(x2::ui_editor::Engine& engine, EditorState& state, const std::vector<EditorState::Step::Text>& texts,
+                unsigned merge)
+{
     const auto sameScripts = [&](const EditorState::Step& step) {
         if (step.anchors || step.texts.size() != texts.size()) {
             return false;
         }
         for (std::size_t i = 0; i < texts.size(); ++i) {
-            if (Key(step.texts[i].script) != Key(texts[i].script)) {
+            if (Key(step.texts[i].script) != Key(texts[i].script) || step.texts[i].tet != texts[i].tet) {
                 return false;
             }
         }
@@ -289,9 +384,12 @@ bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::v
     }
     state.redo.clear();
     for (const EditorState::Step::Text& text : texts) {
-        SetScript(engine, state, text.script, text.after);
+        if (text.tet) {
+            SetTet(engine, state, text.script, text.after);
+        } else {
+            SetScript(engine, state, text.script, text.after);
+        }
     }
-    return true;
 }
 
 // Writes the scripts whose text changed to their loose files in the client_data.
@@ -319,6 +417,31 @@ bool SaveScripts(EditorState& state)
     return true;
 }
 
+// Writes the .tet files whose bytes changed to their loose files in the client_data.
+bool SaveTets(EditorState& state)
+{
+    for (const auto& [key, bytes] : state.tetBytes) {
+        if (const auto saved = state.tetSaved.find(key); saved != state.tetSaved.end() && saved->second == bytes) {
+            continue;
+        }
+        const std::string name = x2::ui_editor::TetName(state.tetTextures[key]);
+        const std::filesystem::path path = x2::ui_editor::FindLooseScript(state.gameFolder, name);
+        if (path.empty()) {
+            state.message = name + ": not in the client_data (data/)";
+            return false;
+        }
+        std::ofstream out(path, std::ios::binary | std::ios::trunc);
+        out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+        if (!out) {
+            state.message = "cannot write " + path.string();
+            return false;
+        }
+        state.tetSaved[key] = bytes;
+        state.message = "saved " + path.string();
+    }
+    return true;
+}
+
 void ReapplyAnchors(x2::ui_editor::Engine& engine, const EditorState& state)
 {
     for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
@@ -340,10 +463,10 @@ bool SaveAnchors(EditorState& state)
     return true;
 }
 
-// Saves what changed: UIAnchors.lua and the scripts.
+// Saves what changed: UIAnchors.lua, the scripts and the .tet files.
 bool SaveAll(EditorState& state)
 {
-    return (!state.anchors.Changed() || SaveAnchors(state)) && SaveScripts(state);
+    return (!state.anchors.Changed() || SaveAnchors(state)) && SaveScripts(state) && SaveTets(state);
 }
 
 // The nearest of the editor's aspects and heights to a resolution.
@@ -606,7 +729,12 @@ void SaveControls(x2::ui_editor::Engine& engine, EditorState& state)
                 files += "\n" + state.scriptNames[key];
             }
         }
-        ImGui::SetTooltip("Ctrl+S: UIAnchors.lua and the dialog scripts moved%s\nThe game reads them when it starts.",
+        for (const auto& [key, bytes] : state.tetBytes) {
+            if (const auto saved = state.tetSaved.find(key); saved == state.tetSaved.end() || saved->second != bytes) {
+                files += "\n" + x2::ui_editor::TetName(state.tetTextures[key]);
+            }
+        }
+        ImGui::SetTooltip("Ctrl+S: UIAnchors.lua, the dialog scripts and the .tet files edited%s\nThe game reads them when it starts.",
                           files.c_str());
     }
     ImGui::SameLine();
@@ -765,9 +893,203 @@ void MoveField(EditorState& state, const char* label, const float value[2], cons
     }
 }
 
+std::string LowerText(std::string text)
+{
+    std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    return text;
+}
+
+// A texture's .tet, kept as read so the inspector does not load it every frame. False when it has none.
+bool PictureTet(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture, TetFile& file)
+{
+    const std::string key = Key(texture);
+    if (texture.empty() || state.noTet.count(key) != 0) {
+        return false;
+    }
+    std::string bytes, error;
+    if (const auto it = state.tetBytes.find(key); it != state.tetBytes.end()) {
+        bytes = it->second;
+    } else if (!engine.TetBytes(texture, bytes, error)) {
+        state.noTet.insert(key);
+        return false;
+    }
+    if (!TetFile::Parse(bytes, file, error)) {
+        state.noTet.insert(key);
+        return false;
+    }
+    state.tetBytes.try_emplace(key, bytes);
+    state.tetSaved.try_emplace(key, bytes);
+    state.tetTextures.try_emplace(key, texture);
+    return true;
+}
+
+// The script lines that name a texture's key, searched once a run (the files as saved).
+const std::vector<x2::ui_editor::KeyUse>& KeyUses(EditorState& state, const std::string& texture, const std::string& key)
+{
+    const std::string id = LowerText(texture + "|" + key);
+    auto it = state.keyUses.find(id);
+    if (it == state.keyUses.end()) {
+        it = state.keyUses.emplace(id, x2::ui_editor::FindKeyUses(state.gameFolder, texture, key)).first;
+    }
+    return it->second;
+}
+
+// Whether the UV rectangle of a picture's key may change now: yes when only its own SetTex names it, or the user chose
+// to change it in place; otherwise asks (KeyPopup) and says no.
+bool MayChangeKey(EditorState& state, const DialogInfo& dialog, const PictureInfo& picture)
+{
+    const std::string id = LowerText(picture.texture + "|" + picture.key);
+    if (state.keysInPlace.count(id) != 0) {
+        return true;
+    }
+    const auto& uses = KeyUses(state, picture.texture, picture.key);
+    const std::string own = Key(picture.texSource.script);
+    const bool others = picture.texSource.shared > 1 || std::any_of(uses.begin(), uses.end(), [&](const auto& use) {
+        return Key(use.script.filename().string()) != own || use.line != picture.texSource.line;
+    });
+    if (!others && picture.texSource.Known()) {
+        state.keysInPlace.insert(id);
+        return true;
+    }
+    if (!state.keyAsk.open) {
+        auto& ask = state.keyAsk;
+        ask = {};
+        ask.open = true;
+        state.message.clear();
+        ask.texture = picture.texture;
+        ask.key = picture.key;
+        ask.dialog = dialog.script;
+        ask.texSource = picture.texSource;
+        ask.uses = uses;
+        // The key named after the dialog: BG_LEFT_TOP of DLG_UI_Local_Map_NEW.lua -> BG_LEFT_TOP_UI_LOCAL_MAP_NEW.
+        std::string stem = std::filesystem::path(dialog.script).stem().string();
+        if (LowerText(stem.substr(0, 4)) == "dlg_") {
+            stem = stem.substr(4);
+        }
+        std::string name = x2::ui_editor::UpperKey(picture.key + "_" + stem);
+        name.erase(std::remove_if(name.begin(), name.end(), [](unsigned char c) { return std::isalnum(c) == 0 && c != '_'; }),
+                   name.end());
+        std::snprintf(ask.name, sizeof(ask.name), "%s", name.c_str());
+    }
+    return false;
+}
+
+// A picture's SetTex made to name this texture and key, as one step of undo.
+void ChangeTexture(x2::ui_editor::Engine& engine, EditorState& state, const PictureInfo& picture,
+                   const std::string& texture, const std::string& key)
+{
+    std::string text, error;
+    if (!picture.texSource.Known() || !CurrentScript(engine, state, picture.texSource.script, text)) {
+        return;
+    }
+    const std::string before = text;
+    if (!x2::ui_editor::SetTexCall(text, picture.texSource.line, texture, key, error)) {
+        state.message = picture.texSource.script + ": " + error;
+        return;
+    }
+    state.keyUses.clear();
+    ApplyTexts(engine, state, {{picture.texSource.script, before, text}}, 0);
+}
+
+// Moves (dx, dy) or grows (dw, dh) the UV rectangle of a picture's key, in texels, in its texture's .tet.
+void ChangeUv(x2::ui_editor::Engine& engine, EditorState& state, const PictureInfo& picture, float dx, float dy, float dw,
+              float dh, unsigned merge)
+{
+    std::string bytes;
+    TetFile file;
+    if (!CurrentTet(engine, state, picture.texture, bytes, file)) {
+        return;
+    }
+    const TetRect* found = file.Find(picture.key);
+    if (found == nullptr) {
+        state.message = picture.texture + " has no key " + picture.key;
+        return;
+    }
+    TetRect rect = *found;
+    rect.Move(dx, dy);
+    if ((dw != 0.0f || dh != 0.0f) && !rect.Resize(dw, dh)) {
+        state.message = picture.key + " is rotated in its .tet: only moved";
+        return;
+    }
+    file.Set(picture.key, rect);
+    ApplyTexts(engine, state, {{picture.texture, bytes, file.Bytes(), true}}, merge);
+}
+
+// A shared key's UV about to change: change it in place, or give this picture a key of its own (a copy of the
+// rectangle under a new name, which its SetTex then names), as one step of undo.
+void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
+{
+    auto& ask = state.keyAsk;
+    if (ask.open) {
+        ImGui::OpenPopup("Shared key");
+    }
+    if (!ImGui::BeginPopupModal("Shared key", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        return;
+    }
+    ImGui::Text("%s of %s is named by %zu script line(s):", ask.key.c_str(), ask.texture.c_str(), ask.uses.size());
+    if (ImGui::BeginChild("uses", ImVec2(560, std::min(240.0f, 20.0f + 18.0f * static_cast<float>(ask.uses.size()))),
+                          ImGuiChildFlags_Borders)) {
+        for (const auto& use : ask.uses) {
+            ImGui::Text("%s:%d", use.script.generic_string().c_str(), use.line);
+        }
+    }
+    ImGui::EndChild();
+    if (ask.texSource.shared > 1) {
+        ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "Its own SetTex line sets %d pictures.", ask.texSource.shared);
+    }
+    ImGui::TextDisabled("The game's code may name it too: it is not searched.");
+    const auto close = [&] {
+        ask.open = false;
+        ImGui::CloseCurrentPopup();
+    };
+    if (ImGui::Button("Change it in place")) {
+        state.keysInPlace.insert(LowerText(ask.texture + "|" + ask.key));
+        state.message = ask.key + ": UV changes go to every picture that names it";
+        close();
+    }
+    ImGui::Separator();
+    ImGui::BeginDisabled(!ask.texSource.Known());
+    ImGui::SetNextItemWidth(360);
+    ImGui::InputText("##name", ask.name, sizeof(ask.name), ImGuiInputTextFlags_CharsUppercase);
+    ImGui::SameLine();
+    if (ImGui::Button("Make a new key")) {
+        std::string bytes, error, text;
+        TetFile file;
+        const TetRect* rect = nullptr;
+        if (CurrentTet(engine, state, ask.texture, bytes, file) && (rect = file.Find(ask.key)) != nullptr &&
+            CurrentScript(engine, state, ask.texSource.script, text)) {
+            const std::string before = text;
+            const std::string name = ask.name;
+            if (!file.Add(name, *rect, error) ||
+                !x2::ui_editor::SetTexCall(text, ask.texSource.line, ask.texture, x2::ui_editor::UpperKey(name), error)) {
+                state.message = error;
+            } else {
+                ApplyTexts(engine, state,
+                           {{ask.texSource.script, before, text}, {ask.texture, bytes, file.Bytes(), true}}, 0);
+                state.keyUses.clear();
+                state.keysInPlace.insert(LowerText(ask.texture + "|" + name));
+                state.message = x2::ui_editor::UpperKey(name) + ": a copy of " + ask.key + ", now named by " +
+                                ask.texSource.script + ":" + std::to_string(ask.texSource.line);
+                close();
+            }
+        }
+    }
+    ImGui::EndDisabled();
+    if (!ask.texSource.Known()) {
+        ImGui::TextDisabled("No SetTex line the editor follows names it here: only in place.");
+    }
+    if (!state.message.empty() && ImGui::IsPopupOpen("Shared key")) {
+        ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "%s", state.message.c_str());
+    }
+    if (ImGui::Button("Cancel")) {
+        close();
+    }
+    ImGui::EndPopup();
+}
+
 // addZone: makes a picture's width a stretch zone of its dialog.
-void PictureTable(EditorState& state, const ControlInfo& control, const std::function<void(float, float)>& addZone,
-                  const MoveFunction& move)
+void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const ControlInfo& control,
+                  const std::function<void(float, float)>& addZone, const MoveFunction& move)
 {
     if (control.pictures.empty()) {
         return;
@@ -794,14 +1116,82 @@ void PictureTable(EditorState& state, const ControlInfo& control, const std::fun
             if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("The dialog's STRETCH controls grow there: a plain middle between end pieces");
             }
-            ImGui::Text("texture size: %.0f x %.0f", static_cast<double>(picture.textureSize[0]),
-                        static_cast<double>(picture.textureSize[1]));
+
+            // Texture and key: the SetTex call's names.
+            ImGui::TextDisabled("SetTex: %s", SourceLabel(picture.texSource).c_str());
+            TetFile tet;
+            const bool hasTet = PictureTet(engine, state, picture.texture, tet);
+            ImGui::BeginDisabled(!picture.texSource.Known());
+            char texture[128];
+            std::snprintf(texture, sizeof(texture), "%s", picture.texture.c_str());
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+            if (ImGui::InputText("texture", texture, sizeof(texture), ImGuiInputTextFlags_EnterReturnsTrue) &&
+                picture.texture != texture) {
+                // The same key when the new texture has one, else its first.
+                TetFile other;
+                std::string key = picture.key;
+                if (PictureTet(engine, state, texture, other) && other.Find(key) == nullptr && !other.Entries().empty()) {
+                    key = other.Entries().front().key;
+                }
+                ChangeTexture(engine, state, picture, texture, key);
+            }
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                ImGui::SetTooltip("A texture file the game loads (client_data or archives); Enter changes its SetTex");
+            }
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+            if (ImGui::BeginCombo("key", picture.key.c_str(), ImGuiComboFlags_HeightLarge)) {
+                for (const auto& entry : tet.Entries()) {
+                    if (ImGui::Selectable(entry.key.c_str(), LowerText(entry.key) == LowerText(picture.key))) {
+                        ChangeTexture(engine, state, picture, picture.texture, entry.key);
+                    }
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("%.0f, %.0f  %.0f x %.0f", static_cast<double>(entry.rect.leftTop[0]),
+                                          static_cast<double>(entry.rect.leftTop[1]),
+                                          static_cast<double>(entry.rect.size[0]), static_cast<double>(entry.rect.size[1]));
+                    }
+                }
+                ImGui::EndCombo();
+            }
+            ImGui::EndDisabled();
+
+            // The key's UV rectangle in the texture's .tet.
+            const TetRect* rect = hasTet ? tet.Find(picture.key) : nullptr;
+            if (rect != nullptr) {
+                const auto uvField = [&](const char* name, const float value[2], bool size, bool enabled) {
+                    float v[2] = {value[0], value[1]};
+                    ImGui::BeginDisabled(!enabled);
+                    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+                    const bool changed = ImGui::DragFloat2(name, v, 1.0f, -16384.0f, 16384.0f, "%.0f");
+                    ImGui::EndDisabled();
+                    const unsigned merge = ImGui::GetItemID();
+                    if (ImGui::IsItemDeactivated() && !state.undo.empty()) {
+                        state.undo.back().merge = 0;
+                    }
+                    const float dx = std::round(v[0] - value[0]), dy = std::round(v[1] - value[1]);
+                    if (changed && (dx != 0.0f || dy != 0.0f) && MayChangeKey(state, dialog, picture)) {
+                        ChangeUv(engine, state, picture, size ? 0.0f : dx, size ? 0.0f : dy, size ? dx : 0.0f,
+                                 size ? dy : 0.0f, merge);
+                    }
+                };
+                uvField("UV left top", rect->leftTop, false, true);
+                uvField("UV size", rect->size, true, rect->Upright());
+                if (!rect->Upright()) {
+                    ImGui::TextDisabled("rotated in its .tet: it moves, its size stays");
+                }
+            } else if (!picture.texture.empty()) {
+                ImGui::TextDisabled(hasTet ? "the key is not in the texture's .tet" : "no .tet: the whole texture");
+            }
+
             static const char* const corners[] = {"left top", "right top", "left bottom", "right bottom"};
             if (ImGui::BeginTable("corners", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit)) {
                 ImGui::TableSetupColumn("corner");
                 ImGui::TableSetupColumn("point");
                 ImGui::TableSetupColumn("UV (texels)");
                 ImGui::TableHeadersRow();
+                const float* uv[4] = {};
+                if (rect != nullptr) {
+                    uv[0] = rect->leftTop, uv[1] = rect->rightTop, uv[2] = rect->leftBottom, uv[3] = rect->rightBottom;
+                }
                 for (int k = 0; k < 4; ++k) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -810,8 +1200,11 @@ void PictureTable(EditorState& state, const ControlInfo& control, const std::fun
                     ImGui::Text("%.1f, %.1f", static_cast<double>(picture.points[k][0]),
                                 static_cast<double>(picture.points[k][1]));
                     ImGui::TableNextColumn();
-                    ImGui::Text("%.1f, %.1f", static_cast<double>(picture.uv[k][0] * picture.textureSize[0]),
-                                static_cast<double>(picture.uv[k][1] * picture.textureSize[1]));
+                    if (uv[k] != nullptr) {
+                        ImGui::Text("%.0f, %.0f", static_cast<double>(uv[k][0]), static_cast<double>(uv[k][1]));
+                    } else {
+                        ImGui::TextDisabled("-");
+                    }
                 }
                 ImGui::EndTable();
             }
@@ -1039,7 +1432,7 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
         ImGui::TextDisabled("drew nothing in the last frame");
     }
     StringTable(state, control, move);
-    PictureTable(state, control, [&](float lo, float hi) {
+    PictureTable(engine, state, dialog, control, [&](float lo, float hi) {
         AnchorEntry entry = state.anchors.Get(dialog.script);
         entry.zones.emplace_back(lo, hi);
         std::sort(entry.zones.begin(), entry.zones.end());
@@ -1056,7 +1449,7 @@ bool QuitPopup(EditorState& state)
     }
     bool quit = false;
     if (ImGui::BeginPopupModal("Unsaved changes", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("UIAnchors.lua or dialog scripts have unsaved changes.");
+        ImGui::Text("UIAnchors.lua, dialog scripts or .tet files have unsaved changes.");
         if (ImGui::Button("Save and close")) {
             quit = SaveAll(state);
             ImGui::CloseCurrentPopup();
@@ -1391,6 +1784,7 @@ int main(int argc, char** argv)
             InspectorPanel(*engine, state);
         }
         ImGui::End();
+        KeyPopup(*engine, state);
         if (QuitPopup(state)) {
             running = false;
         }

@@ -598,6 +598,7 @@ private:
 			DialogPos,		// g_pUIDialog:SetPos(x, y); the object is the dialog
 			Point,			// a point table (SetPoint, SetNormalPoint, ...); the object is the picture or control it was set on
 			String,			// AddString; the object is the static
+			Texture,		// a picture's SetTex(file, key); the object is the picture
 		};
 		struct ScriptCall
 		{

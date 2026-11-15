@@ -90,6 +90,11 @@ class CKTDXDeviceTexture
         const TEXTURE_UV*               GetTexUV( const wchar_t* pwszKey ) const      { return m_tet.GetTexUV( pwszKey ); }
         const TEXTURE_UV*               GetTexUV( const std::wstring& wstrKey ) const { return m_tet.GetTexUV( wstrKey ); }
         const CKTDXDeviceTET_Preprocessing&    GetTET() const { return m_tet; }
+#ifdef X2_DEV_TOOLS
+        // The UI editor's .tet edits (tools/ui-editor): the texture's UV rectangles from these bytes, a whole .tet file,
+        // instead of its file's. False, nothing changed, when they are not one.
+        bool                            ReplaceTET( const BYTE* pbData, int iSize );
+#endif
 
 		void				Draw( int nX, int nY, int nWidth, int nHeight, D3DCOLOR color = 0xffffffff, float fRotateDegree = 0.f );
 		void				Draw( int nX, int nY, int nWidth, int nHeight, const TEXTURE_UV* pTextureUV, D3DCOLOR color = 0xffffffff );

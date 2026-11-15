@@ -1,6 +1,7 @@
 // The UI editor's engine (decision T46, docs/tools/ui-editor.md).
 
 #include "engine.h"
+#include "tet_file.h"
 
 #include "KTDX.h"   // not stdafx.h: Windows would find X2ServerProtocol/StdAfx.h first
 
@@ -206,6 +207,14 @@ struct Engine::State {
     // What each set of scripts placed when first loaded this run (Open::Key): the game, started before the edits,
     // drew that, so the game's state put into a dialog is moved by what the edits moved since (ApplyLive).
     std::map<std::string, ScriptLayout> firstLayouts;
+    // The textures SetTet changed, by ScriptKey, held open so the device manager keeps them with their edited .tet,
+    // and those bytes.
+    struct Tet {
+        std::wstring name;
+        CKTDXDeviceTexture* device = nullptr;
+        std::string bytes;
+    };
+    std::map<std::string, Tet> tets;
 
     void NoteLoaded(Open& open)
     {
@@ -226,6 +235,10 @@ struct Engine::State {
         }
         dialogs.clear();
         if (app) {
+            for (const auto& [key, tet] : tets) {
+                app->GetDeviceManager()->CloseDevice(tet.name);
+            }
+            tets.clear();
             CKTDGStateManager::SetRenderTarget(NULL);
         }
         target.reset();
@@ -474,6 +487,75 @@ bool Engine::DialogUses(int index, const std::string& script) const
     return ScriptKey(open.script) == key ||
            std::any_of(open.extraScripts.begin(), open.extraScripts.end(),
                        [&](const std::string& extra) { return ScriptKey(extra) == key; });
+}
+
+bool Engine::TetBytes(const std::string& texture, std::string& bytes, std::string& error) const
+{
+    if (const auto it = m_state->tets.find(ScriptKey(texture)); it != m_state->tets.end()) {
+        bytes = it->second.bytes;
+        return true;
+    }
+    const std::string name = TetName(texture);
+    const auto info = name.empty() ? nullptr
+                                   : g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile(Wide(name));
+    if (info == NULL || info->pRealData == NULL || info->size <= 0) {
+        error = texture + " has no .tet (" + name + ")";
+        return false;
+    }
+    bytes.assign(info->pRealData, static_cast<std::size_t>(info->size));
+    return true;
+}
+
+bool Engine::SetTet(const std::string& texture, const std::string& bytes, std::string& error)
+{
+    TetFile parsed;
+    if (!TetFile::Parse(bytes, parsed, error)) {
+        error = TetName(texture) + ": " + error;
+        return false;
+    }
+    const std::string key = ScriptKey(texture);
+    auto it = m_state->tets.find(key);
+    if (it == m_state->tets.end()) {
+        State::Tet tet;
+        tet.name = Wide(texture);
+        tet.device = g_pKTDXApp->GetDeviceManager()->OpenTexture(tet.name);
+        if (tet.device == NULL) {
+            error = texture + " does not load";
+            return false;
+        }
+        it = m_state->tets.emplace(key, std::move(tet)).first;
+    }
+    if (!it->second.device->ReplaceTET(reinterpret_cast<const BYTE*>(bytes.data()), static_cast<int>(bytes.size()))) {
+        error = texture + ": the client does not take the .tet";
+        return false;
+    }
+    it->second.bytes = bytes;
+    return true;
+}
+
+bool Engine::DialogUsesTexture(int index, const std::string& texture) const
+{
+    if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
+        return false;
+    }
+    CKTDGUIDialog* dialog = CKTDGUIDialog::GetObjectByUID(m_state->dialogs[static_cast<std::size_t>(index)].dialog.GetHandle());
+    if (dialog == nullptr) {
+        return false;
+    }
+    for (CKTDGUIControl* control : dialog->GetControlList()) {
+        if (control == NULL || control->GetType() != CKTDGUIControl::UCT_STATIC) {
+            continue;
+        }
+        auto* pictures = static_cast<CKTDGUIStatic*>(control);
+        for (int p = 0; p < pictures->GetPictureNum(); ++p) {
+            const CKTDGUIControl::CPictureData* picture = pictures->GetPicture(p);
+            if (picture != NULL && picture->pTexture != NULL &&
+                ScriptKey(Utf8(picture->pTexture->texName)) == ScriptKey(texture)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 bool Engine::ReloadDialog(int index, std::string& error)
@@ -846,6 +928,7 @@ std::vector<DialogInfo> Engine::Inspect() const
             r.line = call.iLine;
             r.kind = call.eKind == Kind::DialogPos ? CallKind::DialogPos
                      : call.eKind == Kind::String  ? CallKind::String
+                     : call.eKind == Kind::Texture ? CallKind::Texture
                                                    : CallKind::Point;
             r.shared = uses[{call.uScript, call.iLine, call.eKind}];
             return r;
@@ -935,6 +1018,9 @@ std::vector<DialogInfo> Engine::Inspect() const
                     }
                     if (const auto found = callsFor(picture, Kind::Point); !found.empty()) {
                         pi.point = ref(*found.back());
+                    }
+                    if (const auto found = callsFor(picture, Kind::Texture); !found.empty()) {
+                        pi.texSource = ref(*found.back());
                     }
                     if (picture->pPoint != NULL) {
                         const D3DXVECTOR2 corners[4] = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint,
