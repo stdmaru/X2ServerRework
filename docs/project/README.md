@@ -10,3 +10,4 @@ Project overview. **All of these pages are essential.**
 | [Roadmap](roadmap.md) | Project phases, in order, and their deliverables |
 | [Decisions](decisions.md) | Decisions made (T*) and pending (D*) |
 | [Client compatibility](client-compatibility.md) | Preliminary analysis for compiling the server against selected historical client/protocol revisions |
+| [Add character](add-character.md) | Survey for enabling Add: sources, gaps, out of scope (2026-11-15) |
