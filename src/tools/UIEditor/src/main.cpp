@@ -84,6 +84,10 @@ struct EditorState {
     bool fit = true;
     float zoom = 1.0f;      // screen pixels per render target pixel when not fitted (ScreenZoom's steps)
     float wheel = 0.0f;     // wheel turns not yet taken as zoom steps (touchpads send fractions)
+    // The screen panel's last frame, for zooming and panning before it begins: hovered, where the image was drawn,
+    // and the scroll it was drawn at.
+    bool screenHovered = false;
+    float screenOrigin[2] = {}, screenScroll[2] = {};
     x2::render::Texture preview;    // what the screen panel shows (ScreenPreview), or the engine's target
     bool showBounds = false;
     Selection selected;
@@ -2120,42 +2124,51 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
     if (texture == 0) {
         return;
     }
-    // The wheel zooms around the pointer, the right or middle button drags the view (the wheel does not scroll).
+    // The wheel zooms around the pointer, the right or middle button drags the view (the wheel does not scroll). Both
+    // are worked out before the child begins and given to it as this frame's scroll and content size: set inside it,
+    // the scroll took effect a frame after the new size, so each wheel step showed the screen at the old place and
+    // then at the new one.
+    const float tw = static_cast<float>(engine.TargetWidth()), th = static_cast<float>(engine.TargetHeight());
+    const ImVec2 avail = ImGui::GetContentRegionAvail();
+    if (state.fit) {
+        state.zoom = std::min(avail.x / tw, avail.y / th);
+        state.zoom = state.zoom >= 1.0f ? std::floor(state.zoom) : state.zoom;
+    }
+    const ImGuiIO& io = ImGui::GetIO();
+    std::optional<ImVec2> scroll;
+    if (state.screenHovered && io.MouseWheel != 0.0f) {
+        // The target pixel under the pointer stays under it.
+        const float px = (io.MousePos.x - state.screenOrigin[0]) / state.zoom;
+        const float py = (io.MousePos.y - state.screenOrigin[1]) / state.zoom;
+        state.wheel += io.MouseWheel;
+        for (; std::fabs(state.wheel) >= 1.0f; state.wheel -= state.wheel > 0 ? 1.0f : -1.0f) {
+            state.zoom = ScreenZoom(state.zoom, state.wheel > 0);
+        }
+        state.fit = false;
+        // Whole pixels, so the screen's pixels stay on the panel's.
+        scroll = ImVec2(std::round(state.screenOrigin[0] + state.screenScroll[0] - io.MousePos.x + px * state.zoom),
+                        std::round(state.screenOrigin[1] + state.screenScroll[1] - io.MousePos.y + py * state.zoom));
+    } else if (state.screenHovered &&
+               (ImGui::IsMouseDragging(ImGuiMouseButton_Right) || ImGui::IsMouseDragging(ImGuiMouseButton_Middle))) {
+        scroll = ImVec2(std::round(state.screenScroll[0] - io.MouseDelta.x),
+                        std::round(state.screenScroll[1] - io.MouseDelta.y));
+    }
+    ImGui::SetNextWindowContentSize(ImVec2(tw * state.zoom, th * state.zoom));
+    if (scroll) {
+        ImGui::SetNextWindowScroll(ImVec2(std::max(scroll->x, 0.0f), std::max(scroll->y, 0.0f)));
+    }
     if (ImGui::BeginChild("screen", ImVec2(0, 0), ImGuiChildFlags_None,
                           ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
                               ImGuiWindowFlags_NoNavInputs)) {     // the arrows move the selection instead
-        const float tw = static_cast<float>(engine.TargetWidth()), th = static_cast<float>(engine.TargetHeight());
-        const ImVec2 avail = ImGui::GetContentRegionAvail();
-        if (state.fit) {
-            state.zoom = std::min(avail.x / tw, avail.y / th);
-            state.zoom = state.zoom >= 1.0f ? std::floor(state.zoom) : state.zoom;
-        }
-        if (ImGui::IsWindowHovered()) {
-            const ImGuiIO& io = ImGui::GetIO();
-            if (io.MouseWheel != 0.0f) {
-                const ImVec2 start(ImGui::GetWindowPos().x + ImGui::GetStyle().WindowPadding.x,
-                                   ImGui::GetWindowPos().y + ImGui::GetStyle().WindowPadding.y);
-                const ImVec2 local(io.MousePos.x - start.x, io.MousePos.y - start.y);
-                const float px = (local.x + ImGui::GetScrollX()) / state.zoom;  // the target pixel under the pointer
-                const float py = (local.y + ImGui::GetScrollY()) / state.zoom;
-                state.wheel += io.MouseWheel;
-                for (; std::fabs(state.wheel) >= 1.0f; state.wheel -= state.wheel > 0 ? 1.0f : -1.0f) {
-                    state.zoom = ScreenZoom(state.zoom, state.wheel > 0);
-                }
-                state.fit = false;
-                // Whole pixels, so the screen's pixels stay on the panel's.
-                ImGui::SetScrollX(std::round(px * state.zoom - local.x));
-                ImGui::SetScrollY(std::round(py * state.zoom - local.y));
-            }
-            if (ImGui::IsMouseDragging(ImGuiMouseButton_Right) || ImGui::IsMouseDragging(ImGuiMouseButton_Middle)) {
-                ImGui::SetScrollX(std::round(ImGui::GetScrollX() - io.MouseDelta.x));
-                ImGui::SetScrollY(std::round(ImGui::GetScrollY() - io.MouseDelta.y));
-            }
-        }
+        state.screenHovered = ImGui::IsWindowHovered();
+        state.screenScroll[0] = ImGui::GetScrollX();
+        state.screenScroll[1] = ImGui::GetScrollY();
         const float zoom = state.zoom;
         const ImVec2 size(tw * zoom, th * zoom);
         const ImVec2 origin(std::floor(ImGui::GetCursorScreenPos().x), std::floor(ImGui::GetCursorScreenPos().y));
         ImGui::SetCursorScreenPos(origin);
+        state.screenOrigin[0] = origin.x;
+        state.screenOrigin[1] = origin.y;
         ImDrawList* draw = ImGui::GetWindowDrawList();
         // Magnified texels stay sharp squares; reduced, the preview's mips filter them.
         const bool nearest = zoom > 1.0f;
