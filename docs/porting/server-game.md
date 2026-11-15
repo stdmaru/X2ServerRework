@@ -80,6 +80,7 @@ below and `fix_warnings.py`.
 | `GSUserAdminCheat` (`/dhn`) | Nickname `std::wstring` passed through `CString::Format` `...`: `%s` interpreted its structure as pointer | `.c_str()` (Clang rejects: "call will abort at runtime") |
 | `KGSHenirRanking::SetLastRank` | `m_uiLastRank = m_uiLastRank`: setter did nothing and Henir ranking limit always used initial value | Store parameter (`-Wself-assign-field`) |
 | `GSGameDBThread`, character selection | Missing `EndFetch` after reading `dbo.P_GSkill_Expand_SEL` row: next query (`dbo.P_GUnitLastPosition_GET`) found open cursor (`24000`), so `KODBC` reconnected and retried | Add `EndFetch` (2026-10-31, found in client test during `server/login-run`) |
+| `GSLogDBThread`, `P_LItemTradeError_INT` | The date went unquoted (`exec ... 1, 3, 2026-11-15 12:00:00`): a syntax error at every trade or letter error log | Quoted as `N'%s'` (2026-11-15, `server/add-character`) |
 | `CXSLSkillTree::LoadSkillTemplet_Stat` (`Common`) | Stat table with fewer than 30 levels (guild skills 500 and 501 have 10) was read through level 30: out-of-bounds read | Missing levels become 0 (2026-10-31, libstdc++ Debug assertion). Inverted check that allows short table remains for Phase 5 ([Original bugs](../original/bugs.md)) |
 
 Portability (no behavior change): mechanical pass (`mechanical.py`); `BOOST_MAP_CONST_FOREACH` → range-for;

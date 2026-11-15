@@ -15,6 +15,16 @@ TEST_CASE("printf-like directives, as Boost.Format")
     CHECK(x2::str(x2::format("%|5d|") % 1) == "    1");
 }
 
+TEST_CASE("narrow characters given to an integer conversion are written as numbers")
+{
+    const unsigned char level = 60;
+    const char unitClass = 9;
+    CHECK(x2::str(x2::wformat(L"%d, %d, %d, %x") % level % unitClass % static_cast<signed char>(-1)
+                  % static_cast<unsigned char>(255)) == L"60, 9, -1, ff");
+    CHECK(x2::str(x2::format("%c%s") % 'a' % 'b') == "ab"); // %c and %s still write the character
+    CHECK(x2::str(x2::format("%1%") % 'a') == "a");
+}
+
 TEST_CASE("positional directives")
 {
     CHECK(x2::str(x2::wformat(L"%1%_%2%_%1%") % 7 % L"b") == L"7_b_7");

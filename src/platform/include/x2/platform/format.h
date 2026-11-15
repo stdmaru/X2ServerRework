@@ -7,8 +7,10 @@
 //   %|...|                   printf-like inside bars (Boost extension)
 //   %%                       a literal '%'
 // Arguments are written through a stream, so the type letter only selects formatting (hex, fixed...), it never
-// reinterprets the argument (type-safe, like Boost). Missing arguments produce nothing; extra ones are ignored
-// (Boost throws in both cases).
+// reinterprets the argument (type-safe, like Boost), with one exception: a narrow character type (char, signed char,
+// unsigned char) given to an integer conversion (d i u x X o) is written as its number. Boost writes the character,
+// so the original's queries that pass a level or a unit class (unsigned char) to %d sent a control character to the
+// database. Missing arguments produce nothing; extra ones are ignored (Boost throws in both cases).
 #pragma once
 
 #include <algorithm>
@@ -16,6 +18,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace x2 {
@@ -37,7 +40,15 @@ public:
             std::basic_ostringstream<CharT> os;
             const Item& spec = m_items[m_argSpecs[n]];
             Apply(os, spec);
-            os << value;
+            if constexpr (std::is_same_v<T, char> || std::is_same_v<T, signed char> || std::is_same_v<T, unsigned char>) {
+                if (IsInteger(spec.type)) {
+                    os << static_cast<int>(value);
+                } else {
+                    os << value;
+                }
+            } else {
+                os << value;
+            }
             m_args.resize(m_argSpecs.size());
             m_args[n] = Pad(os.str(), spec);
         }
@@ -165,6 +176,11 @@ private:
             const size_t first = m_argSpecs.front(); // a copy: assign() must not get a reference into the vector
             m_argSpecs.assign(maxPos, first);
         }
+    }
+
+    static bool IsInteger(CharT type)
+    {
+        return type == 'd' || type == 'i' || type == 'u' || type == 'x' || type == 'X' || type == 'o';
     }
 
     static void Apply(std::basic_ostream<CharT>& os, const Item& it)

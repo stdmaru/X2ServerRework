@@ -99,6 +99,11 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
 - Windows: builds without warnings and passes tests with **clang-cl** (Visual Studio 2026, MSVC 14.51) on real Windows (T26, 2026-10-30).
   From 2026-10-29 through 2026-10-30 it was checked with MinGW-w64 + Wine (T18). Microsoft's STL debug mode found undefined behavior in
   `x2::format` (`assign` with a reference to its own vector); fixed.
+- `x2::format` writes a narrow character (`char`, `signed char`, `unsigned char`) given to an integer conversion
+  (`%d %i %u %x %X %o`) as its number (2026-11-15). Boost.Format writes the character, so the original's queries that
+  pass a level, a unit class or a byte field to `%d` without a cast (`P_LSkillPageExpandLog_INT`,
+  `P_LBossFieldLog_Unit_INS`, ...) sent control characters to the database. A deliberate change from Boost; `%c`,
+  `%s` and positional `%N%` still write the character (`test_format.cpp`).
 
 ## D3DX math
 
