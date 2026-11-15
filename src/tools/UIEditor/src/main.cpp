@@ -28,6 +28,7 @@
 #include <functional>
 #include <fstream>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -118,7 +119,26 @@ struct EditorState {
         SourceRef texSource;
         std::vector<x2::ui_editor::KeyUse> uses;
         char name[96] = {};
+        std::optional<TetRect> rect;    // the rectangle to give the key once decided (Interactive Select's Apply)
+        bool applied = false;           // decided and that rectangle given
     } keyAsk;
+    // Interactive Select (SelectPopup): a key's UV rectangle edited over its texture, given to the key on Apply.
+    struct Select {
+        bool request = false, open = false;
+        PictureInfo picture;            // as when opened
+        std::string dialog;
+        x2::ui_editor::Engine::TextureImage image;
+        TetRect original, working;
+        std::vector<TetFile::Entry> others;     // the texture's other keys
+        float zoom = 0.0f;              // screen pixels per texel; 0: fit when first drawn
+        float pan[2] = {};              // where texel 0, 0 is, from the view's corner
+        bool dragging = false;
+        float dragStart[2] = {};
+        TetRect dragFrom;
+        bool livePreview = true, showOthers = true;
+        bool previewed = false;         // the engine draws `working`, not what the edits hold
+        float pointer[2] = {-1.0f, -1.0f};
+    } select;
 
     // Undo and redo of the edits: a script's UIAnchors.lua entry, or the texts of the scripts a move changed, before
     // and after each. Steps of one drag (merge: the dragged item) are one.
@@ -231,6 +251,17 @@ void SetScript(x2::ui_editor::Engine& engine, EditorState& state, const std::str
     }
 }
 
+// Builds again the open dialogs with pictures of a texture.
+void ReloadTextureDialogs(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture)
+{
+    std::string error;
+    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
+        if (engine.DialogUsesTexture(i, texture) && !engine.ReloadDialog(i, error)) {
+            state.message = error;
+        }
+    }
+}
+
 // Makes a texture's .tet these bytes in the engine, and builds again the open dialogs with pictures of it.
 void SetTet(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture, const std::string& bytes)
 {
@@ -242,11 +273,7 @@ void SetTet(x2::ui_editor::Engine& engine, EditorState& state, const std::string
         state.message = error;
         return;
     }
-    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
-        if (engine.DialogUsesTexture(i, texture) && !engine.ReloadDialog(i, error)) {
-            state.message = error;
-        }
-    }
+    ReloadTextureDialogs(engine, state, texture);
 }
 
 void Undo(x2::ui_editor::Engine& engine, EditorState& state, bool redo)
@@ -1015,6 +1042,22 @@ void ChangeUv(x2::ui_editor::Engine& engine, EditorState& state, const PictureIn
     ApplyTexts(engine, state, {{picture.texture, bytes, file.Bytes(), true}}, merge);
 }
 
+// Gives a key of a texture this UV rectangle in its .tet, as one step of undo.
+void ApplyRect(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture, const std::string& key,
+               const TetRect& rect)
+{
+    std::string bytes;
+    TetFile file;
+    if (!CurrentTet(engine, state, texture, bytes, file)) {
+        return;
+    }
+    if (!file.Set(key, rect)) {
+        state.message = texture + " has no key " + key;
+        return;
+    }
+    ApplyTexts(engine, state, {{texture, bytes, file.Bytes(), true}}, 0);
+}
+
 // A shared key's UV about to change: change it in place, or give this picture a key of its own (a copy of the
 // rectangle under a new name, which its SetTex then names), as one step of undo.
 void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
@@ -1045,6 +1088,10 @@ void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
     if (ImGui::Button("Change it in place")) {
         state.keysInPlace.insert(LowerText(ask.texture + "|" + ask.key));
         state.message = ask.key + ": UV changes go to every picture that names it";
+        if (ask.rect) {
+            ApplyRect(engine, state, ask.texture, ask.key, *ask.rect);
+            ask.applied = true;
+        }
         close();
     }
     ImGui::Separator();
@@ -1060,7 +1107,8 @@ void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
             CurrentScript(engine, state, ask.texSource.script, text)) {
             const std::string before = text;
             const std::string name = ask.name;
-            if (!file.Add(name, *rect, error) ||
+            const TetRect given = ask.rect ? *ask.rect : *rect;
+            if (!file.Add(name, given, error) ||
                 !x2::ui_editor::SetTexCall(text, ask.texSource.line, ask.texture, x2::ui_editor::UpperKey(name), error)) {
                 state.message = error;
             } else {
@@ -1070,6 +1118,7 @@ void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
                 state.keysInPlace.insert(LowerText(ask.texture + "|" + name));
                 state.message = x2::ui_editor::UpperKey(name) + ": a copy of " + ask.key + ", now named by " +
                                 ask.texSource.script + ":" + std::to_string(ask.texSource.line);
+                ask.applied = ask.rect.has_value();
                 close();
             }
         }
@@ -1083,6 +1132,349 @@ void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
     }
     if (ImGui::Button("Cancel")) {
         close();
+    }
+    ImGui::EndPopup();
+}
+
+// The box a rectangle covers in its texture, in texels: min x, min y, max x, max y.
+void RectBox(const TetRect& rect, float box[4])
+{
+    box[0] = std::min({rect.leftTop[0], rect.rightTop[0], rect.leftBottom[0], rect.rightBottom[0]});
+    box[1] = std::min({rect.leftTop[1], rect.rightTop[1], rect.leftBottom[1], rect.rightBottom[1]});
+    box[2] = std::max({rect.leftTop[0], rect.rightTop[0], rect.leftBottom[0], rect.rightBottom[0]});
+    box[3] = std::max({rect.leftTop[1], rect.rightTop[1], rect.leftBottom[1], rect.rightBottom[1]});
+}
+
+// Opens Interactive Select on a picture's key.
+void OpenSelect(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const PictureInfo& picture,
+                const TetFile& tet)
+{
+    const TetRect* rect = tet.Find(picture.key);
+    std::string error;
+    auto& sel = state.select;
+    sel = {};
+    if (rect == nullptr || !engine.LoadTextureImage(picture.texture, sel.image, error)) {
+        state.message = rect == nullptr ? picture.key + " is not in the texture's .tet" : error;
+        return;
+    }
+    sel.request = true;
+    sel.picture = picture;
+    sel.dialog = dialog.script;
+    sel.original = sel.working = *rect;
+    for (const auto& entry : tet.Entries()) {
+        if (LowerText(entry.key) != LowerText(picture.key)) {
+            sel.others.push_back(entry);
+        }
+    }
+}
+
+// What the engine draws for the edited key: the working rectangle while previewing, else what the edits hold.
+void PreviewSelect(x2::ui_editor::Engine& engine, EditorState& state, bool working)
+{
+    auto& sel = state.select;
+    if (!working && !sel.previewed) {
+        return;
+    }
+    std::string bytes, error;
+    TetFile file;
+    if (!CurrentTet(engine, state, sel.picture.texture, bytes, file)) {
+        return;
+    }
+    if (working) {
+        file.Set(sel.picture.key, sel.working);
+        bytes = file.Bytes();
+    }
+    if (engine.SetTet(sel.picture.texture, bytes, error)) {
+        ReloadTextureDialogs(engine, state, sel.picture.texture);
+    } else {
+        state.message = error;
+    }
+    sel.previewed = working;
+}
+
+// The texture with the key's rectangle over it: zoom with the wheel around the pointer, pan with the right or middle
+// button, drag the rectangle with the left one (whole texels; the arrows move it by 1, Shift by 10, while hovered).
+// True when the rectangle changed.
+bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
+{
+    auto& sel = state.select;
+    const float texW = static_cast<float>(sel.image.width), texH = static_cast<float>(sel.image.height);
+    const ImVec2 origin = ImGui::GetCursorScreenPos();
+    ImGui::InvisibleButton("texture", size,
+                           ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight |
+                               ImGuiButtonFlags_MouseButtonMiddle);
+    const bool hovered = ImGui::IsItemHovered();
+    ImGuiIO& io = ImGui::GetIO();
+    if (sel.zoom <= 0.0f && texW > 0 && texH > 0) {
+        // Fit the texture, then center on the rectangle.
+        sel.zoom = std::min(size.x / texW, size.y / texH) * 0.95f;
+        float box[4];
+        RectBox(sel.working, box);
+        sel.pan[0] = size.x * 0.5f - (box[0] + box[2]) * 0.5f * sel.zoom;
+        sel.pan[1] = size.y * 0.5f - (box[1] + box[3]) * 0.5f * sel.zoom;
+    }
+    const auto toScreen = [&](float x, float y) {
+        return ImVec2(origin.x + sel.pan[0] + x * sel.zoom, origin.y + sel.pan[1] + y * sel.zoom);
+    };
+    const auto toTexel = [&](ImVec2 p) {
+        return ImVec2((p.x - origin.x - sel.pan[0]) / sel.zoom, (p.y - origin.y - sel.pan[1]) / sel.zoom);
+    };
+    if (hovered && io.MouseWheel != 0.0f) {
+        const ImVec2 at = toTexel(io.MousePos);
+        sel.zoom = std::clamp(sel.zoom * std::pow(1.25f, io.MouseWheel), 0.05f, 64.0f);
+        sel.pan[0] = io.MousePos.x - origin.x - at.x * sel.zoom;
+        sel.pan[1] = io.MousePos.y - origin.y - at.y * sel.zoom;
+    }
+    if (ImGui::IsItemActive() && (ImGui::IsMouseDragging(ImGuiMouseButton_Right, 0.0f) ||
+                                  ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 0.0f))) {
+        sel.pan[0] += io.MouseDelta.x;
+        sel.pan[1] += io.MouseDelta.y;
+    }
+
+    float box[4];
+    RectBox(sel.working, box);
+    const ImVec2 pointer = toTexel(io.MousePos);
+    sel.pointer[0] = hovered ? std::floor(pointer.x) : -1.0f;
+    sel.pointer[1] = hovered ? std::floor(pointer.y) : -1.0f;
+    const bool overBox = hovered && pointer.x >= box[0] && pointer.x < box[2] && pointer.y >= box[1] && pointer.y < box[3];
+    bool changed = false;
+    if (overBox && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        sel.dragging = true;
+        sel.dragStart[0] = pointer.x;
+        sel.dragStart[1] = pointer.y;
+        sel.dragFrom = sel.working;
+    }
+    if (sel.dragging) {
+        if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+            sel.dragging = false;
+        } else {
+            TetRect moved = sel.dragFrom;
+            moved.Move(std::round(pointer.x - sel.dragStart[0]), std::round(pointer.y - sel.dragStart[1]));
+            if (!(moved == sel.working)) {
+                sel.working = moved;
+                changed = true;
+            }
+        }
+    }
+    if (hovered && !sel.dragging) {
+        const float step = io.KeyShift ? 10.0f : 1.0f;
+        float dx = 0.0f, dy = 0.0f;
+        dx -= ImGui::IsKeyPressed(ImGuiKey_LeftArrow) ? step : 0.0f;
+        dx += ImGui::IsKeyPressed(ImGuiKey_RightArrow) ? step : 0.0f;
+        dy -= ImGui::IsKeyPressed(ImGuiKey_UpArrow) ? step : 0.0f;
+        dy += ImGui::IsKeyPressed(ImGuiKey_DownArrow) ? step : 0.0f;
+        if (dx != 0.0f || dy != 0.0f) {
+            sel.working.Move(dx, dy);
+            changed = true;
+        }
+    }
+    if (overBox || sel.dragging) {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+    }
+    RectBox(sel.working, box);
+
+    ImDrawList* draw = ImGui::GetWindowDrawList();
+    draw->PushClipRect(origin, ImVec2(origin.x + size.x, origin.y + size.y), true);
+    draw->AddRectFilled(origin, ImVec2(origin.x + size.x, origin.y + size.y), IM_COL32(24, 24, 27, 255));
+    // A checkerboard under the texture, for its transparent texels: cells of 16 screen pixels, the visible ones only.
+    const ImVec2 t0 = toScreen(0, 0), t1 = toScreen(texW, texH);
+    const float cell = 16.0f;
+    const float x0 = std::max(t0.x, origin.x), y0 = std::max(t0.y, origin.y);
+    const float x1 = std::min(t1.x, origin.x + size.x), y1 = std::min(t1.y, origin.y + size.y);
+    for (float y = y0 - std::fmod(y0 - t0.y, cell); y < y1; y += cell) {
+        for (float x = x0 - std::fmod(x0 - t0.x, cell); x < x1; x += cell) {
+            const int parity = static_cast<int>(std::floor((x - t0.x) / cell) + std::floor((y - t0.y) / cell)) & 1;
+            draw->AddRectFilled(ImVec2(std::max(x, x0), std::max(y, y0)), ImVec2(std::min(x + cell, x1), std::min(y + cell, y1)),
+                                parity ? IM_COL32(70, 70, 74, 255) : IM_COL32(100, 100, 104, 255));
+        }
+    }
+    // Texels sharp when magnified.
+    const bool nearest = sel.zoom > 1.0f;
+    if (nearest) {
+        draw->AddCallback(ImGui::GetPlatformIO().DrawCallback_SetSamplerNearest, nullptr);
+    }
+    draw->AddImage(static_cast<ImTextureID>(gui.TextureId(sel.image.texture)), t0, t1);
+    if (nearest) {
+        draw->AddCallback(ImGui::GetPlatformIO().DrawCallback_SetSamplerLinear, nullptr);
+    }
+    // The pixel grid when a texel is large.
+    if (sel.zoom >= 8.0f) {
+        for (float x = std::ceil((x0 - t0.x) / sel.zoom); toScreen(x, 0).x <= x1; x += 1.0f) {
+            draw->AddLine(ImVec2(toScreen(x, 0).x, y0), ImVec2(toScreen(x, 0).x, y1), IM_COL32(0, 0, 0, 40));
+        }
+        for (float y = std::ceil((y0 - t0.y) / sel.zoom); toScreen(0, y).y <= y1; y += 1.0f) {
+            draw->AddLine(ImVec2(x0, toScreen(0, y).y), ImVec2(x1, toScreen(0, y).y), IM_COL32(0, 0, 0, 40));
+        }
+    }
+    if (sel.showOthers) {
+        for (const auto& other : sel.others) {
+            float o[4];
+            RectBox(other.rect, o);
+            draw->AddRect(toScreen(o[0], o[1]), toScreen(o[2], o[3]), IM_COL32(160, 200, 255, 70));
+        }
+    }
+    // The texture dimmed around the rectangle, which gets a clear border.
+    const ImVec2 b0 = toScreen(box[0], box[1]), b1 = toScreen(box[2], box[3]);
+    const ImU32 dim = IM_COL32(0, 0, 0, 120);
+    draw->AddRectFilled(t0, ImVec2(t1.x, b0.y), dim);
+    draw->AddRectFilled(ImVec2(t0.x, b1.y), t1, dim);
+    draw->AddRectFilled(ImVec2(t0.x, b0.y), ImVec2(b0.x, b1.y), dim);
+    draw->AddRectFilled(ImVec2(b1.x, b0.y), ImVec2(t1.x, b1.y), dim);
+    draw->AddRect(ImVec2(b0.x - 2, b0.y - 2), ImVec2(b1.x + 2, b1.y + 2), IM_COL32(0, 0, 0, 220), 0.0f, 1.0f);
+    draw->AddRect(ImVec2(b0.x - 1, b0.y - 1), ImVec2(b1.x + 1, b1.y + 1), IM_COL32(255, 210, 60, 255), 0.0f, 2.0f);
+    draw->AddText(ImVec2(b0.x, b0.y - ImGui::GetTextLineHeight() - 4), IM_COL32(255, 210, 60, 255),
+                  sel.picture.key.c_str());
+    draw->PopClipRect();
+    return changed;
+}
+
+// Interactive Select: the texture | the rectangle's numbers, then Apply / Cancel. Apply gives the key the rectangle
+// (asking first when other lines name the key: KeyPopup); Cancel leaves it as it was.
+void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::app::ImGuiLayer& gui)
+{
+    auto& sel = state.select;
+    if (sel.request) {
+        ImGui::OpenPopup("Interactive Select");
+        sel.request = false;
+        sel.open = true;
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x * 0.8f, viewport->WorkSize.y * 0.8f));
+        ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x * 0.5f,
+                                       viewport->WorkPos.y + viewport->WorkSize.y * 0.5f),
+                                ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    }
+    if (!sel.open) {
+        return;
+    }
+    if (!ImGui::BeginPopupModal("Interactive Select", nullptr, ImGuiWindowFlags_NoSavedSettings)) {
+        sel.open = false;
+        return;
+    }
+    const auto close = [&](bool apply) {
+        PreviewSelect(engine, state, false);    // what the edits hold, Apply then adds its step
+        if (apply) {
+            DialogInfo dialog;
+            dialog.script = sel.dialog;
+            if (MayChangeKey(state, dialog, sel.picture)) {
+                ApplyRect(engine, state, sel.picture.texture, sel.picture.key, sel.working);
+            } else {
+                state.keyAsk.rect = sel.working;
+                return;     // KeyPopup decides; the select closes when it has applied
+            }
+        }
+        sel.open = false;
+        ImGui::CloseCurrentPopup();
+    };
+
+    const float footer = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 2;
+    const float fields = 300.0f;
+    const ImVec2 avail = ImGui::GetContentRegionAvail();
+    bool changed = false;
+    if (ImGui::BeginChild("view", ImVec2(avail.x - fields - ImGui::GetStyle().ItemSpacing.x, avail.y - footer),
+                          ImGuiChildFlags_Borders, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
+        changed = SelectView(state, gui, ImGui::GetContentRegionAvail());
+    }
+    ImGui::EndChild();
+    ImGui::SameLine();
+    if (ImGui::BeginChild("fields", ImVec2(fields, avail.y - footer), ImGuiChildFlags_Borders)) {
+        ImGui::TextWrapped("%s", sel.picture.texture.c_str());
+        ImGui::Text("%u x %u texels", sel.image.width, sel.image.height);
+        ImGui::Text("key: %s", sel.picture.key.c_str());
+        ImGui::Separator();
+        float box[4];
+        RectBox(sel.working, box);
+        const bool upright = sel.working.Upright();
+        int left = static_cast<int>(std::lround(box[0])), top = static_cast<int>(std::lround(box[1]));
+        int width = static_cast<int>(std::lround(box[2] - box[0])), height = static_cast<int>(std::lround(box[3] - box[1]));
+        ImGui::SetNextItemWidth(140);
+        if (ImGui::InputInt("left", &left)) {
+            sel.working.Move(static_cast<float>(left) - box[0], 0.0f);
+            changed = true;
+        }
+        ImGui::SetNextItemWidth(140);
+        if (ImGui::InputInt("top", &top)) {
+            sel.working.Move(0.0f, static_cast<float>(top) - box[1]);
+            changed = true;
+        }
+        ImGui::BeginDisabled(!upright);
+        ImGui::SetNextItemWidth(140);
+        if (ImGui::InputInt("width", &width) && width >= 1) {
+            changed = sel.working.Resize(static_cast<float>(width) - (box[2] - box[0]), 0.0f) || changed;
+        }
+        ImGui::SetNextItemWidth(140);
+        if (ImGui::InputInt("height", &height) && height >= 1) {
+            changed = sel.working.Resize(0.0f, static_cast<float>(height) - (box[3] - box[1])) || changed;
+        }
+        ImGui::EndDisabled();
+        if (!upright) {
+            ImGui::TextDisabled("rotated in its .tet: it moves, its size stays");
+        }
+        RectBox(sel.working, box);
+        ImGui::Text("right: %.0f  bottom: %.0f", static_cast<double>(box[2]), static_cast<double>(box[3]));
+        float was[4];
+        RectBox(sel.original, was);
+        ImGui::TextDisabled("was: %.0f, %.0f  %.0f x %.0f", static_cast<double>(was[0]), static_cast<double>(was[1]),
+                            static_cast<double>(was[2] - was[0]), static_cast<double>(was[3] - was[1]));
+        ImGui::BeginDisabled(sel.working == sel.original);
+        if (ImGui::SmallButton("Back to it")) {
+            sel.working = sel.original;
+            changed = true;
+        }
+        ImGui::EndDisabled();
+        ImGui::Separator();
+        if (sel.pointer[0] >= 0.0f) {
+            ImGui::Text("pointer: %.0f, %.0f", static_cast<double>(sel.pointer[0]), static_cast<double>(sel.pointer[1]));
+        } else {
+            ImGui::TextDisabled("pointer: -");
+        }
+        ImGui::Text("zoom: %.0f%%", static_cast<double>(sel.zoom * 100.0f));
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Fit")) {
+            sel.zoom = 0.0f;
+        }
+        if (ImGui::Checkbox("Preview on the screen", &sel.livePreview)) {
+            PreviewSelect(engine, state, sel.livePreview);
+        }
+        ImGui::Checkbox("Other keys' outlines", &sel.showOthers);
+        ImGui::SeparatorText("Rectangle");
+        // The rectangle at its size (smaller to fit), as the texture holds it.
+        if (box[2] > box[0] && box[3] > box[1] && sel.image.width > 0 && sel.image.height > 0) {
+            const float w = box[2] - box[0], h = box[3] - box[1];
+            const float scale = std::min({1.0f, (fields - 24.0f) / w, 200.0f / h});
+            ImGui::Image(static_cast<ImTextureID>(gui.TextureId(sel.image.texture)), ImVec2(w * scale, h * scale),
+                         ImVec2(box[0] / static_cast<float>(sel.image.width), box[1] / static_cast<float>(sel.image.height)),
+                         ImVec2(box[2] / static_cast<float>(sel.image.width), box[3] / static_cast<float>(sel.image.height)));
+        }
+        ImGui::Separator();
+        ImGui::TextDisabled("Drag the box to move it; wheel zooms, right button pans; arrows move it by 1 (Shift: 10) "
+                            "while the pointer is over the texture.");
+    }
+    ImGui::EndChild();
+    if (changed && sel.livePreview) {
+        PreviewSelect(engine, state, true);
+    }
+
+    ImGui::BeginDisabled(sel.working == sel.original);
+    if (ImGui::Button("Apply", ImVec2(120, 0))) {
+        close(true);
+    }
+    ImGui::EndDisabled();
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel", ImVec2(120, 0)) || (!state.keyAsk.open && ImGui::IsKeyPressed(ImGuiKey_Escape))) {
+        close(false);
+    }
+    // A shared key: asked over the select, which closes once its rectangle was given.
+    KeyPopup(engine, state);
+    if (state.keyAsk.applied) {
+        state.keyAsk.applied = false;
+        state.keyAsk.rect.reset();
+        sel.open = false;
+        ImGui::CloseCurrentPopup();
+    } else if (!state.keyAsk.open && state.keyAsk.rect) {
+        state.keyAsk.rect.reset();      // the question was cancelled: back to the select
+        if (sel.livePreview) {
+            PreviewSelect(engine, state, true);
+        }
     }
     ImGui::EndPopup();
 }
@@ -1175,6 +1567,12 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
                 };
                 uvField("UV left top", rect->leftTop, false, true);
                 uvField("UV size", rect->size, true, rect->Upright());
+                if (ImGui::Button("Interactive Select")) {
+                    OpenSelect(engine, state, dialog, picture, tet);
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("The texture with this key's rectangle: drag it or type its numbers, then Apply");
+                }
                 if (!rect->Upright()) {
                     ImGui::TextDisabled("rotated in its .tet: it moves, its size stays");
                 }
@@ -1784,7 +2182,10 @@ int main(int argc, char** argv)
             InspectorPanel(*engine, state);
         }
         ImGui::End();
-        KeyPopup(*engine, state);
+        SelectPopup(*engine, state, *gui);
+        if (!state.select.open) {
+            KeyPopup(*engine, state);   // Interactive Select asks over itself
+        }
         if (QuitPopup(state)) {
             running = false;
         }

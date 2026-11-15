@@ -139,6 +139,14 @@ public:
     // Whether an open dialog has a picture of the texture.
     bool DialogUsesTexture(int index, const std::string& texture) const;
 
+    // A texture as the game loads it, to draw in the editor (ImGuiLayer::TextureId), and its size in texels, those of
+    // its .tet. Held loaded until the engine goes. False with `error` when it does not load.
+    struct TextureImage {
+        render::Texture texture;
+        unsigned width = 0, height = 0;
+    };
+    bool LoadTextureImage(const std::string& texture, TextureImage& image, std::string& error);
+
     // Draws every open dialog into the render target, resized to width x height first. False with error set if the
     // frame failed. The texture stays valid until the next Render with another size or the engine is destroyed.
     bool Render(unsigned width, unsigned height, float elapsed, std::string& error);
