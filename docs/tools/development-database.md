@@ -20,6 +20,8 @@ Collation `Latin1_General_CI_AS`, compatibility level 100 (SQL Server 2008). Ori
 **The backups are not KOG's databases** (user, 2026-11-15): the files the user had did not hold the complete databases,
 so much of them was written by hand by the user to make the game work. Changing them to fix problems or add features is
 allowed (rows and procedures), as patches in [Database patches](database-patches.md), so a fresh restore can reproduce them.
+Since the user wrote them by hand, some procedures are expected to be inconsistent with the code: **fix the database
+whenever a problem is found** (user, 2026-11-15), in the task that found it.
 
 ## Usage
 
@@ -43,8 +45,8 @@ docker compose -f docker/mssql/docker-compose.yml down -v           # remove con
 - **Data adjusted for development** (`restore.sh` runs after restoring `Statistics`): `LServerList.PublicIP/PrivateIP/IP`
   and `LChannelList.IP` become `X2_SERVER_IP` (default `127.0.0.1`). Servers identify themselves in DB by address
   (`SetLocalIP` in configs), and ChannelServer sends `LChannelList` addresses to client; backup contains production addresses.
-  Other IP fields are logs. Existing schema objects and their definitions must not be changed. New tables and procedures may be added
-  through reviewed SQL patches; they are not applied automatically. See [Database patches](database-patches.md).
+  Other IP fields are logs. Tables, rows and procedures are changed or added through SQL patches (above); they are not
+  applied automatically. See [Database patches](database-patches.md).
 - Run `sqlcmd` inside the container: `docker exec -it x2-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '<password>'`.
 
 ## Connection strings
