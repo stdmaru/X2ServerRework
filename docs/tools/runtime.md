@@ -163,6 +163,29 @@ Server-folder version is not always newer: in 9 files, `ServerResource` was unto
 `RandomItemMapping` (events through 2014-08), and `PaymentItemTable`, `ServerResource` was newer and **never loaded** in production.
 Replaced versions remain in git history (initial `runtime/ServerResource` commit) and `X2Server` repository.
 
+## Entries from other servers (`tools/runtime/merge_server_tables.py`)
+
+Adds to `runtime/ServerResource` the drops, cubes and crafting entries ours lacks, from another server's scripts (V5's,
+for Add: [Add character](../project/add-character.md)); ours is kept, entries are added by ID, and a second run adds
+nothing. Every item an added entry names must be in the client's `Item.lua` (`--items`), or the entry is left out.
+
+```bash
+tools/runtime/merge_server_tables.py --ours runtime/ServerResource --source <ServerResource> \
+    --items <client_data>/items/Item.lua --enum <client_data>/data/Enum.lua --unit-types UT_ADD,UT_ELESIS,UT_ARA \
+    [--cubes <IDs>] [--client-manufacture <client_data>/items/ManufactureItem.lua --manufacture-source <file> ...] [--dry-run]
+```
+
+- `RandomItemTable.lua`: in a cube both have, the class entries ours lacks (classes of our `Enum.lua`, never `UC_NONE`).
+  The server gives the group of the opener's class (its base class for `UC_ONE_UNIT` cubes) and fails without one,
+  so a missing class cannot open the cube (`CXSLRandomItemManager::GetResultItem`). Plus the whole cubes of `--cubes`
+  and the item groups both name.
+- `DropTable.lua`: in a monster drop both have, the `DropItemList` items of `--unit-types` ours lacks;
+  `DropData.lua`: their `AddNotifyDropItemInfo`.
+- `ManufactureResultTable.lua`: the recipes whose result is an item of `--unit-types`, with their result groups. The
+  GameServer takes a recipe's materials and cost from the client's `ManufactureItem.lua` (`AddManufactureTemplet`;
+  `AddManufactureVillageData`, where the client lists it, is ignored by the server), so `--client-manufacture` adds the
+  missing ones there, from the first `--manufacture-source` that has each.
+
 ## `tools/kom`
 
 `kom.py` (`list`, `unpack`, `unblob`, `pack`, `decompile`) and `kim.py` (`decompile`, `compile`, `info`), brought from `_tools/kom` on

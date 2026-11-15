@@ -2110,6 +2110,31 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
               m_iItemGroupID = 16285,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"],
+              m_iItemGroupID = 16823,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"],
+              m_iItemGroupID = 16824,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 16855,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 16855,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11815,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -2247,6 +2272,26 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
               m_iItemGroupID = 16286,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 16856,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11818,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_BLAZING_HEART"],
+              m_iItemGroupID = 11904,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_GRAND_MASTER"],
+              m_iItemGroupID = 11905,
        },
 }
 
@@ -2631,6 +2676,21 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_ELSWORD_MAGIC_KNIGHT"],
               m_iItemGroupID = 9990,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11819,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11906,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11907,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -2650,6 +2710,21 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_LIRE_SNIPING_RANGER"],
               m_iItemGroupID = 9984,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11826,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11908,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11909,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -2668,6 +2743,21 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_ARME_DARK_MAGICIAN"],
               m_iItemGroupID = 9982,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11828,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11911,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11912,
        },
 }
 
@@ -3033,6 +3123,11 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12983,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11913,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -3265,6 +3360,11 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12985,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11914,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -3283,6 +3383,11 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_RAVEN_OVER_TAKER"],
               m_iItemGroupID = 10280,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11915,
        },
 }
 
@@ -3417,6 +3522,36 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12987,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11833,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11834,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11916,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11917,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11918,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11919,
        },
 }
 
@@ -3601,6 +3736,11 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_NASOD"],
               m_iItemGroupID = 11021,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_CHUNG_IRON_CANNON"],
+              m_iItemGroupID = 11022,
        },
 }
 
@@ -4275,6 +4415,11 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12969,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11926,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -4408,6 +4553,36 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12971,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11837,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11838,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11927,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11928,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11929,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11935,
        },
 }
 
@@ -4543,6 +4718,36 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12973,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11846,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11847,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11937,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11938,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11939,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11945,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -4677,6 +4882,36 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12975,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11865,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11866,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11946,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11947,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11948,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11949,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -4810,6 +5045,36 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12977,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11869,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11871,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11955,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11956,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11957,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11958,
        },
 }
 
@@ -5057,6 +5322,21 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_ARCHITECTURE"],
               m_iItemGroupID = 11759,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11873,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11959,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11961,
        },
 }
 
@@ -9936,6 +10216,36 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12989,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11876,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11877,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11962,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11963,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11964,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11966,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -10103,6 +10413,11 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12845,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11967,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -10161,6 +10476,21 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12979,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11882,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11968,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11969,
        },
 }
 
@@ -10301,6 +10631,11 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12870,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11976,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -10359,6 +10694,21 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 12981,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11885,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11977,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11978,
        },
 }
 
@@ -11919,6 +12269,36 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_CODE_EMPRESS"],
               m_iItemGroupID = 13108,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11887,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11888,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11979,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+              m_iItemGroupID = 11981,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11982,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 11983,
        },
 }
 
@@ -13908,6 +14288,21 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_ARME_VOID_PRINCESS"],
               m_iItemGroupID = 100003,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11891,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11984,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11985,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -14186,6 +14581,21 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_EVE_ARCHITECTURE"],
               m_iItemGroupID = 100032,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11893,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 11986,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+              m_iItemGroupID = 11987,
        },
 }
 
@@ -17788,6 +18198,76 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_ELSWORD_SWORDMAN"],
               m_iItemGroupID = 100069,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_VIOLET_MAGE"],
+              m_iItemGroupID = 100070,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_ELVEN_RANGER"],
+              m_iItemGroupID = 100071,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_RAVEN_FIGHTER"],
+              m_iItemGroupID = 100072,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_EVE_NASOD"],
+              m_iItemGroupID = 100073,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_KNIGHT"],
+              m_iItemGroupID = 100069,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_MAGIC_KNIGHT"],
+              m_iItemGroupID = 100069,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_COMBAT_RANGER"],
+              m_iItemGroupID = 100071,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_SNIPING_RANGER"],
+              m_iItemGroupID = 100071,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_HIGH_MAGICIAN"],
+              m_iItemGroupID = 100070,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_DARK_MAGICIAN"],
+              m_iItemGroupID = 100070,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_RAVEN_SOUL_TAKER"],
+              m_iItemGroupID = 100072,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_RAVEN_OVER_TAKER"],
+              m_iItemGroupID = 100072,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_EVE_EXOTIC_GEAR"],
+              m_iItemGroupID = 100073,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_EVE_ARCHITECTURE"],
+              m_iItemGroupID = 100073,
        },
 }
 
@@ -22033,6 +22513,11 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_CHUNG_IRON_CANNON"],
               m_iItemGroupID = 300505,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_MARTIAL_ARTIST"],
+              m_iItemGroupID = 300506,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -24048,6 +24533,21 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_ELSWORD_SWORDMAN"],
               m_iItemGroupID = 400192,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_VIOLET_MAGE"],
+              m_iItemGroupID = 500092,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_ELVEN_RANGER"],
+              m_iItemGroupID = 500093,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_RAVEN_FIGHTER"],
+              m_iItemGroupID = 500094,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -24061,6 +24561,21 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_ELSWORD_SWORDMAN"],
               m_iItemGroupID = 400196,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_VIOLET_MAGE"],
+              m_iItemGroupID = 500096,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_ELVEN_RANGER"],
+              m_iItemGroupID = 500097,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_RAVEN_FIGHTER"],
+              m_iItemGroupID = 500098,
        },
 }
 
@@ -24076,6 +24591,21 @@ g_pRandomItemManager:AddRandomItemTemplet
               m_cUnitClass = UNIT_CLASS["UC_ELSWORD_SWORDMAN"],
               m_iItemGroupID = 400200,
        },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_VIOLET_MAGE"],
+              m_iItemGroupID = 500100,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_ELVEN_RANGER"],
+              m_iItemGroupID = 500101,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_RAVEN_FIGHTER"],
+              m_iItemGroupID = 500102,
+       },
 }
 
 g_pRandomItemManager:AddRandomItemTemplet
@@ -24089,6 +24619,21 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_ELSWORD_SWORDMAN"],
               m_iItemGroupID = 400204,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_VIOLET_MAGE"],
+              m_iItemGroupID = 500104,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_ELVEN_RANGER"],
+              m_iItemGroupID = 500105,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_RAVEN_FIGHTER"],
+              m_iItemGroupID = 500106,
        },
 }
 
@@ -31869,6 +32414,51 @@ g_pRandomItemManager:AddRandomItemTemplet
        {
               m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
               m_iItemGroupID = 402174,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_KNIGHT"],
+              m_iItemGroupID = 402175,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"],
+              m_iItemGroupID = 402176,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"],
+              m_iItemGroupID = 402177,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+              m_iItemGroupID = 402240,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+              m_iItemGroupID = 402181,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+              m_iItemGroupID = 11901,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+              m_iItemGroupID = 11902,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_BLAZING_HEART"],
+              m_iItemGroupID = 12170,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELESIS_GRAND_MASTER"],
+              m_iItemGroupID = 12171,
        },
 }
 
@@ -121712,3 +122302,441 @@ g_pRandomItemManager:AddRandomItemGroup( 1300060, 153000091, 12.5, 0, 1 )
 g_pRandomItemManager:AddRandomItemGroup( 1300061, 153000092, 12.5, 0, 1 )
 g_pRandomItemManager:AddRandomItemGroup( 1300062, 130529, 100, 3, 1 )
 g_pRandomItemManager:AddRandomItemGroup( 5000082, 129951, 100, 30, 1 )
+
+-- Cubes from V5 (merge_server_tables.py, 2026-11-15)
+g_pRandomItemManager:AddRandomItemTemplet
+{
+       m_ItemID = 90000130,
+       m_bGiveAll = True,
+       m_UseCondition = USE_CONDITION["UC_ONE_CLASS"],         --??? ????
+       m_KeyItemID = 0,
+       m_RequiredKeyCount = 0,
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_KNIGHT"],
+              m_iItemGroupID = 500037,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_MAGIC_KNIGHT"],
+              m_iItemGroupID = 500038,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_COMBAT_RANGER"],
+              m_iItemGroupID = 500039,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_SNIPING_RANGER"],
+              m_iItemGroupID = 500040,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_HIGH_MAGICIAN"],
+              m_iItemGroupID = 500041,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_DARK_MAGICIAN"],
+              m_iItemGroupID = 500042,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_LORD_KNIGHT"],
+              m_iItemGroupID = 500037,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_RUNE_SLAYER"],
+              m_iItemGroupID = 500038,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_WIND_SNEAKER"],
+              m_iItemGroupID = 500039,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_GRAND_ARCHER"],
+              m_iItemGroupID = 500040,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_ELEMENTAL_MASTER"],
+              m_iItemGroupID = 500041,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_VOID_PRINCESS"],
+              m_iItemGroupID = 500042,
+       },
+	{
+		m_cUnitClass = UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"],
+		m_iItemGroupID = 11895,
+	},
+
+	{
+		m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_DEVIL"],
+		m_iItemGroupID = 12166,
+	},
+	{
+		m_cUnitClass = UNIT_CLASS["UC_ARA_LITTLE_HSIEN"],
+		m_iItemGroupID = 12167,
+	},
+
+}
+g_pRandomItemManager:AddRandomItemTemplet
+{
+       m_ItemID = 90000131,
+       m_bGiveAll = True,
+       m_UseCondition = USE_CONDITION["UC_ONE_CLASS"],         --??? ????
+       m_KeyItemID = 0,
+       m_RequiredKeyCount = 0,
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_LORD_KNIGHT"],
+              m_iItemGroupID = 500043,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ELSWORD_RUNE_SLAYER"],
+              m_iItemGroupID = 500044,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_WIND_SNEAKER"],
+              m_iItemGroupID = 500045,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_LIRE_GRAND_ARCHER"],
+              m_iItemGroupID = 500046,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_ELEMENTAL_MASTER"],
+              m_iItemGroupID = 500047,
+       },
+       
+       {
+              m_cUnitClass = UNIT_CLASS["UC_ARME_VOID_PRINCESS"],
+              m_iItemGroupID = 500048,
+       },
+	{
+		m_cUnitClass = UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"],
+		m_iItemGroupID = 11898,
+	},
+
+	{
+		m_cUnitClass = UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"],
+		m_iItemGroupID = 12168,
+	},
+	{
+		m_cUnitClass = UNIT_CLASS["UC_ARA_YAMA_RAJA"],
+		m_iItemGroupID = 12169,
+	},
+
+}
+
+-- Their item groups and those of the class entries added to our cubes
+g_pRandomItemManager:AddRandomItemGroup( 11815, 41763, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11815, 41764, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11815, 41765, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11815, 41766, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11818, 41769, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11818, 41770, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11818, 41771, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11818, 41772, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11819, 41763, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11819, 41764, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11819, 41765, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11819, 41766, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11826, 41763, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11826, 41764, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11826, 41765, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11826, 41766, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11828, 41763, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11828, 41764, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11828, 41765, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11828, 41766, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11833, 41763, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11833, 41764, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11833, 41765, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11833, 41766, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11834, 41769, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11834, 41770, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11834, 41771, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11834, 41772, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11837, 41763, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11838, 41769, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11846, 41764, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11847, 41770, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11865, 41765, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11866, 41771, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11869, 41766, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11871, 41772, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11873, 41763, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11873, 41764, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11873, 41765, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11873, 41766, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11876, 41763, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11876, 41764, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11876, 41765, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11876, 41766, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11877, 41769, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11877, 41770, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11877, 41771, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11877, 41772, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11882, 41769, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11882, 41770, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11882, 41771, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11882, 41772, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11885, 41769, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11885, 41770, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11885, 41771, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11885, 41772, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11887, 41763, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11887, 41764, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11887, 41765, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11887, 41766, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11888, 41769, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11888, 41770, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11888, 41771, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11888, 41772, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11891, 41763, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11891, 41764, 19, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11891, 41765, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11891, 41766, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11893, 41763, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11893, 41764, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11893, 41765, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11893, 41766, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11895, 41763, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11895, 41764, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11895, 41765, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11895, 41766, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11898, 41769, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11898, 41770, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11898, 41771, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11898, 41772, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11901, 41763, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11901, 41764, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11901, 41765, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11901, 41766, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11902, 41769, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11902, 41770, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11902, 41771, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11902, 41772, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11904, 41751, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11904, 41752, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11904, 41753, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11904, 41754, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11905, 41746, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11905, 41747, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11905, 41748, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11905, 41749, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11906, 41732, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11906, 41733, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11906, 41734, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11906, 41735, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11907, 41600, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11907, 41610, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11907, 41620, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11907, 41630, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11908, 41732, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11908, 41733, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11908, 41734, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11908, 41735, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11909, 41600, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11909, 41610, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11909, 41620, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11909, 41630, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11911, 41732, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11911, 41733, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11911, 41734, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11911, 41735, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11912, 41600, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11912, 41610, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11912, 41620, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11912, 41630, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11913, 41650, 100, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11914, 41650, 100, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11915, 41732, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11915, 41733, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11915, 41734, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11915, 41735, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11916, 41732, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11916, 41733, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11916, 41734, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11916, 41735, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11917, 41660, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11917, 41670, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11917, 41680, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11917, 41690, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11917, 41650, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11918, 41600, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11918, 41610, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11918, 41620, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11918, 41630, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11919, 41739, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11919, 41740, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11919, 41741, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11919, 41742, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11926, 41650, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11927, 41732, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11928, 41660, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11929, 41600, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11935, 41739, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11937, 41733, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11938, 41670, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11939, 41610, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11945, 41740, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11946, 41734, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11947, 41680, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11948, 41620, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11949, 41741, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11955, 41735, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11956, 41690, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11957, 41630, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11958, 41742, 100, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11959, 41732, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11959, 41733, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11959, 41734, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11959, 41735, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11961, 41600, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11961, 41610, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11961, 41620, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11961, 41630, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11962, 41732, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11962, 41733, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11962, 41734, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11962, 41735, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11963, 41660, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11963, 41670, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11963, 41680, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11963, 41690, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11963, 41650, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11964, 41600, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11964, 41610, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11964, 41620, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11964, 41630, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11966, 41739, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11966, 41740, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11966, 41741, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11966, 41742, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11967, 41732, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11967, 41733, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11967, 41734, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11967, 41735, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11968, 41660, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11968, 41670, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11968, 41680, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11968, 41690, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11968, 41650, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11969, 41739, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11969, 41740, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11969, 41741, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11969, 41742, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11976, 41732, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11976, 41733, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11976, 41734, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11976, 41735, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11977, 41660, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11977, 41670, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11977, 41680, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11977, 41690, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11977, 41650, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11978, 41739, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11978, 41740, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11978, 41741, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11978, 41742, 20, 100, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11979, 41732, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11979, 41733, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11979, 41734, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11979, 41735, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11981, 41660, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11981, 41670, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11981, 41680, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11981, 41690, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11981, 41650, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11982, 41600, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11982, 41610, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11982, 41620, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11982, 41630, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11983, 41739, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11983, 41740, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11983, 41741, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11983, 41742, 20, 3, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11984, 41732, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11984, 41733, 19, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11984, 41734, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11984, 41735, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11984, 41733, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11985, 41600, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11985, 41610, 19, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11985, 41620, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11985, 41630, 20, 7, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11986, 41732, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11986, 41733, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11986, 41734, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11986, 41735, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11987, 41600, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11987, 41610, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11987, 41620, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 11987, 41630, 20, 1, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12166, 41732, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12166, 41733, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12166, 41734, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12166, 41735, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12167, 41600, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12167, 41610, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12167, 41620, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12167, 41630, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12168, 41660, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12168, 41670, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12168, 41680, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12168, 41690, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12169, 41739, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12169, 41740, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12169, 41741, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12169, 41742, 20, 14, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12170, 41751, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12170, 41752, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12170, 41753, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12170, 41754, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12171, 41746, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12171, 41747, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12171, 41748, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 12171, 41749, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16823, 133479, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16823, 133480, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16823, 133481, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16823, 133482, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16823, 133483, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16824, 133484, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16824, 133485, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16824, 133486, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16824, 133487, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16824, 133488, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16855, 41731, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16855, 41732, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16855, 41733, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16855, 41734, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16855, 41735, 20, 10, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16856, 41738, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16856, 41739, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16856, 41740, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16856, 41741, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 16856, 41742, 20, 15, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 300506, 181869, 40, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 300506, 181870, 20, 0, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 300506, 80001820, 10, 0, 1000 )
+g_pRandomItemManager:AddRandomItemGroup( 300506, 80001821, 10, 0, 1000 )
+g_pRandomItemManager:AddRandomItemGroup( 300506, 84000405, 10, 0, 1000 )
+g_pRandomItemManager:AddRandomItemGroup( 300506, 84000406, 10, 0, 1000 )
+g_pRandomItemManager:AddRandomItemGroup( 402240, 41731, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 402240, 41732, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 402240, 41733, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 402240, 41734, 20, 30, 1 )
+g_pRandomItemManager:AddRandomItemGroup( 402240, 41735, 20, 30, 1 )
