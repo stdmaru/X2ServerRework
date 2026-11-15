@@ -38,6 +38,9 @@ client_data (`data/`, any folder; a new one goes to `data/ui/scripts/`):
   itself (`SetAnchor` in Lua, `IsAnchorFromScript`) cannot be changed here: they win over the file in the game.
 - **Stretch zones** (`STRETCH_ZONES`, layout x from the dialog): added, dragged or typed (Ctrl + click), removed; a
   picture's "Make its width a stretch zone" adds the span of that piece (the plain middle of a bar).
+- **Backdrops** (`BACKDROPS`, [T51](../project/decisions.md), 2026-11-15): a named static's "full-screen backdrop"
+  check box declares it, with its fade width beside it (64 for a new one; dragged or typed). Choose the 21:9 and 4:3
+  sizes to see the fade and the crop.
 - An edit shows at once in every open dialog of that script (`Engine::ApplyAnchors`, which also clears what the entry
   no longer declares), and is put back every frame over what opening a dialog or watching the game sets. The running
   game reads the file when it starts, so it shows a saved change after a restart; while watching, an anchor removed
@@ -198,11 +201,12 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
 
 `UIAnchors.lua` (`test_anchors_file.cpp`): entries read by script without folder or case; each kind of edit changes
 only its own text (a value, a control removed from the middle or the end of a line and with its line, added after a
-trailing comma or on one line, a name that needs quotes, the dialog's anchor and the zones added, changed and removed,
+trailing comma or on one line, a name that needs quotes, the dialog's anchor, the zones and the backdrops added, changed and removed,
 an entry emptied and removed, a comment after it kept); new entries under one section, long ones wrapped; a missing
 file written with its header; text that cannot be read reported. The client_data's own file (2026-11-14) reads
 without problems and is unchanged by setting its entries to what they are.
-The engine: an entry put into an open dialog and cleared, the script's own anchors kept.
+The engine: an entry put into an open dialog and cleared, the script's own anchors kept, a backdrop declared and
+drawn at 21:9 (2026-11-15).
 
 `x2_ui_editor_tests`, headless on the null render backend: the script list (sorted, `.kom/` skipped), the record file
 (positions by script without folder or case, each once, placed by code; scenes and their scripts, older records without
