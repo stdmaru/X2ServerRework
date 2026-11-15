@@ -848,6 +848,19 @@ void Engine::ApplyAnchors(int index, const AnchorEntry& entry, const AnchorEntry
     for (const auto& [name, value] : entry.controls) {
         apply(name, value);
     }
+    const auto setBackdrop = [&](const std::string& name, float fade) {
+        if (CKTDGUIControl* control = dialog->GetControl(Wide(name).c_str()); control != nullptr) {
+            control->SetBackdropFade(fade);
+        }
+    };
+    for (const auto& [name, fade] : previous.backdrops) {
+        if (entry.Backdrop(name) < 0.0f) {
+            setBackdrop(name, -1.0f);
+        }
+    }
+    for (const auto& [name, fade] : entry.backdrops) {
+        setBackdrop(name, fade);
+    }
 }
 
 bool Engine::Render(unsigned width, unsigned height, float elapsed, std::string& error)
@@ -1008,6 +1021,7 @@ std::vector<DialogInfo> Engine::Inspect() const
             c.anchor = AnchorName(control->GetAnchor());
             c.anchorDeclared = control->HasAnchor();
             c.anchorFromScript = control->IsAnchorFromScript();
+            c.backdropFade = control->GetBackdropFade();
             c.shown = control->GetShow();
             const D3DXVECTOR2 offset = control->GetOffsetPos();
             c.offset[0] = offset.x;

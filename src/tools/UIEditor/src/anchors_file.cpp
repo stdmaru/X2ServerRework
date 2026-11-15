@@ -20,7 +20,9 @@ constexpr const char* kHeader =
     "-- Anchors: CENTER (the default), LEFT, RIGHT, STRETCH. A script's own SetAnchor wins over this file.\n"
     "-- STRETCH pieces span the screen: STRETCH_ZONES = { { min, max }, ... } (layout x relative to the dialog) are the\n"
     "-- parts that grow, the plain middles between end pieces, sharing the extra width; without zones a piece is scaled\n"
-    "-- whole (a plain fill).\n";
+    "-- whole (a plain fill).\n"
+    "-- BACKDROPS = { ControlName = fade } declares full-screen pictures: black beside them where the screen is wider,\n"
+    "-- their outer `fade` layout units faded into it; narrower screens crop them.\n";
 
 std::string ScriptKey(const std::string& script)
 {
@@ -87,6 +89,15 @@ std::string Zones(const std::vector<std::pair<float, float>>& zones)
     return out + " }";
 }
 
+std::string Backdrops(const std::vector<std::pair<std::string, float>>& backdrops)
+{
+    std::string out = "{";
+    for (std::size_t i = 0; i < backdrops.size(); ++i) {
+        out += (i == 0 ? " " : ", ") + Key(backdrops[i].first) + " = " + Number(backdrops[i].second);
+    }
+    return out + " }";
+}
+
 std::size_t Width(const std::string& line)
 {
     std::size_t width = 0;
@@ -119,6 +130,30 @@ void AnchorEntry::SetControl(const std::string& name, const std::string& anchor)
         it->second = anchor;
     } else {
         controls.emplace_back(name, anchor);
+    }
+}
+
+float AnchorEntry::Backdrop(const std::string& name) const
+{
+    for (const auto& [control, fade] : backdrops) {
+        if (control == name) {
+            return fade;
+        }
+    }
+    return -1.0f;
+}
+
+void AnchorEntry::SetBackdrop(const std::string& name, float fade)
+{
+    const auto it = std::find_if(backdrops.begin(), backdrops.end(), [&](const auto& b) { return b.first == name; });
+    if (fade < 0.0f) {
+        if (it != backdrops.end()) {
+            backdrops.erase(it);
+        }
+    } else if (it != backdrops.end()) {
+        it->second = fade;
+    } else {
+        backdrops.emplace_back(name, fade);
     }
 }
 
@@ -406,6 +441,14 @@ void AnchorsFile::Reparse()
                         problem("bad stretch zone in " + item.key);
                     }
                 }
+            } else if (field.key == "BACKDROPS" && field.kind == Field::Kind::Table) {
+                for (const Field& backdrop : m_tables[field.table].fields) {
+                    if (!backdrop.key.empty() && backdrop.kind == Field::Kind::Number && backdrop.number >= 0.0) {
+                        script.entry.SetBackdrop(backdrop.key, static_cast<float>(backdrop.number));
+                    } else {
+                        problem("bad backdrop in " + item.key);
+                    }
+                }
             } else if (field.key == "CONTROLS" && field.kind == Field::Kind::Table) {
                 for (const Field& control : m_tables[field.table].fields) {
                     if (!control.key.empty() && control.kind == Field::Kind::String) {
@@ -567,6 +610,9 @@ void AnchorsFile::Set(const std::string& script, const AnchorEntry& entry)
         if (!entry.zones.empty()) {
             head.push_back("STRETCH_ZONES = " + Zones(entry.zones));
         }
+        if (!entry.backdrops.empty()) {
+            head.push_back("BACKDROPS = " + Backdrops(entry.backdrops));
+        }
         std::vector<std::string> controls;
         for (const auto& [name, anchor] : entry.controls) {
             controls.push_back(Key(name) + " = " + Quote(anchor));
@@ -690,6 +736,10 @@ void AnchorsFile::Set(const std::string& script, const AnchorEntry& entry)
     if (old.zones != entry.zones) {
         const std::size_t controls = fieldIndex(table(), "CONTROLS");
         setField("STRETCH_ZONES", entry.zones.empty() ? std::string() : Zones(entry.zones), controls);
+    }
+    if (old.backdrops != entry.backdrops) {
+        const std::size_t controls = fieldIndex(table(), "CONTROLS");
+        setField("BACKDROPS", entry.backdrops.empty() ? std::string() : Backdrops(entry.backdrops), controls);
     }
     if (old.controls != entry.controls) {
         if (entry.controls.empty()) {

@@ -126,6 +126,30 @@ TEST_CASE("ui editor: an edit to UIAnchors.lua changes only its own text")
         file.Set("DLG_Loading.lua", l);
         CHECK(file.Text().find("[\"DLG_Loading.lua\"] = { CONTROLS = { Bar") != std::string::npos);
     }
+    SUBCASE("backdrops added before the controls, changed, read back and removed") {
+        AnchorEntry l = file.Get("DLG_Loading.lua");
+        l.SetBackdrop("Bg", 64.0f);
+        file.Set("DLG_Loading.lua", l);
+        CHECK(file.Text() == Replaced(kFile, "{ CONTROLS = { Bar", "{ BACKDROPS = { Bg = 64 }, CONTROLS = { Bar"));
+        l.SetBackdrop("Bg", 32.5f);
+        l.SetBackdrop("Second", 0.0f);
+        file.Set("DLG_Loading.lua", l);
+        CHECK(file.Text().find("{ BACKDROPS = { Bg = 32.5, Second = 0 }, CONTROLS") != std::string::npos);
+        CHECK(file.Problem().empty());
+        CHECK(file.Get("DLG_Loading.lua").Backdrop("Bg") == 32.5f);
+        CHECK(file.Get("DLG_Loading.lua").Backdrop("Second") == 0.0f);
+        CHECK(file.Get("DLG_Loading.lua").Backdrop("Bar") < 0.0f);
+        l.backdrops.clear();
+        file.Set("DLG_Loading.lua", l);
+        CHECK(file.Text() == kFile);
+
+        AnchorEntry n;
+        n.SetBackdrop("Login", 64.0f);
+        file.Set("DLG_Login_Back.lua", n);
+        CHECK(file.Text().find("\t[\"DLG_Login_Back.lua\"] = { BACKDROPS = { Login = 64 } },\n") != std::string::npos);
+        CHECK(file.Get("dlg_login_back.lua") == n);
+        CHECK_FALSE(AnchorsFile::Parse("UI_ANCHORS = { [\"x.lua\"] = { BACKDROPS = { A = \"LEFT\" } } }").Problem().empty());
+    }
     SUBCASE("every control removed, then the whole entry") {
         AnchorEntry l = file.Get("DLG_Loading.lua");
         l.controls.clear();

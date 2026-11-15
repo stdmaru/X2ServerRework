@@ -762,6 +762,12 @@ class CKTDGUIControl : private x2::NonCopyable
 		bool			IsAnchorFromScript() const				{ return m_bAnchorFromScript; }
 		// Back to its dialog's anchor, for the UI editor when an entry of UIAnchors.lua goes.
 		void			ClearAnchor()							{ m_eAnchor = UIAnchor::Center; m_bAnchorDeclared = false; m_bAnchorFromScript = false; }
+		// A full-screen picture (BACKDROPS in UIAnchors.lua): where the canvas is wider than its pictures, the sides
+		// beyond them are black and the pictures' outer fFade layout units fade into that black. Narrower canvases
+		// crop it, as any centered picture. A negative fade: not a backdrop.
+		void			SetBackdropFade( float fFade )			{ m_fBackdropFade = fFade; }
+		bool			IsBackdrop() const						{ return m_fBackdropFade >= 0.f; }
+		float			GetBackdropFade() const					{ return m_fBackdropFade; }
 		virtual void	SetOffsetPos( D3DXVECTOR2 pos )		{ m_OffsetPos = pos; }
 
 		void			SetSize_LUA( float x, float y ) { SetSize( D3DXVECTOR2(x,y) ); }
@@ -926,6 +932,7 @@ class CKTDGUIControl : private x2::NonCopyable
 		UIAnchor			m_eAnchor = UIAnchor::Center;
 		bool				m_bAnchorDeclared = false;
 		bool				m_bAnchorFromScript = false;
+		float				m_fBackdropFade = -1.f;
 #ifdef X2_DEV_TOOLS
 	public:
 		// What the control drew this frame, in layout units relative to its dialog (CKTDGUIAnchorRecorder).

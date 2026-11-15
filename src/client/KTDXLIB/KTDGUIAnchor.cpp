@@ -172,6 +172,21 @@ std::unordered_map<std::wstring, CKTDGUIAnchors::Entry> CKTDGUIAnchors::Load()
 				}
 				lua_pop( L, 1 );
 
+				lua_getfield( L, -1, "BACKDROPS" );	// { name = fade width }
+				if ( lua_istable( L, -1 ) )
+				{
+					lua_pushnil( L );
+					while ( lua_next( L, -2 ) != 0 )
+					{
+						if ( lua_type( L, -2 ) == LUA_TSTRING && lua_type( L, -1 ) == LUA_TNUMBER && lua_tonumber( L, -1 ) >= 0 )
+							kEntry.mapBackdrops[ToWide( lua_tostring( L, -2 ) )] = static_cast<float>( lua_tonumber( L, -1 ) );
+						else
+							std::fprintf( stderr, "UIAnchors.lua: bad backdrop in %s\n", pszScript );
+						lua_pop( L, 1 );
+					}
+				}
+				lua_pop( L, 1 );
+
 				lua_getfield( L, -1, "CONTROLS" );
 				if ( lua_istable( L, -1 ) )
 				{
@@ -227,6 +242,20 @@ void CKTDGUIAnchors::Apply( CKTDGUIDialog& kDialog, const wchar_t* pwszScriptNam
 		}
 		else if ( pControl->HasAnchor() == false )
 			pControl->SetAnchor( eAnchor );
+	}
+
+	for ( const auto& [wstrControl, fFade] : kEntry.mapBackdrops )
+	{
+		CKTDGUIControl* pControl = kDialog.GetControl( wstrControl.c_str() );
+		if ( pControl == NULL )
+		{
+			std::string strControl, strScript;
+			ConvertWCHARToChar( strControl, wstrControl );
+			ConvertWCHARToChar( strScript, it->first );
+			std::fprintf( stderr, "UIAnchors.lua: no backdrop control %s in %s\n", strControl.c_str(), strScript.c_str() );
+		}
+		else
+			pControl->SetBackdropFade( fFade );
 	}
 }
 
