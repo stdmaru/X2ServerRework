@@ -132,10 +132,13 @@ CKTDXDeviceTexture::~CKTDXDeviceTexture()
 		dwFilter = D3DX_FILTER_LINEAR;
 	}//if
 
+	// The original loaded only the top level. A texture now keeps the mip chain its file has, so the world and models
+	// do not shimmer when minified (textures upscaled 4x); atlases (a .tet beside the file: UI, name tags) keep one
+	// level, so a minified piece does not blend its atlas neighbours.
 	hr = D3DXCreateTextureFromFileInMemoryEx( g_pKTDXApp->GetDevice()
 		, (void*)Info->pRealData, Info->size
-		, uWidth, uHeight, 1, 0, d3dFormat, D3DPOOL_MANAGED, dwFilter
-		, D3DX_FILTER_NONE, 0, &imgInfo, NULL, &pTexture );
+		, uWidth, uHeight, Info2 != NULL ? 1 : D3DX_FROM_FILE, 0, d3dFormat, D3DPOOL_MANAGED, dwFilter
+		, D3DX_FILTER_BOX, 0, &imgInfo, NULL, &pTexture );
 	if ( hr != D3D_OK || pTexture == NULL )
 		goto fail;
 

@@ -190,7 +190,15 @@ load as they are):
 - **Filters**: `NONE` copies the top-left corner (transparent black outside the source), `POINT` takes the nearest
   texel, `LINEAR` the four nearest, `TRIANGLE`/`BOX`/`D3DX_DEFAULT` average the texels each destination texel covers
   (linear when enlarging). Mirror and dither flags are ignored.
-- **The texture detail option** (`CX2GameOption`, through `CKTDXDeviceManager::SetTextureDetailLevel`): High loads the file as it is (one level);
+- **Mip levels** (2026-11-15, `client/texture-mips`, a change from the original): `CKTDXDeviceTexture` loads the
+  mip chain its file has (`D3DX_FROM_FILE`; 11,299 of the client's `.dds` have one) where the original kept only the
+  top level, so the world and models do not shimmer when minified, which 4× textures
+  ([Upscaling](../tools/upscaling.md)) would make worse; a file without a chain still loads one level. Atlases (a
+  `.tet` beside the file: the UI, name tags) keep one level, so a minified piece does not blend its neighbours in the
+  atlas. Medium and Low regenerate the chain at the reduced size (box filter). The samplers already asked for linear
+  mip filtering (`KTDGManager`, the dialogs). A `ktdxlib` test checks both cases on the client's archives
+  (`X2_MASSFILE_CLIENT_DATA`).
+- **The texture detail option** (`CX2GameOption`, through `CKTDXDeviceManager::SetTextureDetailLevel`): High loads the file as it is;
   Medium halves textures of 128 texels and up and makes `R8G8B8`/`R5G6B5` files DXT1; Low quarters them and makes the
   other files DXT3, so most DXT1/DXT5 textures are decoded, resized and encoded again at load. Medium and Low cost CPU
   at load time, as they did with D3DX.

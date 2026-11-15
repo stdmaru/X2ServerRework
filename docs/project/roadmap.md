@@ -388,6 +388,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           ready ([Upscaling](../tools/upscaling.md), 2026-11-15): `texconv.py` turns the client's DDS/TGA into PNG
           and back in each file's own format, and the `ui` chain (4x-AnimeSharp, alpha through the model; `--scale
           2` for a 2× set) is built; nothing has been run on the UI yet.
+    - [x] `client/texture-mips` (2026-11-15, PR #85): textures load the mip chain their file has, atlases with a `.tet`
+          one level, so 4× model and world textures do not shimmer at a distance
+          ([D3D9](../porting/client-d3d9.md)); `texconv.py from-png --mips` gives upscaled DDS files a full chain
+          ([Upscaling](../tools/upscaling.md)).
     - Validation for every step: a dev tool that captures the main screens (login, character select, village, field,
           dungeon, PvP, inventory, shop) at 4:3, 16:9, 16:10 and 21:9 to compare across PRs; at 4:3 a migrated
           screen must match the original.

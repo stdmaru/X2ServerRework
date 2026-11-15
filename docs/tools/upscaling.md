@@ -28,7 +28,8 @@ commands; this page records what it is and what was learned.
    original format; `texconv.py check <original> <converted>` confirms it. chaiNNer cannot write DDS on Linux, hence
    this script: DXT1 (1-bit alpha kept), DXT3 and DXT5 through Pillow 13 (ImageMagick drops DXT1 alpha and writes
    DXT5 for DXT3), uncompressed DDS with the original's bit masks, TGA with its own depth, RLE and palette, and the
-   full mipmap chain when the original had one. A round trip of one file of every format kept the format
+   full mipmap chain when the original had one; `--mips` gives every DDS a full chain (model and world textures:
+   the client loads a file's chain, [D3D9](../porting/client-d3d9.md); atlases with a `.tet` load one level). A round trip of one file of every format kept the format
    (2026-11-15).
 
 Formats in the client_data (2026-11-15): DXT1 29,673, DXT5 1,808, DXT3 1,292, RGB24 778, RGB32 with alpha 438, DXT1
