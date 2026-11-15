@@ -205,6 +205,9 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         `kim.py`) decompiles all 4,553 bytecode scripts and turns `Item.kim` into `Item.lua` + `SetItem.lua`; unchanged
         files pack back from the originals (173/173 identical), edited ones as UTF-8 source with BOM, `Item.kim` compiled
         again (2026-11-05). See [Client Lua data](../porting/lua.md).
+  - [x] `tools/kom-br-key`: `kom.py` reads the Brazilian August 2014 `data036.kom` (its own Algorithm 3 key, detected on
+        unpack, kept by pack, `unblob` for komextract folders) and `tools/kom/keyrecover.py` recovers keys of other clients
+        from their archives (2026-11-15). See [Inventory](../original/inventory.md) and [Server package](../tools/runtime.md#toolskom).
   - Packing `client_data` for distribution (rebuild only the changed archives, a rule for new files) moved to
     x2 studio's export to `.kom` (user, 2026-11-05; [Later](#later--x2-studio)).
   - [x] `client/kom-mass-file`: the client's `KGCMassFileManager` on `x2::kom` (`x2::client_massfile`): `CX2Main`'s fixed
