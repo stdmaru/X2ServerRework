@@ -126,6 +126,28 @@ as source and Item.kim compiled again, scripts that do not load refused, and `--
 readable Lua: 4,553 scripts decompiled, none kept as bytecode, Item.kim converted, 173 of 173 archives identical,
 7 min 14 s (6 min 22 s without Lua).
 
+## Bringing data from other clients
+
+Two scripts copy entries from other clients' scripts into a client_data's, by ID, and can be run again (a second run
+changes nothing). The sources and their order are on [Add character](../project/add-character.md).
+
+```bash
+tools/assets/merge_skills.py <client_data>/data/NewSkillTempletVer2.lua --skills 9000-9014,9200-9207 \
+    --classes UC_ADD_NASOD_RULER,... --source <file> [--source <file> ...] --text <file> [--tree <file>] [--dry-run]
+tools/assets/merge_items.py <client_data>/items --enum <client_data>/data/Enum.lua --unit-type UT_ADD \
+    --source <Item.lua> [--source ...] --text <Item.lua> --luajit /usr/bin/luajit [--dry-run]
+```
+
+- `merge_skills.py`: each skill from the first `--source` that has it; its name and descriptions from `--text` where
+  the source's are empty or Korean; each class's tree entries from the first of `--tree` and the sources that has them.
+- `merge_items.py`: the items (by `--unit-type` or `--ids`) that our `Item.lua` lacks, from the first `--source` that
+  has them, with `--text`'s name and description where the source's are Korean (items left Korean are skipped), and
+  their sets from the `SetItem.lua` beside a source. It also reads V5's `ClientScript` export (list fields such as
+  `m_RenderRotateList`, rotations in radians) into the original keys (`ADD_ITEM_SCALE_ROTATE` in degrees, ...). Items
+  with a value our `Enum.lua` lacks (classes we do not have, `IT_CUSTOM`...) are skipped; an item whose set is in no
+  source gets `m_SetID = 0` (`CX2ItemManager::GetSetItem` asserts on an unknown set). The result is compiled with
+  `kim.scripts_to_kim` to check it.
+
 ## Content changes (T42)
 
 Since 2026-11-12 the client's content may change ([T42](../project/decisions.md)). Every file changed in the client_data
@@ -151,3 +173,6 @@ is listed here with the step that changed it and why.
 | `ui/textures/DLG_UI_Common_Texture{16,21,23,25,45,66,68,70,74,76,77,80,81}_NEW.tga` | `tools/ui-editor` (2026-11-14) | Same script: fully transparent texels within 2 of a visible one take their visible neighbours' average color (they were white, and linear filtering drew a light line along the portrait's frame at the screen edge). Alpha and every visible texel unchanged; still uncompressed 32-bit TGA |
 | `ui/scripts/DLG_UI_Community_Friend.lua` | `tools/ui-editor-layout` (2026-11-14) | Lines 33 and 37: the add-friend button's `SetDisableTex` and `SetDisablePoint` called on `g_pButtonFriend_add`, a typo of `g_pButtonfriend_add`. In the original it failed (the script stopped there) or, after `DLG_Search_Friend.lua` or `DLG_UI_Community_Whole.lua` had set that global, gave their button the disabled texture and point; found when the UI editor opened the dialog alone |
 | `ui/scripts/DLG_Unit_Create_Front_Menu_New.lua` | `tools/ui-editor-layout` (2026-11-15) | Line 132: `g_pPromotionMovie:SetLoop(true)` → `g_pIntroMovie:SetLoop(true)`, the movie the lines above create. `g_pPromotionMovie` is the character select screen's movie (`DLG_Unit_Select_Back_New.lua`, which sets it not to loop): the call reached another dialog's object, freed or not, and failed when that script had not run; the code loops the intro movie itself (`CX2StateCreateUnit`), so nothing shown changes. Found when the UI editor opened the creation screen's scene |
+| `data/NewSkillTempletVer2.lua` | `server/add-character` (2026-11-15) | Add's first path: 33 skills (9000–9014, 9200–9207, 9400–9408, 9600) from BR 2014-08, with their Portuguese text from BR 2017, and 72 tree entries of `UC_ADD_NASOD_RULER`/`PSYCHIC_TRACER`/`LUNATIC_PSYKER` from V5 (BR 2014-08 has none), by `tools/assets/merge_skills.py` |
+| `ui/textures/DLG_Add_SKILL_ScreenShot_01.{tga,TET}`, `_02` (new) | `server/add-character` (2026-11-15) | The skill tree's Add screenshots: the `.tga` from BR 2017 `data063`, the `.TET` from V5 `data063.kom`. New files: dev builds only until `pack` writes them ([Packing](#packing)) |
+| `items/Item.lua`, `items/SetItem.lua` | `server/add-character` (2026-11-15) | 1,706 Add items and 132 sets from V5's `ClientScript` (BR 2014-08 first; it has few), names and descriptions from BR 2017, by `tools/assets/merge_items.py`; 51,543 items, 2,557 sets. Left out: 49 items with values we lack (classes 33–36/123–126, PR 83), 119 only in Korean; 258 items whose set is in no source have `m_SetID = 0` |
