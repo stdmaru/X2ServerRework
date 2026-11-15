@@ -17,6 +17,10 @@ from backups in `_database/` (outside git).
 Collation `Latin1_General_CI_AS`, compatibility level 100 (SQL Server 2008). Original server `.dsn` files use other database names
 (`DATABASE=Elsword-Account`...): when running a server against this database, adjust `.dsn` `DATABASE` values.
 
+**The backups are not KOG's databases** (user, 2026-11-15): the files the user had did not hold the complete databases,
+so much of them was written by hand by the user to make the game work. Changing them to fix problems or add features is
+allowed (rows and procedures), as patches in [Database patches](database-patches.md), so a fresh restore can reproduce them.
+
 ## Usage
 
 ```bash
