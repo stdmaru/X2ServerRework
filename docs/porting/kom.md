@@ -31,7 +31,9 @@ strict parser (`src/header.cpp`).
   blob's adler32 against the header. `ReadInto` decodes into the caller's buffer with a reusable scratch for the stored blob
   (`DecodeInPlace`, which decrypts it in place): the client's `KGCMassFileManager` reads into its pooled buffers so.
 - Algorithms: 0 zlib, 2 XORCRC (the 2014 client's Lua), 3 XORCRC3 (the August 2014 and later files: raw deflate from byte 6);
-  1 (zlib + Blowfish, unused) is kept opaque: listed, copied, not decoded.
+  1 (zlib + Blowfish, unused) is kept opaque: listed, copied, not decoded. XORCRC3 uses the `2014-08` key only; other
+  clients' keys (the Brazilian one, 2026-11-15) are known to `kom.py` alone, since our client never reads them
+  ([Inventory](../original/inventory.md)).
 - <a id="xml-header"></a>**XML header layouts** found in the client's files (2026-11-05, all 173 read and round-tripped):
 
   | Archives | Prolog | Attributes | End of `<File>` | `FileTime` |

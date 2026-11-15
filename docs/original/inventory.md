@@ -83,17 +83,27 @@ At the root, `_database/` (outside git): SQL Server backups of the game database
 restored by the [Development database](../tools/development-database.md).
 
 And in `_tools/kom/`: tool to extract client `.kom` files (`_client/`), useful for inspecting scripts and assets.
-Formats it reads and writes (2026-10-30):
+Formats it reads and writes (2026-10-30, updated 2026-11-15):
 
 | File | Entries | Lua bytecode | Status |
 |---|---|---|---|
 | Our client's `data036.kom` (2014) | Algorithm 2 (XORCRC) | `\x1bKL\x81` | works |
 | August 2014 `data036.kom` (repository `Elsword-V5.0318.6_3`) | Algorithm 3 (XORCRC with another key, zlib without final adler32) | `\x1bKL\x82`: LuaJIT 2.0 with reordered opcodes | works |
-| `data036_br.kom` (2016) | Algorithm 3 in XML, but with another key or variation | ? | cannot open: entries decrypt to garbage |
+| Brazilian August 2014 `data036.kom` (assets outside the repository, extracted by the old komextract) | Algorithm 3 with its own key (`br-2014-08`) | `\x1bKL\x82` | works (2026-11-15): all 178 encrypted entries, 139 Lua decompiled, `Item.kim` |
+| `data036_br.kom` (2016) | Algorithm 3 in XML, but with another key or variation | ? | cannot open: entries decrypt to garbage; `keyrecover.py` not tried yet |
 
 Algorithm 3 and the `0x82` opcode table are not in `_reference` (only 0, 1, and 2): they come from reverse engineering published in
 repository `Elsword-V5.0318.6_3` (`KTDXCommonFunc.h`, `tools/kpcrack/`), performed in 2026 on a 2014 client, not KOG code. LuaJIT
 version does not change in any format: all are LuaJIT 2.0.
+
+**The Algorithm 3 key changes with the client** (region and date), while the cipher stays the same. `kom.py` keeps the
+known keys in `ALGO3_KEYS` and tries each one. The Brazilian key was not taken from an executable: `tools/kom/keyrecover.py`
+solved it from the archive's own entries (2026-11-15). XORCRC is linear over GF(2), so every plaintext bit we can predict
+(zlib headers, empty Lua scripts, files also present in a decodable archive) is a linear equation on the 160 key bits.
+The equations stop at rank 144: keys form classes of 2^16 that decrypt identically, and the tool prints one of them (the same
+attack on our client's Algorithm 2 gives an equivalent of its key, not the key itself). `KOMView.exe` (a 2023 community
+viewer) carries about 300 five-dword tuples drawn from the same `XOR_KEY` pool as `KTDXCommonFunc.h`, for the later `V.0.4`
+archives; none of them decrypts the 2014 Algorithm 3 entries.
 
 `_reference/X2Server` (the link used by the importer) did not exist on 2026-10-29; the clone is at `_reference/X2Server-github`,
 and the importer uses the clone directly if the link is missing.
