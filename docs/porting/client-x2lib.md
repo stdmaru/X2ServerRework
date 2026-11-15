@@ -260,6 +260,12 @@ it goes between them instead of from 0, which at 4:3 is the same. Before, the ma
 column's edge while the character was in the left part of a field, leaving the screen's left strip uncovered (user,
 2026-11-14).
 
+The navigation box in the map's corner (`CX2WorldMapUI`: clicking or dragging it moves the map, and it follows the
+map) took the map's position from the layout's 0 and was 4:3 wide. With the narrower range, dragging it put the map out
+of range, the range pulled it back and the box jumped when released (user: "glitches"). The box now stands for the
+screen: its left top maps to the canvas's (`NaviToMapPos` / `MapToNaviPos`), its 4:3 size grows with the canvas within
+the background (`WidenNaviWindow`), and the map is kept in range at once. At 4:3 it is the original's.
+
 ## State names (2026-11-14, `tools/ui-editor`)
 
 `CX2Main::StateName` gives a state's `XS_*` name; `StateInLog` writes it, and dev builds pass it to the UI anchor

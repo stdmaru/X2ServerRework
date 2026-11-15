@@ -319,6 +319,9 @@ class CKTDGUIDialog
 		// 4:3: on a wider (or taller) screen, the travel shrinks by what the canvas adds, so the picture covers the
 		// screen at both ends (none when the screen is wider than the picture: it stays centered). 2026-11-14.
 		D3DXVECTOR2 GetDraggingRange() const;
+		// Moves the dialog back into its dragging range now (OnFrameMove does it every step), for code that places
+		// it from elsewhere (the world map's navigation box).
+		void KeepInDraggingRange();
 		void SetDraggingRange( float fWidth, float fHeight ) { m_vDraggingRange = D3DXVECTOR2(fWidth, fHeight); }
 
 		void ShowGuideDesc( CKTDGUIControl* pControl );

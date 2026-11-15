@@ -337,33 +337,7 @@ HRESULT	CKTDGUIDialog::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-	// dialog dragging 범위 제한
-	if( m_bEnableMoveByDrag == true && m_bEnableDraggingRange == true )
-	{
-		const D3DXVECTOR2 vRange	= GetDraggingRange();
-		D3DXVECTOR2 vRightBottom	= m_vDraggingRangeCenter + vRange * 0.5f - m_vSize * 0.5f;
-		D3DXVECTOR2 vLeftTop		= m_vDraggingRangeCenter - vRange * 0.5f - m_vSize * 0.5f;
-
-		if( m_Pos.x < vLeftTop.x )
-		{
-			m_Pos.x = vLeftTop.x;
-		}
-
-		if( m_Pos.x > vRightBottom.x )
-		{
-			m_Pos.x = vRightBottom.x;
-		}
-
-		if( m_Pos.y < vLeftTop.y )
-		{
-			m_Pos.y = vLeftTop.y;
-		}
-		if( m_Pos.y > vRightBottom.y )
-		{
-			m_Pos.y = vRightBottom.y;
-		}
-		SetPos( m_Pos );
-	}
+	KeepInDraggingRange();
 
 
 
@@ -802,6 +776,7 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					if ( uMsg == WM_MOUSEMOVE && m_bMouseDownForDrag == true )
 					{
 						SetPos( vPointer - m_vDragGrab );
+						KeepInDraggingRange();	// not drawn out of it until the next step
 						return true;
 					}
 					m_vDragGrab = vPointer - m_Pos;
@@ -1965,6 +1940,19 @@ bool CKTDGUIDialog::SetAnchor_LUA( const char* pszAnchor )
 	SetAnchor( eAnchor );
 	m_bAnchorFromScript = true;
 	return true;
+}
+
+void CKTDGUIDialog::KeepInDraggingRange()
+{
+	if( m_bEnableMoveByDrag == false || m_bEnableDraggingRange == false )
+		return;
+	const D3DXVECTOR2 vRange	= GetDraggingRange();
+	const D3DXVECTOR2 vRightBottom	= m_vDraggingRangeCenter + vRange * 0.5f - m_vSize * 0.5f;
+	const D3DXVECTOR2 vLeftTop		= m_vDraggingRangeCenter - vRange * 0.5f - m_vSize * 0.5f;
+	D3DXVECTOR2 vPos = m_Pos;
+	vPos.x = std::min( std::max( vPos.x, vLeftTop.x ), vRightBottom.x );
+	vPos.y = std::min( std::max( vPos.y, vLeftTop.y ), vRightBottom.y );
+	SetPos( vPos );
 }
 
 D3DXVECTOR2 CKTDGUIDialog::GetDraggingRange() const
