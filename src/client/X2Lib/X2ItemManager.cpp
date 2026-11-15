@@ -160,6 +160,43 @@ bool    CX2ItemManager::DoMemoryNotEncrypt( const char* pBuffer, long nSize )
     return false;
 }
 
+namespace
+{
+// Runs one of the item scripts. LuaJIT allows 65,536 constants in a function, and the client_data's Item.lua (one chunk
+// of 51,593 AddItemTemplet calls, 2026-11-15) has more, so debug and dev builds run the loose scripts in pieces, cut
+// before every 500th top-level statement (a line starting "g_p"; x2_assets writes one call per statement).
+bool DoItemScript( const WCHAR* pFileName )
+{
+#if defined(X2_DEBUG) || defined(X2_DEV_TOOLS)
+    KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER Info =
+        g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile( std::wstring( pFileName ) );
+    if ( Info == NULL || Info->pRealData == NULL || Info->size <= 0 )
+        return false;
+    std::string_view text( Info->pRealData, static_cast<size_t>( Info->size ) );
+    if ( text.empty() || text[0] == '\033' )   // bytecode: no statements to cut
+        return g_pKTDXApp->LoadLuaTinker( pFileName );
+    if ( text.starts_with( "\xEF\xBB\xBF" ) )
+        text.remove_prefix( 3 );
+
+    constexpr size_t kStatementsPerPiece = 500;
+    lua_State* pLuaState = g_pKTDXApp->GetLuaBinder()->GetLuaState();
+    size_t pieceStart = 0;
+    size_t statements = 0;
+    for ( size_t pos = text.find( "\ng_p" ); pos != std::string_view::npos; pos = text.find( "\ng_p", pos + 1 ) )
+    {
+        if ( ++statements % kStatementsPerPiece != 0 )
+            continue;
+        if ( !lua_tinker::dobuffer( pLuaState, text.data() + pieceStart, pos + 1 - pieceStart ) )
+            return false;
+        pieceStart = pos + 1;
+    }
+    return lua_tinker::dobuffer( pLuaState, text.data() + pieceStart, text.size() - pieceStart );
+#else
+    return g_pKTDXApp->LoadLuaTinker( pFileName );
+#endif
+}
+}
+
 bool	CX2ItemManager::OpenItemScriptFile( const WCHAR* pKimFile, unsigned uNumScriptFiles, const WCHAR* apScriptFileName[] )
 {
     bool bExistRealScript = false;
@@ -197,7 +234,7 @@ bool	CX2ItemManager::OpenItemScriptFile( const WCHAR* pKimFile, unsigned uNumScr
 
         for( unsigned u = 0; u != uNumScriptFiles; ++u )
         {
-            bool bRet = g_pKTDXApp->LoadLuaTinker( apScriptFileName[u] );
+            bool bRet = DoItemScript( apScriptFileName[u] );
 	        if( bRet == false )
 	        {
 		        ErrorLogMsg( XEM_ERROR9, apScriptFileName[u] );
@@ -220,7 +257,7 @@ bool	CX2ItemManager::OpenItemScriptFile( const WCHAR* pKimFile, unsigned uNumScr
 			스크립트에 작성된 자료들을 실제로 등록하는 부분 */
             for( unsigned u = 0; u != uNumScriptFiles; ++u )
             {
-                bool bRet = g_pKTDXApp->LoadLuaTinker( apScriptFileName[u] );
+                bool bRet = DoItemScript( apScriptFileName[u] );
                 if ( bRet == false )
 	            {
 		            ErrorLogMsg( XEM_ERROR9, apScriptFileName[u] );
