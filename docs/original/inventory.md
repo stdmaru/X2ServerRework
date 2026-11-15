@@ -90,8 +90,16 @@ Formats it reads and writes (2026-10-30, updated 2026-11-15):
 | Our client's `data036.kom` (2014) | Algorithm 2 (XORCRC) | `\x1bKL\x81` | works |
 | August 2014 `data036.kom` (repository `Elsword-V5.0318.6_3`) | Algorithm 3 (XORCRC with another key, zlib without final adler32) | `\x1bKL\x82`: LuaJIT 2.0 with reordered opcodes | works |
 | Brazilian August 2014 `data036.kom` (assets outside the repository, extracted by the old komextract) | Algorithm 3 with its own key (`br-2014-08`) | `\x1bKL\x82` | works (2026-11-15): all 178 encrypted entries, 139 Lua decompiled, `Item.kim` |
-| Brazilian 2017 `data036.kom` (assets outside the repository), container `V.0.4` | XML header XOR a 12-byte key, a `MappedID` attribute per entry; entries Algorithm 3 with the `br-2014-08` key | `\x1bKL\x82` | works (2026-11-15): all 356 entries; 251 of 252 Lua decompiled (`DamageEffect.lua` stays bytecode: unstructured jump); its `Item.kim` (107,260 items) has 228-byte templets, which `kim.py` (188) does not read yet |
-| `data036_br.kom` (2016) | Algorithm 3 in XML, but with another key or variation | ? | cannot open: entries decrypt to garbage; not retried with the regional keys or `keyrecover.py` (file not at hand on 2026-11-15) |
+| Brazilian 2017 `data036.kom` (assets outside the repository), container `V.0.4` | XML header XOR a 12-byte key, a `MappedID` attribute per entry; entries Algorithm 3 with the `br-2014-08` key | `\x1bKL\x82` | works (2026-11-15): all 356 entries; 251 of 252 Lua decompiled (`DamageEffect.lua` stays bytecode: unstructured jump); its `Item.kim` (107,260 items, 6,325 sets) has 228-byte templets (`kim.py` layout `2017`, round-trips byte for byte) |
+| Brazilian January 2016 `data036.kom` (assets outside the repository; the `data036_br.kom` that did not open before) | container `V.0.3`; Algorithm 3 with the key `KOMView.exe` calls **EU** (`eu`), not the Brazilian one | `\x1bKL\x82` | works (2026-11-15): all 224 entries, 164 Lua decompiled; its `Item.kim` (89,339 items, 5,200 sets) has 204-byte templets (`kim.py` layout `2016`, round-trips byte for byte) |
+
+**`Item.kim` layouts** (all version `0x1201`; `kim.py` detects the layout from the templet size, and a decompiled
+`Item.lua` names it in its header note so `compile` writes it back): `2014`, 188-byte templets (our client's,
+`x2::lua`'s only one); `2016`, 204 bytes; `2017`, 228 bytes. The new fields were matched against the items each file
+shares with a 2014 `Item.kim`; what they mean is unknown, so their Lua keys are ours (`m_iUnknownB`, `m_iUnknownC`,
+`m_UnknownDate`, ... listed at the top of `kim.py`). Both later layouts add characters 10–13 (Lu, Ciel, Rose, Ain, by
+their model names) and a `m_dwFlags2` bit set on Ciel's items only; 2017 also has eight model and attach names instead
+of six, two more `m_Stat` floats and one more u32 in set records.
 
 Algorithm 3 and the `0x82` opcode table are not in `_reference` (only 0, 1, and 2): they come from reverse engineering published in
 repository `Elsword-V5.0318.6_3` (`KTDXCommonFunc.h`, `tools/kpcrack/`), performed in 2026 on a 2014 client, not KOG code. LuaJIT
@@ -102,7 +110,8 @@ to 2017. `kom.py` keeps the known keys in `ALGO3_KEYS` and tries each one:
 
 - **Regional table of `KOMView.exe`** (a 2023 community viewer, region table `NA EU KR BR CN TW` built in code): NA is the
   `2014-08` key above, KR is the Algorithm 2 key of our client's `KTDXCommonFunc.h`, BR decodes both Brazilian archives;
-  EU, CN and TW were not checked on real archives. Its other table, about 300 five-dword tuples named by eight characters
+  EU decodes the Brazilian January 2016 archive (so Brazil used the "EU" key in 2016 and the "BR" one in 2014 and
+  2017); CN and TW were not checked on real archives. Its other table, about 300 five-dword tuples named by eight characters
   drawn from the `XOR_KEY` pool, matches the `MappedID` values of the `V.0.4` header (some rotated by a few characters);
   the entries decode without them, so their use is unknown.
 - **`tools/kom/keyrecover.py`** finds a key from an archive's own entries when no known key fits. XORCRC is linear over

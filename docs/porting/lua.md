@@ -31,7 +31,8 @@ belongs to the layer that manages that data) and runs scripts in the project's u
 ## Item.kim
 
 `Item.kim` (version `0x1201`: 188-byte item templets, interned strings and vectors, then the set records) is what the
-client loads instead of running the item scripts. `DecompileKim` writes `Item.lua` and `SetItem.lua` in the layout of the
+client loads instead of running the item scripts. Later clients' 204- and 228-byte layouts are read by `kim.py` only
+([Inventory](../original/inventory.md)); our client never sees them. `DecompileKim` writes `Item.lua` and `SetItem.lua` in the layout of the
 original scripts (UTF-8 with BOM, CRLF), in the order the tool read the items, so `CompileKim` of its output gives the
 same `Item.kim` byte for byte. With the tables of `Enum.lua` (`LoadEnums`), enum fields are written by name
 (`ITEM_TYPE["IT_WEAPON"]`); without them, as numbers.
