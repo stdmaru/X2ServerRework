@@ -63,7 +63,7 @@ Configs point to `../ServerResource` and `../ClientScript` (`SimLayer:AddPath`),
 | Variable | Default | Used in |
 |---|---|---|
 | `X2_DIST_DIR` | `<repository>/dist` | package destination, shared by presets |
-| `X2_CLIENT_DATA` | `_client/data` | `ClientScript` source |
+| `X2_CLIENT_DATA` | `_client/data` | `ClientScript` source: the `.kom` folder or a client_data |
 | `X2_DB_SERVER`, `X2_DB_USER`, `X2_DB_PASSWORD` | `127.0.0.1,<X2_DB_PORT or 1433>`, `sa`, development password from `docker-compose.yml` | `.dsn` |
 | `X2_ODBC_DRIVER`, `X2_ODBC_OPTIONS` | FreeTDS (`libtdsodbc.so`, found by `find_library` in `/usr/lib` on Arch or `/usr/lib/<triplet>/odbc` on Ubuntu; `TDS_Version=7.4;ClientCharset=UTF-8`) if available, else ODBC Driver 18 (`Encrypt=yes;TrustServerCertificate=yes`) | `DBLayer:SetODBCDriver/SetODBCOptions` |
 | `X2_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (the address the server registers in the database) |
@@ -101,6 +101,14 @@ version or, when unavailable as in the build image, the interpreter built by CMa
 Scripts are flattened into one output directory (`KAutoPath` searches subfolders by name, and no names repeat across `.kom` files).
 Measured on 2026-10-30 with the client in `_client/`: 4,564 scripts from 173 `.kom`, 45 seconds. The output stamp avoids reruns
 when nothing changes.
+
+`<data>` may also be a **client_data** ([client_data](client-data.md); a folder with `.kom/manifest.tsv`): its scripts are
+already source and its `Item.kim` is already `Item.lua` + `SetItem.lua`, so every `.lua` is copied (no LuaJIT needed) and
+the content changes made there (T42: Add's skills, items and quests, PR 82) reach the servers as they reach the client.
+Point `X2_CLIENT_DATA` at it. Checked 2026-11-15: from the client_data, 4,565 scripts in 2 seconds, byte for byte those of
+the `.kom` except the 17 edited there, `UIAnchors.lua` (new) and the client's three `Config_*.lua` (renamed; no server
+reads them). The client_data must be reachable from the build environment: the build image and the `x2-dev` container mount only the
+repository, so mount it there too or point `X2_CLIENT_DATA` at a copy inside the repository (`_client/`, outside git).
 
 **Comparison with original server's `ClientScript`** (2026-10-30, behavioral comparison using `tools/runtime/lua_trace.lua`, which
 records calls, arguments, and defined globals): 2,198 scripts behave equivalently (2 are byte-identical), 1,800 differ, and 68 are

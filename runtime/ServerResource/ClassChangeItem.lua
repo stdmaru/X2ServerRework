@@ -205,7 +205,6 @@ ClassChangeTable:SetClassChange_InventoryItem(1,607012, UNIT_CLASS["UC_ARA_SAKRA
 ClassChangeTable:SetClassChange_InventoryItem(2,607013, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 ClassChangeTable:SetClassChange_InventoryItem(3,607010, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 
---[[
 --소마
 ClassChangeTable:SetClassChange_InventoryItem(0,607015, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])
 ClassChangeTable:SetClassChange_InventoryItem(1,607016, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])	
@@ -216,7 +215,6 @@ ClassChangeTable:SetClassChange_InventoryItem(0,607015, UNIT_CLASS["UC_ARA_YAMA_
 ClassChangeTable:SetClassChange_InventoryItem(1,607016, UNIT_CLASS["UC_ARA_YAMA_RAJA"])	
 ClassChangeTable:SetClassChange_InventoryItem(2,607017, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
 ClassChangeTable:SetClassChange_InventoryItem(3,607014, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
---]]
 
 ---------------------------------------------------------------인벤토리 교본 아이템
 --소드 나이트
@@ -416,3 +414,13 @@ ClassChangeTable:SetClassChange_InventoryItem(11,99965, UNIT_CLASS["UC_CHUNG_TAC
 ClassChangeTable:SetClassChange_InventoryItem(12,99966, UNIT_CLASS["UC_CHUNG_TACTICAL_TROOPER"])
 ClassChangeTable:SetClassChange_InventoryItem(13,99967, UNIT_CLASS["UC_CHUNG_TACTICAL_TROOPER"])
 ClassChangeTable:SetClassChange_InventoryItem(14,99973, UNIT_CLASS["UC_CHUNG_TACTICAL_TROOPER"])
+
+--Elesis (from V5; _reference has none)
+ClassChangeTable:SetClassChange_InventoryItem(1,608011, UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"])
+ClassChangeTable:SetClassChange_InventoryItem(2,608014, UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"])
+ClassChangeTable:SetClassChange_InventoryItem(1,608011, UNIT_CLASS["UC_ELESIS_GRAND_MASTER"])
+ClassChangeTable:SetClassChange_InventoryItem(2,608014, UNIT_CLASS["UC_ELESIS_GRAND_MASTER"])
+ClassChangeTable:SetClassChange_InventoryItem(1,608019, UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"])
+ClassChangeTable:SetClassChange_InventoryItem(2,608022, UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"])
+ClassChangeTable:SetClassChange_InventoryItem(1,608019, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])
+ClassChangeTable:SetClassChange_InventoryItem(2,608022, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])

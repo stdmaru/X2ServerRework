@@ -266,16 +266,15 @@ ClassChangeTable:SetClassChange_Skill(3,7404, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"]
 ClassChangeTable:SetClassChange_Skill(4,7405, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])--만월 베기, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
 ClassChangeTable:SetClassChange_Skill(5,7600, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])--분기등천-천수화, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
 
---[[
 --소마
 ClassChangeTable:SetClassChange_Skill(1,7215, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--이혈공
-ClassChangeTable:SetClassChange_Skill(2,7014, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--연환지옥
+ClassChangeTable:SetClassChange_Skill(2,7011, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--기공파
 ClassChangeTable:SetClassChange_Skill(3,7013, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--연환장
 ClassChangeTable:SetClassChange_Skill(4,7409, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--늑대의 울부짖음, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
 ClassChangeTable:SetClassChange_Skill(5,7601, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--대규환지옥, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
 --명왕
 ClassChangeTable:SetClassChange_Skill(1,7215, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--이혈공
-ClassChangeTable:SetClassChange_Skill(2,7014, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--연환지옥
+ClassChangeTable:SetClassChange_Skill(2,7011, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--기공파
 ClassChangeTable:SetClassChange_Skill(3,7013, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--연환장
 ClassChangeTable:SetClassChange_Skill(4,7409, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--늑대의 울부짖음
 ClassChangeTable:SetClassChange_Skill(5,7601, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--대규환지옥
@@ -304,4 +303,16 @@ ClassChangeTable:SetClassChange_Skill(2,8012, UNIT_CLASS["UC_ELESIS_BLAZING_HEAR
 ClassChangeTable:SetClassChange_Skill(3,8016, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])--파이어 월
 ClassChangeTable:SetClassChange_Skill(4,8408, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])--꺼지지 않는 불꽃, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
 ClassChangeTable:SetClassChange_Skill(5,8601, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])--에인션트 파이어, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
---]]
+
+--Psychic Tracer
+ClassChangeTable:SetClassChange_Skill(1,9007, UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"])
+ClassChangeTable:SetClassChange_Skill(2,9009, UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"])
+ClassChangeTable:SetClassChange_Skill(3,9012, UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"])
+ClassChangeTable:SetClassChange_Skill(4,9408, UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"])
+ClassChangeTable:SetClassChange_Skill(5,9600, UNIT_CLASS["UC_ADD_PSYCHIC_TRACER"])
+--Lunatic Psyker
+ClassChangeTable:SetClassChange_Skill(1,9007, UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"])
+ClassChangeTable:SetClassChange_Skill(2,9009, UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"])
+ClassChangeTable:SetClassChange_Skill(3,9012, UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"])
+ClassChangeTable:SetClassChange_Skill(4,9408, UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"])
+ClassChangeTable:SetClassChange_Skill(5,9600, UNIT_CLASS["UC_ADD_LUNATIC_PSYKER"])
