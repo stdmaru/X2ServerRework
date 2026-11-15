@@ -348,7 +348,7 @@ TEST_CASE("d3dx: a skinned draw through an effect on the null backend")
         // The fragment block: fog on, in the effect's color.
         const auto* fragment = Pushed(*render, ShaderStage::Fragment, 0);
         REQUIRE(fragment != nullptr);
-        REQUIRE(fragment->bytes.size() == 160);
+        REQUIRE(fragment->bytes.size() == 176);
         float fog[4];
         std::memcpy(fog, fragment->bytes.data() + 144, sizeof(fog));
         CHECK(fog[0] == 0.0f);
