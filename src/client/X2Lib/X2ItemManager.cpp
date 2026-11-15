@@ -163,6 +163,17 @@ bool    CX2ItemManager::DoMemoryNotEncrypt( const char* pBuffer, long nSize )
 bool	CX2ItemManager::OpenItemScriptFile( const WCHAR* pKimFile, unsigned uNumScriptFiles, const WCHAR* apScriptFileName[] )
 {
     bool bExistRealScript = false;
+#if defined(X2_DEBUG) || defined(X2_DEV_TOOLS)
+    // Port: debug and dev builds read the client_data's loose scripts (Item.lua, SetItem.lua) when they are all there,
+    // so item edits show without a pack; the archives' Item.kim is only the packed copy (docs/porting/client-x2lib.md).
+    if ( uNumScriptFiles != 0 && apScriptFileName != NULL )
+    {
+        KGCMassFileManager* pMassFileManager = g_pKTDXApp->GetDeviceManager()->GetMassFileManager();
+        bExistRealScript = true;
+        for ( unsigned u = 0; u != uNumScriptFiles && bExistRealScript; ++u )
+            bExistRealScript = pMassFileManager->IsValidFile_LocalFile( apScriptFileName[u] );
+    }
+#endif
 
     if ( bExistRealScript == false )
     {
