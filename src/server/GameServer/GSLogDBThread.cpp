@@ -3113,7 +3113,7 @@ IMPL_ON_FUNC( ELOG_ITEM_TRADE_ERROR_NOT )
 {
 	int iOK = NetError::NET_OK;
 
-	DO_QUERY( L"exec dbo.P_LItemTradeError_INT", L"%d, %d, %s",
+	DO_QUERY( L"exec dbo.P_LItemTradeError_INT", L"%d, %d, N\'%s\'", // Port: the original left the date unquoted
 		% kPacket_.m_iUnitUID
 		% kPacket_.m_iType
 		% kPacket_.m_wsrtRegDate
