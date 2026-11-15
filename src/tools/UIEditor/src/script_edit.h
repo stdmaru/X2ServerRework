@@ -10,7 +10,7 @@ namespace x2::ui_editor {
 
 enum class CallKind {
     DialogPos,  // g_pUIDialog:SetPos(x, y)
-    Point,      // a point table: SetPoint, SetNormalPoint, SetBGPoint, ... (a method named *Point, or SetRect)
+    Point,      // a point table: SetPoint, SetNormalPoint, SetBGPoint_LUA, ... (a method named *Point, or SetRect)
     String,     // AddString's POS
 };
 

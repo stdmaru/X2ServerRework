@@ -224,8 +224,10 @@ bool MoveTable(const std::string& t, const std::vector<char>& code, Range table,
     return true;
 }
 
-bool KindMatches(CallKind kind, const std::string& name)
+bool KindMatches(CallKind kind, const std::string& full)
 {
+    // Some bindings keep their C++ name (g_pNavi:SetBGPoint_LUA).
+    const std::string name = full.size() > 4 && full.compare(full.size() - 4, 4, "_LUA") == 0 ? full.substr(0, full.size() - 4) : full;
     switch (kind) {
     case CallKind::DialogPos:
         return name == "SetPos";

@@ -541,6 +541,23 @@ Fixed from the original (2026-11-14): `CKTDGUIDialogManager::UnmanageDlg` had an
 dereferenced `m_listDialog.rend()` (undefined behavior); MSVC's debug library stops there, so closing any dialog
 crashed debug builds on Windows (found by the UI editor's tests). Removed.
 
+## Script calls for tools (2026-11-14, `tools/ui-editor-layout`)
+
+`X2_DEV_TOOLS` only, while a tool tracks (`CKTDGUIAnchorRecorder::SetToolTracking`): as a script loads into a dialog
+(`OpenScriptFile`, which keeps the dialog loading in `s_pLoadingDialog`), `CKTDGUIDialog::NoteScriptCall` notes the
+setter calls the UI editor edits, with the object they set (lua_tinker's `self`, argument 1) and the Lua line of the
+call (`lua_getstack(L, 1)`, the line of its `(`): the dialog's `SetPos` (`SetPos_LUA`, no longer inline), every point
+table (`CKTDGUIControl::SetPointData_`, which every `Set*Point` of every control type and `CMovieData::SetRect` read
+through) and `AddString`. `GetScriptCalls` returns them, with the index of the script in `GetOpenedScripts` (the one
+running: a script may load another into the dialog). Only calls at the level of the dialog's own script are noted
+(`CKTDXApp::s_iScriptDepth`, how many `LoadAndDoMemory` run one inside another): some controls run a script of their
+own while the dialog's loads, with lines of that other file (found on the client_data, 2026-11-14). Every script runs
+under the same chunk name (`lua_tinker::dobuffer`), so a call from a function another file defined would still be
+noted with that file's line: the editor checks that the line holds such a call before editing it.
+
+`CKTDXApp::s_fnScriptOverride` (also `X2_DEV_TOOLS`): when set and it returns text for a file name,
+`LoadAndDoMemory_ErrorCode` runs that text instead of the file. The UI editor runs its unsaved script edits with it.
+
 ## Dragging dialogs (2026-11-13, `client/widescreen-screens`)
 
 **Behavior change.** Dialogs that allow it (`SetEnableMoveByDrag`: message boxes, field and world maps, messenger,

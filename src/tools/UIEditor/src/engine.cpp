@@ -11,6 +11,7 @@
 #include <cctype>
 #include <map>
 #include <optional>
+#include <set>
 #include <system_error>
 #include <tuple>
 #include <unordered_map>
@@ -200,6 +201,8 @@ struct Engine::State {
     double time = 0.0;
     // Script edits not saved (SetScriptText), by ScriptKey.
     std::unordered_map<std::string, std::string> scriptTexts;
+    // The Lua globals after start-up: the others are what dialog scripts set (CloseDialog clears their objects).
+    std::set<std::string> startGlobals;
     // What each set of scripts placed when first loaded this run (Open::Key): the game, started before the edits,
     // drew that, so the game's state put into a dialog is moved by what the edits moved since (ApplyLive).
     std::map<std::string, ScriptLayout> firstLayouts;
@@ -308,6 +311,14 @@ std::unique_ptr<Engine> Engine::Create(render::Device& render, const EngineOptio
         state->app->LoadLuaTinker(config);
     }
 
+    lua_pushnil(lua);
+    while (lua_next(lua, LUA_GLOBALSINDEX) != 0) {
+        lua_pop(lua, 1);
+        if (lua_type(lua, -1) == LUA_TSTRING) {
+            state->startGlobals.insert(lua_tostring(lua, -1));
+        }
+    }
+
     // The device manager's loading thread starts suspended; CX2Main resumes it once set up. A device reset waits for it.
     devices->ResumeThread();
 
@@ -348,6 +359,23 @@ void Engine::CloseDialog(int index)
         g_pKTDXApp->GetDGManager()->GetDialogManager()->DeleteDlg(open.dialog);
     }
     m_state->dialogs.erase(m_state->dialogs.begin() + index);
+    // The scripts' globals held the closed dialog's controls and pictures (g_pStaticX = g_pUIDialog:CreateStatic()).
+    // A script that uses another's global by mistake (DLG_Event_Clock_Talk_Box.lua's g_pStaticEVENT_CLOCK, from
+    // DLG_Event_Clock.lua) would reach a freed object: it gets nil, a script error, instead (2026-11-14).
+    lua_State* lua = g_pKTDXApp->GetLuaBinder()->GetLuaState();
+    std::vector<std::string> stale;
+    lua_pushnil(lua);
+    while (lua_next(lua, LUA_GLOBALSINDEX) != 0) {
+        const bool object = lua_type(lua, -1) == LUA_TUSERDATA;
+        lua_pop(lua, 1);
+        if (object && lua_type(lua, -1) == LUA_TSTRING && m_state->startGlobals.count(lua_tostring(lua, -1)) == 0) {
+            stale.emplace_back(lua_tostring(lua, -1));
+        }
+    }
+    for (const std::string& name : stale) {
+        lua_pushnil(lua);
+        lua_setfield(lua, LUA_GLOBALSINDEX, name.c_str());
+    }
 }
 
 void Engine::CloseAll()

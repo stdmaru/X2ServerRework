@@ -68,6 +68,10 @@ TEST_CASE("script edit: a point table, on one line and over several")
                      "\tNAME = \"LEFT_TOP = D3DXVECTOR2(0, 0)\",\n"
                      "}\n");
 
+    std::string navigation = "g_pNavi:SetBGPoint_LUA({\n\tLEFT_TOP = D3DXVECTOR2(398, 95),\n})";   // the C++ name
+    REQUIRE_MESSAGE(MoveCall(navigation, 1, CallKind::Point, 2, 0, error), error);
+    CHECK(navigation == "g_pNavi:SetBGPoint_LUA({\n\tLEFT_TOP = D3DXVECTOR2(400, 95),\n})");
+
     std::string corners = "p:SetPoint({ IS_RECT = false, LEFT_TOP = D3DXVECTOR2(0, 0), RIGHT_TOP = D3DXVECTOR2(8, 0),\n"
                           "\tLEFT_BOTTOM = D3DXVECTOR2(0, 8), RIGHT_BOTTOM = D3DXVECTOR2(8, 8) })\n";
     REQUIRE_MESSAGE(MoveCall(corners, 1, CallKind::Point, 1, 2, error), error);

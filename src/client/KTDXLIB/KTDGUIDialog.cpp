@@ -2057,8 +2057,8 @@ void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind )
 {
 	CKTDGUIDialog* pDialog = s_pLoadingDialog;
 	if ( pDialog == nullptr || pDialog->m_bLoadingScript == false || CKTDGUIAnchorRecorder::IsToolTracking() == false
-		|| pDialog->m_vecOpenedScripts.empty() )
-		return;
+		|| pDialog->m_vecOpenedScripts.empty() || CKTDXApp::s_iScriptDepth != pDialog->m_iLoadingDepth )
+		return;		// not the dialog's script itself: one it made run (a control's own script) has lines of its own
 	lua_State* L = g_pKTDXApp->GetLuaBinder()->GetLuaState();
 	lua_Debug ar;
 	// Level 0 is the setter (a C closure), level 1 the script that called it.
@@ -2066,7 +2066,7 @@ void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind )
 		return;
 	ScriptCall kCall;
 	kCall.eKind = eKind;
-	kCall.uScript = static_cast<unsigned>( pDialog->m_vecOpenedScripts.size() - 1 );
+	kCall.uScript = pDialog->m_uLoadingScript;
 	kCall.iLine = ar.currentline;
 	if ( eKind == ScriptCallKind::DialogPos )
 	{
@@ -2335,14 +2335,20 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 
 #ifdef X2_DEV_TOOLS
 	const bool bWasLoading = m_bLoadingScript;
+	const unsigned uWasLoading = m_uLoadingScript;
+	const int iWasDepth = m_iLoadingDepth;
 	CKTDGUIDialog* const pWasLoading = s_pLoadingDialog;
 	m_bLoadingScript = true;
 	s_pLoadingDialog = this;
+	m_uLoadingScript = static_cast<unsigned>( m_vecOpenedScripts.size() );
+	m_iLoadingDepth = CKTDXApp::s_iScriptDepth + 1;	// LoadLuaTinker below runs it one level in
 	m_vecOpenedScripts.emplace_back( pFilename );
 #endif
 	bool bResult = g_pKTDXApp->LoadLuaTinker( pFilename );
 #ifdef X2_DEV_TOOLS
 	m_bLoadingScript = bWasLoading;
+	m_uLoadingScript = uWasLoading;
+	m_iLoadingDepth = iWasDepth;
 	s_pLoadingDialog = pWasLoading;
 #endif
 	if ( bResult == true )

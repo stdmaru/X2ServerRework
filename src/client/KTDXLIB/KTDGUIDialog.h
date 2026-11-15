@@ -612,6 +612,8 @@ private:
 		static void NoteScriptCall( ScriptCallKind eKind );
 	private:
 		std::vector<ScriptCall> m_vecScriptCalls;
+		unsigned m_uLoadingScript = 0;		// the script running now: a script may load another (OpenScriptFile)
+		int m_iLoadingDepth = 0;			// CKTDXApp::s_iScriptDepth while it runs
 		static inline CKTDGUIDialog* s_pLoadingDialog = nullptr;
 	public:
 #endif

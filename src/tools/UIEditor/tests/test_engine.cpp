@@ -5,6 +5,7 @@
 
 #include <doctest/doctest.h>
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -451,4 +452,65 @@ TEST_CASE("ui editor: an edited script reloads into its dialog, moved where it w
     CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == 0.0f);
     CHECK(x2::ui_editor::FindLooseScript(game.root, "dlg_TEST.lua") == game.root / "data" / "ui" / "scripts" / "DLG_Test.lua");
     CHECK(x2::ui_editor::FindLooseScript(game.root, "DLG_Hidden.lua").empty());     // .kom/ skipped
+}
+
+// The user's game folder, when X2_UI_EDITOR_GAME names it (not in CI): every position its dialog scripts set through
+// a call the engine notes can be moved in the script's text.
+TEST_CASE("ui editor: the positions the client_data's scripts set can be moved" *
+          doctest::skip(std::getenv("X2_UI_EDITOR_GAME") == nullptr))
+{
+    const std::filesystem::path folder = std::getenv("X2_UI_EDITOR_GAME");
+    const std::filesystem::path previous = std::filesystem::current_path();
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = folder;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    int calls = 0, shared = 0, failed = 0;
+    const char* filter = std::getenv("X2_UI_EDITOR_FILTER");     // a name prefix, to look at a few
+    for (const std::string& script : x2::ui_editor::FindDialogScripts(folder)) {
+        if (filter != nullptr && script.rfind(filter, 0) != 0) {
+            continue;
+        }
+        if (engine->OpenDialog(script, error) < 0) {
+            continue;
+        }
+        std::vector<x2::ui_editor::SourceRef> refs;
+        for (const auto& dialog : engine->Inspect()) {
+            refs.push_back(dialog.posSource);
+            for (const auto& control : dialog.controls) {
+                refs.insert(refs.end(), control.points.begin(), control.points.end());
+                for (const auto& picture : control.pictures) {
+                    refs.push_back(picture.point);
+                }
+                for (const auto& string : control.strings) {
+                    refs.push_back(string.source);
+                }
+            }
+        }
+        for (const auto& ref : refs) {
+            if (!ref.Known()) {
+                continue;
+            }
+            std::string text;
+            if (!engine->ScriptText(ref.script, text, error)) {
+                MESSAGE(error);
+                ++failed;
+                continue;
+            }
+            ++calls;
+            shared += ref.shared > 1 ? 1 : 0;
+            if (!x2::ui_editor::MoveCall(text, ref.line, ref.kind, 1, 1, error)) {
+                if (++failed <= 40) {
+                    MESSAGE(script << " -> " << ref.script << ": " << error);
+                }
+            }
+        }
+        engine->CloseAll();
+    }
+    MESSAGE(calls << " calls, " << shared << " of them on lines that set several things, " << failed << " not movable");
+    CHECK(calls > 0);
+    engine.reset();
+    std::filesystem::current_path(previous);
 }
