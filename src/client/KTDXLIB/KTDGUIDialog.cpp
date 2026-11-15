@@ -2044,6 +2044,47 @@ float CKTDGUIDialog::GetControlAnchorShift( const CKTDGUIControl* pControl ) con
 	return g_pKTDXApp->GetUIAnchorShift( pControl->GetAnchor() ) - GetAnchorShift();
 }
 
+void CKTDGUIDialog::SetPos_LUA( float x, float y )
+{
+#ifdef X2_DEV_TOOLS
+	NoteScriptCall( ScriptCallKind::DialogPos );
+#endif
+	SetPos( D3DXVECTOR2( x, y ) );
+}
+
+#ifdef X2_DEV_TOOLS
+void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind )
+{
+	CKTDGUIDialog* pDialog = s_pLoadingDialog;
+	if ( pDialog == nullptr || pDialog->m_bLoadingScript == false || CKTDGUIAnchorRecorder::IsToolTracking() == false
+		|| pDialog->m_vecOpenedScripts.empty() )
+		return;
+	lua_State* L = g_pKTDXApp->GetLuaBinder()->GetLuaState();
+	lua_Debug ar;
+	// Level 0 is the setter (a C closure), level 1 the script that called it.
+	if ( lua_getstack( L, 1, &ar ) == 0 || lua_getinfo( L, "l", &ar ) == 0 || ar.currentline <= 0 )
+		return;
+	ScriptCall kCall;
+	kCall.eKind = eKind;
+	kCall.uScript = static_cast<unsigned>( pDialog->m_vecOpenedScripts.size() - 1 );
+	kCall.iLine = ar.currentline;
+	if ( eKind == ScriptCallKind::DialogPos )
+	{
+		kCall.pObject = pDialog;
+	}
+	else
+	{
+		if ( lua_type( L, 1 ) != LUA_TUSERDATA )
+			return;
+		const auto* pUser = static_cast<const lua_tinker::user*>( lua_touserdata( L, 1 ) );
+		if ( pUser == nullptr || pUser->m_p == nullptr )
+			return;
+		kCall.pObject = pUser->m_p;
+	}
+	pDialog->m_vecScriptCalls.push_back( kCall );
+}
+#endif
+
 void CKTDGUIDialog::SetPos( const D3DXVECTOR2& pos )
 {
 	KTDXPROFILE();
@@ -2293,12 +2334,16 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 
 
 #ifdef X2_DEV_TOOLS
+	const bool bWasLoading = m_bLoadingScript;
+	CKTDGUIDialog* const pWasLoading = s_pLoadingDialog;
 	m_bLoadingScript = true;
+	s_pLoadingDialog = this;
 	m_vecOpenedScripts.emplace_back( pFilename );
 #endif
 	bool bResult = g_pKTDXApp->LoadLuaTinker( pFilename );
 #ifdef X2_DEV_TOOLS
-	m_bLoadingScript = false;
+	m_bLoadingScript = bWasLoading;
+	s_pLoadingDialog = pWasLoading;
 #endif
 	if ( bResult == true )
 		CKTDGUIAnchors::Apply( *this, pFilename );

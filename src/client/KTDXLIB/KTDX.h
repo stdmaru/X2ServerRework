@@ -375,6 +375,7 @@ using std::list;
 using std::map;
 #include <unordered_map>
 using std::unordered_map;
+#include <functional>
 #include <string>
 using std::wstring;
 using std::string;

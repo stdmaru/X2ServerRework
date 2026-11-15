@@ -368,3 +368,87 @@ TEST_CASE("ui editor: a picture wider than the screen pans only as far as it sti
     REQUIRE(engine->Render(2560, 1080, 0.016f, error));
     CHECK(engine->Inspect()[0].pos[0] == doctest::Approx(-256.0));
 }
+
+TEST_CASE("ui editor: the engine knows the script line that set each position")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Test.lua", error) == 0);
+    REQUIRE(engine->OpenDialog("DLG_Text.lua", error) == 1);
+    const auto dialogs = engine->Inspect();
+    REQUIRE(dialogs.size() == 2);
+    CHECK(dialogs[0].posSource.script == "DLG_Test.lua");
+    CHECK(dialogs[0].posSource.line == 4);
+    CHECK(dialogs[0].posSource.kind == x2::ui_editor::CallKind::DialogPos);
+    REQUIRE(dialogs[0].controls.size() == 2);
+    REQUIRE(dialogs[0].controls[0].pictures.size() == 1);
+    CHECK(dialogs[0].controls[0].pictures[0].point.line == 11);
+    CHECK(dialogs[0].controls[0].pictures[0].point.shared == 1);
+    CHECK(dialogs[0].controls[1].pictures[0].point.line == 17);
+    CHECK(dialogs[0].controls[0].points.empty());   // a static's points are its pictures'
+    CHECK_FALSE(dialogs[1].posSource.Known());      // DLG_Text.lua sets no position
+    REQUIRE(dialogs[1].controls[0].strings.size() == 1);
+    CHECK(dialogs[1].controls[0].strings[0].source.line == 5);
+    CHECK(dialogs[1].controls[0].strings[0].source.kind == x2::ui_editor::CallKind::String);
+}
+
+TEST_CASE("ui editor: an edited script reloads into its dialog, moved where it was and in the game's state")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Test.lua", error) == 0);
+    engine->SetDialogPos(0, 300, 200);      // placed elsewhere than its script says (a recorded position)
+
+    std::string text;
+    REQUIRE_MESSAGE(engine->ScriptText("dlg_test.lua", text, error), error);
+    CHECK(text.rfind("\xEF\xBB\xBF", 0) == 0);
+    REQUIRE_MESSAGE(x2::ui_editor::MoveCall(text, 4, x2::ui_editor::CallKind::DialogPos, 10, 5, error), error);
+    REQUIRE_MESSAGE(x2::ui_editor::MoveCall(text, 11, x2::ui_editor::CallKind::Point, 7, 0, error), error);
+    engine->SetScriptText("DLG_Test.lua", &text);
+    CHECK(engine->DialogUses(0, "dlg_test.lua"));
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    auto dialogs = engine->Inspect();
+    REQUIRE(dialogs.size() == 1);
+    CHECK(dialogs[0].pos[0] == 310.0f);     // moved by what the edit moved
+    CHECK(dialogs[0].pos[1] == 205.0f);
+    CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == 7.0f);
+    CHECK(dialogs[0].controls[0].pictures[0].points[3][0] == 207.0f);
+
+    // The game, started before the edit, still draws the picture where the file had it: the edit moves it too.
+    x2::ui_editor::LiveSnapshot::Dialog live;
+    live.script = "dlg_test.lua";
+    live.pos[0] = 40.0f;
+    live.pos[1] = 30.0f;
+    live.controls = {{0, true, -1}, {1, true, -1}};
+    x2::ui_editor::LiveSnapshot::Picture picture;
+    picture.texture = "DLG_Test.tga";
+    picture.points[1][0] = picture.points[3][0] = 200.0f;
+    picture.points[2][1] = picture.points[3][1] = 100.0f;
+    picture.full = true;
+    live.pictures = {picture};
+    engine->ApplyLive(0, live);
+    dialogs = engine->Inspect();
+    CHECK(dialogs[0].pos[0] == 50.0f);      // the game's 40 and the edit's 10
+    CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == 7.0f);
+
+    // Undone: the file's text again, reloaded in the game's state.
+    engine->SetScriptText("DLG_Test.lua", nullptr);
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    dialogs = engine->Inspect();
+    CHECK(dialogs[0].pos[0] == 40.0f);
+    CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == 0.0f);
+    CHECK(x2::ui_editor::FindLooseScript(game.root, "dlg_TEST.lua") == game.root / "data" / "ui" / "scripts" / "DLG_Test.lua");
+    CHECK(x2::ui_editor::FindLooseScript(game.root, "DLG_Hidden.lua").empty());     // .kom/ skipped
+}

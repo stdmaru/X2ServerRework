@@ -460,6 +460,12 @@ class CKTDXApp
         bool LoadAndDoMemory_LocalFile( LUADOMEMORYNOTENCRYPT* pManager, const WCHAR* pFileName );
 
 
+#ifdef X2_DEV_TOOLS
+        // A tool's unsaved edits of scripts (tools/ui-editor): when set and it returns text for a file name, that
+        // script runs from the text instead of its file.
+        static inline std::function<const std::string*( const WCHAR* pFileName )> s_fnScriptOverride;
+#endif
+
         __forceinline bool       LoadLuaTinker( const WCHAR* pFileName, bool bEncryption = true )
         {
 			if(LoadAndDoMemory(GetLuaBinder(), pFileName, bEncryption)) return true;
@@ -615,6 +621,21 @@ __forceinline HRESULT CKTDXApp::LoadAndDoMemory_ErrorCode( LUADOMEMORYNOTENCRYPT
 		ErrorLogMsg( KEM_ERROR72, "" );
         return E_INVALIDARG;
     }
+
+#ifdef X2_DEV_TOOLS
+	if ( s_fnScriptOverride )
+	{
+		if ( const std::string* pText = s_fnScriptOverride( pFileName ); pText != nullptr )
+		{
+			if ( pLuaManager->DoMemoryNotEncrypt( pText->data(), static_cast<long>( pText->size() ) ) == false )
+			{
+				ErrorLogMsg( KEM_ERROR73, pFileName );
+				return HRESULT_FROM_WIN32( ERROR_INVALID_DATA );
+			}
+			return S_OK;
+		}
+	}
+#endif
 
 	// The mass file manager decodes every entry by its archive Algorithm (XORCRC included, docs/porting/kom.md), so
 	// bEncryption no longer decrypts here.
