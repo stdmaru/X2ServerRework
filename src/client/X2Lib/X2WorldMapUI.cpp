@@ -1,6 +1,36 @@
 #include "stdafx.h"
 #include "./X2WorldMapUI.h"
 
+namespace
+{
+	// The navigation box shows the part of the map on the screen. Its left top is the screen's, the canvas's (left
+	// of the centered column on a wide screen), where the original took the layout's 0, and it is as wide as the
+	// screen: at 4:3 both are the original's (2026-11-14, client/widescreen-map-pan).
+	D3DXVECTOR2 NaviToMapPos( const D3DXVECTOR2& vRelative, const D3DXVECTOR2& vMapSize )
+	{
+		const D3DXVECTOR2 vMin = g_pKTDXApp->GetUICanvasMin();
+		return D3DXVECTOR2( vMin.x - vMapSize.x * vRelative.x, vMin.y - vMapSize.y * vRelative.y );
+	}
+
+	D3DXVECTOR2 MapToNaviPos( const D3DXVECTOR2& vMapPos, const D3DXVECTOR2& vMapSize )
+	{
+		const D3DXVECTOR2 vMin = g_pKTDXApp->GetUICanvasMin();
+		return D3DXVECTOR2( ( vMin.x - vMapPos.x ) / vMapSize.x, ( vMin.y - vMapPos.y ) / vMapSize.y );
+	}
+
+	// The box's 4:3 size grown with the screen, within the navigation's background.
+	void WidenNaviWindow( CKTDGUIControl::UIPointData& kWindow, const CKTDGUIControl::UIPointData& kBG )
+	{
+		const D3DXVECTOR2 vCanvas = g_pKTDXApp->GetUICanvasSize();
+		const float fWidth = std::min( ( kWindow.rightTopPoint.x - kWindow.leftTopPoint.x ) * vCanvas.x / CKTDXApp::kUILayoutWidth,
+			kBG.rightTopPoint.x - kBG.leftTopPoint.x );
+		const float fHeight = std::min( ( kWindow.leftBottomPoint.y - kWindow.leftTopPoint.y ) * vCanvas.y / CKTDXApp::kUILayoutHeight,
+			kBG.leftBottomPoint.y - kBG.leftTopPoint.y );
+		kWindow.rightTopPoint.x = kWindow.rightBottomPoint.x = kWindow.leftTopPoint.x + fWidth;
+		kWindow.leftBottomPoint.y = kWindow.rightBottomPoint.y = kWindow.leftTopPoint.y + fHeight;
+	}
+}
+
 
 
 
@@ -191,35 +221,19 @@ CX2WorldMapUI::~CX2WorldMapUI(void)
 			CKTDGUINavigation* pNavi	= (CKTDGUINavigation*)lParam;
 			D3DXVECTOR2 vRelativePos = pNavi->GetRelativeWindowPos();
 
-			D3DXVECTOR2 vPos;
-
 			if ( true == m_bZoomed )
 			{
 				map< int, CKTDGUIDialogType >::iterator it = m_mapDLGFieldMap.find( m_iCurrFieldMapID );
 				if( it != m_mapDLGFieldMap.end() )
 				{
-					vPos = it->second->GetSize();
-
-					vPos.x *= vRelativePos.x;
-					vPos.y *= vRelativePos.y;
-
-					vPos.x = 0.f - vPos.x;
-					vPos.y = 0.f - vPos.y;
-
-					it->second->SetPos( vPos );
+					it->second->SetPos( NaviToMapPos( vRelativePos, it->second->GetSize() ) );
+					it->second->KeepInDraggingRange();
 				}
 			}
 			else
 			{
-				vPos = m_pDLGWorldMap->GetSize();
-
-				vPos.x *= vRelativePos.x;
-				vPos.y *= vRelativePos.y;
-
-				vPos.x = 0.f - vPos.x;
-				vPos.y = 0.f - vPos.y;
-
-				m_pDLGWorldMap->SetPos( vPos );
+				m_pDLGWorldMap->SetPos( NaviToMapPos( vRelativePos, m_pDLGWorldMap->GetSize() ) );
+				m_pDLGWorldMap->KeepInDraggingRange();
 			}
 
 			return true;
@@ -230,35 +244,19 @@ CX2WorldMapUI::~CX2WorldMapUI(void)
 			CKTDGUINavigation* pNavi	= (CKTDGUINavigation*)lParam;
 			D3DXVECTOR2 vRelativePos = pNavi->GetRelativeWindowPos();
 
-			D3DXVECTOR2 vPos;
-
 			if ( true == m_bZoomed )
 			{
 				map< int, CKTDGUIDialogType >::iterator it = m_mapDLGFieldMap.find( m_iCurrFieldMapID );
 				if( it != m_mapDLGFieldMap.end() )
 				{
-					vPos = it->second->GetSize();
-
-					vPos.x *= vRelativePos.x;
-					vPos.y *= vRelativePos.y;
-
-					vPos.x = 0.f - vPos.x;
-					vPos.y = 0.f - vPos.y;
-
-					it->second->SetPos( vPos );
+					it->second->SetPos( NaviToMapPos( vRelativePos, it->second->GetSize() ) );
+					it->second->KeepInDraggingRange();
 				}
 			}
 			else
 			{
-				vPos = m_pDLGWorldMap->GetSize();
-
-				vPos.x *= vRelativePos.x;
-				vPos.y *= vRelativePos.y;
-
-				vPos.x = 0.f - vPos.x;
-				vPos.y = 0.f - vPos.y;
-
-				m_pDLGWorldMap->SetPos( vPos );
+				m_pDLGWorldMap->SetPos( NaviToMapPos( vRelativePos, m_pDLGWorldMap->GetSize() ) );
+				m_pDLGWorldMap->KeepInDraggingRange();
 			}
 
 			return true;
@@ -1995,9 +1993,7 @@ void CX2WorldMapUI::UpdateNaviMap( IN D3DXVECTOR2& vPos_, IN CKTDGUINavigation* 
 		map< int, CKTDGUIDialogType >::iterator it = m_mapDLGFieldMap.find( m_iCurrFieldMapID );
 		if( it != m_mapDLGFieldMap.end() )
 		{
-			vPos_ = it->second->GetPos();
-			vPos_.x /= -it->second->GetSize().x;
-			vPos_.y /= -it->second->GetSize().y;
+			vPos_ = MapToNaviPos( it->second->GetPos(), it->second->GetSize() );
 
 			switch ( m_iCurrFieldMapID )
 			{
@@ -2176,6 +2172,7 @@ void CX2WorldMapUI::UpdateNaviMap( IN D3DXVECTOR2& vPos_, IN CKTDGUINavigation* 
 			pNewPoint_NaviWindow->leftBottomPoint	= D3DXVECTOR2( 763, 732 );
 			pNewPoint_NaviWindow->rightTopPoint		= D3DXVECTOR2( 909, 606 );
 			pNewPoint_NaviWindow->rightBottomPoint	= D3DXVECTOR2( 909, 732 );
+			WidenNaviWindow( *pNewPoint_NaviWindow, *pNewPoint_Navi );
 			pNavi_->SetWindowPoint( pNewPoint_NaviWindow );
 		}
 	}
@@ -2187,9 +2184,7 @@ void CX2WorldMapUI::UpdateNaviMap( IN D3DXVECTOR2& vPos_, IN CKTDGUINavigation* 
 		if ( NULL != pStaticField )
 			pStaticField->SetShow( false );
 
-		vPos_ = m_pDLGWorldMap->GetPos();
-		vPos_.x /= -m_pDLGWorldMap->GetSize().x;
-		vPos_.y /= -m_pDLGWorldMap->GetSize().y;
+		vPos_ = MapToNaviPos( m_pDLGWorldMap->GetPos(), m_pDLGWorldMap->GetSize() );
 
 		pNavi_->SetBGTex( L"DLG_UI_Common_Texture70_NEW.TGA", L"WorldMap_Navigation" );
 
@@ -2209,6 +2204,7 @@ void CX2WorldMapUI::UpdateNaviMap( IN D3DXVECTOR2& vPos_, IN CKTDGUINavigation* 
 		pNewPoint_NaviWindow->leftBottomPoint	= D3DXVECTOR2( 758, 644 );
 		pNewPoint_NaviWindow->rightTopPoint		= D3DXVECTOR2( 911, 529 );
 		pNewPoint_NaviWindow->rightBottomPoint	= D3DXVECTOR2( 911, 644 );
+		WidenNaviWindow( *pNewPoint_NaviWindow, *pNewPoint_Navi );
 		pNavi_->SetWindowPoint( pNewPoint_NaviWindow );
 	}
 }

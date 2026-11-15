@@ -564,7 +564,9 @@ with its end at the centered column's edge, and the strip between it and the scr
 16:9) stayed uncovered until the map scrolled. `CKTDGUIDialog::GetDraggingRange` now takes off what the canvas adds
 (width and height, centered dialogs only, never below 0), so the picture's ends stop at the screen's edges. Wider than
 the picture (the field maps at 21:9: 1820 units), it stays centered with a strip each side. Checked headless in the UI
-editor's tests (`ctest -R ui_editor`).
+editor's tests (`ctest -R ui_editor`). `KeepInDraggingRange` applies the range at once (`OnFrameMove` does it every
+step): a mouse drag calls it, so the dialog is never drawn out of range between steps, and so does code that places
+the dialog (the world map's navigation box).
 
 ## Status
 
