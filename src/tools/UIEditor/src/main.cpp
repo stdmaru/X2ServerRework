@@ -82,7 +82,9 @@ struct EditorState {
     // aspect or a height clears it.
     unsigned exact[2] = {};
     bool fit = true;
-    float zoom = 1.0f;      // screen pixels per render target pixel when not fitted
+    float zoom = 1.0f;      // screen pixels per render target pixel when not fitted (ScreenZoom's steps)
+    float wheel = 0.0f;     // wheel turns not yet taken as zoom steps (touchpads send fractions)
+    x2::render::Texture preview;    // what the screen panel shows (ScreenPreview), or the engine's target
     bool showBounds = false;
     Selection selected;
     std::vector<DialogInfo> inspected;
@@ -2006,6 +2008,72 @@ Selection Pick(const std::vector<DialogInfo>& dialogs, float x, float y)
     return {};
 }
 
+// The screen as the panel shows it: a copy of the engine's target with a full mip chain, so a reduced view filters
+// whole areas (ImGui's linear sampler is trilinear) instead of picking 2 x 2 texels that change with every zoom step,
+// which made the UI's lines and edges flicker.
+class ScreenPreview {
+public:
+    explicit ScreenPreview(x2::render::Device& device) : m_device(device) {}
+    ~ScreenPreview()
+    {
+        if (m_texture) {
+            m_device.ReleaseTexture(m_texture);
+        }
+    }
+    ScreenPreview(const ScreenPreview&) = delete;
+    ScreenPreview& operator=(const ScreenPreview&) = delete;
+
+    // The texture for a target of this size (null when it cannot be made: the target is shown as it is).
+    x2::render::Texture Prepare(unsigned width, unsigned height)
+    {
+        if (width != m_width || height != m_height) {
+            if (m_texture) {
+                m_device.ReleaseTexture(m_texture);
+            }
+            m_width = width, m_height = height;
+            m_levels = 1;
+            while ((std::max(width, height) >> m_levels) > 0) {
+                ++m_levels;
+            }
+            m_texture = width == 0 || height == 0
+                            ? x2::render::Texture{}
+                            : m_device.CreateTexture({.format = x2::render::TextureFormat::B8G8R8A8Unorm,
+                                                      .usage = x2::render::TextureUsage::Sampler |
+                                                               x2::render::TextureUsage::ColorTarget,
+                                                      .width = width,
+                                                      .height = height,
+                                                      .levelCount = m_levels,
+                                                      .name = "UI editor screen"});
+        }
+        return m_texture;
+    }
+    // Copies the target into level 0 and filters the other levels from it.
+    void Update(x2::render::CommandBuffer& commands, x2::render::Texture target)
+    {
+        if (!m_texture || !target) {
+            return;
+        }
+        commands.BlitTexture({.texture = target, .w = m_width, .h = m_height},
+                             {.texture = m_texture, .w = m_width, .h = m_height}, x2::render::Filter::Nearest);
+        commands.GenerateMipmaps(m_texture);
+    }
+
+private:
+    x2::render::Device& m_device;
+    x2::render::Texture m_texture;
+    unsigned m_width = 0, m_height = 0, m_levels = 1;
+};
+
+// The screen's zoom steps: whole multiples when magnified (nearest texels, each drawn as wide as the others) and any
+// factor up to 100% when reduced (the preview's mips filter areas), so no step moves the UI's pixels about.
+float ScreenZoom(float zoom, bool in)
+{
+    if (in) {
+        return zoom >= 1.0f ? std::min(std::floor(zoom) + 1.0f, 8.0f) : std::min(zoom * 1.15f, 1.0f);
+    }
+    return zoom > 1.0f ? std::ceil(zoom) - 1.0f : std::max(zoom / 1.15f, 0.1f);
+}
+
 void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, EditorState& state)
 {
     ImGui::SetNextItemWidth(90);
@@ -2048,7 +2116,7 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
         ImGui::TextDisabled("%s", state.message.c_str());
     }
 
-    const std::uint64_t texture = gui.TextureId(engine.Target());
+    const std::uint64_t texture = gui.TextureId(state.preview ? state.preview : engine.Target());
     if (texture == 0) {
         return;
     }
@@ -2060,6 +2128,7 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
         const ImVec2 avail = ImGui::GetContentRegionAvail();
         if (state.fit) {
             state.zoom = std::min(avail.x / tw, avail.y / th);
+            state.zoom = state.zoom >= 1.0f ? std::floor(state.zoom) : state.zoom;
         }
         if (ImGui::IsWindowHovered()) {
             const ImGuiIO& io = ImGui::GetIO();
@@ -2069,21 +2138,34 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
                 const ImVec2 local(io.MousePos.x - start.x, io.MousePos.y - start.y);
                 const float px = (local.x + ImGui::GetScrollX()) / state.zoom;  // the target pixel under the pointer
                 const float py = (local.y + ImGui::GetScrollY()) / state.zoom;
-                state.zoom = std::clamp(state.zoom * std::pow(1.15f, io.MouseWheel), 0.1f, 8.0f);
+                state.wheel += io.MouseWheel;
+                for (; std::fabs(state.wheel) >= 1.0f; state.wheel -= state.wheel > 0 ? 1.0f : -1.0f) {
+                    state.zoom = ScreenZoom(state.zoom, state.wheel > 0);
+                }
                 state.fit = false;
-                ImGui::SetScrollX(px * state.zoom - local.x);
-                ImGui::SetScrollY(py * state.zoom - local.y);
+                // Whole pixels, so the screen's pixels stay on the panel's.
+                ImGui::SetScrollX(std::round(px * state.zoom - local.x));
+                ImGui::SetScrollY(std::round(py * state.zoom - local.y));
             }
             if (ImGui::IsMouseDragging(ImGuiMouseButton_Right) || ImGui::IsMouseDragging(ImGuiMouseButton_Middle)) {
-                ImGui::SetScrollX(ImGui::GetScrollX() - io.MouseDelta.x);
-                ImGui::SetScrollY(ImGui::GetScrollY() - io.MouseDelta.y);
+                ImGui::SetScrollX(std::round(ImGui::GetScrollX() - io.MouseDelta.x));
+                ImGui::SetScrollY(std::round(ImGui::GetScrollY() - io.MouseDelta.y));
             }
         }
         const float zoom = state.zoom;
         const ImVec2 size(tw * zoom, th * zoom);
-        const ImVec2 origin = ImGui::GetCursorScreenPos();
-        ImGui::Image(ImTextureRef(static_cast<ImTextureID>(texture)), size);
+        const ImVec2 origin(std::floor(ImGui::GetCursorScreenPos().x), std::floor(ImGui::GetCursorScreenPos().y));
+        ImGui::SetCursorScreenPos(origin);
         ImDrawList* draw = ImGui::GetWindowDrawList();
+        // Magnified texels stay sharp squares; reduced, the preview's mips filter them.
+        const bool nearest = zoom > 1.0f;
+        if (nearest) {
+            draw->AddCallback(ImGui::GetPlatformIO().DrawCallback_SetSamplerNearest, nullptr);
+        }
+        ImGui::Image(ImTextureRef(static_cast<ImTextureID>(texture)), size);
+        if (nearest) {
+            draw->AddCallback(ImGui::GetPlatformIO().DrawCallback_SetSamplerLinear, nullptr);
+        }
         draw->AddRect(ImVec2(origin.x - 1, origin.y - 1), ImVec2(origin.x + size.x + 1, origin.y + size.y + 1),
                       IM_COL32(110, 110, 120, 255));     // the screen's edges, around the black bars
         const auto box = [&](const ControlInfo& c, ImU32 color, float thickness) {
@@ -2342,6 +2424,7 @@ int main(int argc, char** argv)
         std::fprintf(stderr, "%s\n", device->LastError().c_str());
         return 1;
     }
+    ScreenPreview preview(*device);
     x2::app::ImGuiOptions guiOptions;   // fixed panels: nothing for an ini file to keep
     auto gui = x2::app::ImGuiLayer::Create(*window, *device, guiOptions, error);
     if (!gui) {
@@ -2390,6 +2473,7 @@ int main(int argc, char** argv)
             std::fprintf(stderr, "%s\n", error.c_str());
             break;
         }
+        state.preview = preview.Prepare(engine->TargetWidth(), engine->TargetHeight());
         state.inspected = engine->Inspect();
         if (state.selected.dialog >= static_cast<int>(state.inspected.size())) {
             state.selected = {};
@@ -2434,6 +2518,7 @@ int main(int argc, char** argv)
             std::fprintf(stderr, "frame: %s\n", device->LastError().c_str());
             break;
         }
+        preview.Update(*commands, engine->Target());
         gui->Render(*commands, swapchain.texture, {0.08f, 0.08f, 0.09f, 1.0f});
         commands->Submit();
     }
