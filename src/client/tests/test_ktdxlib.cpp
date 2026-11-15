@@ -364,6 +364,12 @@ struct SkinMesh : CKTDXDeviceXSkinMesh {
     ~SkinMesh() override = default;
 };
 
+struct Texture : CKTDXDeviceTexture {
+    using CKTDXDeviceTexture::CKTDXDeviceTexture;
+    using CKTDXDeviceTexture::_Load;
+    ~Texture() override = default;
+};
+
 bool HasObject(const std::vector<x2::d3d9::xfile::Object>& objects, const char* type)
 {
     for (const auto& object : objects) {
@@ -637,4 +643,27 @@ TEST_CASE("ktdxlib: drawing between ticks interpolates views and matrices, and s
     CHECK(x2::ktdx::UpdateFraction(9, 10, 12, 0.5f) == 1.f);
     CHECK(x2::ktdx::UpdateFraction(0, 10, 11, 0.5f) == 1.f);
     CHECK(x2::ktdx::UpdateFraction(-1, 10, 11, 0.5f) == 1.f);
+}
+
+TEST_CASE("ktdxlib: textures keep their file's mip chain, atlases one level (X2_MASSFILE_CLIENT_DATA)")
+{
+    const char* folder = std::getenv("X2_MASSFILE_CLIENT_DATA");
+    if (folder == nullptr || *folder == '\0') {
+        MESSAGE("X2_MASSFILE_CLIENT_DATA not set: skipped");
+        return;
+    }
+    Engine engine;
+    std::string error;
+    KGCMassFileManager* files = g_pKTDXApp->GetDeviceManager()->GetMassFileManager();
+    REQUIRE_MESSAGE(files->AddMassFiles(folder, KGCMassFileManager::GetClientArchiveNames(), error), error);
+    files->LockMassFileMap();
+    // A 16x16 DXT5 with its 5 levels and no .tet, and a UI map whose DDS has 10 levels and a .tet.
+    const auto levels = [&](const wchar_t* name) {
+        auto texture = std::make_unique<Texture>(&engine.device, name);
+        REQUIRE(SUCCEEDED(texture->_Load(true)));
+        REQUIRE(texture->GetDeviceTexture() != nullptr);
+        return texture->GetDeviceTexture()->GetLevelCount();
+    };
+    CHECK(levels(L"Imire_Mini_Star.dds") == 5);
+    CHECK(levels(L"DLG_UI_Field_Map_Besma_Rest_01.dds") == 1);
 }
