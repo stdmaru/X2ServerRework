@@ -51,7 +51,8 @@ import tempfile
 BOM = b"\xef\xbb\xbf"
 MAGIC = b"KIM "
 VERSION = 0x1201
-CHARS = ["", "Elsword", "Aisha", "Rena", "Raven", "Eve", "Chung", "Ara", "Elesis", "Add"]
+CHARS = ["", "Elsword", "Aisha", "Rena", "Raven", "Eve", "Chung", "Ara", "Elesis", "Add",
+         "Lu", "Ciel", "Rose", "Ain"]    # 10-13 appear only in the 2017 layout; their key names are ours
 CAPS = [c.upper() for c in CHARS]
 D3DX_PI = struct.unpack("<f", struct.pack("<f", 3.141592654))[0]
 
@@ -72,6 +73,68 @@ TF = ("ItemID Flags Flags2 ItemLevel Quantity RepairED RepairVP Price PricePvPPo
       "nCommonModelNames nCommonXETNames nSlashTraces").split()
 assert TEMPLET_SIZE == 188 and len(TF) == 61
 
+# Later layouts, same version 0x1201, reverse engineered by comparing the items they share with a 2014 Item.kim
+# (2026-11-15).  What the new values mean is not known: their Lua keys (m_*Unknown*, m_bCielItem) are ours.
+#   2016 (Brazilian data036.kom of January 2016): 204-byte templets.  UnknownB and UnknownC follow AddMaxMP; two
+#     string offsets sit between the six attach names and the six model names.
+#   2017 (Brazilian data036.kom of 2017): 228-byte templets.  UnknownA comes before them, the attach and model name
+#     lists have 8 offsets, one u32 (UnknownE) ends the templet, m_Stat has 7 floats and set records one more u32.
+#   UnknownA  f32, 0 or 10..55, on weapons
+#   UnknownB  u32, often 200000000 + ItemID
+#   UnknownC  u32, the ItemID or the first ItemID of a family of variants
+#   oUnknownDate  string, dates such as "2017-09-14 10:00", written unshared after the descriptions
+#   oUnknownD     string offset, unused by every item
+#   UnknownE  u32, 0 or 1
+#   m_dwFlags2 bit 2 (m_bCielItem) is set on Ciel's items only; characters 10-13 (Lu, Ciel, Rose, Ain) appear.
+#   m_Stat floats 5 and 6: 7 and 4 on an old 2014 armour whose first five are 0 (likely a new defence scale).
+#   The set record's extra u32 (m_iUnknown): 1, 2 and 3 on the three Elianod sets, else 0.
+TEMPLET_FMT_2014, TF_2014 = TEMPLET_FMT, TF
+_DU = ["oUnknownDate", "oUnknownD"]
+TF_2016 = TF[:11] + ["UnknownB", "UnknownC"] + TF[11:20] + _DU + TF[20:]
+TF_2017 = TF[:11] + ["UnknownA", "UnknownB", "UnknownC"] + TF[11:14] + ["oAttach%d" % i for i in range(8)] + _DU + \
+    ["oModel%d" % i for i in range(8)] + TF[26:] + ["UnknownE"]
+_LU = [("m_UnknownDate", "oUnknownDate"), ("m_UnknownD", "oUnknownD")]
+_BC = [("m_iUnknownB", "UnknownB"), ("m_iUnknownC", "UnknownC")]
+# layout -> templet format, fields, set record format, extra m_Stat keys, extra strings and scalars (key, field)
+LAYOUTS = {
+    "2014": ("<3I2ifiiiif30I3hH16B", TF_2014, "<IiIII", [], [], []),
+    "2016": ("<3I2ifiiiifII32I3hH16B", TF_2016, "<IiIII", [], _LU, _BC),
+    "2017": ("<3I2ifiiiiffII36I3hH16BI", TF_2017, "<IiIIII", ["m_fUnknownStat5", "m_fUnknownStat6"],
+             [("m_ModelName%d" % i, "oModel%d" % i) for i in range(2, 8)] +
+             [("m_AttachFrameName%d" % i, "oAttach%d" % i) for i in range(2, 8)] + _LU,
+             [("m_fUnknownA", "UnknownA")] + _BC + [("m_iUnknownE", "UnknownE")]),
+}
+assert all(len(struct.unpack(v[0], bytes(struct.calcsize(v[0])))) == len(v[1]) for v in LAYOUTS.values())
+assert [struct.calcsize(v[0]) for v in LAYOUTS.values()] == [188, 204, 228]
+LAYOUT, STRINGS_NEW, SCALARS_NEW = "2014", [], []
+
+
+def set_layout(name):
+    """Selects the templet layout the binary code reads and writes."""
+    global TEMPLET_FMT, TF, TEMPLET_SIZE, SET_FMT, SET_SIZE, STAT_KEYS, STRINGS_NEW, SCALARS_NEW, LAYOUT
+    TEMPLET_FMT, TF, SET_FMT, more, STRINGS_NEW, SCALARS_NEW = LAYOUTS[name]
+    STAT_KEYS = STAT_KEYS_2014 + more
+    TEMPLET_SIZE = struct.calcsize(TEMPLET_FMT)
+    SET_SIZE = struct.calcsize(SET_FMT)
+    LAYOUT = name
+
+
+def detect_layout(data):
+    """The layout whose templet size puts the first templets and the set table where the file has them."""
+    _, _, nitems, nsets = struct.unpack_from("<4sIII", data, 0)
+    tbase = 16 + 4 * nitems
+    for name, (fmt, *_) in LAYOUTS.items():
+        size = struct.calcsize(fmt)
+        sbase = tbase + size * nitems
+        if sbase + 4 * nsets > len(data) or nitems < 2:
+            continue
+        ids = struct.unpack_from("<2I", data, 16)
+        first = struct.unpack_from("<I", data, tbase)[0], struct.unpack_from("<I", data, tbase + size)[0]
+        sets = struct.unpack_from("<%dI" % min(nsets, 64), data, sbase)
+        if first == ids and all(a < b for a, b in zip(sets, sets[1:])):
+            return name
+    raise SystemExit("error: unknown Item.kim templet layout")
+
 FLAG_BITS = [("m_bFashion", 0), ("m_bVested", 1), ("m_bCanEnchant", 2), ("m_bCanUseInventory", 3),
              ("m_bNoEquip", 4), ("m_bPcBang", 5), ("m_bCanHyperMode", 6), ("m_bHideSetDesc", 7)]
 FLAG_FIELDS = [("m_UseType", 8), ("m_UseCondition", 12), ("m_ItemType", 16), ("m_ItemGrade", 20),
@@ -86,7 +149,7 @@ SCALARS = [("m_ItemLevel", "ItemLevel", 0), ("m_Quantity", "Quantity", 0), ("m_R
            ("m_Buff_ID", "BuffID", 0), ("m_EqipPosition", "EqipPosition", 1), ("m_CoolTime", "CoolTime", 0),
            ("m_ucMaxSealCount", "MaxSealCount", 0), ("m_iMaxAttribEnchantCount", "MaxAttribEnchantCount", 0),
            ("m_iAttributeLevel", "AttributeLevel", 0)]
-FLOAT_KEYS = {"m_RepairED", "m_fAddMaxMP"}
+FLOAT_KEYS = {"m_RepairED", "m_fAddMaxMP", "m_fUnknownA"}
 STRINGS_NOMAP = ["m_Description", "m_DescriptionInShop", "m_DescriptionInSkillNote"]
 STRINGS_MAP = ["m_ModelName", "m_ModelName1", "m_TextureChangeXETName", "m_AniXETName", "m_AniName",
                "m_ShopImage", "m_DropViewer", "m_AttachFrameName", "m_AttachFrameName1"]
@@ -96,6 +159,7 @@ STRING_FIELD = {"m_Description": "oDescription", "m_DescriptionInShop": "oDescri
                 "m_AniXETName": "oAniXETName", "m_AniName": "oAniName", "m_ShopImage": "oShopImage",
                 "m_DropViewer": "oDropViewer", "m_AttachFrameName": "oAttach0", "m_AttachFrameName1": "oAttach1"}
 STAT_KEYS = ["m_fBaseHP", "m_fAtkPhysic", "m_fAtkMagic", "m_fDefPhysic", "m_fDefMagic"]
+STAT_KEYS_2014 = STAT_KEYS
 STATREL_KEYS = ["m_byBaseHPRelLV", "m_byAtkPhysicRelLV", "m_byAtkMagicRelLV", "m_byDefPhysicRelLV",
                 "m_byDefMagicRelLV"]
 STT_KEYS = ["SLASH_TRACE_COLOR", "SLASH_TRACE_TIP_COLOR", "HYPER_SLASH_TRACE_COLOR", "HYPER_SLASH_TRACE_TIP_COLOR"]
@@ -142,6 +206,7 @@ def parse_kim(data):
     _, version, nitems, nsets = struct.unpack_from("<4sIII", data, 0)
     if version != VERSION:
         raise SystemExit("error: unsupported KIM version 0x%x (expected 0x%x)" % (version, VERSION))
+    set_layout(detect_layout(data))
     ids = struct.unpack_from("<%dI" % nitems, data, 16)
     tbase = 16 + 4 * nitems
     sbase = tbase + TEMPLET_SIZE * nitems
@@ -158,14 +223,20 @@ def parse_kim(data):
         for k, pos in FLAG_FIELDS:
             it[k] = (t["Flags"] >> pos) & 0xf
         it["m_bIsPvpItem"] = t["Flags2"] & 1
-        if t["Flags2"] & ~1:
+        if LAYOUT != "2014":
+            it["m_bCielItem"] = (t["Flags2"] >> 2) & 1
+        if t["Flags2"] & ~(1 if LAYOUT == "2014" else 5):
             raise SystemExit("error: item %d uses unknown m_dwFlags2 bits" % t["ItemID"])
         for k, f, _ in SCALARS:
             it[k] = t[f]
         for k, f in STRING_FIELD.items():
             it[k] = _wstr(data, t[f])
+        for k, f in STRINGS_NEW:
+            it[k] = _wstr(data, t[f])
+        for k, f in SCALARS_NEW:
+            it[k] = t[f]
         if t["oStat"]:
-            it["m_Stat"] = list(struct.unpack_from("<5f", data, t["oStat"]))
+            it["m_Stat"] = list(struct.unpack_from("<%df" % len(STAT_KEYS), data, t["oStat"]))
         if t["oStatRelLV"]:
             it["m_Stat_Relation_Level"] = list(struct.unpack_from("<5B", data, t["oStatRelLV"]))
         if t["oBuffFactor"]:
@@ -200,6 +271,8 @@ def parse_kim(data):
             groups.append(ex[p:p + n])
             p += n
         vec = lambda o: list(struct.unpack_from("<3f", data, o))
+        if any(not 0 < ty < len(CHARS) for g in groups[:5] for ty, _ in g):
+            raise SystemExit("error: item %d has a per-character value for an unknown character" % t["ItemID"])
         it["frame_offsets"] = {ty: vec(o) for ty, o in groups[0]}
         it["scales"] = {ty: vec(o) for ty, o in groups[1]}
         it["rotates"] = {ty: vec(o) for ty, o in groups[2]}
@@ -220,7 +293,7 @@ def parse_kim(data):
         items.append(it)
     sets = []
     for i in range(nsets):
-        sid, _maxlv, oname, oids, oopts = struct.unpack_from(SET_FMT, data, sdbase + i * SET_SIZE)
+        sid, _maxlv, oname, oids, oopts, *more = struct.unpack_from(SET_FMT, data, sdbase + i * SET_SIZE)
         opts = {}
         if oopts:
             n = struct.unpack_from("<I", data, oopts)[0]
@@ -230,10 +303,12 @@ def parse_kim(data):
             if n == 0:
                 opts[1] = []      # m_NeedPartsNum given without any m_Option
         sets.append({"m_SetID": sid, "m_SetName": _wstr(data, oname), "options": opts, "_order": oname})
+        if more:
+            sets[-1]["m_iUnknown"] = more[0]
     # items without any data keep their place in their set's item list
     setlists = {}
     for i in range(nsets):
-        sid, _maxlv, oname, oids, oopts = struct.unpack_from(SET_FMT, data, sdbase + i * SET_SIZE)
+        sid, _maxlv, oname, oids, oopts = struct.unpack_from(SET_FMT, data, sdbase + i * SET_SIZE)[:5]
         if oids:
             setlists[sid] = list(struct.unpack_from("<%dI" % struct.unpack_from("<I", data, oids)[0], data, oids + 4))
     byid = {it["m_ItemID"]: it for it in items}
@@ -253,7 +328,7 @@ def parse_kim(data):
     # set overrode are still in the data area, between the item data and the
     # set lists; keep them so the scripts rebuild the identical file.
     named = [s["_order"] for s in sets if s["_order"]]
-    lists = [o for i in range(nsets) for o in struct.unpack_from(SET_FMT, data, sdbase + i * SET_SIZE)[3:] if o]
+    lists = [o for i in range(nsets) for o in struct.unpack_from(SET_FMT, data, sdbase + i * SET_SIZE)[3:5] if o]
     orphans = []
     if named:
         o, end = min(named), (min(lists) if lists else len(data))
@@ -333,6 +408,8 @@ def build_kim(items, setcalls, log=None):
         done.add(iid)
         t = dict.fromkeys(TF, 0)
         t["ItemID"] = iid
+        for k, f in SCALARS_NEW:
+            t[f] = it[k]
         t["oName"] = w.wstr(it["m_Name"], True)
         fl = 0
         for k, bit in FLAG_BITS:
@@ -341,6 +418,8 @@ def build_kim(items, setcalls, log=None):
             fl |= (it[k] & 0xf) << pos
         t["Flags"] = fl
         t["Flags2"] = 1 if it["m_bIsPvpItem"] else 0
+        if LAYOUT != "2014" and it["m_bCielItem"]:
+            t["Flags2"] |= 4
         for k, f, _ in SCALARS:
             t[f] = it[k]
         for f in ("BuyPvpRank", "UseLevel", "UnitType", "UnitClass", "BuffID", "EqipPosition", "CoolTime",
@@ -352,9 +431,16 @@ def build_kim(items, setcalls, log=None):
         # data is appended in the order AddItemTemplet_LUA reads the script
         for k in ("m_Description", "m_DescriptionInShop"):
             t[STRING_FIELD[k]] = w.wstr(it[k], True)
-        for k in ("m_ModelName", "m_ModelName1", "m_TextureChangeXETName", "m_AniXETName", "m_AniName",
-                  "m_ShopImage", "m_DropViewer", "m_AttachFrameName", "m_AttachFrameName1"):
-            t[STRING_FIELD[k]] = w.wstr(it[k], False)
+        if LAYOUT != "2014":
+            t["oUnknownDate"] = w.wstr(it["m_UnknownDate"], True)
+        fields = dict(STRING_FIELD, **dict(STRINGS_NEW))
+        models = ["m_ModelName", "m_ModelName1"] + [k for k in fields if k.startswith("m_ModelName") and k[-1] > "1"]
+        attach = ["m_AttachFrameName", "m_AttachFrameName1"] + \
+            [k for k in fields if k.startswith("m_AttachFrameName") and k[-1] > "1"]
+        order = models + ["m_TextureChangeXETName", "m_AniXETName", "m_AniName", "m_ShopImage", "m_DropViewer"] + \
+            attach + (["m_UnknownD"] if "m_UnknownD" in fields else [])
+        for k in order:
+            t[fields[k]] = w.wstr(it[k], False)
         extra = []
         for key, default_one, cnt in (("frame_offsets", False, "nFrameOffsets"), ("scales", True, "nRenderScales"),
                                       ("rotates", False, "nRenderRotates")):
@@ -379,7 +465,7 @@ def build_kim(items, setcalls, log=None):
                 t["nCommonXETNames"] += 1
         if "m_Stat" in it:
             w.align(4)
-            t["oStat"] = w.append(struct.pack("<5f", *it["m_Stat"]))
+            t["oStat"] = w.append(struct.pack("<%df" % len(STAT_KEYS), *it["m_Stat"]))
         if "m_Stat_Relation_Level" in it:
             w.align(4)
             t["oStatRelLV"] = w.append(struct.pack("<5B", *[x & 0xff for x in it["m_Stat_Relation_Level"]]))
@@ -432,8 +518,10 @@ def build_kim(items, setcalls, log=None):
     setrec = {}
     for s in setcalls:
         sid = s["m_SetID"]
-        rec = setrec.setdefault(sid, [sid, 0, 0, 0, 0])
+        rec = setrec.setdefault(sid, [sid, 0, 0, 0, 0] + [0] * (SET_SIZE // 4 - 5))
         rec[2] = w.wstr(s["m_SetName"], False)
+        if s.get("m_iUnknown"):
+            rec[5] = s["m_iUnknown"]
         need = s["m_NeedPartsNum"]
         if need > 0:
             sd = setdata.setdefault(sid, [0, [], {}])
@@ -542,7 +630,7 @@ class Enums(object):
 
 IND = "       "          # Item.lua / SetItem.lua indent (7 spaces)
 # per-character keys follow this order in the original scripts
-CHAR_ORDER = [1, 2, 3, 4, 8, 5, 6, 7, 9]
+CHAR_ORDER = [1, 2, 3, 4, 8, 5, 6, 7, 9, 10, 11, 12, 13]
 DEFAULTS = {"m_UseCondition": 1, "m_ItemGrade": 4, "m_PriceType": 2, "m_EqipPosition": 1, "m_Endurance": -1}
 
 
@@ -580,11 +668,19 @@ def item_to_lua(it, en):
     for k in ("m_Description", "m_DescriptionInShop", "m_DescriptionInSkillNote"):
         string(k)
     L.append("")
-    for k in ("m_ModelName", "m_ModelName1", "m_TextureChangeXETName", "m_AniXETName", "m_AniName"):
+    for k in ("m_ModelName", "m_ModelName1"):
+        string(k)
+    if "m_ModelName2" in it:
+        for i in range(2, 8):
+            string("m_ModelName%d" % i)
+    for k in ("m_TextureChangeXETName", "m_AniXETName", "m_AniName"):
         string(k)
     scalar("m_UseType")
     for k in ("m_AttachFrameName", "m_AttachFrameName1"):
         string(k)
+    if "m_AttachFrameName2" in it:
+        for i in range(2, 8):
+            string("m_AttachFrameName%d" % i)
     L.append("")
     string("m_ShopImage")
     string("m_DropViewer")
@@ -653,6 +749,21 @@ def item_to_lua(it, en):
                                           for e in it["ATTACHED_MESH"]), []))
     scalar("m_SetID")
     scalar("m_Summon_Npc")
+    if "m_iUnknownC" in it:          # 2016 and 2017 layouts
+        mark = len(L)
+        L.append("")
+        for k in ("m_fUnknownA", "m_iUnknownB"):
+            if k in it:
+                scalar(k)
+        if it["m_iUnknownC"] != it["m_ItemID"]:
+            scalar("m_iUnknownC", True)
+        if "m_iUnknownE" in it:
+            scalar("m_iUnknownE")
+        scalar("m_bCielItem")
+        string("m_UnknownDate")
+        string("m_UnknownD")
+        if len(L) == mark + 1:
+            L.pop()
     if it["common_models"]:
         L.append("")
         for i in CHAR_ORDER:
@@ -702,6 +813,8 @@ def sets_to_lua(sets_and_orphans):
         groups = sorted(s["options"].items()) or [(0, [])]
         for need, opts in groups:
             L = ["%sm_SetID = %d," % (IND, s["m_SetID"]), "%sm_SetName = %s," % (IND, lua_str(s["m_SetName"]))]
+            if s.get("m_iUnknown"):
+                L.append("%sm_iUnknown = %d," % (IND, s["m_iUnknown"]))
             if need:
                 L.append("%sm_NeedPartsNum = %d," % (IND, need))
             for j, o in enumerate(opts, 1):
@@ -1076,6 +1189,13 @@ def read_item(t, log):
         it[k] = t.float(k, d) if k in FLOAT_KEYS else t.int(k, d)
     for k in STRINGS_NOMAP + STRINGS_MAP:
         it[k] = t.wstr(k)
+    for k, f in STRINGS_NEW:
+        it[k] = t.wstr(k)
+    for k, f in SCALARS_NEW:
+        it[k] = t.float(k, 0.0) if k in FLOAT_KEYS else \
+            t.int(k, it["m_ItemID"] if k == "m_iUnknownC" else 0, signed=False)
+    if LAYOUT != "2014":
+        it["m_bCielItem"] = t.bool("m_bCielItem")
     it["frame_offsets"], it["scales"], it["rotates"] = {}, {}, {}
     for i in range(1, len(CHARS)):
         v = [t.float("m_FrameOffset%s%s" % (CHARS[i], a), 0.0) for a in "XYZ"]
@@ -1150,7 +1270,7 @@ def read_set(t):
         if o:
             opts.append(o)
     return {"m_SetID": sid, "m_SetName": t.wstr("m_SetName"), "m_NeedPartsNum": t.int("m_NeedPartsNum", 0, signed=False),
-            "options": opts}
+            "options": opts, "m_iUnknown": t.int("m_iUnknown", 0, signed=False) if SET_SIZE > 20 else 0}
 
 
 def scripts_to_kim(luajit, scripts, enum_files):
@@ -1196,8 +1316,9 @@ def cmd_decompile(args):
     en = load_enums(find_luajit(args.luajit), args.enum) if args.enum else Enums()
     os.makedirs(args.out, exist_ok=True)
     note = ("-- lua header. UTF-8 인코딩 인식을 위해 이 줄은 지우지 마세요.\n"
-            "-- Generated from Item.kim by kim.py%s\n\n\n" % (
-                "; uses the enum names of Enum.lua (compile with --enum)." if args.enum else "."))
+            "-- Generated from Item.kim by kim.py%s%s\n\n\n" % (
+                "; uses the enum names of Enum.lua (compile with --enum)" if args.enum else "",
+                "; " + LAYOUT_NOTE % LAYOUT if LAYOUT != "2014" else "."))
     crlf = lambda text: text.replace("\n", "\r\n").encode("utf-8", "surrogatepass")
     with open(os.path.join(args.out, "Item.lua"), "wb") as fp:
         fp.write(BOM + crlf(note))
@@ -1208,7 +1329,21 @@ def cmd_decompile(args):
     print("%d items, %d sets -> %s/Item.lua, %s/SetItem.lua" % (len(items), nsets, args.out, args.out))
 
 
+LAYOUT_NOTE = "Item.kim layout %s."
+
+
+def script_layout(path):
+    """The layout a decompiled Item.lua's header note names, else 2014."""
+    with open(path, "rb") as fp:
+        head = fp.read(1024)
+    for name in LAYOUTS:
+        if (LAYOUT_NOTE % name).encode() in head:
+            return name
+    return "2014"
+
+
 def cmd_compile(args):
+    set_layout(args.layout or script_layout(args.scripts[0]))
     data, nitems, nsets = scripts_to_kim(find_luajit(args.luajit), args.scripts, args.enum or [])
     with open(args.output, "wb") as fp:
         fp.write(data)
@@ -1235,6 +1370,8 @@ def main():
     p.add_argument("scripts", nargs="+", help="item scripts, in the order the tool was given them")
     p.add_argument("-o", "--output", required=True)
     p.add_argument("--enum", action="append", help="Enum.lua defining the enum names (repeatable)")
+    p.add_argument("--layout", choices=sorted(LAYOUTS),
+                   help="templet layout (default: the one a decompiled Item.lua names, else 2014)")
     p.set_defaults(func=cmd_compile)
     p = sub.add_parser("info", help="show the header")
     p.add_argument("kim")
