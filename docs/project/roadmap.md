@@ -304,6 +304,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [ ] `client/font-rendering`, after widescreen (user, 2026-11-13): UI text looks too bold at 1080p, as it does in
         the original. FreeType hinting and weight (the `fontWeight` parameter is ignored) and the outline styles, which
         redraw the text at ±1 layout unit, so 1 or 2 pixels at 1080p (`CUKFont::DrawFontStyle`).
+  - [ ] `server/character-switches` (user, 2026-11-15; before Add): each character past the first three (Elsword,
+        Aisha, Rena) behind its own switch in `src/define.h`, on both sides; without it the character practically does
+        not exist (not creatable, not listed, refused by the servers). Replaces the ordinal limit
+        `_CONST_LIMIT_UNIT_::iLimitType` (8, Elesis), which assumes characters are released in order. About 45 files
+        per character name its type or classes (2026-11-15: Raven 447 references, Eve 533, Chung 466, Ara 323,
+        Elesis 299, Add 217, client and servers).
   - [ ] `server/add-character`, soon (user, 2026-11-13): enable Add (`UT_ADD` = 9; Nasod Ruler 9, Psychic Tracer 32,
         Lunatic Psyker 122). Investigated 2026-11-13. The code is in place: `CX2GUAdd`, the classes on both sides, and the
         creation slot. One limit gates it on both sides, `_CONST_LIMIT_UNIT_::iLimitType = 8` (Elesis) in
