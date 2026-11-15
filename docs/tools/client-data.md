@@ -128,8 +128,7 @@ readable Lua: 4,553 scripts decompiled, none kept as bytecode, Item.kim converte
 
 ## Bringing data from other clients
 
-Two scripts copy entries from other clients' scripts into a client_data's, by ID, and can be run again (a second run
-changes nothing). The sources and their order are on [Add character](../project/add-character.md).
+Three scripts bring what our client lacks from other clients, and can be run again (a second run changes nothing). The sources and their order are on [Add character](../project/add-character.md).
 
 ```bash
 tools/assets/merge_skills.py <client_data>/data/NewSkillTempletVer2.lua --skills 9000-9014,9200-9207 \
@@ -147,6 +146,11 @@ tools/assets/merge_items.py <client_data>/items --enum <client_data>/data/Enum.l
   with a value our `Enum.lua` lacks (classes we do not have, `IT_CUSTOM`...) are skipped; an item whose set is in no
   source gets `m_SetID = 0` (`CX2ItemManager::GetSetItem` asserts on an unknown set). The result is compiled with
   `kim.scripts_to_kim` to check it.
+- `copy_assets.py <client_data> --scripts <Item.lua> --dir <extracted archive> ... --kom <.kom folder>`: every file
+  name the scripts quote that no file of the client_data has, from the first `--dir` (named after its archive, e.g.
+  `data148_kom`) or `--kom` archive that has it, into the folder `x2_assets import` would choose. The meshes (`.x`/`.y`,
+  MSZIP-compressed DirectX files too) and `.xet` it copies are scanned for the files they name. `--report` lists what
+  came from where and what is in no source.
 
 ## Content changes (T42)
 
@@ -176,3 +180,4 @@ is listed here with the step that changed it and why.
 | `data/NewSkillTempletVer2.lua` | `server/add-character` (2026-11-15) | Add's first path: 33 skills (9000–9014, 9200–9207, 9400–9408, 9600) from BR 2014-08, with their Portuguese text from BR 2017, and 72 tree entries of `UC_ADD_NASOD_RULER`/`PSYCHIC_TRACER`/`LUNATIC_PSYKER` from V5 (BR 2014-08 has none), by `tools/assets/merge_skills.py` |
 | `ui/textures/DLG_Add_SKILL_ScreenShot_01.{tga,TET}`, `_02` (new) | `server/add-character` (2026-11-15) | The skill tree's Add screenshots: the `.tga` from BR 2017 `data063`, the `.TET` from V5 `data063.kom`. New files: dev builds only until `pack` writes them ([Packing](#packing)) |
 | `items/Item.lua`, `items/SetItem.lua` | `server/add-character` (2026-11-15) | 1,706 Add items and 132 sets from V5's `ClientScript` (BR 2014-08 first; it has few), names and descriptions from BR 2017, by `tools/assets/merge_items.py`; 51,543 items, 2,557 sets. Left out: 49 items with values we lack (classes 33–36/123–126, PR 83), 119 only in Korean; 258 items whose set is in no source have `m_SetID = 0` |
+| `items/equipment/**`, `items/icons/**`, `_unsorted/data148`, ... (new) | `server/add-character` (2026-11-15) | 3,058 meshes, textures and icons for the items, by `tools/assets/copy_assets.py` over `items/Item.lua`: 2,944 for the added items and what their meshes name (BR 2014-08 and 2017 extracted archives first, then V5's `.kom`), 114 that our own items named but our client lacked. 200 names are in no source (46 Add icons and meshes, e.g. `HQ_Shop_ADD_Cash_*1040`; the rest were already missing in the 2014-03 client). New files: dev builds only until `pack` writes them |
