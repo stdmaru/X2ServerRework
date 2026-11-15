@@ -318,10 +318,12 @@ return `std::wstring`.
   and the character select drew no character (`ErrorEnum(10093)` in `CX2Eqip::InitSkin`). Outside Windows it converts
   each string once and keeps it by offset (callers hold the pointers); `_SetData`/`_ResetData` clear the cache.
 - `KFileSerializer::AppendWideString` writes UTF-16 (lengths in UTF-16 units, aligned to 2), so the item templets the
-  client builds in memory have the same layout as the files. `KMemoryDeserializer::RetrieveWideString*` still read
+  client builds in memory have the same layout as the files. Its `std::wstring` overload, which the item templets
+  use, was missed and copied `wchar_t` until 2026-11-15 (`server/add-character`: model names read as "M" once
+  debug builds read `Item.lua`); it now calls the pointer overload. `KMemoryDeserializer::RetrieveWideString*` still read
   `wchar_t` (no caller).
 
-Test: `x2_client_tests -tc="ktdxlib: preprocessed*"`.
+Tests: `x2_client_tests -tc="ktdxlib: preprocessed*"` and `-tc="ktdxlib: KFileSerializer writes wide*"`.
 
 ## Frame pacing (2026-11-12, `client/frame-pacing`, [T41](../project/decisions.md))
 

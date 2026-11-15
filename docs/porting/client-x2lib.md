@@ -281,6 +281,9 @@ basic items were in `Item.lua` but not in the packed `Item.kim`, and creation sh
 longer (two passes over a 59 MB script). LuaJIT allows 65,536 constants in a function and `Item.lua` (51,593
 `AddItemTemplet` calls) has more, so those builds run the loose scripts in pieces of 500 top-level statements
 (`DoItemScript`). Release builds read `Item.kim` as before.
+`KFileSerializer::AppendWideString`'s `std::wstring` overload, which builds that table, still copied the 4-byte
+`wchar_t` while every reader expects UTF-16 (model names read as "M"); it now writes UTF-16 as the pointer overload
+([KTDXLib](client-ktdxlib.md)).
 
 ## Status
 
