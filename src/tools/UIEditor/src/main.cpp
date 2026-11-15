@@ -10,6 +10,7 @@
 #include "engine.h"
 #include "live.h"
 #include "record.h"
+#include "layout_edit.h"
 #include "tet_file.h"
 
 #include "x2/app/imgui_layer.h"
@@ -37,6 +38,11 @@
 namespace {
 
 using x2::ui_editor::AnchorEntry;
+using x2::ui_editor::CallEdit;
+using x2::ui_editor::CutPlan;
+using x2::ui_editor::DialogExtent;
+using x2::ui_editor::PictureBox;
+using x2::ui_editor::PlanCut;
 using x2::ui_editor::ControlInfo;
 using x2::ui_editor::DialogInfo;
 using x2::ui_editor::PictureInfo;
@@ -125,6 +131,15 @@ struct EditorState {
     // The pictures of the selected control expanded in the inspector (indexes), green on the screen: set as the
     // inspector draws, so the screen shows the last frame's.
     std::vector<int> expandedPictures, shownPictures;
+    // Resizing a dialog at a line (CutEditor): everything past the line moves, the pieces it crosses grow.
+    struct Cut {
+        bool open = false;      // the inspector's section is open: the line shows on the screen
+        int dialog = -1;        // the inspected dialog it was placed for
+        bool vertical = true;   // a vertical line: the width grows; else the height
+        float at = 0.0f;        // layout units relative to the dialog
+        int grow = 0;
+        bool dragging = false;
+    } cut;
     // Dragging an edge of a green picture on the screen: its SetPoint, which edges (1 left, 2 top, 4 right, 8 bottom)
     // and the change applied so far (whole layout units).
     struct EdgeDrag {
@@ -353,19 +368,6 @@ bool CurrentTet(x2::ui_editor::Engine& engine, EditorState& state, const std::st
 }
 
 std::string SourceLabel(const SourceRef& ref);
-
-// An edit of the script call behind something: moves what it places by (move) layout units, or, resize, moves its
-// edges by (left, top, right, bottom) so it grows (x2::ui_editor::MoveCall, ResizeCall).
-struct CallEdit {
-    SourceRef ref;
-    bool resize = false;
-    float d[4] = {};    // move: dx, dy; resize: left, top, right, bottom
-
-    bool SameAs(const CallEdit& other) const
-    {
-        return resize == other.resize && std::equal(std::begin(d), std::end(d), std::begin(other.d));
-    }
-};
 
 // Makes the edits in the scripts' text and builds again the dialogs made from them, as one step of undo; merge: an id
 // that joins the steps of one drag (0: none). A call is edited once, also when several objects name it; two different
@@ -1516,19 +1518,6 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
     ImGui::EndPopup();
 }
 
-// A picture's box in layout units relative to its control: min x, min y, max x, max y.
-void PictureBox(const PictureInfo& picture, float box[4])
-{
-    box[0] = box[2] = picture.points[0][0];
-    box[1] = box[3] = picture.points[0][1];
-    for (const auto& point : picture.points) {
-        box[0] = std::min(box[0], point[0]);
-        box[1] = std::min(box[1], point[1]);
-        box[2] = std::max(box[2], point[0]);
-        box[3] = std::max(box[3], point[1]);
-    }
-}
-
 // A picture's size, where it comes from, and a field that changes it in its SetPoint (ResizeCall): it grows to the
 // right and down; on the screen its green box's edges can be dragged.
 void SizeField(x2::ui_editor::Engine& engine, EditorState& state, const PictureInfo& picture)
@@ -1777,6 +1766,8 @@ void ControlAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, cons
     }
 }
 
+void CutEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog);
+
 void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     state.shownPictures.swap(state.expandedPictures);
@@ -1827,6 +1818,8 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     } else {
         ImGui::TextDisabled("not recorded: drawn at the script's position");
     }
+
+    CutEditor(engine, state, dialog);
 
     ImGui::SeparatorText("Controls");
     if (ImGui::BeginChild("controls", ImVec2(0, ImGui::GetContentRegionAvail().y * 0.4f), ImGuiChildFlags_Borders)) {
@@ -1883,6 +1876,73 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
         std::sort(entry.zones.begin(), entry.zones.end());
         EditAnchors(engine, state, dialog.script, entry);
     }, move);
+}
+
+// Resize at a line: a line across the dialog (dragged on the screen or typed), how much to grow, what that grows and
+// moves, and Apply, one step of undo.
+void CutEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog)
+{
+    auto& cut = state.cut;
+    const bool open = ImGui::TreeNode("Resize at a line");
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Grow the dialog: pieces the line crosses grow, everything past it moves");
+    }
+    cut.open = open;
+    if (!open) {
+        return;
+    }
+    float extent[4] = {};
+    const bool drawn = DialogExtent(dialog, extent);
+    if (cut.dialog != state.selected.dialog) {
+        cut.dialog = state.selected.dialog;
+        cut.at = drawn ? std::round((extent[cut.vertical ? 0 : 1] + extent[cut.vertical ? 2 : 3]) * 0.5f) : 0.0f;
+        cut.grow = 0;
+    }
+    bool vertical = cut.vertical;
+    if (ImGui::RadioButton("width (vertical line)", vertical)) {
+        vertical = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("height (horizontal line)", !vertical)) {
+        vertical = false;
+    }
+    if (vertical != cut.vertical) {
+        cut.vertical = vertical;
+        cut.at = drawn ? std::round((extent[vertical ? 0 : 1] + extent[vertical ? 2 : 3]) * 0.5f) : 0.0f;
+    }
+    ImGui::SetNextItemWidth(140);
+    ImGui::DragFloat("line at", &cut.at, 1.0f, -8192.0f, 8192.0f, "%.0f");
+    cut.at = std::round(cut.at);
+    ImGui::SetNextItemWidth(140);
+    ImGui::InputInt("grow by", &cut.grow);
+    if (drawn) {
+        ImGui::TextDisabled("%s now %.0f (layout units); drag the magenta line on the screen", vertical ? "width" : "height",
+                            static_cast<double>(extent[vertical ? 2 : 3] - extent[vertical ? 0 : 1]));
+    }
+    const CutPlan plan = PlanCut(dialog, cut.vertical, cut.at, static_cast<float>(cut.grow));
+    ImGui::Text("grows %zu, moves %zu, stays %d", plan.grows.size(), plan.moves.size(), plan.stays);
+    if (!plan.skipped.empty()) {
+        ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "not changed: %zu", plan.skipped.size());
+        if (ImGui::IsItemHovered()) {
+            std::string names;
+            for (const auto& piece : plan.skipped) {
+                names += piece.name + "\n";
+            }
+            ImGui::SetTooltip("%s", names.c_str());
+        }
+    }
+    ImGui::BeginDisabled(cut.grow == 0 || plan.edits.empty());
+    if (ImGui::Button("Apply")) {
+        if (EditCalls(engine, state, plan.edits, 0)) {
+            state.message = std::string(cut.vertical ? "width" : "height") + " grown by " + std::to_string(cut.grow) +
+                            ": " + std::to_string(plan.grows.size()) + " grown, " + std::to_string(plan.moves.size()) +
+                            " moved";
+            cut.grow = 0;
+        }
+    }
+    ImGui::EndDisabled();
+    ImGui::TextDisabled("orange grows, blue moves on the screen");
+    ImGui::TreePop();
 }
 
 // Closing with unsaved changes (UIAnchors.lua, scripts) asks first; true when the editor should close.
@@ -2081,6 +2141,67 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
                 }
             }
         }
+        // Resize at a line: the line, what grows (orange) and what moves (blue); the line drags.
+        bool overCut = false;
+        if (state.cut.open && state.cut.dialog >= 0 && state.cut.dialog < static_cast<int>(state.inspected.size())) {
+            auto& cut = state.cut;
+            const DialogInfo& d = state.inspected[static_cast<std::size_t>(cut.dialog)];
+            const CutPlan plan = PlanCut(d, cut.vertical, cut.at, static_cast<float>(cut.grow));
+            const auto paint = [&](const CutPlan::Piece& piece, ImU32 fill, ImU32 line) {
+                const ImVec2 a(origin.x + piece.pixelMin[0] * zoom, origin.y + piece.pixelMin[1] * zoom);
+                const ImVec2 b(origin.x + piece.pixelMax[0] * zoom, origin.y + piece.pixelMax[1] * zoom);
+                draw->AddRectFilled(a, b, fill);
+                draw->AddRect(a, b, line, 0.0f, 1.0f);
+            };
+            for (const auto& piece : plan.grows) {
+                paint(piece, IM_COL32(255, 150, 40, 60), IM_COL32(255, 150, 40, 200));
+            }
+            for (const auto& piece : plan.moves) {
+                paint(piece, IM_COL32(60, 140, 255, 50), IM_COL32(60, 140, 255, 180));
+            }
+            float extent[4];
+            if (DialogExtent(d, extent)) {
+                const float scale = engine.UIScale() * zoom;
+                const float ox = origin.x + engine.UIOriginX() * zoom, oy = origin.y + engine.UIOriginY() * zoom;
+                const auto sx = [&](float x) { return ox + (d.canvasPos[0] + x) * scale; };
+                const auto sy = [&](float y) { return oy + (d.canvasPos[1] + y) * scale; };
+                const float pad = 12.0f;
+                ImVec2 a, b;
+                if (cut.vertical) {
+                    a = ImVec2(sx(cut.at), sy(extent[1]) - pad);
+                    b = ImVec2(sx(cut.at), sy(extent[3]) + pad);
+                } else {
+                    a = ImVec2(sx(extent[0]) - pad, sy(cut.at));
+                    b = ImVec2(sx(extent[2]) + pad, sy(cut.at));
+                }
+                const ImVec2 m = ImGui::GetMousePos();
+                overCut = ImGui::IsItemHovered() &&
+                          (cut.vertical ? std::fabs(m.x - a.x) <= 6.0f && m.y >= a.y && m.y <= b.y
+                                        : std::fabs(m.y - a.y) <= 6.0f && m.x >= a.x && m.x <= b.x);
+                draw->AddLine(a, b, IM_COL32(255, 60, 220, 255), overCut || cut.dragging ? 3.0f : 2.0f);
+                if (cut.grow != 0) {
+                    // Where the line's far side ends up.
+                    const float g = static_cast<float>(cut.grow) * scale;
+                    draw->AddLine(ImVec2(a.x + (cut.vertical ? g : 0), a.y + (cut.vertical ? 0 : g)),
+                                  ImVec2(b.x + (cut.vertical ? g : 0), b.y + (cut.vertical ? 0 : g)),
+                                  IM_COL32(255, 60, 220, 120), 1.0f);
+                }
+                if (overCut || cut.dragging) {
+                    ImGui::SetMouseCursor(cut.vertical ? ImGuiMouseCursor_ResizeEW : ImGuiMouseCursor_ResizeNS);
+                }
+                if (overCut && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                    cut.dragging = true;
+                }
+                if (cut.dragging) {
+                    if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+                        cut.dragging = false;
+                    } else {
+                        const float layout = cut.vertical ? (m.x - ox) / scale - d.canvasPos[0] : (m.y - oy) / scale - d.canvasPos[1];
+                        cut.at = std::round(layout);
+                    }
+                }
+            }
+        }
         if (ImGui::IsItemHovered()) {
             const ImVec2 mouse = ImGui::GetMousePos();
             const float px = (mouse.x - origin.x) / zoom, py = (mouse.y - origin.y) / zoom;
@@ -2097,7 +2218,7 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
             } else {
                 ImGui::SetTooltip("layout %.0f, %.0f", static_cast<double>(lx), static_cast<double>(ly));
             }
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !state.edgeDrag.active) {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !state.edgeDrag.active && !overCut && !state.cut.dragging) {
                 state.selected = hover;
                 // Dragging it moves it in its scripts (Alt: its dialog), in whole layout units.
                 state.dragging = hover.dialog >= 0;
