@@ -272,6 +272,14 @@ the background (`WidenNaviWindow`), and the map is kept in range at once. At 4:3
 recorder at each state change (the [UI editor](../tools/ui-editor.md)'s scenes). Change from the original: the class
 change and arcade states were logged as `XS_INVALID` (missing from `StateInLog`'s switch) and now log their own names.
 
+## Items from the loose scripts (2026-11-15, `server/add-character`)
+
+`CX2ItemManager::OpenItemScriptFile` loads `Item.kim` from the archives and reads `Item.lua` + `SetItem.lua` only when
+that fails. Debug and dev builds now read the two scripts first when both are loose files of the
+[client_data](../tools/client-data.md) (`IsValidFile_LocalFile`), so an item added there shows without a pack: Add's
+basic items were in `Item.lua` but not in the packed `Item.kim`, and creation showed him with no model. Loading takes
+longer (two passes over a 59 MB script). Release builds read `Item.kim` as before.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

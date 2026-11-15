@@ -63,7 +63,7 @@ client_data/
   for byte. An **edited script** is packed as **UTF-8 Lua source with BOM** (user, 2026-11-05; a BOM is added if
   missing), after LuaJIT checks its syntax: a script that does not load stops the pack. Bytecode put back into
   client_data is packed as it is. Edited `Item.lua`/`SetItem.lua` are **compiled into a new `Item.kim`**, with the
-  warnings of KOG's tool printed; a missing one makes `Item.kim` missing.
+  warnings of KOG's tool printed; a missing one makes `Item.kim` missing. Debug and dev clients read the loose `Item.lua`/`SetItem.lua` instead ([X2Lib](../porting/client-x2lib.md#items-from-the-loose-scripts-2026-11-15-serveradd-character)).
 - Source in the archives is what the **ported client** loads (T21: upstream LuaJIT 2.1). The original `x2.exe`'s LuaJIT
   has no parser, so it cannot load edited scripts; for it, `tools/kom/kom.py pack` recompiles with KOG's LuaJIT
   ([Server package](runtime.md#toolskom)).
