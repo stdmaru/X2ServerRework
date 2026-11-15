@@ -309,6 +309,11 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [ ] `client/font-rendering`, after widescreen (user, 2026-11-13): UI text looks too bold at 1080p, as it does in
         the original. FreeType hinting and weight (the `fontWeight` parameter is ignored) and the outline styles, which
         redraw the text at ±1 layout unit, so 1 or 2 pixels at 1080p (`CUKFont::DrawFontStyle`).
+  - [ ] `server/character-switches` (user, 2026-11-15; before Add): the original's configuration centralized in
+        `src/define.h`. Characters stay sequential, as in the original: `CHARACTER_MAX_UNIT` (8 Elesis, 9 Add) replaces
+        `_CONST_LIMIT_UNIT_::iLimitType` on both sides. Every job class has its own switch,
+        `<CHARACTER>_1ST_JOB_<CLASS>`, `<CHARACTER>_2ND_JOB_<CLASS>` and so on, the three base characters included;
+        with none on, every character keeps its base class.
   - [ ] `server/add-character`, soon (user, 2026-11-13): enable Add (`UT_ADD` = 9; Nasod Ruler 9, Psychic Tracer 32,
         Lunatic Psyker 122). Investigated 2026-11-13. The code is in place: `CX2GUAdd`, the classes on both sides, and the
         creation slot. One limit gates it on both sides, `_CONST_LIMIT_UNIT_::iLimitType = 8` (Elesis) in
@@ -365,7 +370,7 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           (boss bars, the NPC talk shade) go with the migration's next part.
     - [ ] `client/widescreen-backgrounds`, art permitting: full-screen images (login, loading screens, cut-ins)
           redrawn for wider screens, replacing the side bars; same formats (T1).
-    - [ ] `client/ui-atlas-clamp` (2026-11-15, PR #80, [T49](decisions.md)): UI pictures sample only their `.tet` key, so a
+    - [x] `client/ui-atlas-clamp` (done 2026-11-15, PR #80, [T49](decisions.md)): UI pictures sample only their `.tet` key, so a
           scaled window's slices show no seams from their atlas neighbours (the message box at 1080p)
           ([D3D9 device](../porting/client-d3d9.md#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49)).
     - [ ] `client/ui-scale`: a "UI scale" option (automatic, 100–200%) and a pixel-perfect mode (integer scale,
@@ -389,8 +394,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       [UI editor](../tools/ui-editor.md)). Slices, one PR each: (a) viewer with inspection and resolution/aspect
       switching (done 2026-11-14, PR #74), with zoom, scenes (the recorder notes each dialog's game
       state, so a screen opens whole) and "Watch game" mirroring a running client (statics in full, scripts code loads); (b) anchor/STRETCH editing saved to `UIAnchors.lua` (done 2026-11-14, PR #75, with undo); (c) positions, textures
-      and UV saved to the scripts and `.tet` (`tools/ui-editor-layout`, started 2026-11-14; positions of dialogs, controls,
-      pictures and texts done 2026-11-14, textures/keys and UV next); then the C++ layout positions migrated into the scripts, screen by screen.
+      and UV saved to the scripts and `.tet` (done 2026-11-15, PR #78: positions of dialogs, controls,
+      pictures and texts, textures/keys and UV with Interactive Select, picture and dialog resizing); then the C++ layout positions migrated into the scripts, screen by screen.
 - [x] `client/linux-icon` (user, 2026-11-14; done 2026-11-14, PR #79): the game's icon on Linux, in the taskbar while
       it runs. The window sets its Wayland `app_id` / X11 class `x2` and its own icon (from `src/client/X2/Elsword.ico`),
       and `tools/client/install.sh` installs `x2.desktop` and the icon. On the user's Hyprland + quickshell bar the
