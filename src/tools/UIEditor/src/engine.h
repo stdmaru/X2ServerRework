@@ -33,6 +33,10 @@ struct PictureInfo {
     float points[4][2] = {};    // left top, right top, left bottom, right bottom (layout units, relative to the control)
     float uv[4][2] = {};        // texture coordinates of the same corners
     float textureSize[2] = {};  // its key's rectangle size in texels (0 when not loaded)
+    // Where its size comes from: with USE_TEXTURE_SIZE, the key's size times RESIZE_X/Y plus ADD_SIZE_X/Y; without,
+    // the corners its point table gives.
+    bool useTextureSize = true;
+    float addSize[2] = {}, resize[2] = {1.0f, 1.0f};
     bool shown = true;
     float pixelMin[2] = {}, pixelMax[2] = {};   // its corners' box in render target pixels (anchors and stretch applied)
     SourceRef point;            // its SetPoint

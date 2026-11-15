@@ -168,6 +168,8 @@ bool VectorArgs(const std::string& t, const std::vector<char>& code, Range value
     return true;
 }
 
+void AddField(const std::string& t, Range table, const std::string& field, std::vector<Edit>& edits);
+
 // Shifts the D3DXVECTOR2 fields named in `keys` of the table at `table` ('{' to '}'); adds `add` = (dx, dy) when none
 // of them is there.
 bool MoveTable(const std::string& t, const std::vector<char>& code, Range table, std::initializer_list<const char*> keys,
@@ -203,8 +205,14 @@ bool MoveTable(const std::string& t, const std::vector<char>& code, Range table,
     if (found) {
         return true;
     }
-    // None given: add one after the '{', on a line of its own when the table spans lines.
-    const std::string field = std::string(add) + " = D3DXVECTOR2(" + FormatNumber(dx) + ", " + FormatNumber(dy) + ")";
+    AddField(t, table, std::string(add) + " = D3DXVECTOR2(" + FormatNumber(dx) + ", " + FormatNumber(dy) + ")", edits);
+    return true;
+}
+
+// Adds `field` (name = value) to the table at `table` ('{' to '}'), after the '{', on a line of its own when the
+// table spans lines.
+void AddField(const std::string& t, Range table, const std::string& field, std::vector<Edit>& edits)
+{
     std::size_t after = table.begin + 1;
     while (after < table.end && (t[after] == ' ' || t[after] == '\t')) {
         ++after;
@@ -221,7 +229,44 @@ bool MoveTable(const std::string& t, const std::vector<char>& code, Range table,
     } else {
         edits.push_back({after, after, field + ", "});
     }
-    return true;
+}
+
+// The fields of the table at `table`: name and the value's range.
+struct Field {
+    std::string name;
+    Range value;
+};
+std::vector<Field> TableFields(const std::string& t, const std::vector<char>& code, Range table)
+{
+    std::vector<Field> fields;
+    for (const Range& item : Split(t, code, {table.begin + 1, table.end}, ",;")) {
+        std::size_t i = item.begin;
+        while (i < item.end && (IsSpace(t[i]) || !code[i])) {    // comments before the field
+            ++i;
+        }
+        const std::size_t nameBegin = i;
+        while (i < item.end && IsIdent(t[i])) {
+            ++i;
+        }
+        const std::string name = t.substr(nameBegin, i - nameBegin);
+        i = SkipSpaces(t, i, item.end);
+        if (name.empty() || i >= item.end || t[i] != '=' || (i + 1 < item.end && t[i + 1] == '=')) {
+            continue;
+        }
+        fields.push_back({name, {i + 1, item.end}});
+    }
+    return fields;
+}
+
+std::string Trimmed(const std::string& t, Range r)
+{
+    while (r.begin < r.end && IsSpace(t[r.begin])) {
+        ++r.begin;
+    }
+    while (r.end > r.begin && IsSpace(t[r.end - 1])) {
+        --r.end;
+    }
+    return t.substr(r.begin, r.end - r.begin);
 }
 
 bool KindMatches(CallKind kind, const std::string& full)
@@ -541,6 +586,97 @@ bool SetTexCall(std::string& text, int line, const std::string& texture, const s
     }
     text.replace(name.begin, name.end - name.begin, key);
     text.replace(file.begin, file.end - file.begin, texture);
+    return true;
+}
+
+bool ResizeCall(std::string& text, int line, float left, float top, float right, float bottom, std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    std::size_t open = 0, close = 0;
+    if (!FindCall(text, code, line, CallKind::Point, open, close, error)) {
+        return false;
+    }
+    const std::string where = " on line " + std::to_string(line);
+    Range table{open, close};
+    if (text[open] == '(') {
+        const std::size_t brace = SkipSpaces(text, open + 1, close);
+        const std::size_t braceClose = brace < close && text[brace] == '{' ? FindClose(text, code, brace) : npos;
+        if (braceClose == npos || braceClose > close) {
+            error = "the point call" + where + " does not take a table";
+            return false;
+        }
+        table = {brace, braceClose};
+    }
+    const std::vector<Field> fields = TableFields(text, code, table);
+    const auto find = [&](const char* name) -> const Field* {
+        for (const Field& field : fields) {
+            if (field.name == name) {
+                return &field;
+            }
+        }
+        return nullptr;
+    };
+    // The size comes from the texture (the default) plus ADD_SIZE_X/Y, or from the corners given.
+    bool textureSize = true;
+    if (const Field* use = find("USE_TEXTURE_SIZE"); use != nullptr) {
+        const std::string value = Trimmed(text, use->value);
+        if (value == "FALSE" || value == "false" || value == "0") {
+            textureSize = false;
+        } else if (value != "TRUE" && value != "true" && value != "1") {
+            error = "USE_TEXTURE_SIZE" + where + " is " + value + ", not true or false";
+            return false;
+        }
+    }
+    std::vector<Edit> edits;
+    const auto shiftVector = [&](const char* name, float dx, float dy, bool addWhenMissing) {
+        const Field* field = find(name);
+        if (field == nullptr) {
+            if (addWhenMissing && (dx != 0.0f || dy != 0.0f)) {     // LEFT_TOP defaults to 0, 0
+                AddField(text, table, std::string(name) + " = D3DXVECTOR2(" + FormatNumber(dx) + ", " + FormatNumber(dy) + ")",
+                         edits);
+            }
+            return true;
+        }
+        Range x, y;
+        if (!VectorArgs(text, code, field->value, x, y)) {
+            error = std::string(name) + where + " is not a D3DXVECTOR2(x, y)";
+            return false;
+        }
+        edits.push_back({x.begin, x.end, ShiftExpression(text.substr(x.begin, x.end - x.begin), dx)});
+        edits.push_back({y.begin, y.end, ShiftExpression(text.substr(y.begin, y.end - y.begin), dy)});
+        return true;
+    };
+    const auto shiftNumber = [&](const char* name, float delta) {
+        if (delta == 0.0f) {
+            return;
+        }
+        if (const Field* field = find(name); field != nullptr) {
+            edits.push_back({field->value.begin, field->value.end,
+                             ShiftExpression(text.substr(field->value.begin, field->value.end - field->value.begin), delta)});
+        } else {
+            AddField(text, table, std::string(name) + " = " + FormatNumber(delta), edits);
+        }
+    };
+    if (textureSize) {
+        if (!shiftVector("LEFT_TOP", left, top, true)) {
+            return false;
+        }
+        shiftNumber("ADD_SIZE_X", right - left);
+        shiftNumber("ADD_SIZE_Y", bottom - top);
+    } else {
+        if (find("RIGHT_BOTTOM") == nullptr) {
+            error = "the point table" + where + " sets its size without a RIGHT_BOTTOM";
+            return false;
+        }
+        if (!shiftVector("LEFT_TOP", left, top, true) || !shiftVector("RIGHT_TOP", right, top, false) ||
+            !shiftVector("LEFT_BOTTOM", left, bottom, false) || !shiftVector("RIGHT_BOTTOM", right, bottom, false)) {
+            return false;
+        }
+    }
+    std::stable_sort(edits.begin(), edits.end(), [](const Edit& a, const Edit& b) { return a.begin > b.begin; });
+    for (const Edit& edit : edits) {
+        text.replace(edit.begin, edit.end - edit.begin, edit.text);
+    }
     return true;
 }
 

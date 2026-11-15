@@ -63,6 +63,14 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   `AddString`'s `POS`). In the inspector each has a field (drag or Ctrl + click to type, whole layout units) and shows
   the line that set it. On the screen, a click selects a control and dragging it moves it (Alt: its dialog); with the
   screen focused, the arrow keys move it by 1 (Shift: 10).
+- **A picture's size** (2026-11-15): the inspector shows it with where it comes from, as the script writes it
+  (`= key 390 x 1 + ADD_SIZE_Y 480 (the key stretched)`), and a size field; on the screen, the green box of an
+  expanded picture grows or shrinks by dragging its edges or corners. The change goes where the size is set
+  (`ResizeCall`, each edge moved by its own amount): with `USE_TEXTURE_SIZE` (the default) the size is the key's
+  rectangle times `RESIZE_X/Y` plus `ADD_SIZE_X/Y`, so `LEFT_TOP` moves with the left and top edges and
+  `ADD_SIZE_X/Y` take the growth (added when missing); with `USE_TEXTURE_SIZE = FALSE` the corners the table gives move
+  with their edges (one without `RIGHT_BOTTOM`, or a `USE_TEXTURE_SIZE` that is not a plain true or false, is refused).
+  Windows are made of such pieces, a middle of one texel stretched between ends: their size is the `ADD_SIZE`.
 - **Where the lines come from:** as a script loads, KTDXLIB notes each such call with the object it set and its Lua line
   ([KTDXLIB](../porting/client-ktdxlib.md#script-calls-for-tools-2026-11-14-toolsui-editor-layout)); the scripts a
   control makes run on its own (another level of loading) are left out. Something code placed, or set by a call the
@@ -197,6 +205,8 @@ Position edits (`test_script_edit.cpp`): numbers written as a script would; expr
 number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a
 commented-out corner and a string that looks like one left alone), the four corners, a `LEFT_TOP` added, `AddString`'s
 `POS`; lines with two calls, a corner that is not a `D3DXVECTOR2` and a commented-out call refused, unchanged; a
+point table grown by its edges (`ADD_SIZE` changed or added and `LEFT_TOP` moved, or the corners given, two or four;
+one without `RIGHT_BOTTOM` or an unknown `USE_TEXTURE_SIZE` refused); a
 `SetTex`'s texture and key changed (either quotes), one naming them through a variable, two on a line and a quote in
 the new name refused.
 
