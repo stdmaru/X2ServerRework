@@ -322,6 +322,9 @@ class CKTDGUIDialog
 		// Moves the dialog back into its dragging range now (OnFrameMove does it every step), for code that places
 		// it from elsewhere (the world map's navigation box).
 		void KeepInDraggingRange();
+		// Such a picture narrower (or shorter) than the screen: black bars fill the screen beside it, as the letterbox
+		// around the game (T48), instead of what lies behind showing through (21:9, 2026-11-14).
+		void DrawPannedPictureBars() const;
 		void SetDraggingRange( float fWidth, float fHeight ) { m_vDraggingRange = D3DXVECTOR2(fWidth, fHeight); }
 
 		void ShowGuideDesc( CKTDGUIControl* pControl );

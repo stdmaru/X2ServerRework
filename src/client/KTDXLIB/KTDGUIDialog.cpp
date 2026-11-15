@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "./KTDGUIDialog.h"
 
+#include <cmath>
+
 CKTDGUIControl* CKTDGUIDialog::s_pControlFocus = NULL;	// The control which has focus
 
 CKTDGUIDialog::CKTDGUIDialog( CKTDXStage* pStage, const WCHAR* wstrScriptFileName /*= NULL*/, float fMoveTime /* = 0.07 */, int iLayer /*= 0 */)
@@ -426,6 +428,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 	    CKTDGStateManager::PushSamplerState( 1, D3DSAMP_ADDRESSV,  D3DTADDRESS_MIRROR   );
 
         CKTDGStateManager::PushStates( g_pKTDXApp->GetDGManager()->GetRSICKTDGUIDialog() );
+		DrawPannedPictureBars();
 
 #ifdef X2_DEV_TOOLS
 		const bool bRecord = CKTDGUIAnchorRecorder::IsOn();
@@ -1953,6 +1956,36 @@ void CKTDGUIDialog::KeepInDraggingRange()
 	vPos.x = std::min( std::max( vPos.x, vLeftTop.x ), vRightBottom.x );
 	vPos.y = std::min( std::max( vPos.y, vLeftTop.y ), vRightBottom.y );
 	SetPos( vPos );
+}
+
+void CKTDGUIDialog::DrawPannedPictureBars() const
+{
+	if ( m_bEnableMoveByDrag == false || m_bEnableDraggingRange == false || m_eAnchor != UIAnchor::Center )
+		return;
+	if ( m_vSize.x <= CKTDXApp::kUILayoutWidth && m_vSize.y <= CKTDXApp::kUILayoutHeight )
+		return;
+	const D3DXVECTOR2 vCanvasMin = g_pKTDXApp->GetUICanvasMin();
+	const D3DXVECTOR2 vScreenLT = g_pKTDXApp->ConvertByResolution( vCanvasMin );
+	const D3DXVECTOR2 vScreenRB = g_pKTDXApp->ConvertByResolution( vCanvasMin + g_pKTDXApp->GetUICanvasSize() );
+	const D3DXVECTOR2 vLT = g_pKTDXApp->ConvertByResolution( m_Pos );
+	const D3DXVECTOR2 vRB = g_pKTDXApp->ConvertByResolution( m_Pos + m_vSize );
+	// Whole pixels, where the pictures snap (CKTDGUIControl: floor).
+	D3DRECT akBars[4];
+	DWORD dwBars = 0;
+	const auto add = [&]( float fLeft, float fTop, float fRight, float fBottom )
+	{
+		const LONG l = static_cast<LONG>( std::floor( fLeft ) ), t = static_cast<LONG>( std::floor( fTop ) );
+		const LONG r = static_cast<LONG>( std::floor( fRight ) ), b = static_cast<LONG>( std::floor( fBottom ) );
+		if ( r > l && b > t )
+			akBars[dwBars++] = D3DRECT{ l, t, r, b };
+	};
+	add( vScreenLT.x, vScreenLT.y, vLT.x, vScreenRB.y );		// left
+	add( vRB.x, vScreenLT.y, vScreenRB.x, vScreenRB.y );		// right
+	const float fLeft = std::max( vLT.x, vScreenLT.x ), fRight = std::min( vRB.x, vScreenRB.x );
+	add( fLeft, vScreenLT.y, fRight, vLT.y );					// top
+	add( fLeft, vRB.y, fRight, vScreenRB.y );					// bottom
+	if ( dwBars > 0 )
+		g_pKTDXApp->GetDevice()->Clear( dwBars, akBars, D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.f, 0 );
 }
 
 D3DXVECTOR2 CKTDGUIDialog::GetDraggingRange() const

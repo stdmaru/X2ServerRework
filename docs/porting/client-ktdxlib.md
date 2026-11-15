@@ -563,7 +563,9 @@ its script gives as its size less 1024×768: how far it travels at 4:3. On a wid
 with its end at the centered column's edge, and the strip between it and the screen's edge (171 units each side at
 16:9) stayed uncovered until the map scrolled. `CKTDGUIDialog::GetDraggingRange` now takes off what the canvas adds
 (width and height, centered dialogs only, never below 0), so the picture's ends stop at the screen's edges. Wider than
-the picture (the field maps at 21:9: 1820 units), it stays centered with a strip each side. Checked headless in the UI
+the picture (the field maps at 21:9: 1820 units), it stays centered, and `DrawPannedPictureBars` clears the strips
+beside it (and above or below, when shorter) to black before its controls draw, as the letterbox around the game
+([T48](../project/decisions.md)), instead of the HUD and the field showing through (user's request, 2026-11-14). Checked headless in the UI
 editor's tests (`ctest -R ui_editor`). `KeepInDraggingRange` applies the range at once (`OnFrameMove` does it every
 step): a mouse drag calls it, so the dialog is never drawn out of range between steps, and so does code that places
 the dialog (the world map's navigation box).
