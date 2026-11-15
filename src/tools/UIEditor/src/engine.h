@@ -34,6 +34,7 @@ struct PictureInfo {
     float uv[4][2] = {};        // texture coordinates of the same corners
     float textureSize[2] = {};  // its key's rectangle size in texels (0 when not loaded)
     bool shown = true;
+    float pixelMin[2] = {}, pixelMax[2] = {};   // its corners' box in render target pixels (anchors and stretch applied)
     SourceRef point;            // its SetPoint
     SourceRef texSource;        // its SetTex(file, key)
 };

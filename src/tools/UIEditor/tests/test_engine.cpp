@@ -159,6 +159,8 @@ TEST_CASE("ui editor: a dialog opens, draws at 16:9 and reports its controls in 
     REQUIRE(panel.pictures.size() == 1);
     CHECK(panel.pictures[0].texture == "DLG_Test.tga");
     CHECK(panel.pictures[0].points[3][0] == 200.0f);
+    CHECK(panel.pictures[0].pixelMin[0] == doctest::Approx(panel.pixelMin[0]));     // the panel's only picture
+    CHECK(panel.pictures[0].pixelMax[1] == doctest::Approx(panel.pixelMax[1]));
     CHECK(dialog.controls[1].name == "#1");
     CHECK_FALSE(dialog.controls[1].named);
 

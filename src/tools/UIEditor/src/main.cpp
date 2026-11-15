@@ -1,6 +1,6 @@
 // x2_ui_editor: the client's dialogs drawn by the client's own GUI code, at any resolution and aspect, to inspect them,
 // edit their anchors (UIAnchors.lua), move what their scripts place (the scripts' own numbers), and change a picture's
-// texture, key and UV rectangle (the scripts' SetTex and the textures' .tet). Decision T46; docs/tools/ui-editor.md.
+// texture and key and its key's UV rectangle (the scripts' SetTex and the textures' .tet). Decision T46; docs/tools/ui-editor.md.
 //
 //   x2_ui_editor [<game folder>] [--open DLG_x.lua]... [--size WxH]
 //
@@ -122,6 +122,9 @@ struct EditorState {
         std::optional<TetRect> rect;    // the rectangle to give the key once decided (Interactive Select's Apply)
         bool applied = false;           // decided and that rectangle given
     } keyAsk;
+    // The pictures of the selected control expanded in the inspector (indexes), green on the screen: set as the
+    // inspector draws, so the screen shows the last frame's.
+    std::vector<int> expandedPictures, shownPictures;
     // Interactive Select (SelectPopup): a key's UV rectangle edited over its texture, given to the key on Apply.
     struct Select {
         bool request = false, open = false;
@@ -1018,30 +1021,6 @@ void ChangeTexture(x2::ui_editor::Engine& engine, EditorState& state, const Pict
     ApplyTexts(engine, state, {{picture.texSource.script, before, text}}, 0);
 }
 
-// Moves (dx, dy) or grows (dw, dh) the UV rectangle of a picture's key, in texels, in its texture's .tet.
-void ChangeUv(x2::ui_editor::Engine& engine, EditorState& state, const PictureInfo& picture, float dx, float dy, float dw,
-              float dh, unsigned merge)
-{
-    std::string bytes;
-    TetFile file;
-    if (!CurrentTet(engine, state, picture.texture, bytes, file)) {
-        return;
-    }
-    const TetRect* found = file.Find(picture.key);
-    if (found == nullptr) {
-        state.message = picture.texture + " has no key " + picture.key;
-        return;
-    }
-    TetRect rect = *found;
-    rect.Move(dx, dy);
-    if ((dw != 0.0f || dh != 0.0f) && !rect.Resize(dw, dh)) {
-        state.message = picture.key + " is rotated in its .tet: only moved";
-        return;
-    }
-    file.Set(picture.key, rect);
-    ApplyTexts(engine, state, {{picture.texture, bytes, file.Bytes(), true}}, merge);
-}
-
 // Gives a key of a texture this UV rectangle in its .tet, as one step of undo.
 void ApplyRect(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture, const std::string& key,
                const TetRect& rect)
@@ -1493,6 +1472,7 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
         const std::string label = std::to_string(p + 1) + ": " + (picture.texture.empty() ? "(no texture)" : picture.texture) +
                                   (picture.key.empty() ? "" : " / " + picture.key);
         if (ImGui::TreeNode(label.c_str())) {
+            state.expandedPictures.push_back(static_cast<int>(p));
             ImGui::Text("shown: %s", picture.shown ? "yes" : "no");
             ImGui::TextDisabled("SetPoint: %s", SourceLabel(picture.point).c_str());
             MoveField(state, "left top", picture.points[0],
@@ -1546,65 +1526,17 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
             }
             ImGui::EndDisabled();
 
-            // The key's UV rectangle in the texture's .tet.
+            // The key's UV rectangle: shown and edited in Interactive Select.
             const TetRect* rect = hasTet ? tet.Find(picture.key) : nullptr;
             if (rect != nullptr) {
-                const auto uvField = [&](const char* name, const float value[2], bool size, bool enabled) {
-                    float v[2] = {value[0], value[1]};
-                    ImGui::BeginDisabled(!enabled);
-                    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
-                    const bool changed = ImGui::DragFloat2(name, v, 1.0f, -16384.0f, 16384.0f, "%.0f");
-                    ImGui::EndDisabled();
-                    const unsigned merge = ImGui::GetItemID();
-                    if (ImGui::IsItemDeactivated() && !state.undo.empty()) {
-                        state.undo.back().merge = 0;
-                    }
-                    const float dx = std::round(v[0] - value[0]), dy = std::round(v[1] - value[1]);
-                    if (changed && (dx != 0.0f || dy != 0.0f) && MayChangeKey(state, dialog, picture)) {
-                        ChangeUv(engine, state, picture, size ? 0.0f : dx, size ? 0.0f : dy, size ? dx : 0.0f,
-                                 size ? dy : 0.0f, merge);
-                    }
-                };
-                uvField("UV left top", rect->leftTop, false, true);
-                uvField("UV size", rect->size, true, rect->Upright());
-                if (ImGui::Button("Interactive Select")) {
+                if (ImGui::Button("Edit")) {
                     OpenSelect(engine, state, dialog, picture, tet);
                 }
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("The texture with this key's rectangle: drag it or type its numbers, then Apply");
-                }
-                if (!rect->Upright()) {
-                    ImGui::TextDisabled("rotated in its .tet: it moves, its size stays");
+                    ImGui::SetTooltip("The key's rectangle over its texture (Interactive Select)");
                 }
             } else if (!picture.texture.empty()) {
                 ImGui::TextDisabled(hasTet ? "the key is not in the texture's .tet" : "no .tet: the whole texture");
-            }
-
-            static const char* const corners[] = {"left top", "right top", "left bottom", "right bottom"};
-            if (ImGui::BeginTable("corners", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit)) {
-                ImGui::TableSetupColumn("corner");
-                ImGui::TableSetupColumn("point");
-                ImGui::TableSetupColumn("UV (texels)");
-                ImGui::TableHeadersRow();
-                const float* uv[4] = {};
-                if (rect != nullptr) {
-                    uv[0] = rect->leftTop, uv[1] = rect->rightTop, uv[2] = rect->leftBottom, uv[3] = rect->rightBottom;
-                }
-                for (int k = 0; k < 4; ++k) {
-                    ImGui::TableNextRow();
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(corners[k]);
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%.1f, %.1f", static_cast<double>(picture.points[k][0]),
-                                static_cast<double>(picture.points[k][1]));
-                    ImGui::TableNextColumn();
-                    if (uv[k] != nullptr) {
-                        ImGui::Text("%.0f, %.0f", static_cast<double>(uv[k][0]), static_cast<double>(uv[k][1]));
-                    } else {
-                        ImGui::TextDisabled("-");
-                    }
-                }
-                ImGui::EndTable();
             }
             ImGui::TreePop();
         }
@@ -1734,6 +1666,8 @@ void ControlAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, cons
 
 void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
+    state.shownPictures.swap(state.expandedPictures);
+    state.expandedPictures.clear();
     const Selection& sel = state.selected;
     if (sel.dialog < 0 || sel.dialog >= static_cast<int>(state.inspected.size())) {
         ImGui::TextDisabled("Open a dialog, then click a control on the screen.");
@@ -1989,6 +1923,24 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
                     if (control.drawn && control.shown) {
                         box(control, IM_COL32(80, 160, 255, 110), 1.0f);
                     }
+                }
+            }
+        }
+        // The pictures expanded in the inspector, painted green.
+        if (state.selected.dialog >= 0 && state.selected.dialog < static_cast<int>(state.inspected.size())) {
+            const DialogInfo& d = state.inspected[static_cast<std::size_t>(state.selected.dialog)];
+            if (state.selected.control >= 0 && state.selected.control < static_cast<int>(d.controls.size())) {
+                const ControlInfo& c = d.controls[static_cast<std::size_t>(state.selected.control)];
+                for (const int p : state.shownPictures) {
+                    if (p < 0 || p >= static_cast<int>(c.pictures.size())) {
+                        continue;
+                    }
+                    const PictureInfo& picture = c.pictures[static_cast<std::size_t>(p)];
+                    const ImVec2 a(origin.x + picture.pixelMin[0] * zoom, origin.y + picture.pixelMin[1] * zoom);
+                    const ImVec2 b(origin.x + picture.pixelMax[0] * zoom, origin.y + picture.pixelMax[1] * zoom);
+                    draw->AddRectFilled(a, b, IM_COL32(40, 220, 90, 80));
+                    draw->AddRect(ImVec2(a.x - 1, a.y - 1), ImVec2(b.x + 1, b.y + 1), IM_COL32(40, 255, 100, 255), 0.0f,
+                                  2.0f);
                 }
             }
         }
