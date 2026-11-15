@@ -32,9 +32,10 @@ struct PictureInfo {
     std::string key;            // the .tet key, empty when the whole texture is drawn
     float points[4][2] = {};    // left top, right top, left bottom, right bottom (layout units, relative to the control)
     float uv[4][2] = {};        // texture coordinates of the same corners
-    float textureSize[2] = {};  // the texture's size in texels (0 when not loaded)
+    float textureSize[2] = {};  // its key's rectangle size in texels (0 when not loaded)
     bool shown = true;
     SourceRef point;            // its SetPoint
+    SourceRef texSource;        // its SetTex(file, key)
 };
 
 struct StringInfo {
@@ -128,6 +129,15 @@ public:
     bool ReloadDialog(int index, std::string& error);
     // Whether an open dialog was built from the script (first or extra).
     bool DialogUses(int index, const std::string& script) const;
+
+    // .tet edits not saved yet (docs/tools/ui-editor.md#editing-textures-and-uv). The bytes of a texture's .tet: its
+    // file's, from client_data or the archives, or the ones set here. False with `error` when it has none.
+    bool TetBytes(const std::string& texture, std::string& bytes, std::string& error) const;
+    // Makes a texture's UV rectangles these, a whole .tet file, in the pictures built after (ReloadDialog builds
+    // the open ones again). False with `error` when the bytes are not a .tet or the texture does not load.
+    bool SetTet(const std::string& texture, const std::string& bytes, std::string& error);
+    // Whether an open dialog has a picture of the texture.
+    bool DialogUsesTexture(int index, const std::string& texture) const;
 
     // Draws every open dialog into the render target, resized to width x height first. False with error set if the
     // frame failed. The texture stays valid until the next Render with another size or the engine is destroyed.

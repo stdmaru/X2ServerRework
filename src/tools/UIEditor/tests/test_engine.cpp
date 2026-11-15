@@ -2,6 +2,7 @@
 // drawn and inspected (docs/tools/ui-editor.md).
 
 #include "engine.h"
+#include "tet_file.h"
 
 #include <doctest/doctest.h>
 
@@ -397,6 +398,76 @@ TEST_CASE("ui editor: the engine knows the script line that set each position")
     REQUIRE(dialogs[1].controls[0].strings.size() == 1);
     CHECK(dialogs[1].controls[0].strings[0].source.line == 5);
     CHECK(dialogs[1].controls[0].strings[0].source.kind == x2::ui_editor::CallKind::String);
+}
+
+namespace {
+
+std::string EmptyTet()
+{
+    const unsigned header[3] = {0x20544554, 0x100, 0};
+    return std::string(reinterpret_cast<const char*>(header), sizeof(header));
+}
+
+x2::ui_editor::TetRect Rect(float l, float t, float r, float b)
+{
+    x2::ui_editor::TetRect rect;
+    rect.leftTop[0] = l, rect.leftTop[1] = t;
+    rect.rightBottom[0] = r, rect.rightBottom[1] = b;
+    rect.leftBottom[0] = l, rect.leftBottom[1] = b;
+    rect.rightTop[0] = r, rect.rightTop[1] = t;
+    rect.size[0] = r - l, rect.size[1] = b - t;
+    return rect;
+}
+
+}  // namespace
+
+TEST_CASE("ui editor: a picture's key comes from its texture's .tet, which edits change in its dialogs")
+{
+    TempGame game;
+    x2::ui_editor::TetFile tet;
+    std::string error;
+    REQUIRE(x2::ui_editor::TetFile::Parse(EmptyTet(), tet, error));
+    REQUIRE(tet.Add("HALF", Rect(0, 0, 2, 4), error));
+    {
+        const std::string bytes = tet.Bytes();
+        std::ofstream(game.root / "data" / "ui" / "DLG_Test.TET", std::ios::binary).write(bytes.data(), bytes.size());
+        std::ofstream(game.root / "data" / "ui" / "scripts" / "DLG_Keyed.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pStatic = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pStatic)
+g_pPicture = g_pUIDialog:CreatePicture()
+g_pStatic:AddPicture(g_pPicture)
+g_pPicture:SetTex("DLG_Test.tga", "HALF")
+g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
+)lua";
+    }
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Keyed.lua", error) == 0);
+    auto picture = engine->Inspect()[0].controls[0].pictures.at(0);
+    CHECK(picture.key == "HALF");
+    CHECK(picture.texSource.line == 6);
+    CHECK(picture.texSource.kind == x2::ui_editor::CallKind::Texture);
+    CHECK(picture.textureSize[0] == 2);
+    CHECK(picture.textureSize[1] == 4);
+
+    std::string bytes;
+    REQUIRE_MESSAGE(engine->TetBytes("DLG_Test.tga", bytes, error), error);
+    CHECK(bytes == tet.Bytes());
+    x2::ui_editor::TetRect grown = *tet.Find("HALF");
+    REQUIRE(grown.Resize(2, 0));
+    REQUIRE(tet.Set("HALF", grown));
+    REQUIRE_MESSAGE(engine->SetTet("DLG_Test.tga", tet.Bytes(), error), error);
+    CHECK(engine->DialogUsesTexture(0, "dlg_test.TGA"));
+    REQUIRE(engine->ReloadDialog(0, error));
+    picture = engine->Inspect()[0].controls[0].pictures.at(0);
+    CHECK(picture.textureSize[0] == 4);
+    REQUIRE(engine->TetBytes("DLG_Test.tga", bytes, error));
+    CHECK(bytes == tet.Bytes());
+    CHECK_FALSE(engine->SetTet("DLG_Test.tga", "nope", error));
 }
 
 TEST_CASE("ui editor: an edited script reloads into its dialog, moved where it was and in the game's state")

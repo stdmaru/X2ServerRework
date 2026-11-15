@@ -115,3 +115,21 @@ TEST_CASE("script edit: lines it cannot edit are refused, unchanged")
     std::string commented = "-- a:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })";
     CHECK_FALSE(MoveCall(commented, 1, CallKind::Point, 1, 1, error));
 }
+
+TEST_CASE("script edit: a picture's SetTex names another texture and key")
+{
+    std::string text = "p:SetTex(\"A.TGA\", \"KEY\")\np:SetTex( 'B.tga' , 'OTHER' ) -- SetTex(\"x\", \"y\")\n";
+    std::string error;
+    REQUIRE(x2::ui_editor::SetTexCall(text, 1, "A.TGA", "NEW_KEY", error));
+    REQUIRE(x2::ui_editor::SetTexCall(text, 2, "C.TGA", "K2", error));
+    CHECK(text == "p:SetTex(\"A.TGA\", \"NEW_KEY\")\np:SetTex( 'C.TGA' , 'K2' ) -- SetTex(\"x\", \"y\")\n");
+
+    std::string named = "p:SetTex(TEX, \"KEY\")\n";
+    CHECK_FALSE(x2::ui_editor::SetTexCall(named, 1, "A.TGA", "K", error));
+    CHECK(named == "p:SetTex(TEX, \"KEY\")\n");
+    std::string two = "p:SetTex(\"A\", \"B\") q:SetTex(\"A\", \"B\")\n";
+    CHECK_FALSE(x2::ui_editor::SetTexCall(two, 1, "A", "K", error));
+    std::string plain = "p:SetTex(\"A\", \"B\")\n";
+    CHECK_FALSE(x2::ui_editor::SetTexCall(plain, 1, "A", "K\"", error));
+    CHECK_FALSE(MoveCall(plain, 1, CallKind::Texture, 1, 1, error));
+}

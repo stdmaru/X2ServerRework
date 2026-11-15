@@ -1355,6 +1355,9 @@ void CKTDGUIControl::CPictureData::SetTex_LUA2( const char* pFileName )
 void CKTDGUIControl::CPictureData::SetTex_LUA( const char* pFileName, const char* key )
 {
 	KTDXPROFILE();
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 
 	SAFE_DELETE( pTexture );
 	wstring wstrFileName;

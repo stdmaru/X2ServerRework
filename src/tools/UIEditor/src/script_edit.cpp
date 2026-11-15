@@ -235,6 +235,8 @@ bool KindMatches(CallKind kind, const std::string& full)
         return name == "SetRect" || (name.size() > 5 && name.compare(name.size() - 5, 5, "Point") == 0);
     case CallKind::String:
         return name == "AddString";
+    case CallKind::Texture:
+        return name == "SetTex";
     }
     return false;
 }
@@ -248,6 +250,8 @@ const char* KindName(CallKind kind)
         return "point table (Set...Point)";
     case CallKind::String:
         return "AddString";
+    case CallKind::Texture:
+        return "SetTex";
     }
     return "?";
 }
@@ -393,9 +397,12 @@ std::string ShiftExpression(const std::string& e, float delta)
     return out;
 }
 
-bool MoveCall(std::string& text, int line, CallKind kind, float dx, float dy, std::string& error)
+namespace {
+
+// The one call of `kind` on `line`: its '(' or '{' and the bracket closing it. False with `error` otherwise.
+bool FindCall(const std::string& text, const std::vector<char>& code, int line, CallKind kind, std::size_t& open,
+              std::size_t& close, std::string& error)
 {
-    const std::vector<char> code = CodeMask(text);
     std::size_t lineBegin = 0;
     for (int l = 1; l < line; ++l) {
         lineBegin = text.find('\n', lineBegin);
@@ -433,10 +440,46 @@ bool MoveCall(std::string& text, int line, CallKind kind, float dx, float dy, st
         error = std::string("more than one ") + KindName(kind) + " call" + where;
         return false;
     }
-    const std::size_t open = opens.front();
-    const std::size_t close = FindClose(text, code, open);
+    open = opens.front();
+    close = FindClose(text, code, open);
     if (close == npos) {
         error = "the call" + where + " is not closed";
+        return false;
+    }
+    return true;
+}
+
+// The text between the quotes of a string literal at [begin, end) (spaces around it allowed), or false.
+bool StringLiteral(const std::string& t, Range range, Range& inside)
+{
+    std::size_t b = SkipSpaces(t, range.begin, range.end), e = range.end;
+    while (e > b && IsSpace(t[e - 1])) {
+        --e;
+    }
+    if (e - b < 2 || (t[b] != '"' && t[b] != '\'') || t[e - 1] != t[b]) {
+        return false;
+    }
+    for (std::size_t i = b + 1; i + 1 < e; ++i) {
+        if (t[i] == t[b] || t[i] == '\\') {
+            return false;
+        }
+    }
+    inside = {b + 1, e - 1};
+    return true;
+}
+
+}  // namespace
+
+bool MoveCall(std::string& text, int line, CallKind kind, float dx, float dy, std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    std::size_t open = 0, close = 0;
+    if (!FindCall(text, code, line, kind, open, close, error)) {
+        return false;
+    }
+    const std::string where = " on line " + std::to_string(line);
+    if (kind == CallKind::Texture) {
+        error = "SetTex" + where + " places nothing";
         return false;
     }
 
@@ -473,6 +516,31 @@ bool MoveCall(std::string& text, int line, CallKind kind, float dx, float dy, st
     for (const Edit& edit : edits) {
         text.replace(edit.begin, edit.end - edit.begin, edit.text);
     }
+    return true;
+}
+
+bool SetTexCall(std::string& text, int line, const std::string& texture, const std::string& key, std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    std::size_t open = 0, close = 0;
+    if (!FindCall(text, code, line, CallKind::Texture, open, close, error)) {
+        return false;
+    }
+    const std::string where = " on line " + std::to_string(line);
+    const std::vector<Range> args = Split(text, code, {open + 1, close}, ",");
+    Range file, name;
+    if (text[open] != '(' || args.size() != 2 || !StringLiteral(text, args[0], file) || !StringLiteral(text, args[1], name)) {
+        error = "SetTex" + where + " does not take two quoted names";
+        return false;
+    }
+    for (const std::string* value : {&texture, &key}) {
+        if (value->empty() || value->find_first_of("\"'\\\n") != npos) {
+            error = "a texture and a key are plain names";
+            return false;
+        }
+    }
+    text.replace(name.begin, name.end - name.begin, key);
+    text.replace(file.begin, file.end - file.begin, texture);
     return true;
 }
 

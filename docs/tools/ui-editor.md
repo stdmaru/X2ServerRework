@@ -20,12 +20,12 @@ container's build runs on the desktop.
 
 | Panel | Contents |
 |---|---|
-| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Undo", "Redo", "Save" (UIAnchors.lua and the dialog scripts moved; Ctrl+S) and whether there are unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
+| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Undo", "Redo", "Save" (UIAnchors.lua, the dialog scripts and the `.tet` files edited; Ctrl+S) and whether there are unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
 | Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or zoomed with the wheel around the pointer (10%–800%, "100%" for one pixel per pixel), panned with the right or middle button. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
-| Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the `SetPos` line that set it with a field that moves it ([below](#editing-positions)), the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels, with "Make its width a stretch zone". The control, each picture and each text can be moved, and show the script line that placed them |
+| Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the `SetPos` line that set it with a field that moves it ([below](#editing-positions)), the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels, with "Make its width a stretch zone". The control, each picture and each text can be moved, and show the script line that placed them; a picture's texture, key and UV rectangle can be changed ([below](#editing-textures-and-uv)) |
 
 Slice (a) inspects, slice (b) edits the anchors ([below](#editing-anchors)), slice (c) moves what the scripts place
-([below](#editing-positions)); textures and UV follow ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+([below](#editing-positions)) and changes the pictures' textures, keys and UV ([below](#editing-textures-and-uv)).
 
 ## Editing anchors
 
@@ -82,6 +82,33 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   each one as a whole with its BOM (the files are UTF-8 with BOM, T42), and closing asks first.
 - **Dialogs placed by code** (T46 (3)): moving one changes its script's `SetPos` only, which the code overrides; the
   inspector says so. Their positions move into the scripts screen by screen, later.
+
+## Editing textures and UV
+
+Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture and key are saved into its script's
+`SetTex("file.tga", "KEY")`, and a key's UV rectangle into the texture's `.tet`, both loose files in the client_data.
+
+- **Texture and key:** the inspector shows the picture's `SetTex` line, a field with the texture's file name (Enter
+  changes it; the key stays when the new texture has it, else its first key) and a list of the texture's keys, each
+  with its rectangle. Both are string literals in the call (`SetTexCall`); a call naming them otherwise, through a
+  variable, is refused. Pictures set by `SetTex2` (a whole texture) or by code have no line here.
+- **UV rectangle:** "UV left top" moves the key's rectangle and "UV size" grows it to the right and down, in whole
+  texels (the size is what `USE_TEXTURE_SIZE` gives the picture). A rectangle the `.tet` rotates (its script's
+  `RotateRect`) can be moved only. The corners table lists the four corners' points and texels.
+- **A key others use** (user's choice, 2026-11-14): before the first UV change of a key, the editor searches every
+  `.lua` under `data/` for lines that name the texture and the key in quotes (`FindKeyUses`; the game's code is not
+  searched). When lines other than the picture's own `SetTex` name it, or that line sets several pictures, it asks:
+  change it in place (for every picture that names it, remembered for that key until the editor closes), or make a
+  new key, a copy of the rectangle under a name the user may edit (suggested: the key and the dialog's name, as
+  `BG_LEFT_TOP_UI_LOCAL_MAP_NEW`), which the picture's `SetTex` then names, as one step of undo.
+- **The `.tet` file** (`tet_file.h`), as the client reads it (`CKTDXDeviceTET_Preprocessing`): header (magic `TET `,
+  version 0x100, count), each key's offset, the rectangles (10 floats in texels: left top, right bottom, left bottom,
+  right top, size), then the keys (a WORD length, UTF-16LE, a null). The client finds a key by binary search, so the
+  keys stay sorted (uppercase, by code unit); a new key is made uppercase and is letters, digits and underscores.
+  Every `.tet` of the user's client_data writes back unchanged (2026-11-14).
+- **Seeing it:** the edited bytes replace the texture's rectangles in the engine (`Engine::SetTet`, KTDXLIB's
+  `CKTDXDeviceTexture::ReplaceTET`; the engine holds the texture so it stays loaded with them), and the open dialogs
+  with pictures of it are built again. Undo, redo and Save cover the `.tet` files as they do the scripts.
 
 ## Watch game
 
@@ -153,12 +180,20 @@ inspected (not drawn: the tests have no fonts); the game's live state put into a
 a text); a script loaded into an open dialog; statics as the game holds them (a picture code removed, a static code
 added with its picture and text, a filler keeping the indexes); the line of each `SetPos`, `SetPoint` and `AddString`;
 an edited script reloaded into its dialog, moved where it was, the game's state put into it moved by the edit, and the
-file's text again (2026-11-14).
+file's text again (2026-11-14); a picture's key read from its texture's `.tet`, its `SetTex` line, and a changed `.tet`
+growing it after a reload (2026-11-14).
 
 Position edits (`test_script_edit.cpp`): numbers written as a script would; expressions keep their constants (the
 number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a
 commented-out corner and a string that looks like one left alone), the four corners, a `LEFT_TOP` added, `AddString`'s
-`POS`; lines with two calls, a corner that is not a `D3DXVECTOR2` and a commented-out call refused, unchanged.
+`POS`; lines with two calls, a corner that is not a `D3DXVECTOR2` and a commented-out call refused, unchanged; a
+`SetTex`'s texture and key changed (either quotes), one naming them through a variable, two on a line and a quote in
+the new name refused.
+
+`.tet` files (`test_tet_file.cpp`): read and written back as the client writes them; files cut short or not `.tet`
+refused; rectangles moved and grown, a rotated one not grown; keys added in order, a duplicate or invalid name
+refused; the name of a texture's `.tet`; the lines of the scripts that name a key (any case, either quotes, `.kom/`
+skipped). With `X2_UI_EDITOR_GAME`, every `.tet` of that client_data writes back unchanged.
 
 With `X2_UI_EDITOR_GAME=<game folder>` (not in CI; `X2_UI_EDITOR_FILTER=<prefix>` narrows it), every dialog script of
 that client_data is opened in turn and every call the engine noted is moved in its text. On the user's (2026-11-14):
@@ -185,4 +220,7 @@ the game's code hides but the one in use: "Watch game" shows them as the game do
 
 2026-11-14: slice (b), anchor editing ([above](#editing-anchors)), checked by the user on the desktop ("worked perfectly"); undo and redo added after.
 
-Next ([T46](../project/decisions.md)): slice (c).
+2026-11-14: slice (c) (`tools/ui-editor-layout`): positions, then textures, keys and UV
+([above](#editing-positions)); to be tried on the desktop with the local map (`DLG_UI_Local_Map_NEW.lua`).
+
+Next ([T46](../project/decisions.md)): the C++ layout positions moved into the scripts, screen by screen.
