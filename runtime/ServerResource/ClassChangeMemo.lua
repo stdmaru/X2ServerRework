@@ -200,7 +200,6 @@ ClassChangeTable:SetClassChange_Memo(1,607012, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"
 ClassChangeTable:SetClassChange_Memo(2,607013, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 ClassChangeTable:SetClassChange_Memo(3,607010, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 
---[[
 --소마
 ClassChangeTable:SetClassChange_Memo(0,607015, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])
 ClassChangeTable:SetClassChange_Memo(1,607016, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])	
@@ -211,4 +210,13 @@ ClassChangeTable:SetClassChange_Memo(0,607015, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
 ClassChangeTable:SetClassChange_Memo(1,607016, UNIT_CLASS["UC_ARA_YAMA_RAJA"])	
 ClassChangeTable:SetClassChange_Memo(2,607017, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
 ClassChangeTable:SetClassChange_Memo(3,607014, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
---]]
+
+--Elesis (from V5; _reference has none)
+ClassChangeTable:SetClassChange_Memo(1,608011, UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"])
+ClassChangeTable:SetClassChange_Memo(2,608014, UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"])
+ClassChangeTable:SetClassChange_Memo(1,608011, UNIT_CLASS["UC_ELESIS_GRAND_MASTER"])
+ClassChangeTable:SetClassChange_Memo(2,608014, UNIT_CLASS["UC_ELESIS_GRAND_MASTER"])
+ClassChangeTable:SetClassChange_Memo(1,608019, UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"])
+ClassChangeTable:SetClassChange_Memo(2,608022, UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"])
+ClassChangeTable:SetClassChange_Memo(1,608019, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])
+ClassChangeTable:SetClassChange_Memo(2,608022, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])

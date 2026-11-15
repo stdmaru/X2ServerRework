@@ -32,7 +32,7 @@ endfunction()
 
 x2_env_cache(X2_DIST_DIR PATH "${CMAKE_SOURCE_DIR}/dist" "Destination where x2_run_* targets assemble the package")
 x2_env_cache(X2_CLIENT_DATA PATH "${CMAKE_SOURCE_DIR}/_client/data"
-    "Client data folder (data*.kom) the ClientScript folder is generated from")
+    "Client data folder (data*.kom) or client_data the ClientScript folder is generated from")
 
 # Values of the runtime/*/*.in templates. The defaults match docker/docker-compose.yml; X2_DB_PASSWORD, X2_DB_PORT and
 # X2_SERVER_IP are the variables docker compose and docker/mssql/restore.sh also read.

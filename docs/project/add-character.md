@@ -45,6 +45,19 @@ per-level text) from BR 2017 by skill ID where BR 2014-08 has none or has it in 
   classes outside 1–8; `GSkill_Default` has no class 9; `GBase_Item`'s class 9 rows are Ara's and Elesis's items. The
   reference's `DataBase/` procedure is older (classes 1–4). Fixes go in `tools/database/patches/Game01/`.
 
+**Done (2026-11-15)**, our files kept, entries added by ID:
+- `StatTable.lua`: classes 31, 119, 120, 121 from `_reference` and 9, 32, 122 from V5 (80 levels each). Our class 118's
+  level 1 differs from `_reference`'s (ours lacks the 2nd-job level-1 correction of the file's header); kept.
+- `ClassChangeTable/Skill/Quest/Item/Memo.lua` (what a class change item converts): ours had Ara's 2nd path and
+  Elesis's jobs in "temporary comment" blocks (`임시 주석 처리`); they are active now, as in `_reference`, which also
+  takes Little Devil's slot-2 skill 7011 (Energy Wave) where our draft had 7014. Add: groups 91 (Psychic Tracer) and
+  92 (Lunatic Psyker), one per job tier as for the other characters (V5 groups Add by path, 91–93), and V5's skill
+  rows. Elesis's memo rows (Item/Memo, 608009–608022) from V5, with the 44 memo items of Ara's 2nd path and Elesis
+  (607018–607035, 608001–608030; BR 2014-08, text BR 2017) now in our client. No source has `ClassChangeQuest` rows
+  for Elesis or Add.
+- Servers read the client_data's scripts when `X2_CLIENT_DATA` points at it (`gen_clientscript.py`,
+  [Server package](../tools/runtime.md#clientscript-generated-from-the-client)); from the `.kom` they would not see Add.
+
 ## Also synced on the way (user, 2026-11-15)
 
 What the current game should have but our data lacks or has out of sync is brought in with Add:
