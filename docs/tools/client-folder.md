@@ -28,6 +28,15 @@ It copies the executable and, when they are missing, `general.ess`, `movie/` and
 `_client/data`). It never touches the `.kom` or the client_data. Run it on the machine that has the folder: the
 `x2-dev` container does not mount it.
 
+On Linux it also installs, under `$XDG_DATA_HOME` (`~/.local/share`), the launcher entry `applications/x2.desktop`
+(`Name=Elsword`, `Exec`/`Path` the folder's `x2`, `Icon=x2`, `StartupWMClass=x2`) and `icons/hicolor/256x256/apps/x2.png`,
+the 256×256 PNG inside `src/client/X2/Elsword.ico` (since 2026-11-14). Wayland taskbars find the icon through the entry
+whose name matches the window's `app_id` `x2` ([Client: DXUT](../porting/client-dxut.md)); a second run, for another folder,
+points the entry at that folder. The window's own icon was not enough on the user's Hyprland with a quickshell bar
+(2026-11-14): the bar looks the `app_id` up in the desktop entries and the icon theme, and caches a miss, so after the
+first install the bar may need a restart. `Elsword.ico` holds two 256×256 PNGs, a black 24-bit one first and the real
+32-bit one (opaque RGB) after it: both the script and `LoadIcoImage` take the deeper one.
+
 The user's folder (2026-11-12): `/media/games/X2ReworkClient/data`, with its client_data in `data/data`.
 
 ## Running

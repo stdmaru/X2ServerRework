@@ -159,6 +159,20 @@ TEST_CASE("app: LoadIcoImage decodes the largest PNG entry of an .ico")
     CHECK(x2::app::LoadIcoImage(bmp.data(), bmp.size(), error) == nullptr);
 }
 
+TEST_CASE("app: LoadIcoImage prefers the deeper of two images of the same size")
+{
+    // Elsword.ico: a 24-bit 256x256 PNG (black) before the 32-bit one. Both say 32 bits here but the second is bigger;
+    // then the bit depth decides.
+    auto ico = MakeIco({{256, 256, EncodePng(8, 8)}, {256, 256, EncodePng(16, 16)}});
+    ico[6 + 6] = 24;  // first entry: 24 bits per pixel
+    ico[6 + 16 + 6] = 32;
+    std::string error;
+    SDL_Surface* image = x2::app::LoadIcoImage(ico.data(), ico.size(), error);
+    REQUIRE_MESSAGE(image, error);
+    CHECK(image->w == 16);
+    SDL_DestroySurface(image);
+}
+
 TEST_CASE("app: a window's icon fails on bytes that are not an .ico")
 {
     // The dummy video driver does not support window icons, so only the decoding error path runs here.

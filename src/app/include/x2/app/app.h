@@ -57,7 +57,7 @@ private:
     SDL_Window* m_window = nullptr;
 };
 
-// Decodes the largest image of a Windows .ico file's bytes. Only PNG-encoded entries are read (the 256x256 image of
+// Decodes the largest image of a Windows .ico file's bytes (on a tie, the most bits per pixel, then the most bytes). Only PNG-encoded entries are read (the 256x256 image of
 // a modern .ico is one; the older BMP entries are skipped). Returns nullptr, with `error`, when there is none. The
 // caller frees the surface with SDL_DestroySurface.
 SDL_Surface* LoadIcoImage(const unsigned char* ico, std::size_t size, std::string& error);
