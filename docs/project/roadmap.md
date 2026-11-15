@@ -326,6 +326,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         `SERV_LIMIT_UNIT` is commented out "2026-08-08 Add disabled fix"): a source to compare against, not a
         reference. What is migrated from it keeps the current version working through switches in `src/define.h`
         (user, 2026-11-15). Comes after `server/character-switches`, which gives Add its switch.
+        Surveyed 2026-11-15 ([Add character](add-character.md)): the code is all in `_reference` and imported; the data
+        comes from the Brazilian scripts, and only the server data from V5.
   - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
         ratio, ultrawide included, and 16:9 by default. Today the UI's 1024×768 layout is scaled by separate X and Y
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it
