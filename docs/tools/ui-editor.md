@@ -20,11 +20,12 @@ container's build runs on the desktop.
 
 | Panel | Contents |
 |---|---|
-| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Undo", "Redo", "Save UIAnchors.lua" and whether it has unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
+| Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Undo", "Redo", "Save" (UIAnchors.lua and the dialog scripts moved; Ctrl+S) and whether there are unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
 | Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or zoomed with the wheel around the pointer (10%–800%, "100%" for one pixel per pixel), panned with the right or middle button. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
-| Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels, with "Make its width a stretch zone" |
+| Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the `SetPos` line that set it with a field that moves it ([below](#editing-positions)), the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels, with "Make its width a stretch zone". The control, each picture and each text can be moved, and show the script line that placed them |
 
-Slice (a) inspects, slice (b) edits the anchors ([below](#editing-anchors)); positions, textures and UV (c) follow ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+Slice (a) inspects, slice (b) edits the anchors ([below](#editing-anchors)), slice (c) moves what the scripts place
+([below](#editing-positions)); textures and UV follow ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
 
 ## Editing anchors
 
@@ -51,6 +52,36 @@ client_data (`data/`, any folder; a new one goes to `data/ui/scripts/`):
   and Ctrl+Y (Ctrl+Shift+Z) when no text field is being typed in. Each step is a script's entry before and after an
   edit, so it is undone in the open dialogs as well; one drag of a stretch zone is one step. Loading the file again
   clears the history.
+
+## Editing positions
+
+Slice (c), 2026-11-14 (`tools/ui-editor-layout`, [T46](../project/decisions.md) (2)): a move is saved into the dialog
+script itself, the loose file in the client_data ([client_data](client-data.md)), with no overrides file.
+
+- **What moves:** the dialog (its `g_pUIDialog:SetPos`), a control (every point table set on it, such as a button's
+  normal, over and down points, and those of its pictures and texts), a picture (its `SetPoint`) or a text (its
+  `AddString`'s `POS`). In the inspector each has a field (drag or Ctrl + click to type, whole layout units) and shows
+  the line that set it. On the screen, a click selects a control and dragging it moves it (Alt: its dialog); with the
+  screen focused, the arrow keys move it by 1 (Shift: 10).
+- **Where the lines come from:** as a script loads, KTDXLIB notes each such call with the object it set and its Lua line
+  ([KTDXLIB](../porting/client-ktdxlib.md#script-calls-for-tools-2026-11-14-toolsui-editor-layout)); the scripts a
+  control makes run on its own (another level of loading) are left out. Something code placed, or set by a call the
+  engine does not note (a picture's `SetPos`), has no line and its field is disabled.
+- **How the text changes** (user's choices, 2026-11-14): only the numbers. Each coordinate keeps its expression and its
+  first number is changed (`746 + MOVE_BG_Y` becomes `750 + MOVE_BG_Y`; `X - 10` becomes `X - 6`); one with no number
+  gets the move appended (`X + 4`). A control is moved by editing each of its points, not by adding a `SetOffsetPos`.
+  A point table moves every corner it gives (`LEFT_TOP`, `RIGHT_TOP`, `LEFT_BOTTOM`, `RIGHT_BOTTOM`) and gets a
+  `LEFT_TOP` when it has none (it defaults to 0, 0); a text without `POS` gets one. A line with two calls of the kind, or
+  without one (a function defined in another file), is refused with the reason. A line that sets several things (a loop,
+  or a function called several times) moves them all, and the inspector says so.
+- **Seeing it:** the edited text runs instead of the file (`Engine::SetScriptText`) and each open dialog built from
+  that script is built again (`ReloadDialog`), where it was drawn and with the game's state last mirrored into it. The
+  game, started before the edit, still draws the old numbers, so its state is moved by what the edit moved (the
+  difference between what the scripts placed when first loaded and now).
+- **Undo and redo** take back moves as they do anchor edits (one drag is one step); "Save" writes the changed scripts,
+  each one as a whole with its BOM (the files are UTF-8 with BOM, T42), and closing asks first.
+- **Dialogs placed by code** (T46 (3)): moving one changes its script's `SetPos` only, which the code overrides; the
+  inspector says so. Their positions move into the scripts screen by screen, later.
 
 ## Watch game
 
@@ -120,7 +151,22 @@ with loose files only: a missing script refused; a dialog opened, drawn at 1280�
 (`#1` when unnamed), boxes in layout units and pixels, the slot manager stub; moved and closed; a static's text
 inspected (not drawn: the tests have no fonts); the game's live state put into a dialog (position, a control hidden,
 a text); a script loaded into an open dialog; statics as the game holds them (a picture code removed, a static code
-added with its picture and text, a filler keeping the indexes).
+added with its picture and text, a filler keeping the indexes); the line of each `SetPos`, `SetPoint` and `AddString`;
+an edited script reloaded into its dialog, moved where it was, the game's state put into it moved by the edit, and the
+file's text again (2026-11-14).
+
+Position edits (`test_script_edit.cpp`): numbers written as a script would; expressions keep their constants (the
+number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a
+commented-out corner and a string that looks like one left alone), the four corners, a `LEFT_TOP` added, `AddString`'s
+`POS`; lines with two calls, a corner that is not a `D3DXVECTOR2` and a commented-out call refused, unchanged.
+
+With `X2_UI_EDITOR_GAME=<game folder>` (not in CI; `X2_UI_EDITOR_FILTER=<prefix>` narrows it), every dialog script of
+that client_data is opened in turn and every call the engine noted is moved in its text. On the user's (2026-11-14):
+29,571 calls, all movable, 2,465 of them on lines that set several things.
+
+Closing a dialog clears the Lua globals its scripts set to objects (2026-11-14): `DLG_Event_Clock_Talk_Box.lua` names
+its static through `g_pStaticEVENT_CLOCK`, a global of `DLG_Event_Clock.lua`, and opening the two in turn crashed the
+editor on the freed control; it now gets nil, a script error.
 
 ## Status
 

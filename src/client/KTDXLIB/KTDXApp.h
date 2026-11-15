@@ -464,6 +464,9 @@ class CKTDXApp
         // A tool's unsaved edits of scripts (tools/ui-editor): when set and it returns text for a file name, that
         // script runs from the text instead of its file.
         static inline std::function<const std::string*( const WCHAR* pFileName )> s_fnScriptOverride;
+        // How many scripts are running now, one inside another (LoadAndDoMemory): a dialog notes only the calls of
+        // its own script, not of those it makes run (CKTDGUIDialog::NoteScriptCall).
+        static inline int s_iScriptDepth = 0;
 #endif
 
         __forceinline bool       LoadLuaTinker( const WCHAR* pFileName, bool bEncryption = true )
@@ -623,6 +626,11 @@ __forceinline HRESULT CKTDXApp::LoadAndDoMemory_ErrorCode( LUADOMEMORYNOTENCRYPT
     }
 
 #ifdef X2_DEV_TOOLS
+	struct DepthGuard
+	{
+		DepthGuard() { ++s_iScriptDepth; }
+		~DepthGuard() { --s_iScriptDepth; }
+	} kDepth;
 	if ( s_fnScriptOverride )
 	{
 		if ( const std::string* pText = s_fnScriptOverride( pFileName ); pText != nullptr )

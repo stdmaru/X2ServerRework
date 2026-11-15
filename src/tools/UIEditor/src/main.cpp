@@ -1,6 +1,6 @@
-// x2_ui_editor: the client's dialogs drawn by the client's own GUI code, at any resolution and aspect, to inspect them
-// and edit their anchors (UIAnchors.lua); positions, textures and UV in a later slice. Decision T46;
-// docs/tools/ui-editor.md.
+// x2_ui_editor: the client's dialogs drawn by the client's own GUI code, at any resolution and aspect, to inspect them,
+// edit their anchors (UIAnchors.lua) and move what their scripts place (the scripts' own numbers); textures and UV
+// next. Decision T46; docs/tools/ui-editor.md.
 //
 //   x2_ui_editor [<game folder>] [--open DLG_x.lua]... [--size WxH]
 //
@@ -25,6 +25,8 @@
 #include <cstring>
 #include <filesystem>
 #include <functional>
+#include <fstream>
+#include <map>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -35,6 +37,7 @@ namespace {
 using x2::ui_editor::AnchorEntry;
 using x2::ui_editor::ControlInfo;
 using x2::ui_editor::DialogInfo;
+using x2::ui_editor::SourceRef;
 
 struct Aspect {
     const char* name;
@@ -92,15 +95,38 @@ struct EditorState {
     x2::ui_editor::AnchorsFile anchors;
     std::filesystem::path anchorsPath;
     std::set<std::string> anchorsEdited;    // lowercase
-    // Undo and redo of the edits: a script's entry before and after each. Steps of one drag (merge: the dragged
-    // item) are one.
-    struct AnchorStep {
-        std::string script;
+    // Dialog scripts as the inspector moved what they place (docs/tools/ui-editor.md#editing-positions), by Key:
+    // the text, the file's text when first edited or last saved, and the name as the dialog loaded it.
+    std::unordered_map<std::string, std::string> scriptTexts, scriptSaved, scriptNames;
+
+    // Undo and redo of the edits: a script's UIAnchors.lua entry, or the texts of the scripts a move changed, before
+    // and after each. Steps of one drag (merge: the dragged item) are one.
+    struct Step {
+        bool anchors = true;
+        std::string script;                 // anchors: the entry's script; texts: the first script changed
         AnchorEntry before, after;
+        struct Text {
+            std::string script, before, after;
+        };
+        std::vector<Text> texts;
         unsigned merge = 0;
     };
-    std::vector<AnchorStep> undo, redo;
+    std::vector<Step> undo, redo;
     bool quitAsked = false;
+    // Dragging the selected control on the screen: the move not applied yet (whole layout units are), and whether it
+    // moves the dialog (Alt) instead.
+    bool dragging = false;
+    bool draggingDialog = false;
+    float dragRest[2] = {};
+
+    bool ScriptsChanged() const
+    {
+        return std::any_of(scriptTexts.begin(), scriptTexts.end(), [this](const auto& text) {
+            const auto saved = scriptSaved.find(text.first);
+            return saved == scriptSaved.end() || saved->second != text.second;
+        });
+    }
+    bool Changed() const { return anchors.Changed() || ScriptsChanged(); }
 };
 
 std::string Key(const std::string& script)
@@ -145,28 +171,152 @@ void EditAnchors(x2::ui_editor::Engine& engine, EditorState& state, const std::s
     if (before == entry) {
         return;
     }
-    if (merge != 0 && !state.undo.empty() && state.undo.back().merge == merge && state.undo.back().script == script) {
+    if (merge != 0 && !state.undo.empty() && state.undo.back().anchors && state.undo.back().merge == merge &&
+        state.undo.back().script == script) {
         state.undo.back().after = entry;
     } else {
-        state.undo.push_back({script, before, entry, merge});
+        EditorState::Step step;
+        step.script = script;
+        step.before = before;
+        step.after = entry;
+        step.merge = merge;
+        state.undo.push_back(std::move(step));
     }
     state.redo.clear();
     SetAnchors(engine, state, script, entry);
 }
 
-void UndoAnchors(x2::ui_editor::Engine& engine, EditorState& state, bool redo)
+// Makes a script's text this one: it runs from it in every dialog loaded after, and the open dialogs built from it
+// are built again.
+void SetScript(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script, const std::string& text)
+{
+    const std::string key = Key(script);
+    state.scriptTexts[key] = text;
+    state.scriptNames.try_emplace(key, script);
+    engine.SetScriptText(script, &text);
+    std::string error;
+    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
+        if (engine.DialogUses(i, script) && !engine.ReloadDialog(i, error)) {
+            state.message = error;
+        }
+    }
+}
+
+void Undo(x2::ui_editor::Engine& engine, EditorState& state, bool redo)
 {
     auto& from = redo ? state.redo : state.undo;
     auto& to = redo ? state.undo : state.redo;
     if (from.empty()) {
         return;
     }
-    EditorState::AnchorStep step = std::move(from.back());
+    EditorState::Step step = std::move(from.back());
     from.pop_back();
     step.merge = 0;
-    SetAnchors(engine, state, step.script, redo ? step.after : step.before);
+    if (step.anchors) {
+        SetAnchors(engine, state, step.script, redo ? step.after : step.before);
+    } else {
+        for (const EditorState::Step::Text& text : step.texts) {
+            SetScript(engine, state, text.script, redo ? text.after : text.before);
+        }
+    }
     state.message = std::string(redo ? "redone: " : "undone: ") + step.script;
     to.push_back(std::move(step));
+}
+
+// Moves what the script calls set by (dx, dy) layout units, in the scripts' text (x2::ui_editor::MoveCall), and builds
+// again the dialogs made from them. One step of undo; merge: an id that joins the steps of one drag (0: none).
+bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::vector<SourceRef>& refs, float dx,
+                 float dy, unsigned merge)
+{
+    if (dx == 0.0f && dy == 0.0f) {
+        return false;
+    }
+    // Each call once (a control's pictures may share a line), by script.
+    std::map<std::string, std::pair<std::string, std::set<std::pair<int, int>>>> calls;
+    for (const SourceRef& ref : refs) {
+        if (ref.Known()) {
+            auto& entry = calls[Key(ref.script)];
+            entry.first = ref.script;
+            entry.second.insert({ref.line, static_cast<int>(ref.kind)});
+        }
+    }
+    if (calls.empty()) {
+        state.message = "not placed by a script call the editor follows";
+        return false;
+    }
+    std::vector<EditorState::Step::Text> texts;
+    for (const auto& [key, entry] : calls) {
+        std::string text, error;
+        if (const auto it = state.scriptTexts.find(key); it != state.scriptTexts.end()) {
+            text = it->second;
+        } else if (!engine.ScriptText(entry.first, text, error)) {
+            state.message = error;
+            return false;
+        } else {
+            state.scriptSaved.try_emplace(key, text);
+        }
+        const std::string before = text;
+        for (const auto& [line, kind] : entry.second) {
+            if (!x2::ui_editor::MoveCall(text, line, static_cast<x2::ui_editor::CallKind>(kind), dx, dy, error)) {
+                state.message = entry.first + ": " + error;
+                return false;
+            }
+        }
+        texts.push_back({entry.first, before, text});
+    }
+    const auto sameScripts = [&](const EditorState::Step& step) {
+        if (step.anchors || step.texts.size() != texts.size()) {
+            return false;
+        }
+        for (std::size_t i = 0; i < texts.size(); ++i) {
+            if (Key(step.texts[i].script) != Key(texts[i].script)) {
+                return false;
+            }
+        }
+        return true;
+    };
+    if (merge != 0 && !state.undo.empty() && state.undo.back().merge == merge && sameScripts(state.undo.back())) {
+        for (std::size_t i = 0; i < texts.size(); ++i) {
+            state.undo.back().texts[i].after = texts[i].after;
+        }
+    } else {
+        EditorState::Step step;
+        step.anchors = false;
+        step.script = texts.front().script;
+        step.texts = texts;
+        step.merge = merge;
+        state.undo.push_back(std::move(step));
+    }
+    state.redo.clear();
+    for (const EditorState::Step::Text& text : texts) {
+        SetScript(engine, state, text.script, text.after);
+    }
+    return true;
+}
+
+// Writes the scripts whose text changed to their loose files in the client_data.
+bool SaveScripts(EditorState& state)
+{
+    for (const auto& [key, text] : state.scriptTexts) {
+        if (const auto saved = state.scriptSaved.find(key); saved != state.scriptSaved.end() && saved->second == text) {
+            continue;
+        }
+        const std::string& name = state.scriptNames[key];
+        const std::filesystem::path path = x2::ui_editor::FindLooseScript(state.gameFolder, name);
+        if (path.empty()) {
+            state.message = name + ": not in the client_data (data/)";
+            return false;
+        }
+        std::ofstream out(path, std::ios::binary | std::ios::trunc);
+        out.write(text.data(), static_cast<std::streamsize>(text.size()));
+        if (!out) {
+            state.message = "cannot write " + path.string();
+            return false;
+        }
+        state.scriptSaved[key] = text;
+        state.message = "saved " + path.string();
+    }
+    return true;
 }
 
 void ReapplyAnchors(x2::ui_editor::Engine& engine, const EditorState& state)
@@ -188,6 +338,12 @@ bool SaveAnchors(EditorState& state)
     }
     state.message = "saved " + state.anchorsPath.string();
     return true;
+}
+
+// Saves what changed: UIAnchors.lua and the scripts.
+bool SaveAll(EditorState& state)
+{
+    return (!state.anchors.Changed() || SaveAnchors(state)) && SaveScripts(state);
 }
 
 // The nearest of the editor's aspects and heights to a resolution.
@@ -412,12 +568,12 @@ void WatchControls(EditorState& state)
     }
 }
 
-void AnchorsFileControls(x2::ui_editor::Engine& engine, EditorState& state)
+void SaveControls(x2::ui_editor::Engine& engine, EditorState& state)
 {
     const bool typing = ImGui::GetIO().WantTextInput;
     ImGui::BeginDisabled(state.undo.empty());
     if (ImGui::SmallButton("Undo") || (!typing && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Z))) {
-        UndoAnchors(engine, state, false);
+        Undo(engine, state, false);
     }
     ImGui::EndDisabled();
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
@@ -427,7 +583,7 @@ void AnchorsFileControls(x2::ui_editor::Engine& engine, EditorState& state)
     ImGui::BeginDisabled(state.redo.empty());
     if (ImGui::SmallButton("Redo") || (!typing && (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Y) ||
                                                    ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Z)))) {
-        UndoAnchors(engine, state, true);
+        Undo(engine, state, true);
     }
     ImGui::EndDisabled();
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
@@ -435,16 +591,26 @@ void AnchorsFileControls(x2::ui_editor::Engine& engine, EditorState& state)
                           state.redo.empty() ? "nothing to redo" : state.redo.back().script.c_str());
     }
     ImGui::SameLine();
-    ImGui::BeginDisabled(!state.anchors.Changed());
-    if (ImGui::SmallButton("Save UIAnchors.lua")) {
-        SaveAnchors(state);
+    ImGui::BeginDisabled(!state.Changed());
+    if (ImGui::SmallButton("Save") || (!typing && state.Changed() && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_S))) {
+        SaveAll(state);
     }
     ImGui::EndDisabled();
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-        ImGui::SetTooltip("%s\nThe game reads it when it starts.", state.anchorsPath.string().c_str());
+        std::string files;
+        if (state.anchors.Changed()) {
+            files += "\n" + state.anchorsPath.string();
+        }
+        for (const auto& [key, text] : state.scriptTexts) {
+            if (const auto saved = state.scriptSaved.find(key); saved == state.scriptSaved.end() || saved->second != text) {
+                files += "\n" + state.scriptNames[key];
+            }
+        }
+        ImGui::SetTooltip("Ctrl+S: UIAnchors.lua and the dialog scripts moved%s\nThe game reads them when it starts.",
+                          files.c_str());
     }
     ImGui::SameLine();
-    ImGui::TextDisabled("%s", state.anchors.Changed() ? "unsaved changes" : "no changes");
+    ImGui::TextDisabled("%s", state.Changed() ? "unsaved changes" : "no changes");
     if (!state.anchors.Problem().empty()) {
         ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "UIAnchors.lua, %s", state.anchors.Problem().c_str());
     }
@@ -453,7 +619,7 @@ void AnchorsFileControls(x2::ui_editor::Engine& engine, EditorState& state)
 void DialogsPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     WatchControls(state);
-    AnchorsFileControls(engine, state);
+    SaveControls(engine, state);
     ImGui::Separator();
     ImGui::SetNextItemWidth(-FLT_MIN - ImGui::CalcTextSize("Open scene").x - ImGui::GetStyle().FramePadding.x * 4);
     const char* preview = state.scene == 0 ? "All scripts" : state.scenes[static_cast<std::size_t>(state.scene - 1)].c_str();
@@ -535,8 +701,73 @@ void DialogsPanel(x2::ui_editor::Engine& engine, EditorState& state)
     }
 }
 
+using MoveFunction = std::function<void(const std::vector<SourceRef>&, float, float, unsigned)>;
+
+// Where a script set something, for the inspector.
+std::string SourceLabel(const SourceRef& ref)
+{
+    if (!ref.Known()) {
+        return "not set by a script call";
+    }
+    std::string label = ref.script + ":" + std::to_string(ref.line);
+    if (ref.shared > 1) {
+        label += " (sets " + std::to_string(ref.shared) + ")";
+    }
+    return label;
+}
+
+// What moving a control moves: the point tables set on it, its pictures' and its texts'.
+std::vector<SourceRef> ControlSources(const ControlInfo& control)
+{
+    std::vector<SourceRef> refs = control.points;
+    for (const auto& picture : control.pictures) {
+        refs.push_back(picture.point);
+    }
+    for (const auto& string : control.strings) {
+        refs.push_back(string.source);
+    }
+    refs.erase(std::remove_if(refs.begin(), refs.end(), [](const SourceRef& ref) { return !ref.Known(); }), refs.end());
+    return refs;
+}
+
+// A position the inspector moves, dragged or typed in whole layout units, then the lines that set it. Calls move
+// with the change; one drag is one undo step.
+void MoveField(EditorState& state, const char* label, const float value[2], const std::vector<SourceRef>& refs,
+               const MoveFunction& move)
+{
+    float v[2] = {std::round(value[0]), std::round(value[1])};
+    ImGui::BeginDisabled(refs.empty());
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+    const bool changed = ImGui::DragFloat2(label, v, 1.0f, -8192.0f, 8192.0f, "%.0f");
+    ImGui::EndDisabled();
+    const unsigned merge = ImGui::GetItemID();
+    if (ImGui::IsItemDeactivated() && !state.undo.empty()) {
+        state.undo.back().merge = 0;    // the drag ended: the next one is a step of its own
+    }
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        std::string lines;
+        for (const SourceRef& ref : refs) {
+            lines += "\n" + SourceLabel(ref);
+        }
+        ImGui::SetTooltip("%s", refs.empty() ? "Not set by a script call the editor follows (code, or no script)"
+                                             : ("Moves what these script lines set:" + lines).c_str());
+    }
+    if (changed) {
+        const float dx = std::round(v[0]) - std::round(value[0]), dy = std::round(v[1]) - std::round(value[1]);
+        if (dx != 0.0f || dy != 0.0f) {
+            move(refs, dx, dy, merge);
+        }
+    }
+    const auto shared = std::find_if(refs.begin(), refs.end(), [](const SourceRef& ref) { return ref.shared > 1; });
+    if (shared != refs.end()) {
+        ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "%s: a line that sets %d things moves them all",
+                           SourceLabel(*shared).c_str(), shared->shared);
+    }
+}
+
 // addZone: makes a picture's width a stretch zone of its dialog.
-void PictureTable(const ControlInfo& control, const std::function<void(float, float)>& addZone)
+void PictureTable(EditorState& state, const ControlInfo& control, const std::function<void(float, float)>& addZone,
+                  const MoveFunction& move)
 {
     if (control.pictures.empty()) {
         return;
@@ -549,6 +780,9 @@ void PictureTable(const ControlInfo& control, const std::function<void(float, fl
                                   (picture.key.empty() ? "" : " / " + picture.key);
         if (ImGui::TreeNode(label.c_str())) {
             ImGui::Text("shown: %s", picture.shown ? "yes" : "no");
+            ImGui::TextDisabled("SetPoint: %s", SourceLabel(picture.point).c_str());
+            MoveField(state, "left top", picture.points[0],
+                      picture.point.Known() ? std::vector<SourceRef>{picture.point} : std::vector<SourceRef>{}, move);
             float lo = picture.points[0][0], hi = lo;
             for (const auto& point : picture.points) {
                 lo = std::min(lo, point[0]);
@@ -587,7 +821,7 @@ void PictureTable(const ControlInfo& control, const std::function<void(float, fl
     }
 }
 
-void StringTable(const ControlInfo& control)
+void StringTable(EditorState& state, const ControlInfo& control, const MoveFunction& move)
 {
     if (control.strings.empty()) {
         return;
@@ -604,7 +838,9 @@ void StringTable(const ControlInfo& control)
             } else {
                 ImGui::TextDisabled("no string table entry");
             }
-            ImGui::Text("position: %.0f, %.0f", static_cast<double>(string.pos[0]), static_cast<double>(string.pos[1]));
+            ImGui::TextDisabled("AddString: %s", SourceLabel(string.source).c_str());
+            MoveField(state, "position", string.pos,
+                      string.source.Known() ? std::vector<SourceRef>{string.source} : std::vector<SourceRef>{}, move);
             ImGui::Text("font: %d, alignment flags: 0x%x", string.font, string.sortFlag);
             ImGui::ColorButton("##color", ImVec4(string.color[0], string.color[1], string.color[2], string.color[3]));
             ImGui::SameLine();
@@ -722,9 +958,18 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     ImGui::Text("anchor: %s%s", dialog.anchor.c_str(),
                 AnchorSource(dialog.anchorDeclared, dialog.anchorFromScript, " (default)"));
     DialogAnchorEditor(engine, state, dialog);
+    const MoveFunction move = [&](const std::vector<SourceRef>& refs, float dx, float dy, unsigned merge) {
+        MoveSources(engine, state, refs, dx, dy, merge);
+    };
     ImGui::Text("position: %.0f, %.0f (drawn at %.0f, %.0f)", static_cast<double>(dialog.pos[0]),
                 static_cast<double>(dialog.pos[1]), static_cast<double>(dialog.canvasPos[0]),
                 static_cast<double>(dialog.canvasPos[1]));
+    ImGui::TextDisabled("SetPos: %s", SourceLabel(dialog.posSource).c_str());
+    MoveField(state, "move##dialog", dialog.pos,
+              dialog.posSource.Known() ? std::vector<SourceRef>{dialog.posSource} : std::vector<SourceRef>{}, move);
+    if (dialog.placedByCode) {
+        ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "The game's code places it: this moves its script's SetPos only");
+    }
     if (const auto* positions = state.record.Positions(dialog.script); positions != nullptr) {
         const auto& r = state.record.Of(dialog.script);
         ImGui::Text("recorded: %zu position(s)%s", positions->size(), r.placedByCode ? ", placed by code" : "");
@@ -779,6 +1024,11 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     ControlAnchorEditor(engine, state, dialog, control);
     ImGui::Text("shown: %s", control.shown ? "yes" : "no");
     ImGui::Text("offset: %.0f, %.0f", static_cast<double>(control.offset[0]), static_cast<double>(control.offset[1]));
+    const std::vector<SourceRef> sources = ControlSources(control);
+    const float origin[2] = {control.drawn ? control.drawnMin[0] : control.offset[0],
+                             control.drawn ? control.drawnMin[1] : control.offset[1]};
+    MoveField(state, "move##control", origin, sources, move);
+    ImGui::TextDisabled("its left top as drawn; on the screen drag it or use the arrows (Shift: 10), Alt for the dialog");
     if (control.drawn) {
         ImGui::Text("drawn: %.0f, %.0f to %.0f, %.0f (%.0f x %.0f)", static_cast<double>(control.drawnMin[0]),
                     static_cast<double>(control.drawnMin[1]), static_cast<double>(control.drawnMax[0]),
@@ -788,16 +1038,16 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     } else {
         ImGui::TextDisabled("drew nothing in the last frame");
     }
-    StringTable(control);
-    PictureTable(control, [&](float lo, float hi) {
+    StringTable(state, control, move);
+    PictureTable(state, control, [&](float lo, float hi) {
         AnchorEntry entry = state.anchors.Get(dialog.script);
         entry.zones.emplace_back(lo, hi);
         std::sort(entry.zones.begin(), entry.zones.end());
         EditAnchors(engine, state, dialog.script, entry);
-    });
+    }, move);
 }
 
-// Closing with unsaved UIAnchors.lua changes asks first; true when the editor should close.
+// Closing with unsaved changes (UIAnchors.lua, scripts) asks first; true when the editor should close.
 bool QuitPopup(EditorState& state)
 {
     if (state.quitAsked) {
@@ -806,9 +1056,9 @@ bool QuitPopup(EditorState& state)
     }
     bool quit = false;
     if (ImGui::BeginPopupModal("Unsaved changes", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("UIAnchors.lua has unsaved changes.");
+        ImGui::Text("UIAnchors.lua or dialog scripts have unsaved changes.");
         if (ImGui::Button("Save and close")) {
-            quit = SaveAnchors(state);
+            quit = SaveAll(state);
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
@@ -823,6 +1073,23 @@ bool QuitPopup(EditorState& state)
         ImGui::EndPopup();
     }
     return quit;
+}
+
+// Moves the selected control (or, `dialog`, its dialog) in its scripts. False when nothing could be moved.
+bool MoveSelected(x2::ui_editor::Engine& engine, EditorState& state, bool dialog, float dx, float dy, unsigned merge)
+{
+    const Selection& sel = state.selected;
+    if (sel.dialog < 0 || sel.dialog >= static_cast<int>(state.inspected.size())) {
+        return false;
+    }
+    const DialogInfo& info = state.inspected[static_cast<std::size_t>(sel.dialog)];
+    if (dialog) {
+        return MoveSources(engine, state, {info.posSource}, dx, dy, merge);
+    }
+    if (sel.control < 0 || sel.control >= static_cast<int>(info.controls.size())) {
+        return false;
+    }
+    return MoveSources(engine, state, ControlSources(info.controls[static_cast<std::size_t>(sel.control)]), dx, dy, merge);
 }
 
 // The topmost drawn control under a render target pixel: the last open dialog first, its last control first.
@@ -889,7 +1156,8 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
     }
     // The wheel zooms around the pointer, the right or middle button drags the view (the wheel does not scroll).
     if (ImGui::BeginChild("screen", ImVec2(0, 0), ImGuiChildFlags_None,
-                          ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
+                          ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
+                              ImGuiWindowFlags_NoNavInputs)) {     // the arrows move the selection instead
         const float tw = static_cast<float>(engine.TargetWidth()), th = static_cast<float>(engine.TargetHeight());
         const ImVec2 avail = ImGui::GetContentRegionAvail();
         if (state.fit) {
@@ -951,6 +1219,43 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
             }
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
                 state.selected = hover;
+                // Dragging it moves it in its scripts (Alt: its dialog), in whole layout units.
+                state.dragging = hover.dialog >= 0;
+                state.draggingDialog = ImGui::GetIO().KeyAlt;
+                state.dragRest[0] = state.dragRest[1] = 0.0f;
+            }
+        }
+        constexpr unsigned kDragMerge = 1;  // one drag on the screen is one undo step
+        if (state.dragging) {
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+                state.dragging = false;
+                if (!state.undo.empty() && state.undo.back().merge == kDragMerge) {
+                    state.undo.back().merge = 0;
+                }
+            } else if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+                const ImVec2 drag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
+                const float unit = zoom * engine.UIScale();     // screen pixels per layout unit
+                const float tx = std::round(drag.x / unit), ty = std::round(drag.y / unit);
+                const float dx = tx - state.dragRest[0], dy = ty - state.dragRest[1];
+                if (dx != 0.0f || dy != 0.0f) {
+                    if (MoveSelected(engine, state, state.draggingDialog, dx, dy, kDragMerge)) {
+                        state.dragRest[0] = tx;
+                        state.dragRest[1] = ty;
+                    } else {
+                        state.dragging = false;
+                    }
+                }
+            }
+        }
+        if (ImGui::IsWindowFocused() && !ImGui::GetIO().WantTextInput && state.selected.dialog >= 0) {
+            const float step = ImGui::GetIO().KeyShift ? 10.0f : 1.0f;
+            const bool dialog = ImGui::GetIO().KeyAlt;
+            const std::pair<ImGuiKey, ImVec2> keys[] = {{ImGuiKey_LeftArrow, {-step, 0}}, {ImGuiKey_RightArrow, {step, 0}},
+                                                        {ImGuiKey_UpArrow, {0, -step}}, {ImGuiKey_DownArrow, {0, step}}};
+            for (const auto& [key, move] : keys) {
+                if (ImGui::IsKeyPressed(key, true)) {
+                    MoveSelected(engine, state, dialog, move.x, move.y, 0);
+                }
             }
         }
         const Selection& sel = state.selected;
@@ -1039,7 +1344,7 @@ int main(int argc, char** argv)
     bool running = true;
     while (running) {
         running = x2::app::PollEvents([&](const SDL_Event& event) { gui->ProcessEvent(event); }, window->Id());
-        if (!running && state.anchors.Changed()) {
+        if (!running && state.Changed()) {
             running = true;     // asked first (QuitPopup)
             state.quitAsked = true;
         }
