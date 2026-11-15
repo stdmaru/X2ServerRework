@@ -356,6 +356,20 @@ TEST_CASE("ktdxlib: KFileSerializer and CRC_32 read and write whole files")
     std::filesystem::remove_all(dir);
 }
 
+TEST_CASE("ktdxlib: KFileSerializer writes wide strings as UTF-16 from either overload")
+{
+    KFileSerializer out;
+    out.SetSaveStringEndNull(true);
+    const BYTE first = 0;
+    out.AppendData(sizeof(first), &first);   // offset 0 means no string
+    const DWORD fromPointer = out.AppendWideString(true, true, L"Mesh_ADD_Basic_Upbody_Sorted.X");
+    const DWORD fromString = out.AppendWideString(true, true, std::wstring(L"Rosto Básico do Add"));
+    std::vector<BYTE> bytes;
+    out.Swap(bytes);
+    CHECK(KReadPreprocessedString(bytes, fromPointer) == u"Mesh_ADD_Basic_Upbody_Sorted.X");
+    CHECK(KReadPreprocessedString(bytes, fromString) == u"Rosto Básico do Add");
+}
+
 namespace {
 
 struct SkinMesh : CKTDXDeviceXSkinMesh {

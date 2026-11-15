@@ -415,64 +415,10 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar
 
 DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const std::wstring& wstrIn_ )
 {
-    ASSERT( m_iLockCounter <= 0 );
-
-
-    DWORD   dwLength = wstrIn_.size();
-	if( dwLength == 0 )
-		return 0;
-	AlignSpace( sizeof(wchar_t) );
-
-    DWORD   dwOffset = GetSize();
-
-	if ( bNoMap == false )
-	{
-		std::pair<KWideStringOffsetMap::iterator, bool> insertResult
-			= m_mapWideStringOffset.insert(
-			KWideStringOffsetMap::value_type( wstrIn_, dwOffset ) );
-		if( !insertResult.second )
-		{
-			return insertResult.first->second;
-		}//if
-	}
-
-
-	if ( bShort == false )
-	{
-		if ( m_bSaveStringEndNull )
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(DWORD) + (dwLength + 1)*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &dwLength, sizeof(DWORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(DWORD)], wstrIn_.c_str(), dwLength*sizeof(wchar_t) );
-			*( (wchar_t*) &m_vecbBuffer[dwOffset+sizeof(DWORD)+dwLength*sizeof(wchar_t) ] ) = 0;
-		}
-		else
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(DWORD) + dwLength * sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &dwLength, sizeof(DWORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(DWORD)], wstrIn_.c_str(), dwLength*sizeof(wchar_t) );
-		}//if.. else..
-	}
-	else
-	{
-		WORD wLength = (WORD) dwLength;
-		if ( m_bSaveStringEndNull )
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(WORD) + (wLength + 1)*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &wLength, sizeof(WORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(WORD)], wstrIn_.c_str(), wLength*sizeof(wchar_t) );
-			*( (wchar_t*) &m_vecbBuffer[dwOffset+sizeof(WORD) + wLength*sizeof(wchar_t)] ) = 0;
-		}
-		else
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(WORD) + wLength*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &wLength, sizeof(WORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(WORD)], wstrIn_.c_str(), wLength*sizeof(wchar_t) );
-		}//if.. else..
-	}
-
-    return  dwOffset;
-}//KFileSerializer::AppendString()
+    // Port: this overload copied wchar_t as it is (4 bytes on Linux) while every reader expects UTF-16, so the item
+    // table built from Item.lua read "Mesh_..." as "M"; it now writes what the pointer overload writes.
+    return AppendWideString( bShort, bNoMap, wstrIn_.c_str(), (DWORD) wstrIn_.size() );
+}//KFileSerializer::AppendWideString()
 
 
 
