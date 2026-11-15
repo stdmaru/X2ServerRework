@@ -19,6 +19,12 @@
 #include <string>
 #include <vector>
 
+#ifndef _WIN32
+// Elsword.ico, compiled in by x2_embed_file (src/client/CMakeLists.txt).
+extern const unsigned char X2WindowIconFile[];
+extern const std::size_t X2WindowIconFile_size;
+#endif
+
 namespace {
 
 struct DxutState {
@@ -318,6 +324,9 @@ HRESULT DXUTInit(bool /*bParseCommandLine*/, bool /*bHandleDefaultHotkeys*/, boo
         // KTDGUIIMEEditBox draws the composition string and the candidate list itself (it hid the IME windows on
         // WM_IME_SETCONTEXT): SDL sends them as events instead of showing the system's windows where it can.
         SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, "composition,candidates");
+        // The Wayland app_id and the X11 WM_CLASS: the taskbar finds x2.desktop (installed by tools/client/install.sh)
+        // and its icon by this name.
+        SDL_SetAppMetadata("Elsword", nullptr, "x2");
         std::string error;
         state.sdl = x2::app::Sdl::Init(error, SDL_INIT_VIDEO);
         if (!state.sdl) {
@@ -399,6 +408,12 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
         state.exitCode = 1;
         return E_FAIL;
     }
+#ifndef _WIN32
+    // Windows takes the icon from the executable's resource (x2_windows_icon); elsewhere the window carries it.
+    if (!state.window->SetIcon(X2WindowIconFile, X2WindowIconFile_size, error)) {
+        SDL_Log("DXUT: no window icon: %s", error.c_str());
+    }
+#endif
     SDL_Window* window = state.window->Handle();
     x2::render::DeviceOptions renderOptions;
     renderOptions.backend = RenderBackend();

@@ -141,6 +141,9 @@ target_include_directories(x2_client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/X2/Comm
 target_link_libraries(x2_client PRIVATE x2::client_x2lib)
 set_target_properties(x2_client PROPERTIES OUTPUT_NAME x2 WIN32_EXECUTABLE TRUE)  # SDL_main.h provides WinMain
 x2_windows_icon(x2_client ${CMAKE_CURRENT_SOURCE_DIR}/X2/Elsword.ico)
+if(NOT WIN32)
+    x2_embed_file(x2_client_dxut ${CMAKE_CURRENT_SOURCE_DIR}/X2/Elsword.ico X2WindowIconFile)  # DXUTCreateWindow
+endif()
 
 if(X2_BUILD_TESTS)
     add_subdirectory(tests)

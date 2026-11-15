@@ -35,6 +35,11 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   `DXUTPostQuit`, an SDL quit event that closes the window as `WM_CLOSE` does. The original called `PostQuitMessage`;
   on Windows that posts `WM_QUIT` to the thread's queue, which SDL's event loop never reads, so until 2026-11-14 the
   quit button did nothing there (Linux had a replacement `PostQuitMessage` that pushed the SDL event).
+- **Icon and app_id** (2026-11-14): `DXUTInit` names the application `x2` (`SDL_SetAppMetadata`: the Wayland `app_id`
+  and the X11 `WM_CLASS`), and outside Windows `DXUTCreateWindow` gives the window the 256×256 image of
+  `X2/Elsword.ico`, compiled in (`x2_embed_file`, `x2::app::Window::SetIcon`). X11 bars use that icon; on Wayland it
+  reaches only compositors with `xdg-toplevel-icon-v1`, so the bar usually finds it through `x2.desktop`
+  ([Client folder](../tools/client-folder.md)). Windows keeps the executable's resource icon.
 - `DXUTCreateWindow` creates a **resizable** window, as DXUT's was, at least 640×480, with a 1024×768 client area until
   `DXUTCreateDeviceFromSettings` applies the options' resolution. From 2026-11-12 to 2026-11-14 it was of fixed size, so
   tiling window managers such as Hyprland floated it at the game's resolution; it could not be resized, so other
