@@ -128,7 +128,7 @@ readable Lua: 4,553 scripts decompiled, none kept as bytecode, Item.kim converte
 
 ## Bringing data from other clients
 
-Three scripts bring what our client lacks from other clients, and can be run again (a second run changes nothing). The sources and their order are on [Add character](../project/add-character.md).
+Four scripts bring what our client lacks from other clients, and can be run again (a second run changes nothing). The sources and their order are on [Add character](../project/add-character.md).
 
 ```bash
 tools/assets/merge_skills.py <client_data>/data/NewSkillTempletVer2.lua --skills 9000-9014,9200-9207 \
@@ -151,6 +151,14 @@ tools/assets/merge_items.py <client_data>/items --enum <client_data>/data/Enum.l
   `data148_kom`) or `--kom` archive that has it, into the folder `x2_assets import` would choose. The meshes (`.x`/`.y`,
   MSZIP-compressed DirectX files too) and `.xet` it copies are scanned for the files they name. `--report` lists what
   came from where and what is in no source.
+- `merge_quests.py <client_data> --quests <IDs> --source <data036 folder> --fallback <folder> --text <folder> --ess
+  <our general.ess> --strings <their General.ess>`: quests by ID with the sub-quests, scenes (`EventScene.lua`) and
+  scene objects they name that ours lacks. A `--source`'s text is kept unless Korean; a `--fallback`'s (V5, English)
+  is replaced by `--text`'s. Classes our `Enum.lua` lacks are dropped from class lists. The `STR_ID`s the scenes use
+  are defined in `StringID_def.lua`, and their strings are copied into `general.ess` (the client's folder, outside
+  client_data) where ours lacks them. String IDs are the same in our table, BR 2017's and V5's (checked 2026-11-15,
+  e.g. 1860, 8402, 30631; 2,375 of V5's scenes use the same IDs as BR 2014-08's). Items, dungeons and NPCs the
+  quests name that we lack are reported (then brought with `merge_items.py --ids`).
 
 ## Content changes (T42)
 
@@ -181,3 +189,6 @@ is listed here with the step that changed it and why.
 | `ui/textures/DLG_Add_SKILL_ScreenShot_01.{tga,TET}`, `_02` (new) | `server/add-character` (2026-11-15) | The skill tree's Add screenshots: the `.tga` from BR 2017 `data063`, the `.TET` from V5 `data063.kom`. New files: dev builds only until `pack` writes them ([Packing](#packing)) |
 | `items/Item.lua`, `items/SetItem.lua` | `server/add-character` (2026-11-15) | 1,706 Add items and 132 sets from V5's `ClientScript` (BR 2014-08 first; it has few), names and descriptions from BR 2017, by `tools/assets/merge_items.py`; 51,543 items, 2,557 sets. Left out: 49 items with values we lack (classes 33–36/123–126, PR 83), 119 only in Korean; 258 items whose set is in no source have `m_SetID = 0` |
 | `items/equipment/**`, `items/icons/**`, `_unsorted/data148`, ... (new) | `server/add-character` (2026-11-15) | 3,058 meshes, textures and icons for the items, by `tools/assets/copy_assets.py` over `items/Item.lua`: 2,944 for the added items and what their meshes name (BR 2014-08 and 2017 extracted archives first, then V5's `.kom`), 114 that our own items named but our client lacked. 200 names are in no source (46 Add icons and meshes, e.g. `HQ_Shop_ADD_Cash_*1040`; the rest were already missing in the 2014-03 client). New files: dev builds only until `pack` writes them |
+| `data/FieldQuest.lua`, `data/FieldSubQuest.lua`, `data/EventScene.lua` | `server/add-character` (2026-11-15) | 60 quests, 11 sub-quests and 25 scenes by `tools/assets/merge_quests.py`: Elesis's job changes (Free Knight 35310–35313, Saber/Pyro Knight 35320–35333 from BR 2014-08; Grand Master 35400–35404, Blazing Heart 35410–35414 from V5), her skill training (35340–35359, 35450–35454, Asura dropped from the class list) and Add's (Tracer 35460–35463, Psychic Tracer 35470–35473, Lunatic Psyker 35480–35484, from V5), V5's text replaced by BR 2017's (Tracer has none: English). Scene `35470_02` is in no source |
+| `general.ess` (client folder) | `server/add-character` (2026-11-15) | 91 strings of those scenes from BR 2017's `General.ess`, by the same script; the file keeps its format (`ff fe` BOM, XORed UTF-16LE lines) |
+| `items/Item.lua` | `server/add-character` (2026-11-15) | The quests' items 92392, 92393 (BR 2014-08) and 135469 (V5), by `merge_items.py --ids`, and their 2 icons |
