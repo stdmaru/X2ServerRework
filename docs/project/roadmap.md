@@ -212,6 +212,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         layouts byte for byte (2026-11-15). See [Inventory](../original/inventory.md) and [Server package](../tools/runtime.md#toolskom).
   - Packing `client_data` for distribution (rebuild only the changed archives, a rule for new files) moved to
     x2 studio's export to `.kom` (user, 2026-11-05; [Later](#later--x2-studio)).
+  - [ ] `tools/assets-manager` ([T50](decisions.md), user, 2026-11-15): `x2_assets` as the client_data manager, an
+        SDL3 + ImGui window (browse by folder and archive, file states, add/remove files with the manifest in sync,
+        the archive of a new file, import/status/pack) and `--cli` with every operation. New files then get an archive
+        and are packed: unblocks PR 82's (Add's skill screenshots and item assets) in release builds.
   - [x] `client/kom-mass-file`: the client's `KGCMassFileManager` on `x2::kom` (`x2::client_massfile`): `CX2Main`'s fixed
         list in load order, first-wins, entries decoded by algorithm, full names; with `X2_DEV_TOOLS` the loose files of
         `/data/data` (a client_data works) preferred; nothing deleted at start, a missing or rejected archive named before
