@@ -56,6 +56,24 @@ Notes:
 - `ScriptData/` — `.xls/.xlsm/.mdb` source spreadsheets for tables (tool input; out of scope).
 - `_client/data/` — ready-to-run client: `x2.exe`, `*.kom` (header `KOG GC TEAM MASSFILE V.0.3`, zlib contents), DLLs (d3dx9_43, fmodex, bugtrap, steam...); the effects are 4 `.fx` inside `data041.kom` ([Client](client.md#d3dx-features-that-need-replacements)).
 
+### Our client's assets and the Brazilian sources (user, 2026-11-15)
+
+- **`_client` is a US client of 2014-03-28, half translated to Brazilian Portuguese by the user.** Without a way to edit
+  its `.lua`, the user translated by editing the assets themselves (textures with text). The Brazilian client cuts its
+  textures differently (other atlases and piece rectangles in the UI scripts), so the result is partial: some assets are
+  still in English and many pieces are out of place. **Goal:** now that Brazilian scripts are decompiled, bring the
+  original Brazilian layout (UI scripts, textures, strings) into our client through the client_data
+  ([client_data](../tools/client-data.md#content-changes-t42)), replacing the hand edits.
+- **Brazilian sources, preferred for data our client lacks** (items, skills, strings, UI): `/media/games/Elsword_Assets/kom_BR/`
+  (outside git), the 2017 Brazilian `.kom` (`dataNNN.kom`, extracted to `dataNNN_kom/`) plus decompiled `data036`
+  of 2013-07 (`data036_br_20130724`), **2014-08** (`data036_br-201408`) and 2017-11 (`data036_br_201711`), and textures
+  of 2014-08 (`data048-br-20140808`, `data052-br-20140808`). The 2014-08 `data036` is the closest to our client: the same
+  skill fields as ours, every skill ID we have, plus Add's (9000–9601) and one skill per character in `x600`
+  (checked 2026-11-15); names are in Portuguese. The 2017 files are after the skill revamp (2,353 skills, 107,260 items)
+  and need adapting.
+- **Backup source:** the March 2015 US client and its source, `/media/games/Elsword-V5.0318.6_3/` (see
+  [Client compatibility](../project/client-compatibility.md)).
+
 ## Copy integrity
 
 On 2026-10-29, the original HDD copy (`/media/1tb-hdd/Storage/ElswordServer/source/X2Server`, now `_reference/X2Server-hdd`)
