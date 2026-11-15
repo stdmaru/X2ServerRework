@@ -468,6 +468,14 @@ g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
     REQUIRE(engine->TetBytes("DLG_Test.tga", bytes, error));
     CHECK(bytes == tet.Bytes());
     CHECK_FALSE(engine->SetTet("DLG_Test.tga", "nope", error));
+
+    // The texture itself, for Interactive Select: its size in texels, as the .tet's.
+    x2::ui_editor::Engine::TextureImage image;
+    REQUIRE_MESSAGE(engine->LoadTextureImage("DLG_Test.tga", image, error), error);
+    CHECK(image.texture);
+    CHECK(image.width == 4);
+    CHECK(image.height == 4);
+    CHECK_FALSE(engine->LoadTextureImage("DLG_Missing.tga", image, error));
 }
 
 TEST_CASE("ui editor: an edited script reloads into its dialog, moved where it was and in the game's state")

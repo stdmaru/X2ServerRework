@@ -95,6 +95,16 @@ Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture 
 - **UV rectangle:** "UV left top" moves the key's rectangle and "UV size" grows it to the right and down, in whole
   texels (the size is what `USE_TEXTURE_SIZE` gives the picture). A rectangle the `.tet` rotates (its script's
   `RotateRect`) can be moved only. The corners table lists the four corners' points and texels.
+- **Interactive Select** (user's design, 2026-11-14): a button under the UV fields opens a dialog with the texture on
+  the left and the rectangle's numbers on the right, Apply / Cancel below. The texture is drawn as the game loaded it
+  (`Engine::LoadTextureImage`, over a checkerboard, texels sharp when magnified and a pixel grid from 800%), dimmed
+  around the rectangle, which has a clear border and its key's name; the texture's other keys can be outlined faintly.
+  The mouse only drags the rectangle (whole texels); the wheel zooms around the pointer and the right or middle button
+  pans; the arrows move it by 1 (Shift: 10) while the pointer is over the texture. The numbers (left, top, width,
+  height; right and bottom shown) are typed or stepped from the keyboard, with the pointer's texel, the rectangle
+  before ("Back to it") and the rectangle drawn at its size. While it is open the screen previews the rectangle in the
+  dialogs (it can be turned off). Apply gives the key the rectangle as one step of undo, asking first, over the select,
+  when others use the key; Cancel puts back what the edits held.
 - **A key others use** (user's choice, 2026-11-14): before the first UV change of a key, the editor searches every
   `.lua` under `data/` for lines that name the texture and the key in quotes (`FindKeyUses`; the game's code is not
   searched). When lines other than the picture's own `SetTex` name it, or that line sets several pictures, it asks:
@@ -181,7 +191,7 @@ a text); a script loaded into an open dialog; statics as the game holds them (a 
 added with its picture and text, a filler keeping the indexes); the line of each `SetPos`, `SetPoint` and `AddString`;
 an edited script reloaded into its dialog, moved where it was, the game's state put into it moved by the edit, and the
 file's text again (2026-11-14); a picture's key read from its texture's `.tet`, its `SetTex` line, and a changed `.tet`
-growing it after a reload (2026-11-14).
+growing it after a reload, and the texture loaded for Interactive Select at its size in texels (2026-11-14).
 
 Position edits (`test_script_edit.cpp`): numbers written as a script would; expressions keep their constants (the
 number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a

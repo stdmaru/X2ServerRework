@@ -215,6 +215,8 @@ struct Engine::State {
         std::string bytes;
     };
     std::map<std::string, Tet> tets;
+    // The textures LoadTextureImage loaded, by ScriptKey, held open.
+    std::map<std::string, std::pair<std::wstring, CKTDXDeviceTexture*>> images;
 
     void NoteLoaded(Open& open)
     {
@@ -239,6 +241,10 @@ struct Engine::State {
                 app->GetDeviceManager()->CloseDevice(tet.name);
             }
             tets.clear();
+            for (const auto& [key, image] : images) {
+                app->GetDeviceManager()->CloseDevice(image.first);
+            }
+            images.clear();
             CKTDGStateManager::SetRenderTarget(NULL);
         }
         target.reset();
@@ -556,6 +562,30 @@ bool Engine::DialogUsesTexture(int index, const std::string& texture) const
         }
     }
     return false;
+}
+
+bool Engine::LoadTextureImage(const std::string& texture, TextureImage& image, std::string& error)
+{
+    const std::string key = ScriptKey(texture);
+    auto it = m_state->images.find(key);
+    if (it == m_state->images.end()) {
+        const std::wstring name = Wide(texture);
+        CKTDXDeviceTexture* device = g_pKTDXApp->GetDeviceManager()->OpenTexture(name);
+        if (device == NULL) {
+            error = texture + " does not load";
+            return false;
+        }
+        it = m_state->images.emplace(key, std::make_pair(name, device)).first;
+    }
+    CKTDXDeviceTexture* device = it->second.second;
+    if (device->GetDeviceTexture() == NULL) {
+        error = texture + " has no image";
+        return false;
+    }
+    image.texture = device->GetDeviceTexture()->RenderTexture();
+    image.width = static_cast<unsigned>(device->GetWidth());
+    image.height = static_cast<unsigned>(device->GetHeight());
+    return true;
 }
 
 bool Engine::ReloadDialog(int index, std::string& error)
