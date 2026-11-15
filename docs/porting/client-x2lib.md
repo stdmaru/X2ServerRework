@@ -278,7 +278,9 @@ change and arcade states were logged as `XS_INVALID` (missing from `StateInLog`'
 that fails. Debug and dev builds now read the two scripts first when both are loose files of the
 [client_data](../tools/client-data.md) (`IsValidFile_LocalFile`), so an item added there shows without a pack: Add's
 basic items were in `Item.lua` but not in the packed `Item.kim`, and creation showed him with no model. Loading takes
-longer (two passes over a 59 MB script). Release builds read `Item.kim` as before.
+longer (two passes over a 59 MB script). LuaJIT allows 65,536 constants in a function and `Item.lua` (51,593
+`AddItemTemplet` calls) has more, so those builds run the loose scripts in pieces of 500 top-level statements
+(`DoItemScript`). Release builds read `Item.kim` as before.
 
 ## Status
 
