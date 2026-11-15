@@ -368,7 +368,7 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           `BACKDROPS` in `UIAnchors.lua` crops a backdrop at 4:3 and fades it into black at 21:9
           ([KTDXLIB](../porting/client-ktdxlib.md#backdrops-2026-11-15-clientwidescreen-backgrounds-t51)), the UI
           editor edits it, and the login screen is one 16:9 texture. The art is made outside the repository (Stable
-          Diffusion outpainting of the sides, chaiNNer with 4x-AnimeSharp; `/home/maru/upscale` on the user's machine).
+          Diffusion outpainting of the sides, chaiNNer with 4x-AnimeSharp; [Upscaling](../tools/upscaling.md)).
           Left: the loading screens and cut-ins, one by one.
     - [ ] `client/ui-atlas-clamp` (2026-11-15, PR #80, [T49](decisions.md)): UI pictures sample only their `.tet` key, so a
           scaled window's slices show no seams from their atlas neighbours (the message box at 1080p)
@@ -377,7 +377,17 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           nearest texels: 1× at 1080p, 2× at 4K), since a fractional scale (1.41 at 1080p) blurs the UI a little.
     - [ ] `client/ui-hd-assets`, later: 2× and 4× UI textures, same formats and names in a separate package (T42);
           sizes stay in canvas units, the engine divides the `.tet` UV keys by the loaded texture's scale; the
-          original as fallback.
+          original as fallback. Found 2026-11-15 (user, login screen with the 2560×1440 background): the login
+          buttons and fields (`DLG_Login3.TGA`, a 256×256 atlas with `BTN_LOGIN`, `BTN_JOIN`, `BTN_REGISTER`) are
+          the original textures magnified about 1.9× at 1440p and look soft. A 4× texture cannot just replace them:
+          a `.tet` key holds its UVs and `rectSize` in pixels, `rectSize` becomes the picture's `texSize`
+          (`KTDGUIControl.cpp`, `pTexData->texSize = pTexUV->rectSize`), and a
+          control with only a left-top point or `USE_TEXTURE_SIZE` takes its size from it (`size =
+          pTexture->texSize`), so the controls would grow 4×. The scale (loaded size ÷ the size the `.tet` was made
+          for) must divide both. The UI editor shows the same sizes, so it needs the same rule. The art side is
+          ready ([Upscaling](../tools/upscaling.md), 2026-11-15): `texconv.py` turns the client's DDS/TGA into PNG
+          and back in each file's own format, and the `ui` chain (4x-AnimeSharp, alpha through the model; `--scale
+          2` for a 2× set) is built; nothing has been run on the UI yet.
     - Validation for every step: a dev tool that captures the main screens (login, character select, village, field,
           dungeon, PvP, inventory, shop) at 4:3, 16:9, 16:10 and 21:9 to compare across PRs; at 4:3 a migrated
           screen must match the original.
