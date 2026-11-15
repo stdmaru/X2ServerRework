@@ -22,7 +22,7 @@ container's build runs on the desktop.
 |---|---|
 | Dialogs (left) | "Watch game" and "Start game" ([below](#watch-game)). "Undo", "Redo", "Save" (UIAnchors.lua, the dialog scripts and the `.tet` files edited; Ctrl+S) and whether there are unsaved changes ([below](#editing-anchors)). A scene (a game state, `XS_*`) narrows the list to the scripts the recording saw in it, and "Open scene" opens them all at their recorded positions. Every `DLG_*.lua` under `data/`, filtered by name; dimmed when the recording never saw it. Double-click opens it alone, Ctrl + double-click adds it to the open ones (a screen made of several dialogs). The open dialogs, to select or close |
 | Screen (middle) | The render target at the chosen aspect (4:3, 16:10, 16:9, 21:9) and height (720–2160), fitted to the panel or zoomed with the wheel around the pointer (10%–800%, "100%" for one pixel per pixel), panned with the right or middle button. Hovering shows the control under the pointer and the layout coordinates; a click selects it; "all boxes" outlines every drawn control |
-| Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the `SetPos` line that set it with a field that moves it ([below](#editing-positions)), the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture, `.tet` key, corner points and UV in texels, with "Make its width a stretch zone". The control, each picture and each text can be moved, and show the script line that placed them; a picture's texture, key and UV rectangle can be changed ([below](#editing-textures-and-uv)) |
+| Inspector (right) | The dialog: script, name, anchor (declared, the script's own or the default) and its `UIAnchors.lua` entry with its stretch zones (editable), position and where it is drawn, the `SetPos` line that set it with a field that moves it ([below](#editing-positions)), the recorded positions (a click moves the dialog there). Its controls by name (`#<index>` when unnamed) with type and declared anchor. The selected control: anchor and its `UIAnchors.lua` entry (editable), offset, what it drew; for statics, each text (the string, its `STR_ID_*`, position, font, alignment and color; empty when the game's code fills it) and each picture's texture and `.tet` key, with "Make its width a stretch zone"; a picture expanded there is painted green on the screen. The control, each picture and each text can be moved, and show the script line that placed them; a picture's texture and key can be changed and "Edit" opens its key's UV rectangle over the texture ([below](#editing-textures-and-uv)) |
 
 Slice (a) inspects, slice (b) edits the anchors ([below](#editing-anchors)), slice (c) moves what the scripts place
 ([below](#editing-positions)) and changes the pictures' textures, keys and UV ([below](#editing-textures-and-uv)).
@@ -92,15 +92,15 @@ Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture 
   changes it; the key stays when the new texture has it, else its first key) and a list of the texture's keys, each
   with its rectangle. Both are string literals in the call (`SetTexCall`); a call naming them otherwise, through a
   variable, is refused. Pictures set by `SetTex2` (a whole texture) or by code have no line here.
-- **UV rectangle:** "UV left top" moves the key's rectangle and "UV size" grows it to the right and down, in whole
-  texels (the size is what `USE_TEXTURE_SIZE` gives the picture). A rectangle the `.tet` rotates (its script's
-  `RotateRect`) can be moved only. The corners table lists the four corners' points and texels.
-- **Interactive Select** (user's design, 2026-11-14): a button under the UV fields opens a dialog with the texture on
+- **UV rectangle**, edited only in **Interactive Select** (user's design, 2026-11-14; the inspector's number fields and
+  corners table went, 2026-11-14: numbers without the texture were edited blind): "Edit" opens a dialog with the texture on
   the left and the rectangle's numbers on the right, Apply / Cancel below. The texture is drawn as the game loaded it
   (`Engine::LoadTextureImage`, over a checkerboard, texels sharp when magnified and a pixel grid from 800%), dimmed
   around the rectangle, which has a clear border and its key's name; the texture's other keys can be outlined faintly.
   The mouse only drags the rectangle (whole texels); the wheel zooms around the pointer and the right or middle button
-  pans; the arrows move it by 1 (Shift: 10) while the pointer is over the texture. The numbers (left, top, width,
+  pans; the arrows move it by 1 (Shift: 10) while the pointer is over the texture. The size is what
+  `USE_TEXTURE_SIZE` gives the picture; a rectangle the `.tet` rotates (its script's `RotateRect`) can be moved only.
+  The numbers (left, top, width,
   height; right and bottom shown) are typed or stepped from the keyboard, with the pointer's texel, the rectangle
   before ("Back to it") and the rectangle drawn at its size. While it is open the screen previews the rectangle in the
   dialogs (it can be turned off). Apply gives the key the rectangle as one step of undo, asking first, over the select,

@@ -1056,10 +1056,22 @@ std::vector<DialogInfo> Engine::Inspect() const
                         const D3DXVECTOR2 corners[4] = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint,
                                                         picture->pPoint->leftBottomPoint,
                                                         picture->pPoint->rightBottomPoint};
+                        D3DXVECTOR2 lo = corners[0], hi = corners[0];
                         for (int k = 0; k < 4; ++k) {
                             pi.points[k][0] = corners[k].x;
                             pi.points[k][1] = corners[k].y;
+                            lo.x = std::min(lo.x, corners[k].x);
+                            lo.y = std::min(lo.y, corners[k].y);
+                            hi.x = std::max(hi.x, corners[k].x);
+                            hi.y = std::max(hi.y, corners[k].y);
                         }
+                        // As the control's drawn box: the corners plus its offset, then its anchor or stretch.
+                        lo += offset;
+                        hi += offset;
+                        pi.pixelMin[0] = origin.x + (canvas.x + dialog->ControlXToDialogX(control, lo.x)) * scale;
+                        pi.pixelMax[0] = origin.x + (canvas.x + dialog->ControlXToDialogX(control, hi.x)) * scale;
+                        pi.pixelMin[1] = origin.y + (canvas.y + lo.y) * scale;
+                        pi.pixelMax[1] = origin.y + (canvas.y + hi.y) * scale;
                     }
                     c.pictures.push_back(std::move(pi));
                 }
