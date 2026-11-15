@@ -24,6 +24,13 @@ workspace, and a named volume preserves ccache between container sessions. On Li
 host UID so generated files stay writable. The container uses host networking, allowing builds and tests to reach the development
 database at `127.0.0.1`.
 
+**Client data outside the repository** (2026-11-15): containers mount only the repository, so a client folder elsewhere
+(a [client_data](client-data.md), whose scripts the servers then read: [Server package](runtime.md#clientscript-generated-from-the-client))
+is given in `docker/.env` as `X2_CLIENT_DATA_MOUNT=<host path>`, with `X2_CLIENT_DATA=/x2/client_data`. `docker/build.sh`
+mounts it read-only at `/x2/client_data`; the Dev Container does the same through `docker/client-data-link.sh`
+(`initializeCommand`), which points `.devcontainer/.client_data` (not versioned) at it, or at an empty folder when unset.
+Rebuild the Dev Container after setting or changing it.
+
 The image includes Clang, clangd, clang-format, CMake, Ninja, GDB, ShellCheck, Git, Python, and the ODBC/FreeTDS development
 packages, plus SDL_shadercross with Microsoft's DXC in `/opt/shadercross` on x86_64, built in a separate stage of the
 Dockerfile, for the offline shader compiler ([Shaders](shaders.md), T39; 2026-11-06). The container installs the VS Code extensions for CMake Tools, C/C++ debugging, clangd, Python with Pylance, and

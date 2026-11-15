@@ -23,6 +23,12 @@ for name in $(compgen -e); do
     if [[ $name == X2_* ]]; then env_args+=(-e "$name"); fi
 done
 
+# X2_CLIENT_DATA_MOUNT: a client folder outside the repository (a client_data), mounted read-only at /x2/client_data
+mount_args=()
+if [ -n "${X2_CLIENT_DATA_MOUNT:-}" ]; then
+    mount_args=(-v "$X2_CLIENT_DATA_MOUNT:/x2/client_data:ro")
+fi
+
 # Docker's layer cache makes this a no-op when the Dockerfile has not changed.
 docker build -q -t "$image" -f "$repo/docker/build/Dockerfile" "$repo" >/dev/null
 
@@ -33,5 +39,5 @@ tty=(-i)
 
 exec docker run --rm "${tty[@]}" --network host \
     --user "$(id -u):$(id -g)" -e HOME=/x2home -e CCACHE_DIR=/x2home/ccache "${env_args[@]}" \
-    -v "$home:/x2home" -v "$repo:$repo" -w "$PWD" \
+    -v "$home:/x2home" -v "$repo:$repo" "${mount_args[@]}" -w "$PWD" \
     "$image" "$@"

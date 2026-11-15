@@ -6,13 +6,15 @@
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   "workspaceFolder": "/workspace",
+  "initializeCommand": "docker/client-data-link.sh",
   "runArgs": [
     "--name=x2-dev",
     "--network=host",
     "--env-file=${localWorkspaceFolder}/docker/.env"
   ],
   "mounts": [
-    "source=x2-build-cache,target=/home/ubuntu/.cache/x2-build,type=volume"
+    "source=x2-build-cache,target=/home/ubuntu/.cache/x2-build,type=volume",
+    "source=${localWorkspaceFolder}/.devcontainer/.client_data,target=/x2/client_data,type=bind,readonly"
   ],
   "updateRemoteUserUID": true,
   "remoteUser": "ubuntu",
