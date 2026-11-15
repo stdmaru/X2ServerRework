@@ -55,6 +55,15 @@ per-level text) from BR 2017 by skill ID where BR 2014-08 has none or has it in 
   rows. Elesis's memo rows (Item/Memo, 608009–608022) from V5, with the 44 memo items of Ara's 2nd path and Elesis
   (607018–607035, 608001–608030; BR 2014-08, text BR 2017) now in our client. No source has `ClassChangeQuest` rows
   for Elesis or Add.
+- Drops, cubes and crafting, from V5 by `tools/runtime/merge_server_tables.py`
+  ([Server package](../tools/runtime.md#entries-from-other-servers-toolsruntimemerge_server_tablespy)), for items of
+  Add, Elesis and Ara: 118 class entries in 31 cubes ours had without those classes (Add's jobs 26, Ara 55, Elesis 9;
+  also 28 for older classes the same cubes lacked), the job change promotion cubes 90000130/90000131, 92 item groups
+  (300 rows); 221 monster drop items in 107 drops (Add 153, Elesis 55, Ara 13; V5's other additions, such as Feita's
+  Royal Knight set, left as they are); 21 notified drops; 194 recipes (48 of Add's, the rest Elesis's and Ara's that
+  our client listed but the server lacked) and the client's 47 missing ones. Equipment drops have no class filter:
+  each monster lists its unique items for every class, so Add's are added beside the others. Left out: one V5 monster
+  drop (dungeon 33261) we do not have; recipe 117501 has no village in any source.
 - Servers read the client_data's scripts when `X2_CLIENT_DATA` points at it (`gen_clientscript.py`,
   [Server package](../tools/runtime.md#clientscript-generated-from-the-client)); from the `.kom` they would not see Add.
 
