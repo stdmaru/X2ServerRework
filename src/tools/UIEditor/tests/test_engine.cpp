@@ -2,6 +2,7 @@
 // drawn and inspected (docs/tools/ui-editor.md).
 
 #include "engine.h"
+#include "layout_edit.h"
 #include "tet_file.h"
 
 #include <doctest/doctest.h>
@@ -478,6 +479,54 @@ g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
     CHECK(image.width == 4);
     CHECK(image.height == 4);
     CHECK_FALSE(engine->LoadTextureImage("DLG_Missing.tga", image, error));
+}
+
+TEST_CASE("ui editor: a dialog grows at a line: crossed pictures grow, those past it would move")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Test.lua", error) == 0);
+    REQUIRE(engine->Render(1024, 768, 0.016f, error));
+    auto dialog = engine->Inspect()[0];
+
+    // The panel's picture spans 0-200, the other static's 10-60: a line at 100 crosses the first only.
+    auto plan = x2::ui_editor::PlanCut(dialog, true, 100.0f, 15.0f);
+    REQUIRE(plan.grows.size() == 1);
+    CHECK(plan.moves.empty());
+    CHECK(plan.stays == 1);
+    REQUIRE(plan.edits.size() == 1);
+    CHECK(plan.edits[0].resize);
+    CHECK(plan.edits[0].d[2] == 15.0f);
+    CHECK(plan.edits[0].ref.line == 11);
+    // A line at 5 moves the other picture, past it, and grows the panel's.
+    plan = x2::ui_editor::PlanCut(dialog, true, 5.0f, 15.0f);
+    CHECK(plan.grows.size() == 1);
+    REQUIRE(plan.moves.size() == 1);
+    CHECK(plan.stays == 0);
+
+    // Made: the panel's picture is 15 wider, the other moved 15 right.
+    std::string text;
+    REQUIRE(engine->ScriptText("DLG_Test.lua", text, error));
+    for (const auto& edit : plan.edits) {
+        const bool ok = edit.resize ? x2::ui_editor::ResizeCall(text, edit.ref.line, edit.d[0], edit.d[1], edit.d[2], edit.d[3], error)
+                                    : x2::ui_editor::MoveCall(text, edit.ref.line, edit.ref.kind, edit.d[0], edit.d[1], error);
+        REQUIRE_MESSAGE(ok, error);
+    }
+    engine->SetScriptText("DLG_Test.lua", &text);
+    REQUIRE(engine->ReloadDialog(0, error));
+    dialog = engine->Inspect()[0];
+    CHECK(dialog.controls[0].pictures[0].points[3][0] == 215.0f);
+    CHECK(dialog.controls[1].pictures[0].points[0][0] == 25.0f);
+    float extent[4];
+    REQUIRE(engine->Render(1024, 768, 0.016f, error));
+    REQUIRE(x2::ui_editor::DialogExtent(engine->Inspect()[0], extent));
+    CHECK(extent[2] - extent[0] == doctest::Approx(215.0));
 }
 
 TEST_CASE("ui editor: an edited script reloads into its dialog, moved where it was and in the game's state")

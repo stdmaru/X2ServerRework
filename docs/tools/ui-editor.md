@@ -91,6 +91,22 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
 - **Dialogs placed by code** (T46 (3)): moving one changes its script's `SetPos` only, which the code overrides; the
   inspector says so. Their positions move into the scripts screen by screen, later.
 
+## Resizing a dialog
+
+2026-11-15 (user's request: the editor must be able to change a dialog, not only nudge it). A window is made of
+pieces: corners, edges and a middle stretched from a one-texel key ([above](#editing-positions)). "Resize at a line",
+in the inspector's dialog section, grows (or, negative, shrinks) the dialog at a line across it:
+
+- **The line:** vertical to change the width, horizontal for the height, magenta on the screen; drag it there or type
+  where it is (layout units relative to the dialog, as the scripts' numbers, before anchors). "grow by" is how much;
+  a fainter line shows where the far side ends up.
+- **What changes** (`layout_edit.h`, `PlanCut`): a picture the line crosses grows (its `SetPoint`, by `ResizeCall`:
+  `ADD_SIZE` or its far corners), painted orange; a picture, text or other control wholly past the line moves
+  (`MoveCall`), painted blue; what is before it stays. Controls other than statics the line crosses (a button) and
+  pieces without a script line are not changed, and the inspector lists them.
+- **Apply** makes every edit as one step of undo (`EditCalls`); a line that sets several pieces is edited once, and
+  refused when the pieces it sets would change differently (move them one by one).
+
 ## Editing textures and UV
 
 Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture and key are saved into its script's
@@ -199,7 +215,8 @@ a text); a script loaded into an open dialog; statics as the game holds them (a 
 added with its picture and text, a filler keeping the indexes); the line of each `SetPos`, `SetPoint` and `AddString`;
 an edited script reloaded into its dialog, moved where it was, the game's state put into it moved by the edit, and the
 file's text again (2026-11-14); a picture's key read from its texture's `.tet`, its `SetTex` line, and a changed `.tet`
-growing it after a reload, and the texture loaded for Interactive Select at its size in texels (2026-11-14).
+growing it after a reload, and the texture loaded for Interactive Select at its size in texels (2026-11-14); a dialog
+grown at a line (a crossed picture grows, one past the line moves, one before stays) and its extent after (2026-11-15).
 
 Position edits (`test_script_edit.cpp`): numbers written as a script would; expressions keep their constants (the
 number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a
