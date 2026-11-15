@@ -6,6 +6,9 @@ What making Add playable needs (`UT_ADD` = 9: Nasod Ruler 9, Psychic Tracer 32, 
 comes from, and what is out of scope. Progress is on the [Roadmap](roadmap.md); the sources are described on
 [Inventory](../original/inventory.md#our-clients-assets-and-the-brazilian-sources-user-2026-11-15).
 
+**Our files are the superset** (user, 2026-11-15): what another source has and ours lacks is added to ours, entry by
+entry; nothing of ours is replaced by another client's file. Text in Portuguese wherever a source has it.
+
 **Source order** (user, 2026-11-15): `_reference` first (little modified, and only by the user); then the Brazilian
 scripts in `kom_BR`; the V5 source (`Elsword-V5.0318.6_3`, edited by a third party) only where nothing else has it.
 
