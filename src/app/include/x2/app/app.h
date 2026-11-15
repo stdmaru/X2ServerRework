@@ -6,6 +6,7 @@
 
 #include <SDL3/SDL.h>
 
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
@@ -46,12 +47,20 @@ public:
     float ContentScale() const;     // display scale (1.0 = 96 dpi)
     bool Minimized() const;
     void SetTitle(const std::string& title);
+    // The window's own icon (X11 _NET_WM_ICON, Wayland xdg-toplevel-icon where supported) from a Windows .ico file's
+    // bytes (LoadIcoImage). False, with `error`, when it cannot be decoded.
+    bool SetIcon(const unsigned char* ico, std::size_t size, std::string& error);
 
 private:
     Window() = default;
 
     SDL_Window* m_window = nullptr;
 };
+
+// Decodes the largest image of a Windows .ico file's bytes. Only PNG-encoded entries are read (the 256x256 image of
+// a modern .ico is one; the older BMP entries are skipped). Returns nullptr, with `error`, when there is none. The
+// caller frees the surface with SDL_DestroySurface.
+SDL_Surface* LoadIcoImage(const unsigned char* ico, std::size_t size, std::string& error);
 
 // Handles every pending event. Returns false when the application should quit: SDL_EVENT_QUIT, or a close request for
 // `mainWindow` (0: any window).
