@@ -321,6 +321,11 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           class 9 rows are Ara items.
         The V5 client (`Elsword-V5.0318.6_3`, same `.kom` format) has the Add data, but it is a later version with third
         jobs. Take only these three classes, checking field by field.
+        It also ships its source (`JP_TW_EU_CN_US/Trunk`, 2026-11-15): servers, client (`X2Lib/X2GUAdd.cpp`),
+        `ClientScript`, `ServerResource` and database backups (2026-09-08), edited by a third party (its
+        `SERV_LIMIT_UNIT` is commented out "2026-08-08 Add disabled fix"): a source to compare against, not a
+        reference. What is migrated from it keeps the current version working through switches in `src/define.h`
+        (user, 2026-11-15). Comes after `server/character-switches`, which gives Add its switch.
   - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
         ratio, ultrawide included, and 16:9 by default. Today the UI's 1024×768 layout is scaled by separate X and Y
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it
