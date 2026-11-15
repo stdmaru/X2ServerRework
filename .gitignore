@@ -2,6 +2,7 @@
 _*
 .dmn
 .vscode
+/.devcontainer/.client_data*
 
 # build
 /build/

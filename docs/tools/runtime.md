@@ -108,7 +108,7 @@ the content changes made there (T42: Add's skills, items and quests, PR 82) reac
 Point `X2_CLIENT_DATA` at it. Checked 2026-11-15: from the client_data, 4,565 scripts in 2 seconds, byte for byte those of
 the `.kom` except the 17 edited there, `UIAnchors.lua` (new) and the client's three `Config_*.lua` (renamed; no server
 reads them). The client_data must be reachable from the build environment: the build image and the `x2-dev` container mount only the
-repository, so mount it there too or point `X2_CLIENT_DATA` at a copy inside the repository (`_client/`, outside git).
+repository, so set `X2_CLIENT_DATA_MOUNT` ([Build environment](build-environment.md#dev-container)).
 
 **Comparison with original server's `ClientScript`** (2026-10-30, behavioral comparison using `tools/runtime/lua_trace.lua`, which
 records calls, arguments, and defined globals): 2,198 scripts behave equivalently (2 are byte-identical), 1,800 differ, and 68 are
