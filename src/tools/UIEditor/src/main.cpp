@@ -125,6 +125,14 @@ struct EditorState {
     // The pictures of the selected control expanded in the inspector (indexes), green on the screen: set as the
     // inspector draws, so the screen shows the last frame's.
     std::vector<int> expandedPictures, shownPictures;
+    // Dragging an edge of a green picture on the screen: its SetPoint, which edges (1 left, 2 top, 4 right, 8 bottom)
+    // and the change applied so far (whole layout units).
+    struct EdgeDrag {
+        bool active = false;
+        SourceRef ref;
+        int edges = 0;
+        float rest[2] = {};
+    } edgeDrag;
     // Interactive Select (SelectPopup): a key's UV rectangle edited over its texture, given to the key on Apply.
     struct Select {
         bool request = false, open = false;
@@ -344,21 +352,38 @@ bool CurrentTet(x2::ui_editor::Engine& engine, EditorState& state, const std::st
     return true;
 }
 
-// Moves what the script calls set by (dx, dy) layout units, in the scripts' text (x2::ui_editor::MoveCall), and builds
-// again the dialogs made from them. One step of undo; merge: an id that joins the steps of one drag (0: none).
-bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::vector<SourceRef>& refs, float dx,
-                 float dy, unsigned merge)
-{
-    if (dx == 0.0f && dy == 0.0f) {
-        return false;
+std::string SourceLabel(const SourceRef& ref);
+
+// An edit of the script call behind something: moves what it places by (move) layout units, or, resize, moves its
+// edges by (left, top, right, bottom) so it grows (x2::ui_editor::MoveCall, ResizeCall).
+struct CallEdit {
+    SourceRef ref;
+    bool resize = false;
+    float d[4] = {};    // move: dx, dy; resize: left, top, right, bottom
+
+    bool SameAs(const CallEdit& other) const
+    {
+        return resize == other.resize && std::equal(std::begin(d), std::end(d), std::begin(other.d));
     }
-    // Each call once (a control's pictures may share a line), by script.
-    std::map<std::string, std::pair<std::string, std::set<std::pair<int, int>>>> calls;
-    for (const SourceRef& ref : refs) {
-        if (ref.Known()) {
-            auto& entry = calls[Key(ref.script)];
-            entry.first = ref.script;
-            entry.second.insert({ref.line, static_cast<int>(ref.kind)});
+};
+
+// Makes the edits in the scripts' text and builds again the dialogs made from them, as one step of undo; merge: an id
+// that joins the steps of one drag (0: none). A call is edited once, also when several objects name it; two different
+// edits of one call are refused.
+bool EditCalls(x2::ui_editor::Engine& engine, EditorState& state, const std::vector<CallEdit>& edits, unsigned merge)
+{
+    // By script, then by call.
+    std::map<std::string, std::pair<std::string, std::map<std::pair<int, int>, CallEdit>>> calls;
+    for (const CallEdit& edit : edits) {
+        if (!edit.ref.Known()) {
+            continue;
+        }
+        auto& entry = calls[Key(edit.ref.script)];
+        entry.first = edit.ref.script;
+        const auto [it, added] = entry.second.emplace(std::make_pair(edit.ref.line, static_cast<int>(edit.ref.kind)), edit);
+        if (!added && !it->second.SameAs(edit)) {
+            state.message = SourceLabel(edit.ref) + " sets things this edit changes differently: edit them one by one";
+            return false;
         }
     }
     if (calls.empty()) {
@@ -372,16 +397,49 @@ bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::v
             return false;
         }
         const std::string before = text;
-        for (const auto& [line, kind] : entry.second) {
-            if (!x2::ui_editor::MoveCall(text, line, static_cast<x2::ui_editor::CallKind>(kind), dx, dy, error)) {
+        for (const auto& [call, edit] : entry.second) {
+            const bool ok =
+                edit.resize ? x2::ui_editor::ResizeCall(text, call.first, edit.d[0], edit.d[1], edit.d[2], edit.d[3], error)
+                            : x2::ui_editor::MoveCall(text, call.first, static_cast<x2::ui_editor::CallKind>(call.second),
+                                                      edit.d[0], edit.d[1], error);
+            if (!ok) {
                 state.message = entry.first + ": " + error;
                 return false;
             }
         }
-        texts.push_back({entry.first, before, text});
+        if (text != before) {
+            texts.push_back({entry.first, before, text});
+        }
+    }
+    if (texts.empty()) {
+        return false;
     }
     ApplyTexts(engine, state, texts, merge);
     return true;
+}
+
+// Moves what the script calls set by (dx, dy) layout units (EditCalls).
+bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::vector<SourceRef>& refs, float dx,
+                 float dy, unsigned merge)
+{
+    if (dx == 0.0f && dy == 0.0f) {
+        return false;
+    }
+    std::vector<CallEdit> edits;
+    for (const SourceRef& ref : refs) {
+        edits.push_back({ref, false, {dx, dy, 0.0f, 0.0f}});
+    }
+    return EditCalls(engine, state, edits, merge);
+}
+
+// Grows what a point table places by moving its edges (left, top, right, bottom) in layout units (EditCalls).
+bool ResizeSource(x2::ui_editor::Engine& engine, EditorState& state, const SourceRef& ref, float left, float top,
+                  float right, float bottom, unsigned merge)
+{
+    if (left == 0.0f && top == 0.0f && right == 0.0f && bottom == 0.0f) {
+        return false;
+    }
+    return EditCalls(engine, state, {{ref, true, {left, top, right, bottom}}}, merge);
 }
 
 // The texts of an edit (scripts, .tet files) made so, as one step of undo; merge: an id that joins the steps of one
@@ -1458,6 +1516,60 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
     ImGui::EndPopup();
 }
 
+// A picture's box in layout units relative to its control: min x, min y, max x, max y.
+void PictureBox(const PictureInfo& picture, float box[4])
+{
+    box[0] = box[2] = picture.points[0][0];
+    box[1] = box[3] = picture.points[0][1];
+    for (const auto& point : picture.points) {
+        box[0] = std::min(box[0], point[0]);
+        box[1] = std::min(box[1], point[1]);
+        box[2] = std::max(box[2], point[0]);
+        box[3] = std::max(box[3], point[1]);
+    }
+}
+
+// A picture's size, where it comes from, and a field that changes it in its SetPoint (ResizeCall): it grows to the
+// right and down; on the screen its green box's edges can be dragged.
+void SizeField(x2::ui_editor::Engine& engine, EditorState& state, const PictureInfo& picture)
+{
+    float box[4];
+    PictureBox(picture, box);
+    float v[2] = {std::round(box[2] - box[0]), std::round(box[3] - box[1])};
+    const float was[2] = {v[0], v[1]};
+    ImGui::BeginDisabled(!picture.point.Known());
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+    const bool changed = ImGui::DragFloat2("size", v, 1.0f, 0.0f, 8192.0f, "%.0f");
+    ImGui::EndDisabled();
+    const unsigned merge = ImGui::GetItemID();
+    if (ImGui::IsItemDeactivated() && !state.undo.empty()) {
+        state.undo.back().merge = 0;
+    }
+    if (changed && picture.point.Known()) {
+        ResizeSource(engine, state, picture.point, 0.0f, 0.0f, std::round(v[0]) - was[0], std::round(v[1]) - was[1], merge);
+    }
+    // Where it comes from, the way the script writes it.
+    if (picture.useTextureSize) {
+        std::string from = "key " + x2::ui_editor::FormatNumber(picture.textureSize[0]) + " x " +
+                           x2::ui_editor::FormatNumber(picture.textureSize[1]);
+        if (picture.resize[0] != 1.0f || picture.resize[1] != 1.0f) {
+            from += " x RESIZE " + x2::ui_editor::FormatNumber(picture.resize[0]) + ", " +
+                    x2::ui_editor::FormatNumber(picture.resize[1]);
+        }
+        if (picture.addSize[0] != 0.0f) {
+            from += " + ADD_SIZE_X " + x2::ui_editor::FormatNumber(picture.addSize[0]);
+        }
+        if (picture.addSize[1] != 0.0f) {
+            from += " + ADD_SIZE_Y " + x2::ui_editor::FormatNumber(picture.addSize[1]);
+        }
+        const bool stretched = picture.addSize[0] != 0.0f || picture.addSize[1] != 0.0f ||
+                               picture.resize[0] != 1.0f || picture.resize[1] != 1.0f;
+        ImGui::TextDisabled("= %s%s", from.c_str(), stretched ? " (the key stretched)" : "");
+    } else {
+        ImGui::TextDisabled("= the corners its SetPoint gives (USE_TEXTURE_SIZE = FALSE)");
+    }
+}
+
 // addZone: makes a picture's width a stretch zone of its dialog.
 void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const ControlInfo& control,
                   const std::function<void(float, float)>& addZone, const MoveFunction& move)
@@ -1477,6 +1589,7 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
             ImGui::TextDisabled("SetPoint: %s", SourceLabel(picture.point).c_str());
             MoveField(state, "left top", picture.points[0],
                       picture.point.Known() ? std::vector<SourceRef>{picture.point} : std::vector<SourceRef>{}, move);
+            SizeField(engine, state, picture);
             float lo = picture.points[0][0], hi = lo;
             for (const auto& point : picture.points) {
                 lo = std::min(lo, point[0]);
@@ -1941,6 +2054,30 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
                     draw->AddRectFilled(a, b, IM_COL32(40, 220, 90, 80));
                     draw->AddRect(ImVec2(a.x - 1, a.y - 1), ImVec2(b.x + 1, b.y + 1), IM_COL32(40, 255, 100, 255), 0.0f,
                                   2.0f);
+                    // Its edges grow or shrink it (its SetPoint), hovered within a few pixels.
+                    if (!ImGui::IsItemHovered() || state.dragging || state.edgeDrag.active || !picture.point.Known()) {
+                        continue;
+                    }
+                    const ImVec2 m = ImGui::GetMousePos();
+                    constexpr float near = 6.0f;
+                    const bool inX = m.x > a.x - near && m.x < b.x + near, inY = m.y > a.y - near && m.y < b.y + near;
+                    int edges = 0;
+                    edges |= inY && std::fabs(m.x - a.x) <= near ? 1 : 0;
+                    edges |= inX && std::fabs(m.y - a.y) <= near ? 2 : 0;
+                    edges |= inY && std::fabs(m.x - b.x) <= near && (edges & 1) == 0 ? 4 : 0;
+                    edges |= inX && std::fabs(m.y - b.y) <= near && (edges & 2) == 0 ? 8 : 0;
+                    if (edges == 0) {
+                        continue;
+                    }
+                    const bool horizontal = (edges & 5) != 0, vertical = (edges & 10) != 0;
+                    ImGui::SetMouseCursor(horizontal && vertical
+                                              ? ((edges == 5 || edges == 10 || edges == 9 || edges == 6) ? ImGuiMouseCursor_ResizeNESW
+                                                                                                          : ImGuiMouseCursor_ResizeNWSE)
+                                          : horizontal ? ImGuiMouseCursor_ResizeEW
+                                                       : ImGuiMouseCursor_ResizeNS);
+                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                        state.edgeDrag = {true, picture.point, edges, {0.0f, 0.0f}};
+                    }
                 }
             }
         }
@@ -1960,7 +2097,7 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
             } else {
                 ImGui::SetTooltip("layout %.0f, %.0f", static_cast<double>(lx), static_cast<double>(ly));
             }
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !state.edgeDrag.active) {
                 state.selected = hover;
                 // Dragging it moves it in its scripts (Alt: its dialog), in whole layout units.
                 state.dragging = hover.dialog >= 0;
@@ -1969,6 +2106,31 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
             }
         }
         constexpr unsigned kDragMerge = 1;  // one drag on the screen is one undo step
+        constexpr unsigned kEdgeMerge = 2;
+        if (state.edgeDrag.active) {
+            auto& edge = state.edgeDrag;
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+                edge.active = false;
+                if (!state.undo.empty() && state.undo.back().merge == kEdgeMerge) {
+                    state.undo.back().merge = 0;
+                }
+            } else if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.0f)) {
+                const ImVec2 drag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.0f);
+                const float unit = zoom * engine.UIScale();
+                const float tx = std::round(drag.x / unit), ty = std::round(drag.y / unit);
+                const float dx = tx - edge.rest[0], dy = ty - edge.rest[1];
+                const float l = (edge.edges & 1) ? dx : 0.0f, t = (edge.edges & 2) ? dy : 0.0f;
+                const float r = (edge.edges & 4) ? dx : 0.0f, b = (edge.edges & 8) ? dy : 0.0f;
+                if (l != 0.0f || t != 0.0f || r != 0.0f || b != 0.0f) {
+                    if (ResizeSource(engine, state, edge.ref, l, t, r, b, kEdgeMerge)) {
+                        edge.rest[0] = tx;
+                        edge.rest[1] = ty;
+                    } else {
+                        edge.active = false;
+                    }
+                }
+            }
+        }
         if (state.dragging) {
             if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
                 state.dragging = false;

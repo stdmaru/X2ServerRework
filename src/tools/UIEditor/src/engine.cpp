@@ -1053,6 +1053,11 @@ std::vector<DialogInfo> Engine::Inspect() const
                         pi.texSource = ref(*found.back());
                     }
                     if (picture->pPoint != NULL) {
+                        pi.useTextureSize = picture->pPoint->bUseTextureSize;
+                        pi.addSize[0] = picture->pPoint->addSize.x;
+                        pi.addSize[1] = picture->pPoint->addSize.y;
+                        pi.resize[0] = picture->pPoint->kResize.x;
+                        pi.resize[1] = picture->pPoint->kResize.y;
                         const D3DXVECTOR2 corners[4] = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint,
                                                         picture->pPoint->leftBottomPoint,
                                                         picture->pPoint->rightBottomPoint};

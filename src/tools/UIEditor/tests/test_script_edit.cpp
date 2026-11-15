@@ -133,3 +133,36 @@ TEST_CASE("script edit: a picture's SetTex names another texture and key")
     CHECK_FALSE(x2::ui_editor::SetTexCall(plain, 1, "A", "K\"", error));
     CHECK_FALSE(MoveCall(plain, 1, CallKind::Texture, 1, 1, error));
 }
+
+TEST_CASE("script edit: a point table grows by its edges")
+{
+    std::string error;
+    // The texture's size: LEFT_TOP moves with the left and top edges, ADD_SIZE_X/Y take the growth.
+    std::string text = "p:SetPoint({ ADD_SIZE_Y = 480, CHANGE_TIME = 0, LEFT_TOP = D3DXVECTOR2(0, 55) })\n";
+    REQUIRE(x2::ui_editor::ResizeCall(text, 1, 0, 0, 0, 20, error));
+    CHECK(text == "p:SetPoint({ ADD_SIZE_Y = 500, CHANGE_TIME = 0, LEFT_TOP = D3DXVECTOR2(0, 55) })\n");
+    REQUIRE(x2::ui_editor::ResizeCall(text, 1, -10, 0, 0, 0, error));
+    CHECK(text == "p:SetPoint({ ADD_SIZE_X = 10, ADD_SIZE_Y = 500, CHANGE_TIME = 0, LEFT_TOP = D3DXVECTOR2(-10, 55) })\n");
+
+    std::string bare = "p:SetPoint({ CHANGE_TIME = 0 })\n";
+    REQUIRE(x2::ui_editor::ResizeCall(bare, 1, 0, 5, 0, 0, error));
+    CHECK(bare == "p:SetPoint({ ADD_SIZE_Y = -5, LEFT_TOP = D3DXVECTOR2(0, 5), CHANGE_TIME = 0 })\n");
+
+    // Corners given: each moves with its edges.
+    std::string corners = "p:SetPoint({ USE_TEXTURE_SIZE = FALSE, LEFT_TOP = D3DXVECTOR2(10, 20), "
+                          "RIGHT_BOTTOM = D3DXVECTOR2(60, 40 + Y) })\n";
+    REQUIRE(x2::ui_editor::ResizeCall(corners, 1, 0, -2, 5, 3, error));
+    CHECK(corners == "p:SetPoint({ USE_TEXTURE_SIZE = FALSE, LEFT_TOP = D3DXVECTOR2(10, 18), "
+                     "RIGHT_BOTTOM = D3DXVECTOR2(65, 43 + Y) })\n");
+    std::string four = "p:SetPoint({ USE_TEXTURE_SIZE = false, IS_RECT = false, LEFT_TOP = D3DXVECTOR2(0, 0),\n"
+                       "  RIGHT_TOP = D3DXVECTOR2(10, 0), LEFT_BOTTOM = D3DXVECTOR2(0, 10), RIGHT_BOTTOM = D3DXVECTOR2(10, 10) })\n";
+    REQUIRE(x2::ui_editor::ResizeCall(four, 1, 0, 0, 2, 4, error));
+    CHECK(four == "p:SetPoint({ USE_TEXTURE_SIZE = false, IS_RECT = false, LEFT_TOP = D3DXVECTOR2(0, 0),\n"
+                  "  RIGHT_TOP = D3DXVECTOR2(12, 0), LEFT_BOTTOM = D3DXVECTOR2(0, 14), RIGHT_BOTTOM = D3DXVECTOR2(12, 14) })\n");
+
+    std::string noCorner = "p:SetPoint({ USE_TEXTURE_SIZE = FALSE, LEFT_TOP = D3DXVECTOR2(0, 0) })\n";
+    CHECK_FALSE(x2::ui_editor::ResizeCall(noCorner, 1, 0, 0, 1, 1, error));
+    std::string unknown = "p:SetPoint({ USE_TEXTURE_SIZE = flag, LEFT_TOP = D3DXVECTOR2(0, 0) })\n";
+    CHECK_FALSE(x2::ui_editor::ResizeCall(unknown, 1, 0, 0, 1, 1, error));
+    CHECK(unknown == "p:SetPoint({ USE_TEXTURE_SIZE = flag, LEFT_TOP = D3DXVECTOR2(0, 0) })\n");
+}

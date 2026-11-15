@@ -22,6 +22,13 @@ enum class CallKind {
 // such call or more than one.
 bool MoveCall(std::string& text, int line, CallKind kind, float dx, float dy, std::string& error);
 
+// Moves the edges of what the point table on `line` places by layout units (left, top, right, bottom: + is right or
+// down), so it grows or shrinks. With USE_TEXTURE_SIZE (the default) the size is the texture key's plus ADD_SIZE_X/Y:
+// LEFT_TOP moves and ADD_SIZE_X/Y change (added when missing). Without, the corners it gives move (each by its two
+// edges). False with `error`, the text unchanged, when the line has no such call, more than one, or USE_TEXTURE_SIZE is
+// not a plain true or false.
+bool ResizeCall(std::string& text, int line, float left, float top, float right, float bottom, std::string& error);
+
 // Makes the SetTex call on `line` name another texture and key, both written as string literals there. False with
 // `error`, the text unchanged, when the line has no such call, more than one, or it names them otherwise.
 bool SetTexCall(std::string& text, int line, const std::string& texture, const std::string& key, std::string& error);
