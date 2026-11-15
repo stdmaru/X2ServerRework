@@ -299,6 +299,11 @@ public:
     // game asks; at most 16). Samplers the game sets anisotropic keep their own level if higher.
     void SetAnisotropy(UINT level);
     UINT Anisotropy() const { return m_anisotropy; }
+    // A sprite's rectangle (2026-11-15, not in D3D9's interface; client-d3d9.md#sprite-rectangles): until turned off,
+    // draws keep stage 0's texture coordinates inside rect (u1, v1, u2, v2, in texture coordinates, either order) less
+    // half a texel of the stage's texture, so linear filtering reads no texel outside it when the sprite is scaled.
+    // nullptr turns it off.
+    void SetTextureRect(const float* rect);
 
     // The back buffer's size this frame (0 x 0 while minimized or before the first scene).
     UINT BackBufferWidth() const { return m_backBuffer.width; }
@@ -441,6 +446,8 @@ private:
     render::TextureFormat m_msaaFormat = render::TextureFormat::Invalid;
     render::Texture m_textureDepth;
     UINT m_anisotropy = 1;
+    bool m_textureRectOn = false;
+    float m_textureRect[4] = {};
     // Supersampling: m_supersample asked; with m_ssaa > 1 the back buffer is drawn into m_ssaaColor (and m_msaaColor,
     // m_depth) m_ssaa times the window's size and blitted into the swapchain texture.
     UINT m_supersample = 1;

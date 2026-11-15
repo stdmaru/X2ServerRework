@@ -154,6 +154,15 @@ New, not in D3D9's interface; the game's options set them ([Game options](client
   as sharp as without supersampling, where linear magnification blurred it. Stretched ones keep the game's filter (a
   village's 128×128 light overlay over the screen showed its texels as squares). Render targets are not supersampled.
 
+## Sprite rectangles (2026-11-15, `client/ui-atlas-clamp`, [T49](../project/decisions.md))
+
+**Behavior change.** `Device::SetTextureRect(rect)` (not in D3D9's interface) gives the draws after it a rectangle of
+stage 0's texture, in texture coordinates; `nullptr` turns it off. The fixed-function pixel shader clamps stage 0's
+coordinates to the rectangle less half a texel of the bound texture (`stage0Rect` in its uniforms; off when its x is
+past its z), so a linearly filtered sample never takes texels outside it; a rectangle a texel wide or less keeps its
+middle, a solid color. The mapping inside is unchanged: only the samples of the outermost half texel move, to the edge
+texel's center. Who sets it: [UI pictures](client-ktdxlib.md#pictures-sample-only-their-key-2026-11-15-clientui-atlas-clamp-t49).
+
 ## Image files (2026-11-07, `client/d3dx-textures`)
 
 `CKTDXDeviceTexture` loads every texture through `D3DXGetImageInfoFromFileInMemory` and
@@ -445,6 +454,8 @@ lockable), state blocks. Each comes with the engine file that needs it.
   lists), the pipeline cache (uniform and dynamic state do not create pipelines; blending and culling do), texture formats
   and locked rectangles (A8R8G8B8 with mips, X8R8G8B8, A4R4G4B4, A8L8, DXT1), vertex buffer lock flags and the bytes they
   leave, partial clears drawn with the states restored, resources destroyed before and after the device.
+- On a GPU: a two-texel key between transparent texels, drawn 3.5 times its size with linear filtering, stays opaque
+  to its edges with its sprite rectangle and takes some of the gutter without it.
 - `D3DXCheckTextureRequirements`: defaults, mip chains, formats a render target cannot take; a file that is not an image
   fails cleanly.
 - `test_d3dx_texture.cpp` (`-tc="d3dx*"`): `.dds`/`.tga`/`.png`/`.bmp` built in the test — the info of every format and of

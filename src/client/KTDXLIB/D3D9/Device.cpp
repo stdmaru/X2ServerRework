@@ -214,8 +214,9 @@ struct FragmentUniforms {
     float textureFactor[4];
     float alphaTest[4];
     float fogColor[4];
+    float stage0Rect[4];
 };
-static_assert(sizeof(FragmentUniforms) == 160);
+static_assert(sizeof(FragmentUniforms) == 176);
 
 // The effect vertex program's own block (XRenderer.vert.hlsl, slot 1; slot 0 is the registers).
 struct EffectProgramUniforms {
@@ -768,6 +769,17 @@ void Device::SetSupersample(UINT factor)
 void Device::SetAnisotropy(UINT level)
 {
     m_anisotropy = std::clamp<UINT>(level, 1, 16);
+}
+
+void Device::SetTextureRect(const float* rect)
+{
+    m_textureRectOn = rect != nullptr;
+    if (rect != nullptr) {
+        m_textureRect[0] = std::min(rect[0], rect[2]);
+        m_textureRect[1] = std::min(rect[1], rect[3]);
+        m_textureRect[2] = std::max(rect[0], rect[2]);
+        m_textureRect[3] = std::max(rect[1], rect[3]);
+    }
 }
 
 // The back buffer's depth-stencil buffer and, with anti-aliasing, its multisampled color texture and the
@@ -1475,6 +1487,20 @@ void Device::PushUniforms(DWORD fvf)
     f.fogColor[1] = fog.g;
     f.fogColor[2] = fog.b;
     f.fogColor[3] = m_renderStates[D3DRS_FOGENABLE] ? 1.0f : 0.0f;
+    f.stage0Rect[0] = 1.0f;     // off
+    const Texture* texture0 = m_textures[0];
+    if (m_textureRectOn && texture0 != nullptr && texture0->m_texture && texture0->Width() > 0 &&
+        texture0->Height() > 0) {
+        // The centers of the rectangle's edge texels; a rectangle a texel wide or less keeps its middle.
+        const float halfU = 0.5f / static_cast<float>(texture0->Width());
+        const float halfV = 0.5f / static_cast<float>(texture0->Height());
+        const float* r = m_textureRect;
+        const float u1 = r[0] + halfU, u2 = r[2] - halfU, v1 = r[1] + halfV, v2 = r[3] - halfV;
+        f.stage0Rect[0] = u1 <= u2 ? u1 : (r[0] + r[2]) / 2;
+        f.stage0Rect[2] = u1 <= u2 ? u2 : (r[0] + r[2]) / 2;
+        f.stage0Rect[1] = v1 <= v2 ? v1 : (r[1] + r[3]) / 2;
+        f.stage0Rect[3] = v1 <= v2 ? v2 : (r[1] + r[3]) / 2;
+    }
     m_frame->PushFragmentUniformData(0, std::as_bytes(std::span(&f, 1)));
 }
 

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <algorithm>
 #include <cmath>
 #include "x2/platform/file.h"
 #include "./KTDGUIControl.h"
@@ -703,10 +704,23 @@ HRESULT CKTDGUIControl::RenderVertex( VERTEX_UI* pVertex, const UIPointData& poi
 
 	pointData.pUITextureData->pTexture->SetDeviceTexture();
 
+	// The picture is a key of an atlas: scaled (any resolution but 1024 x 768) and filtered linearly, its edges would
+	// blend the texels next to the key, a seam between the slices of a window. The quad samples only its own UVs.
+	float rect[4] = { pVertex[0].u, pVertex[0].v, pVertex[0].u, pVertex[0].v };
+	for ( int i = 1; i < 4; ++i )
+	{
+		rect[0] = std::min( rect[0], pVertex[i].u );
+		rect[1] = std::min( rect[1], pVertex[i].v );
+		rect[2] = std::max( rect[2], pVertex[i].u );
+		rect[3] = std::max( rect[3], pVertex[i].v );
+	}
+	g_pKTDXApp->GetDevice()->SetTextureRect( rect );
+
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
 	static_assert( D3DFVF_VERTEX_UI == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, pVertex, renderCount );
+	g_pKTDXApp->GetDevice()->SetTextureRect( nullptr );
 
 	return S_OK;
 //#else
