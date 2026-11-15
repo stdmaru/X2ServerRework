@@ -360,7 +360,7 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           (boss bars, the NPC talk shade) go with the migration's next part.
     - [ ] `client/widescreen-backgrounds`, art permitting: full-screen images (login, loading screens, cut-ins)
           redrawn for wider screens, replacing the side bars; same formats (T1).
-    - [ ] `client/ui-atlas-clamp` (2026-11-15, [T49](decisions.md)): UI pictures sample only their `.tet` key, so a
+    - [ ] `client/ui-atlas-clamp` (2026-11-15, PR #80, [T49](decisions.md)): UI pictures sample only their `.tet` key, so a
           scaled window's slices show no seams from their atlas neighbours (the message box at 1080p)
           ([D3D9 device](../porting/client-d3d9.md#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49)).
     - [ ] `client/ui-scale`: a "UI scale" option (automatic, 100–200%) and a pixel-perfect mode (integer scale,
