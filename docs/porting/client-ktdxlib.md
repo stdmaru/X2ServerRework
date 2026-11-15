@@ -597,6 +597,30 @@ editor's tests (`ctest -R ui_editor`). `KeepInDraggingRange` applies the range a
 step): a mouse drag calls it, so the dialog is never drawn out of range between steps, and so does code that places
 the dialog (the world map's navigation box).
 
+## Backdrops (2026-11-15, `client/widescreen-backgrounds`, [T51](../project/decisions.md))
+
+A static whose pictures are a full-screen image is declared a **backdrop** in `UIAnchors.lua`, by control name with
+the width of its fade in layout units:
+
+```lua
+["DLG_Login_Back.lua"] = { BACKDROPS = { Login = 64 } },
+```
+
+- **Narrower screens** need nothing: the 16:9 picture (1365.33 units, from x -170.67 to 1194.67 under a centered
+  dialog) is wider than the canvas at 16:10 and 4:3, and its sides fall off the screen.
+- **Wider screens** (up to 21:9, T48): right after the backdrop control draws, under its anchor,
+  `CKTDGUIDialog::DrawBackdropEdges` draws black from the screen's edge to the pictures' box and a gradient over the
+  box's outer `fade` units, opaque at the edge to clear inside (two quads per side, vertex color, no texture: the
+  device draws the vertex color, [D3D9](client-d3d9.md)). Edges snap as the pictures' corners do (`floor - 0.5`); the
+  fade is at most half the box. Its alpha is the dialog's times the control's, so it fades in and out with the screen.
+  Controls drawn after it (the login fields and buttons) are on top.
+- `CKTDGUIControl::SetBackdropFade` (negative: none) holds the declaration; `CKTDGUIAnchors::Apply` sets it, and
+  reports a name the dialog lacks on stderr, as for anchors. Only statics are measured (the union of their shown
+  pictures' corners).
+
+The login screen (`DLG_Login_Back.lua`) is the first: its four 512×512 tiles became one 2560×1440 `DLG_Login_16x9.tga`
+([client_data](../tools/client-data.md#content-changes-t42)).
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

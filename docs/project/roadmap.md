@@ -363,8 +363,13 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           The EXP/vigor bar and the loading bars stretched (user checked in game); loading frames now clear the screen
           and the vigor bar's 1-unit overlap (in the original too) is fixed in the client_data. Other spanning pieces
           (boss bars, the NPC talk shade) go with the migration's next part.
-    - [ ] `client/widescreen-backgrounds`, art permitting: full-screen images (login, loading screens, cut-ins)
-          redrawn for wider screens, replacing the side bars; same formats (T1).
+    - [ ] `client/widescreen-backgrounds` ([T51](decisions.md)): full-screen images (login, loading screens, cut-ins)
+          redrawn at 16:9 (2560×1440), same formats (T1). The engine part and the login screen are done (2026-11-15):
+          `BACKDROPS` in `UIAnchors.lua` crops a backdrop at 4:3 and fades it into black at 21:9
+          ([KTDXLIB](../porting/client-ktdxlib.md#backdrops-2026-11-15-clientwidescreen-backgrounds-t51)), the UI
+          editor edits it, and the login screen is one 16:9 texture. The art is made outside the repository (Stable
+          Diffusion outpainting of the sides, chaiNNer with 4x-AnimeSharp; `/home/maru/upscale` on the user's machine).
+          Left: the loading screens and cut-ins, one by one.
     - [ ] `client/ui-atlas-clamp` (2026-11-15, PR #80, [T49](decisions.md)): UI pictures sample only their `.tet` key, so a
           scaled window's slices show no seams from their atlas neighbours (the message box at 1080p)
           ([D3D9 device](../porting/client-d3d9.md#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49)).
