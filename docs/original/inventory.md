@@ -90,20 +90,28 @@ Formats it reads and writes (2026-10-30, updated 2026-11-15):
 | Our client's `data036.kom` (2014) | Algorithm 2 (XORCRC) | `\x1bKL\x81` | works |
 | August 2014 `data036.kom` (repository `Elsword-V5.0318.6_3`) | Algorithm 3 (XORCRC with another key, zlib without final adler32) | `\x1bKL\x82`: LuaJIT 2.0 with reordered opcodes | works |
 | Brazilian August 2014 `data036.kom` (assets outside the repository, extracted by the old komextract) | Algorithm 3 with its own key (`br-2014-08`) | `\x1bKL\x82` | works (2026-11-15): all 178 encrypted entries, 139 Lua decompiled, `Item.kim` |
-| `data036_br.kom` (2016) | Algorithm 3 in XML, but with another key or variation | ? | cannot open: entries decrypt to garbage; `keyrecover.py` not tried yet |
+| Brazilian 2017 `data036.kom` (assets outside the repository), container `V.0.4` | XML header XOR a 12-byte key, a `MappedID` attribute per entry; entries Algorithm 3 with the `br-2014-08` key | `\x1bKL\x82` | works (2026-11-15): all 356 entries; 251 of 252 Lua decompiled (`DamageEffect.lua` stays bytecode: unstructured jump); its `Item.kim` (107,260 items) has 228-byte templets, which `kim.py` (188) does not read yet |
+| `data036_br.kom` (2016) | Algorithm 3 in XML, but with another key or variation | ? | cannot open: entries decrypt to garbage; not retried with the regional keys or `keyrecover.py` (file not at hand on 2026-11-15) |
 
 Algorithm 3 and the `0x82` opcode table are not in `_reference` (only 0, 1, and 2): they come from reverse engineering published in
 repository `Elsword-V5.0318.6_3` (`KTDXCommonFunc.h`, `tools/kpcrack/`), performed in 2026 on a 2014 client, not KOG code. LuaJIT
 version does not change in any format: all are LuaJIT 2.0.
 
-**The Algorithm 3 key changes with the client** (region and date), while the cipher stays the same. `kom.py` keeps the
-known keys in `ALGO3_KEYS` and tries each one. The Brazilian key was not taken from an executable: `tools/kom/keyrecover.py`
-solved it from the archive's own entries (2026-11-15). XORCRC is linear over GF(2), so every plaintext bit we can predict
-(zlib headers, empty Lua scripts, files also present in a decodable archive) is a linear equation on the 160 key bits.
-The equations stop at rank 144: keys form classes of 2^16 that decrypt identically, and the tool prints one of them (the same
-attack on our client's Algorithm 2 gives an equivalent of its key, not the key itself). `KOMView.exe` (a 2023 community
-viewer) carries about 300 five-dword tuples drawn from the same `XOR_KEY` pool as `KTDXCommonFunc.h`, for the later `V.0.4`
-archives; none of them decrypts the 2014 Algorithm 3 entries.
+**The Algorithm 3 key changes with the region**, while the cipher stays the same, and it did not change in Brazil from 2014
+to 2017. `kom.py` keeps the known keys in `ALGO3_KEYS` and tries each one:
+
+- **Regional table of `KOMView.exe`** (a 2023 community viewer, region table `NA EU KR BR CN TW` built in code): NA is the
+  `2014-08` key above, KR is the Algorithm 2 key of our client's `KTDXCommonFunc.h`, BR decodes both Brazilian archives;
+  EU, CN and TW were not checked on real archives. Its other table, about 300 five-dword tuples named by eight characters
+  drawn from the `XOR_KEY` pool, matches the `MappedID` values of the `V.0.4` header (some rotated by a few characters);
+  the entries decode without them, so their use is unknown.
+- **`tools/kom/keyrecover.py`** finds a key from an archive's own entries when no known key fits. XORCRC is linear over
+  GF(2), so every plaintext bit we can predict (zlib headers, empty Lua scripts, files also present in a decodable archive)
+  is a linear equation on the 160 key bits. The equations stop at rank 144: keys form classes of 2^16 that decrypt
+  identically, and the tool prints one of them. On 2026-11-15 it recovered, from the 2014 Brazilian blobs alone, a key of the
+  same class as `KOMView.exe`'s BR key (and, from our client's archive, one equivalent to its Algorithm 2 key).
+
+The `V.0.4` header key (`db4808aea7e05e588679d7af`) came from the predictable start of the XML (`<?xml version="1.0"?><Files>`).
 
 `_reference/X2Server` (the link used by the importer) did not exist on 2026-10-29; the clone is at `_reference/X2Server-github`,
 and the importer uses the clone directly if the link is missing.

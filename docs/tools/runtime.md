@@ -159,9 +159,10 @@ Replaced versions remain in git history (initial `runtime/ServerResource` commit
 
 `kom.py` (`list`, `unpack`, `unblob`, `pack`, `decompile`) and `kim.py` (`decompile`, `compile`, `info`), brought from `_tools/kom` on
 2026-10-30. Formats in [Inventory](../original/inventory.md). `unblob` extracts a folder written by the old komextract
-(plain files plus `name.SIZE.ALG.___` blobs). Algorithm 3 entries are tried with every key in `ALGO3_KEYS` (or `--key`), and
+(plain files plus `name.SIZE.ALG.___` blobs). `V.0.4` archives (XORed header, `MappedID`) are read and written
+back as `V.0.4` (`pack --container 3|4` chooses). Algorithm 3 entries are tried with every key in `ALGO3_KEYS` (or `--key`), and
 the key that worked goes to the manifest so `pack` writes the entry with it again; `pack --format` converts an archive to
-`2014-03`, `2014-08` or `br-2014-08`. When no key fits, `keyrecover.py recover <kom or blob folder>` finds one
+`2014-03`, `2014-08` or `br-2014-08`; the keys of the other regions (`eu`, `kr`, `cn`, `tw`) are tried on unpack. When no key fits, `keyrecover.py recover <kom or blob folder>` finds one
 (`--reference` adds a decodable archive with some of the same files, `--known` adds known bytes) and prints the
 `ALGO3_KEYS` line to add; `keyrecover.py selftest` and `tools/kom/tests/test_keys.py` check it on synthetic archives. To **pack** (`pack`/`compile`), tools need KOG's LuaJIT 2.0.2
 (`luajit-kog/luajit` beside script, or `$KOM_LUAJIT`/`--luajit`), currently built from `_reference` sources: pending moving this

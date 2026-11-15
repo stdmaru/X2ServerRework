@@ -17,6 +17,13 @@ Size is the decoded size, CompressedSize the stored blob size, Checksum the
 adler32 of the stored blob.  V.0.1/V.0.2 archives (binary 72-byte entry
 table, zlib only) can be listed and unpacked too.
 
+V.0.4 ("KOG GC TEAM MASSFILE V.0.4.", the Brazilian data036.kom of 2017) is the
+same layout with the XML header XOR the 12 bytes HEADER_XOR_V4, repeated (the
+adler32 is over the stored, XORed bytes), and one more attribute per entry,
+MappedID (eight characters, the name of a key tuple in community tools; the
+entries decode without it).  unpack keeps MappedID in the manifest and pack
+writes the container the archive was unpacked from (or --container).
+
 Algorithm 0: blob = zlib(data).
 Algorithm 2: blob = XORCRC(zlib(data)), "encrypt after compress", introduced
 in 2013 (X2OPTIMIZE_ENCRYPT_AFTER_COMPRESS / ENFORCE_IMPORTANT_DATA_ENCRYPTION
@@ -39,16 +46,18 @@ whose meaning is unknown (not an adler32/crc32 of the data or of z); pack
 writes adler32(z) there, like JunePack.  XORCRC3 is XORCRC with another key20
 and the prefix run through the decrypt update (comp/s/crc as below, output
 discarded) instead of the plain CRC update.  The key changes with the client
-(ALGO3_KEYS); unpack tries each one and records the one that worked in the
-manifest, so pack reuses it:
-  2014-08     FD E1 08 EC 0D 09 02 DC DE 4C 8C 64 16 62 7D E4 97 16 FF DC
+and region (ALGO3_KEYS); unpack tries each one and records the one that
+worked in the manifest, so pack reuses it:
+  2014-08     FD E1 08 EC 0D 09 02 DC DE 4C 8C 64 16 62 7D E4 97 16 FF DC  (NA)
               reverse engineered by the Elsword-V5.0318.6_3 repository
               (KTDXCommonFunc.h XORCRCDecryptAlgo3, tools/kpcrack/JuneExtract.cs
               and JunePack.cs) from that client's executable
-  br-2014-08  9C 2A C4 E8 14 4A 14 CE D0 18 92 E6 30 A2 A4 46 46 D6 88 C4
-              recovered from the Brazilian data036.kom alone by keyrecover.py
-              (known-plaintext attack; see that file for how to add a key)
-Neither is in the 2014 client source.
+  br-2014-08  CB 2A 00 23 7D 74 B9 3B 43 84 3F D7 3F 00 A4 82 DA E8 72 31
+              the Brazilian data036.kom of August 2014 and the V.0.4 one of 2017
+  eu, kr, cn, tw: the other regions of KOMView.exe's table, not checked here
+The regional keys come from KOMView.exe (a 2023 community viewer);
+keyrecover.py finds an equivalent key from an archive alone (see that file).
+None of them is in the 2014 client source.
 Algorithm 1 (zlib + Blowfish, unused by current clients) is kept as an opaque
 "name.SIZE.1.___" file, like the original komextract did.
 
@@ -100,6 +109,9 @@ from xml.dom.minidom import parseString
 from xml.sax.saxutils import quoteattr
 
 MAGIC_V3 = b"KOG GC TEAM MASSFILE V.0.3."
+MAGIC_V4 = b"KOG GC TEAM MASSFILE V.0.4."
+HEADER_XOR_V4 = bytes.fromhex("db4808aea7e05e588679d7af")   # V.0.4: the XML header XOR this, repeated
+_KNOWN_ATTRS = ("Name", "Size", "CompressedSize", "Checksum", "FileTime", "Algorithm")
 BOM = b"\xef\xbb\xbf"
 META_DIR = ".kom"
 
@@ -128,12 +140,17 @@ CRC_INV = {t & 0xff: i for i, t in enumerate(CRC_T)}   # low bytes are a permuta
 XOR_KEYS = (0xcc3d4ffb, 0x593cdeaf, 0xcf4235de, 0xde34bd78, 0x52b34a75)
 KEY20 = b"".join(struct.pack("<I", k ^ 0x38d2dfa4) for k in XOR_KEYS)
 KEY20_ALGO3 = bytes.fromhex("FDE108EC0D0902DCDE4C8C6416627DE49716FFDC")
-# Algorithm 3 keys by client, tried in this order when an archive does not say which one it uses.  The br-2014-08 key
-# was recovered on 2026-11-15 by keyrecover.py from the Brazilian data036.kom of August 2014; it is one of the keys
-# equivalent to the client's (every key of its class decrypts every entry identically).
+# Algorithm 3 keys by region, tried in this order when an archive does not say which one it uses.  The regional keys
+# come from KOMView.exe (a 2023 community viewer: CKOMFile region table "NA EU KR BR CN TW"); keyrecover.py had
+# recovered an equivalent of the Brazilian one from the archive alone (2026-11-15), and the NA one matches the
+# Elsword-V5.0318.6_3 repository's.  Only 2014-08 and br-2014-08 were checked on real archives.
 ALGO3_KEYS = {
-    "2014-08": KEY20_ALGO3,
-    "br-2014-08": bytes.fromhex("9c2ac4e8144a14ced01892e630a2a44646d688c4"),
+    "2014-08": KEY20_ALGO3,                                                  # NA
+    "br-2014-08": bytes.fromhex("cb2a00237d74b93b43843fd73f00a482dae87231"),   # Brazil, 2014 to 2017 at least
+    "eu": bytes.fromhex("d93b903081f6ff36fd9f793100e08788dc0a0130"),
+    "kr": bytes.fromhex("5f90eff40b01ee617aea90f7dc62e6e6d195616a"),           # = Algorithm 2's KEY20
+    "cn": bytes.fromhex("e504604097e6fc710df7878c567e7e9fd994a876"),
+    "tw": bytes.fromhex("e5e1fe91501dcb86585e31f782cabefcf2aa7891"),
 }
 
 
@@ -204,15 +221,27 @@ class Entry(object):
         self.checksum, self.filetime, self.algorithm = checksum, filetime, algorithm
         self.blob = blob
         self.key = None     # Algorithm 3 key that decoded the entry (ALGO3_KEYS)
+        self.attrs = {}     # other XML attributes, kept as they are (V.0.4: MappedID)
 
 
-def read_kom(path):
+def _xor_v4(b):
+    k = HEADER_XOR_V4
+    return bytes(c ^ k[i % len(k)] for i, c in enumerate(b))
+
+
+def read_kom(path, info=None):
+    """Entries of an archive; info (a dict), when given, receives the container "version" (3 or 4)."""
     with open(path, "rb") as fp:
         d = fp.read()
     magic = d[:52].split(b"\0", 1)[0]
-    if magic == MAGIC_V3:
+    if magic in (MAGIC_V3, MAGIC_V4):
         count, _compressed, _ftime, _adler, xsize = struct.unpack_from("<5I", d, 52)
-        doc = parseString(d[72:72 + xsize].rstrip(b"\0"))
+        xml = d[72:72 + xsize]
+        if magic == MAGIC_V4:
+            xml = _xor_v4(xml)
+        if info is not None:
+            info["version"] = 4 if magic == MAGIC_V4 else 3
+        doc = parseString(xml.rstrip(b"\0"))
         entries, off = [], 72 + xsize
         for node in doc.getElementsByTagName("File"):
             csize = int(node.getAttribute("CompressedSize"))
@@ -220,6 +249,9 @@ def read_kom(path):
                       int(node.getAttribute("Checksum") or "0", 16),
                       int(node.getAttribute("FileTime") or "0", 16),
                       int(node.getAttribute("Algorithm") or "0"), d[off:off + csize])
+            for k, v in node.attributes.items():
+                if k not in _KNOWN_ATTRS:
+                    e.attrs[k] = v
             if len(e.blob) != csize:
                 raise ValueError("%s: truncated entry %s" % (path, e.name))
             entries.append(e)
@@ -241,16 +273,19 @@ def read_kom(path):
     raise ValueError("%s: not a KOM archive" % path)
 
 
-def write_kom(path, entries):
+def write_kom(path, entries, version=3):
     xml = ['<?xml version="1.0"?><Files>']
     for e in entries:
-        xml.append('<File Name=%s Size="%d" CompressedSize="%d" Checksum="%08x" FileTime="%08x" Algorithm="%d" />'
-                   % (quoteattr(e.name), e.size, len(e.blob), e.checksum, e.filetime, e.algorithm))
+        xml.append('<File Name=%s Size="%d" CompressedSize="%d" Checksum="%08x" FileTime="%08x" Algorithm="%d"%s />'
+                   % (quoteattr(e.name), e.size, len(e.blob), e.checksum, e.filetime, e.algorithm,
+                      "".join(" %s=%s" % (k, quoteattr(v)) for k, v in e.attrs.items())))
     xml.append("</Files>")
     xml = "".join(xml).encode("utf-8")
+    if version == 4:
+        xml = _xor_v4(xml)              # the header checksum is over the stored (XORed) bytes
     ftime = sum(e.filetime for e in entries) & 0xFFFFFFFF
-    header = MAGIC_V3.ljust(52, b"\0") + struct.pack("<5I", len(entries), 1, ftime,
-                                                       zlib.adler32(xml) & 0xFFFFFFFF, len(xml))
+    header = (MAGIC_V4 if version == 4 else MAGIC_V3).ljust(52, b"\0") + struct.pack(
+        "<5I", len(entries), 1, ftime, zlib.adler32(xml) & 0xFFFFFFFF, len(xml))
     tmp = path + ".tmp"
     with open(tmp, "wb") as fp:
         fp.write(header)
@@ -428,7 +463,9 @@ def cmd_list(args):
 
 
 def cmd_unpack(args):
-    unpack_entries(read_kom(args.kom), args.out, os.path.basename(args.kom), args.key, args.no_decompile)
+    info = {}
+    entries = read_kom(args.kom, info)
+    unpack_entries(entries, args.out, os.path.basename(args.kom), args.key, args.no_decompile, info.get("version", 3))
 
 
 def read_blob_dir(src):
@@ -455,11 +492,13 @@ def cmd_unblob(args):
                    args.key, args.no_decompile)
 
 
-def unpack_entries(entries, out, source, key=None, no_decompile=False):
+def unpack_entries(entries, out, source, key=None, no_decompile=False, container=3):
     meta = os.path.join(out, META_DIR)
     bcdir = os.path.join(meta, "bytecode")
     os.makedirs(bcdir, exist_ok=True)
     manifest = {"source": source, "entries": []}
+    if container != 3:
+        manifest["container"] = container
     stats = {"decompiled": 0, "bytecode": 0, "plain": 0, "raw": 0}
     hint, keys = None, {}
     for e in entries:
@@ -476,6 +515,8 @@ def unpack_entries(entries, out, source, key=None, no_decompile=False):
                 raise SystemExit("error: %s does not decode with any known Algorithm 3 key (%s); see keyrecover.py"
                                  % (e.name, ", ".join(ALGO3_KEYS)))
         rec = {"name": e.name, "algorithm": e.algorithm, "size": e.size, "filetime": e.filetime}
+        if e.attrs:
+            rec["attrs"] = e.attrs
         if e.key:
             rec["key"] = hint = e.key
             keys[e.key] = keys.get(e.key, 0) + 1
@@ -590,7 +631,10 @@ def cmd_pack(args):
         if ftime is None:
             edited += 1
         entries.append(encode_entry(name, data, alg, ftime, key))
-    write_kom(args.out, entries)
+    attrs = {r["name"]: r["attrs"] for r in manifest["entries"] if r.get("attrs")}
+    for e in entries:
+        e.attrs = attrs.get(e.name, e.attrs)
+    write_kom(args.out, entries, args.container or manifest.get("container", 3))
     print("%s: %d entries (%d new or changed, %d Lua recompiled)"
           % (args.out, len(entries), edited, len(compiled)))
 
@@ -629,6 +673,8 @@ def main():
     p.add_argument("dir")
     p.add_argument("out")
     p.add_argument("--luajit", help="client LuaJIT used to recompile edited scripts")
+    p.add_argument("--container", type=int, choices=(3, 4),
+                   help="archive header: 3 (V.0.3) or 4 (V.0.4, XORed XML); default: the unpacked archive's")
     p.add_argument("--format", choices=["keep"] + sorted(FORMATS), default="keep",
                    help="keep: each entry as it was unpacked (default); 2014-03: algorithm 2 and Lua "
                         "bytecode 0x81 (our client's data036.kom); 2014-08: algorithm 3 and bytecode 0x82; "
