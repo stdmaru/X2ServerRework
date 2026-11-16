@@ -3,7 +3,7 @@
 //
 // client_data/.kom/manifest.tsv, UTF-8, one record per line, tab-separated:
 //   # comment
-//   x2-assets-manifest  2
+//   x2-assets-manifest  3   (2 is read too: the same records, without "new")
 //   archive  <name.kom>  <entry count>
 //   file     <name> <archive> <index> <algorithm> <size> <stored size> <checksum> <file time> <encoding> <form>
 //            <sha256>
@@ -26,6 +26,9 @@ enum class Encoding
     Zlib,    // "zlib": encoding the content with the entry's algorithm at KOG's zlib level gives the original blob
     Blob,    // "blob": it does not; the original blob is kept in .kom/blobs/<name> for as long as the content matches
     Stored,  // "stored": the content is the stored blob itself (an algorithm x2::kom does not decode)
+    New,     // "new": a file added after import (x2_assets sync), in no original archive: always encoded from its
+             // content with the record's algorithm; size, stored size, checksum and file time are 0, sha256 is of
+             // the content when it was added
 };
 
 std::string_view ToString(Encoding encoding);
@@ -63,7 +66,7 @@ struct ArchiveRecord
 
 struct Manifest
 {
-    static constexpr int kVersion = 2;
+    static constexpr int kVersion = 3;
 
     std::vector<ArchiveRecord> archives;
     std::vector<FileRecord> files;

@@ -1,5 +1,7 @@
 #include "x2/assets/client_data.h"
 
+#include "util.h"
+
 #include "Crypto/Crypto.h"
 #include "x2/kom/mount.h"
 #include "x2/kom/writer.h"
@@ -24,113 +26,7 @@ namespace x2::assets {
 
 namespace {
 
-using Bytes = std::vector<std::uint8_t>;
-
-unsigned Jobs(unsigned requested, std::size_t work)
-{
-    unsigned jobs = requested ? requested : std::max(1u, std::thread::hardware_concurrency());
-    return static_cast<unsigned>(std::min<std::size_t>(jobs, std::max<std::size_t>(work, 1)));
-}
-
-// Runs fn(i) for i in [0, count) on `jobs` threads; stops handing out work at the first failure and returns its
-// error.
-bool ParallelFor(std::size_t count, unsigned jobs, const std::function<bool(std::size_t, std::string&)>& fn,
-                 std::string& error)
-{
-    std::atomic<std::size_t> next{0};
-    std::atomic<bool> failed{false};
-    std::mutex mutex;
-    const auto worker = [&] {
-        std::string e;
-        while (!failed)
-        {
-            const std::size_t i = next++;
-            if (i >= count)
-                return;
-            if (!fn(i, e))
-            {
-                const std::lock_guard lock(mutex);
-                if (!failed.exchange(true))
-                    error = e;
-                return;
-            }
-        }
-    };
-    jobs = Jobs(jobs, count);
-    std::vector<std::thread> threads;
-    for (unsigned k = 1; k < jobs; ++k)
-        threads.emplace_back(worker);
-    worker();
-    for (std::thread& t : threads)
-        t.join();
-    return !failed;
-}
-
-// Serializes a LogSink called from several threads.
-class Log
-{
-public:
-    explicit Log(const LogSink& sink) : sink_(sink) {}
-    void operator()(const std::string& line)
-    {
-        if (!sink_)
-            return;
-        const std::lock_guard lock(mutex_);
-        sink_(line);
-    }
-
-private:
-    const LogSink& sink_;
-    std::mutex mutex_;
-};
-
-bool ReadWholeFile(const std::filesystem::path& path, Bytes& out, std::string& error)
-{
-    std::ifstream in(path, std::ios::binary);
-    if (!in)
-    {
-        error = "cannot open " + PathToUtf8(path);
-        return false;
-    }
-    in.seekg(0, std::ios::end);
-    const auto size = static_cast<std::size_t>(in.tellg());
-    in.seekg(0);
-    out.resize(size);
-    if (size && !in.read(reinterpret_cast<char*>(out.data()), static_cast<std::streamsize>(size)))
-    {
-        error = "cannot read " + PathToUtf8(path);
-        return false;
-    }
-    return true;
-}
-
-bool WriteWholeFile(const std::filesystem::path& path, std::span<const std::uint8_t> data, std::string& error)
-{
-    std::ofstream out(path, std::ios::binary | std::ios::trunc);
-    if (out)
-        out.write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(data.size()));
-    out.flush();
-    if (!out)
-    {
-        error = "cannot write " + PathToUtf8(path);
-        return false;
-    }
-    return true;
-}
-
-std::string Sha256Hex(std::span<const std::uint8_t> data)
-{
-    static constexpr char kDigits[] = "0123456789abcdef";
-    const auto digest = crypto::Sha256::Hash(data.data(), data.size());
-    std::string out;
-    out.reserve(digest.size() * 2);
-    for (const auto b : digest)
-    {
-        out += kDigits[b >> 4];
-        out += kDigits[b & 0xF];
-    }
-    return out;
-}
+using namespace detail;
 
 bool SameFile(const std::filesystem::path& a, const std::filesystem::path& b)
 {
@@ -148,13 +44,6 @@ bool IsKimName(std::string_view name) { return EndsWithNoCase(name, ".kim"); }
 
 Bytes ToBytes(std::string_view s) { return Bytes(s.begin(), s.end()); }
 std::string ToText(const Bytes& b) { return std::string(b.begin(), b.end()); }
-
-// The content hash of a kim record: of its two scripts' hashes.
-std::string KimContentHash(const std::string& itemsSha, const std::string& setsSha)
-{
-    const std::string both = itemsSha + setsSha;
-    return Sha256Hex(std::span(reinterpret_cast<const std::uint8_t*>(both.data()), both.size()));
-}
 
 constexpr std::string_view kEnumScript = "enum.lua";
 
@@ -558,7 +447,7 @@ bool GetStatus(const std::filesystem::path& clientData, unsigned jobs, Status& s
             bool missing = false;
             if (!ws.Content(records[i], contents, hash, missing, e))
                 return false;
-            state[i] = missing ? 2 : hash == records[i].sha256 ? 0 : 1;
+            state[i] = missing ? 2 : records[i].encoding == Encoding::New ? 3 : hash == records[i].sha256 ? 0 : 1;
             return true;
         }, error))
         return false;
@@ -568,9 +457,11 @@ bool GetStatus(const std::filesystem::path& clientData, unsigned jobs, Status& s
             status.changed.push_back(records[i].name);
         else if (state[i] == 2)
             status.missing.push_back(records[i].name);
+        else if (state[i] == 3)
+            status.added.push_back(records[i].name);
     for (std::size_t i = 0; i < ws.files.size(); ++i)
         if (!ws.known[i])
-            status.added.push_back(ws.files[i]);
+            status.untracked.push_back(ws.files[i]);
     return true;
 }
 
@@ -602,8 +493,8 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
         std::stable_sort(list.begin(), list.end(),
                          [](const FileRecord* a, const FileRecord* b) { return a->index < b->index; });
 
-    std::atomic<std::size_t> done{0}, identical{0}, files{0}, changed{0}, missing{0}, notReproduced{0}, luaSource{0},
-        kimCompiled{0};
+    std::atomic<std::size_t> done{0}, identical{0}, files{0}, changed{0}, added{0}, missing{0}, notReproduced{0},
+        luaSource{0}, kimCompiled{0};
     const auto& archives = ws.manifest.archives;
     const bool ok = ParallelFor(archives.size(), options.jobs, [&](std::size_t a, std::string& e) {
         const std::string& archiveName = archives[a].name;
@@ -627,7 +518,8 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
                     log(archiveName + ": " + r->name + " is missing from client_data: dropped");
                     continue;
                 }
-                const bool same = hash == r->sha256;
+                const bool isNew = r->encoding == Encoding::New;  // no original: encoded from its content
+                const bool same = !isNew && hash == r->sha256;
                 const auto where = [&] { return archiveName + ": " + r->name + ": "; };
                 if (same && r->form != Form::Raw)
                 {
@@ -715,7 +607,7 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
                 }
                 if (!same)
                 {
-                    ++changed;
+                    ++(isNew ? added : changed);
                     archiveChanged = true;
                 }
                 if (data.size() > std::numeric_limits<std::uint32_t>::max())
@@ -756,13 +648,14 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
     for (std::size_t i = 0; i < ws.files.size(); ++i)
         if (!ws.known[i])
         {
-            ++stats.added;
-            log("not packed (new files are not assigned to an archive yet): " + PathToUtf8(ws.files[i]));
+            ++stats.untracked;
+            log("not packed (not in the manifest; x2_assets sync adds it): " + PathToUtf8(ws.files[i]));
         }
     stats.archives = archives.size();
     stats.identicalHeaders = identical;
     stats.files = files;
     stats.changed = changed;
+    stats.added = added;
     stats.luaSource = luaSource;
     stats.kimCompiled = kimCompiled;
     stats.missing = missing;

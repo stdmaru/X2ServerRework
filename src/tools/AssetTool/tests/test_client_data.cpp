@@ -188,7 +188,7 @@ TEST_CASE("assets: an unchanged client_data packs back byte for byte, wherever i
     const Status status = f.DoStatus();
     CHECK(status.changed.empty());
     CHECK(status.missing.empty());
-    CHECK(status.added.empty());
+    CHECK(status.untracked.empty());
 }
 
 TEST_CASE("assets: edited, missing and new files")
@@ -206,13 +206,13 @@ TEST_CASE("assets: edited, missing and new files")
     const Status status = f.DoStatus();
     CHECK(status.changed == std::vector<std::string>{"Wall.dds", "Level1.tga"});
     CHECK(status.missing == std::vector<std::string>{"Hit.ogg"});
-    REQUIRE(status.added.size() == 1);
-    CHECK(status.added[0].filename() == "New.tga");
+    REQUIRE(status.untracked.size() == 1);
+    CHECK(status.untracked[0].filename() == "New.tga");
 
     const PackStats stats = f.DoPack();
     CHECK(stats.changed == 2);
     CHECK(stats.missing == 1);
-    CHECK(stats.added == 1);
+    CHECK(stats.untracked == 1);
     CHECK(stats.identicalHeaders == 0);
     CHECK(stats.files == 7);
 

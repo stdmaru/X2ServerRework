@@ -41,7 +41,7 @@ std::string Hex8(std::uint32_t v)
 
 bool ParseEncoding(std::string_view text, Encoding& encoding)
 {
-    for (const Encoding e : {Encoding::Zlib, Encoding::Blob, Encoding::Stored})
+    for (const Encoding e : {Encoding::Zlib, Encoding::Blob, Encoding::Stored, Encoding::New})
         if (text == ToString(e))
         {
             encoding = e;
@@ -80,6 +80,7 @@ std::string_view ToString(Encoding encoding)
     case Encoding::Zlib: return "zlib";
     case Encoding::Blob: return "blob";
     case Encoding::Stored: return "stored";
+    case Encoding::New: return "new";
     }
     return "?";
 }
@@ -168,7 +169,7 @@ bool Manifest::Read(const std::filesystem::path& path, std::string& error)
             std::uint32_t version = 0;
             if (f.size() != 2 || !ParseNumber(f[1], 10, version))
                 return bad("bad version line");
-            if (version != kVersion)
+            if (version != kVersion && version != 2)
                 return bad("manifest version " + std::to_string(version) + " is not supported (expected " +
                            std::to_string(kVersion) + "; import the client again)");
             sawVersion = true;
