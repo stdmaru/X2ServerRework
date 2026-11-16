@@ -969,10 +969,12 @@ std::vector<DialogInfo> Engine::Inspect() const
             SourceRef r;
             r.script = call.uScript < scripts.size() ? Utf8(scripts[call.uScript]) : std::string();
             r.line = call.iLine;
-            r.kind = call.eKind == Kind::DialogPos ? CallKind::DialogPos
-                     : call.eKind == Kind::String  ? CallKind::String
-                     : call.eKind == Kind::Texture ? CallKind::Texture
-                                                   : CallKind::Point;
+            r.kind = call.eKind == Kind::DialogPos    ? CallKind::DialogPos
+                     : call.eKind == Kind::String     ? CallKind::String
+                     : call.eKind == Kind::Texture    ? CallKind::Texture
+                     : call.eKind == Kind::AddPicture ? CallKind::AddPicture
+                     : call.eKind == Kind::AddControl ? CallKind::AddControl
+                                                      : CallKind::Point;
             r.shared = uses[{call.uScript, call.iLine, call.eKind}];
             return r;
         };
@@ -1013,6 +1015,9 @@ std::vector<DialogInfo> Engine::Inspect() const
             for (const void* object : {static_cast<const void*>(control), self}) {
                 for (const Call* call : callsFor(object, Kind::Point)) {
                     c.points.push_back(ref(*call));
+                }
+                if (const auto found = callsFor(object, Kind::AddControl); !found.empty() && !c.add.Known()) {
+                    c.add = ref(*found.back());
                 }
                 if (self == static_cast<const void*>(control)) {
                     break;
@@ -1065,6 +1070,9 @@ std::vector<DialogInfo> Engine::Inspect() const
                     }
                     if (const auto found = callsFor(picture, Kind::Texture); !found.empty()) {
                         pi.texSource = ref(*found.back());
+                    }
+                    if (const auto found = callsFor(picture, Kind::AddPicture); !found.empty()) {
+                        pi.add = ref(*found.back());
                     }
                     if (picture->pPoint != NULL) {
                         pi.useTextureSize = picture->pPoint->bUseTextureSize;

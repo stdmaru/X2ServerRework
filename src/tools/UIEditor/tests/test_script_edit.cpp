@@ -166,3 +166,185 @@ TEST_CASE("script edit: a point table grows by its edges")
     CHECK_FALSE(x2::ui_editor::ResizeCall(unknown, 1, 0, 0, 1, 1, error));
     CHECK(unknown == "p:SetPoint({ USE_TEXTURE_SIZE = flag, LEFT_TOP = D3DXVECTOR2(0, 0) })\n");
 }
+
+namespace {
+
+// DLG_Dungeon_Ending_Event_Speech.lua's start, as the client_data had it (2026-11-16).
+const std::string kSpeech = "\xEF\xBB\xBF"
+                            "g_pUIDialog:SetName(\"DLG_Dungeon_Ending_Event_Speech\")\n"
+                            "g_pStaticSpeech = g_pUIDialog:CreateStatic()\n"
+                            "g_pUIDialog:AddControl(g_pStaticSpeech)\n"
+                            "g_pStaticSpeech:SetName(\"Static_Ending_Speech\")\n"
+                            "g_pPictureSpeech_Shadow = g_pUIDialog:CreatePicture()\n"
+                            "g_pStaticSpeech:AddPicture(g_pPictureSpeech_Shadow)\n"
+                            "g_pPictureSpeech_Shadow:SetTex(\"DLG_Common_New_Texture64.tga\", \"Shadow\")\n"
+                            "g_pPictureSpeech_Shadow:SetPoint({ ADD_SIZE_X = 1024, LEFT_TOP = D3DXVECTOR2(0, 530) })\n"
+                            "g_pPictureSpeech_Left = g_pUIDialog:CreatePicture()\n"
+                            "g_pStaticSpeech:AddPicture(g_pPictureSpeech_Left)\n"
+                            "g_pPictureSpeech_Left:SetTex(\"DLG_Common_New_Texture64.tga\", \"Speech_Popup_Left\")\n"
+                            "g_pPictureSpeech_Left:SetPoint({ LEFT_TOP = D3DXVECTOR2(59, 562) })\n"
+                            "g_pStaticSpeech:AddString({\n"
+                            "\tPOS = D3DXVECTOR2(90, 592),\n"
+                            "})\n";
+
+}  // namespace
+
+TEST_CASE("script edit: a picture moved to a static of its own")
+{
+    std::string error;
+    std::string before = kSpeech;
+    REQUIRE_MESSAGE(x2::ui_editor::PictureToNewStatic(before, 6, 3, "Static_Ending_Speech_Shadow", true, error), error);
+    CHECK(before == "\xEF\xBB\xBF"
+                    "g_pUIDialog:SetName(\"DLG_Dungeon_Ending_Event_Speech\")\n"
+                    "g_pStaticSpeech = g_pUIDialog:CreateStatic()\n"
+                    "g_pStatic_Static_Ending_Speech_Shadow = g_pUIDialog:CreateStatic()\n"
+                    "g_pStatic_Static_Ending_Speech_Shadow:SetName(\"Static_Ending_Speech_Shadow\")\n"
+                    "g_pUIDialog:AddControl(g_pStatic_Static_Ending_Speech_Shadow)\n"
+                    "g_pUIDialog:AddControl(g_pStaticSpeech)\n"
+                    "g_pStaticSpeech:SetName(\"Static_Ending_Speech\")\n"
+                    "g_pPictureSpeech_Shadow = g_pUIDialog:CreatePicture()\n"
+                    "g_pStatic_Static_Ending_Speech_Shadow:AddPicture(g_pPictureSpeech_Shadow)\n"
+                    "g_pPictureSpeech_Shadow:SetTex(\"DLG_Common_New_Texture64.tga\", \"Shadow\")\n"
+                    "g_pPictureSpeech_Shadow:SetPoint({ ADD_SIZE_X = 1024, LEFT_TOP = D3DXVECTOR2(0, 530) })\n"
+                    "g_pPictureSpeech_Left = g_pUIDialog:CreatePicture()\n"
+                    "g_pStaticSpeech:AddPicture(g_pPictureSpeech_Left)\n"
+                    "g_pPictureSpeech_Left:SetTex(\"DLG_Common_New_Texture64.tga\", \"Speech_Popup_Left\")\n"
+                    "g_pPictureSpeech_Left:SetPoint({ LEFT_TOP = D3DXVECTOR2(59, 562) })\n"
+                    "g_pStaticSpeech:AddString({\n"
+                    "\tPOS = D3DXVECTOR2(90, 592),\n"
+                    "})\n");
+
+    // After: added past the old one, drawn over it.
+    std::string after = kSpeech;
+    REQUIRE_MESSAGE(x2::ui_editor::PictureToNewStatic(after, 10, 3, "Left", false, error), error);
+    CHECK(after.find("g_pUIDialog:AddControl(g_pStaticSpeech)\n"
+                     "g_pUIDialog:AddControl(g_pStatic_Left)\n") != std::string::npos);
+    CHECK(after.find("g_pStaticSpeech = g_pUIDialog:CreateStatic()\n"
+                     "g_pStatic_Left = g_pUIDialog:CreateStatic()\n"
+                     "g_pStatic_Left:SetName(\"Left\")\n") != std::string::npos);
+    CHECK(after.find("g_pStatic_Left:AddPicture(g_pPictureSpeech_Left)\n") != std::string::npos);
+
+    // The picture added before the static is: the new static is made before both.
+    std::string late = "s = g_pUIDialog:CreateStatic()\np = g_pUIDialog:CreatePicture()\n\ts:AddPicture(p)\n"
+                       "g_pUIDialog:AddControl(s)\n";
+    REQUIRE_MESSAGE(x2::ui_editor::PictureToNewStatic(late, 3, 4, "P", true, error), error);
+    CHECK(late == "s = g_pUIDialog:CreateStatic()\np = g_pUIDialog:CreatePicture()\n"
+                  "\tg_pStatic_P = g_pUIDialog:CreateStatic()\n\tg_pStatic_P:SetName(\"P\")\n\tg_pStatic_P:AddPicture(p)\n"
+                  "g_pUIDialog:AddControl(g_pStatic_P)\ng_pUIDialog:AddControl(s)\n");
+
+    // Refused: not the calls, another static, a quote in the name; a name the text has gets a number.
+    std::string text = kSpeech;
+    CHECK_FALSE(x2::ui_editor::PictureToNewStatic(text, 7, 3, "X", true, error));
+    CHECK(error == "no AddPicture call on line 7");
+    CHECK_FALSE(x2::ui_editor::PictureToNewStatic(text, 6, 3, "X\"", true, error));
+    std::string other = "a = g_pUIDialog:CreateStatic()\ng_pUIDialog:AddControl(a)\nb:AddPicture(p)\n";
+    CHECK_FALSE(x2::ui_editor::PictureToNewStatic(other, 3, 2, "X", true, error));
+    CHECK(text == kSpeech);
+    std::string taken = "g_pStatic_X = 1\n" + kSpeech.substr(3);
+    REQUIRE_MESSAGE(x2::ui_editor::PictureToNewStatic(taken, 7, 4, "X", true, error), error);
+    CHECK(taken.find("g_pStatic_X_2:AddPicture(g_pPictureSpeech_Shadow)") != std::string::npos);
+}
+
+TEST_CASE("script edit: statics and pictures added")
+{
+    std::string error;
+    std::string text = "g_pUIDialog:SetName(\"A\")";
+    REQUIRE_MESSAGE(x2::ui_editor::AddStatic(text, "New", "T.tga", "KEY", 10, 20.5f, error), error);
+    CHECK(text == "g_pUIDialog:SetName(\"A\")\n"
+                  "g_pStatic_New = g_pUIDialog:CreateStatic()\n"
+                  "g_pStatic_New:SetName(\"New\")\n"
+                  "g_pUIDialog:AddControl(g_pStatic_New)\n"
+                  "g_pPicture_New = g_pUIDialog:CreatePicture()\n"
+                  "g_pStatic_New:AddPicture(g_pPicture_New)\n"
+                  "g_pPicture_New:SetTex(\"T.tga\", \"KEY\")\n"
+                  "g_pPicture_New:SetPoint({ USE_TEXTURE_SIZE = true, LEFT_TOP = D3DXVECTOR2(10, 20.5) })\n");
+    std::string whole = "";
+    REQUIRE_MESSAGE(x2::ui_editor::AddStatic(whole, "W", "Whole.dds", "", 0, 0, error), error);
+    CHECK(whole.find("g_pPicture_W:SetTex2(\"Whole.dds\")\n") != std::string::npos);
+
+    // A picture after the static's last: past that picture's own lines.
+    std::string speech = kSpeech;
+    REQUIRE_MESSAGE(x2::ui_editor::AddPictureAfter(speech, 10, CallKind::AddPicture, "T.tga", "K", 1, 2, error), error);
+    CHECK(speech.find("g_pPictureSpeech_Left:SetPoint({ LEFT_TOP = D3DXVECTOR2(59, 562) })\n"
+                      "g_pPicture_g_pStaticSpeech = g_pUIDialog:CreatePicture()\n"
+                      "g_pStaticSpeech:AddPicture(g_pPicture_g_pStaticSpeech)\n"
+                      "g_pPicture_g_pStaticSpeech:SetTex(\"T.tga\", \"K\")\n"
+                      "g_pPicture_g_pStaticSpeech:SetPoint({ USE_TEXTURE_SIZE = true, LEFT_TOP = D3DXVECTOR2(1, 2) })\n"
+                      "g_pStaticSpeech:AddString({\n") != std::string::npos);
+    // A static without pictures: after its lines.
+    std::string empty = "s = g_pUIDialog:CreateStatic()\ng_pUIDialog:AddControl(s)\ns:SetName(\"S\")\nx = 1\n";
+    REQUIRE_MESSAGE(x2::ui_editor::AddPictureAfter(empty, 2, CallKind::AddControl, "T.tga", "K", 0, 0, error), error);
+    CHECK(empty == "s = g_pUIDialog:CreateStatic()\ng_pUIDialog:AddControl(s)\ns:SetName(\"S\")\n"
+                   "g_pPicture_s = g_pUIDialog:CreatePicture()\ns:AddPicture(g_pPicture_s)\n"
+                   "g_pPicture_s:SetTex(\"T.tga\", \"K\")\n"
+                   "g_pPicture_s:SetPoint({ USE_TEXTURE_SIZE = true, LEFT_TOP = D3DXVECTOR2(0, 0) })\nx = 1\n");
+    CHECK_FALSE(x2::ui_editor::AddPictureAfter(empty, 1, CallKind::AddControl, "T.tga", "K", 0, 0, error));
+    CHECK_FALSE(x2::ui_editor::AddStatic(empty, "S", "a\"b", "K", 0, 0, error));
+}
+
+TEST_CASE("script edit: pictures and statics duplicated")
+{
+    std::string error;
+    std::string text = kSpeech;
+    REQUIRE_MESSAGE(x2::ui_editor::DuplicatePicture(text, 10, 10, 0, error), error);
+    CHECK(text.find("g_pPictureSpeech_Left:SetPoint({ LEFT_TOP = D3DXVECTOR2(59, 562) })\n"
+                    "g_pPictureSpeech_Left_Copy = g_pUIDialog:CreatePicture()\n"
+                    "g_pStaticSpeech:AddPicture(g_pPictureSpeech_Left_Copy)\n"
+                    "g_pPictureSpeech_Left_Copy:SetTex(\"DLG_Common_New_Texture64.tga\", \"Speech_Popup_Left\")\n"
+                    "g_pPictureSpeech_Left_Copy:SetPoint({ LEFT_TOP = D3DXVECTOR2(69, 562) })\n"
+                    "g_pStaticSpeech:AddString({\n") != std::string::npos);
+
+    std::string copy = kSpeech;
+    REQUIRE_MESSAGE(x2::ui_editor::DuplicateStatic(copy, 3, "Speech2", 0, 5, error), error);
+    CHECK(copy == kSpeech +
+                      "g_pStatic_Speech2 = g_pUIDialog:CreateStatic()\n"
+                      "g_pStatic_Speech2:SetName(\"Speech2\")\n"
+                      "g_pPictureSpeech_Shadow_Copy = g_pUIDialog:CreatePicture()\n"
+                      "g_pStatic_Speech2:AddPicture(g_pPictureSpeech_Shadow_Copy)\n"
+                      "g_pPictureSpeech_Shadow_Copy:SetTex(\"DLG_Common_New_Texture64.tga\", \"Shadow\")\n"
+                      "g_pPictureSpeech_Shadow_Copy:SetPoint({ ADD_SIZE_X = 1024, LEFT_TOP = D3DXVECTOR2(0, 535) })\n"
+                      "g_pPictureSpeech_Left_Copy = g_pUIDialog:CreatePicture()\n"
+                      "g_pStatic_Speech2:AddPicture(g_pPictureSpeech_Left_Copy)\n"
+                      "g_pPictureSpeech_Left_Copy:SetTex(\"DLG_Common_New_Texture64.tga\", \"Speech_Popup_Left\")\n"
+                      "g_pPictureSpeech_Left_Copy:SetPoint({ LEFT_TOP = D3DXVECTOR2(59, 567) })\n"
+                      "g_pStatic_Speech2:AddString({\n"
+                      "\tPOS = D3DXVECTOR2(90, 597),\n"
+                      "})\n"
+                      "g_pUIDialog:AddControl(g_pStatic_Speech2)\n");
+}
+
+TEST_CASE("script edit: pictures and controls removed")
+{
+    std::string error;
+    std::string text = kSpeech;
+    REQUIRE_MESSAGE(x2::ui_editor::RemovePicture(text, 6, error), error);
+    CHECK(text == "\xEF\xBB\xBF"
+                  "g_pUIDialog:SetName(\"DLG_Dungeon_Ending_Event_Speech\")\n"
+                  "g_pStaticSpeech = g_pUIDialog:CreateStatic()\n"
+                  "g_pUIDialog:AddControl(g_pStaticSpeech)\n"
+                  "g_pStaticSpeech:SetName(\"Static_Ending_Speech\")\n"
+                  "g_pPictureSpeech_Left = g_pUIDialog:CreatePicture()\n"
+                  "g_pStaticSpeech:AddPicture(g_pPictureSpeech_Left)\n"
+                  "g_pPictureSpeech_Left:SetTex(\"DLG_Common_New_Texture64.tga\", \"Speech_Popup_Left\")\n"
+                  "g_pPictureSpeech_Left:SetPoint({ LEFT_TOP = D3DXVECTOR2(59, 562) })\n"
+                  "g_pStaticSpeech:AddString({\n"
+                  "\tPOS = D3DXVECTOR2(90, 592),\n"
+                  "})\n");
+
+    std::string control = kSpeech + "x = 1\n";
+    REQUIRE_MESSAGE(x2::ui_editor::RemoveControl(control, 3, error), error);
+    CHECK(control == "\xEF\xBB\xBFg_pUIDialog:SetName(\"DLG_Dungeon_Ending_Event_Speech\")\nx = 1\n");
+
+    // Used elsewhere (inside an if): only the call that adds it goes.
+    std::string used = "p = g_pUIDialog:CreatePicture()\ns:AddPicture(p)\np:SetTex(\"T.tga\", \"K\")\n"
+                       "if a then p:SetShow(false) end\n";
+    REQUIRE_MESSAGE(x2::ui_editor::RemovePicture(used, 2, error), error);
+    CHECK(used == "p = g_pUIDialog:CreatePicture()\np:SetTex(\"T.tga\", \"K\")\nif a then p:SetShow(false) end\n");
+
+    // A name used again for the next picture: only the first picture's lines go.
+    std::string reused = "p = g_pUIDialog:CreatePicture()\ns:AddPicture(p)\np:SetTex(\"A.tga\", \"K\")\n"
+                         "p = g_pUIDialog:CreatePicture()\ns:AddPicture(p)\np:SetTex(\"B.tga\", \"K\")\n";
+    REQUIRE_MESSAGE(x2::ui_editor::RemovePicture(reused, 2, error), error);
+    CHECK(reused == "p = g_pUIDialog:CreatePicture()\ns:AddPicture(p)\np:SetTex(\"B.tga\", \"K\")\n");
+    CHECK_FALSE(x2::ui_editor::RemoveControl(reused, 1, error));
+}

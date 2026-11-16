@@ -403,6 +403,11 @@ TEST_CASE("ui editor: the engine knows the script line that set each position")
     CHECK(dialogs[0].controls[0].pictures[0].point.shared == 1);
     CHECK(dialogs[0].controls[1].pictures[0].point.line == 17);
     CHECK(dialogs[0].controls[0].points.empty());   // a static's points are its pictures'
+    CHECK(dialogs[0].controls[0].add.line == 6);
+    CHECK(dialogs[0].controls[0].add.kind == x2::ui_editor::CallKind::AddControl);
+    CHECK(dialogs[0].controls[0].pictures[0].add.line == 9);
+    CHECK(dialogs[0].controls[0].pictures[0].add.kind == x2::ui_editor::CallKind::AddPicture);
+    CHECK(dialogs[0].controls[1].add.line == 13);
     CHECK_FALSE(dialogs[1].posSource.Known());      // DLG_Text.lua sets no position
     REQUIRE(dialogs[1].controls[0].strings.size() == 1);
     CHECK(dialogs[1].controls[0].strings[0].source.line == 5);
@@ -588,6 +593,48 @@ TEST_CASE("ui editor: an edited script reloads into its dialog, moved where it w
     CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == 0.0f);
     CHECK(x2::ui_editor::FindLooseScript(game.root, "dlg_TEST.lua") == game.root / "data" / "ui" / "scripts" / "DLG_Test.lua");
     CHECK(x2::ui_editor::FindLooseScript(game.root, "DLG_Hidden.lua").empty());     // .kom/ skipped
+}
+
+TEST_CASE("ui editor: a picture moved to a static of its own is drawn where it was, by a control of its own")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Test.lua", error) == 0);
+    REQUIRE_MESSAGE(engine->Render(1280, 720, 0.0f, error), error);
+    const auto before = engine->Inspect();
+    REQUIRE(before[0].controls.size() == 2);
+    const auto& picture = before[0].controls[1].pictures[0];
+
+    std::string text;
+    REQUIRE_MESSAGE(engine->ScriptText("DLG_Test.lua", text, error), error);
+    REQUIRE_MESSAGE(x2::ui_editor::PictureToNewStatic(text, picture.add.line, before[0].controls[1].add.line, "Own", true,
+                                                      error),
+                    error);
+    engine->SetScriptText("DLG_Test.lua", &text);
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    REQUIRE_MESSAGE(engine->Render(1280, 720, 0.0f, error), error);
+    const auto after = engine->Inspect();
+    REQUIRE(after[0].controls.size() == 3);
+    CHECK(after[0].controls[0].name == "Panel");
+    CHECK(after[0].controls[1].name == "Own");          // just before the static it came from: drawn under it
+    CHECK(after[0].controls[2].pictures.empty());
+    REQUIRE(after[0].controls[1].pictures.size() == 1);
+    CHECK(after[0].controls[1].pictures[0].points[0][0] == picture.points[0][0]);
+    CHECK(after[0].controls[1].pictures[0].pixelMin[0] == picture.pixelMin[0]);
+    CHECK(after[0].controls[1].pictures[0].pixelMax[1] == picture.pixelMax[1]);
+    CHECK(after[0].controls[1].add.Known());
+
+    // Removed: the dialog builds without it.
+    REQUIRE_MESSAGE(x2::ui_editor::RemoveControl(text, after[0].controls[1].add.line, error), error);
+    engine->SetScriptText("DLG_Test.lua", &text);
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    CHECK(engine->Inspect()[0].controls.size() == 2);
 }
 
 // The user's game folder, when X2_UI_EDITOR_GAME names it (not in CI): every position its dialog scripts set through

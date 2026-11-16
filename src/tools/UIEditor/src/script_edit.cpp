@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 namespace x2::ui_editor {
@@ -282,6 +283,10 @@ bool KindMatches(CallKind kind, const std::string& full)
         return name == "AddString";
     case CallKind::Texture:
         return name == "SetTex";
+    case CallKind::AddPicture:
+        return name == "AddPicture";
+    case CallKind::AddControl:
+        return name == "AddControl";
     }
     return false;
 }
@@ -297,6 +302,10 @@ const char* KindName(CallKind kind)
         return "AddString";
     case CallKind::Texture:
         return "SetTex";
+    case CallKind::AddPicture:
+        return "AddPicture";
+    case CallKind::AddControl:
+        return "AddControl";
     }
     return "?";
 }
@@ -523,8 +532,8 @@ bool MoveCall(std::string& text, int line, CallKind kind, float dx, float dy, st
         return false;
     }
     const std::string where = " on line " + std::to_string(line);
-    if (kind == CallKind::Texture) {
-        error = "SetTex" + where + " places nothing";
+    if (kind == CallKind::Texture || kind == CallKind::AddPicture || kind == CallKind::AddControl) {
+        error = std::string(KindName(kind)) + where + " places nothing";
         return false;
     }
 
@@ -677,6 +686,719 @@ bool ResizeCall(std::string& text, int line, float left, float top, float right,
     for (const Edit& edit : edits) {
         text.replace(edit.begin, edit.end - edit.begin, edit.text);
     }
+    return true;
+}
+
+// Structural edits ----------------------------------------------------------------------------------------------------
+
+namespace {
+
+constexpr const char* kBom = "\xEF\xBB\xBF";
+
+// Where the line holding `at` starts (past the BOM on the first line).
+std::size_t LineBegin(const std::string& t, std::size_t at)
+{
+    const std::size_t nl = at == 0 ? npos : t.rfind('\n', at - 1);
+    if (nl != npos) {
+        return nl + 1;
+    }
+    return t.compare(0, 3, kBom) == 0 && at >= 3 ? 3 : 0;
+}
+
+// Where the line after the one holding `at` starts (the text's end when it is the last).
+std::size_t NextLine(const std::string& t, std::size_t at)
+{
+    const std::size_t nl = t.find('\n', at);
+    return nl == npos ? t.size() : nl + 1;
+}
+
+int LineOf(const std::string& t, std::size_t at)
+{
+    return 1 + static_cast<int>(std::count(t.begin(), t.begin() + static_cast<std::ptrdiff_t>(std::min(at, t.size())), '\n'));
+}
+
+std::string Indent(const std::string& t, std::size_t lineBegin)
+{
+    std::size_t i = lineBegin;
+    while (i < t.size() && (t[i] == ' ' || t[i] == '\t')) {
+        ++i;
+    }
+    return t.substr(lineBegin, i - lineBegin);
+}
+
+const char* Newline(const std::string& t)
+{
+    return t.find("\r\n") != npos ? "\r\n" : "\n";
+}
+
+bool IsName(const std::string& s)
+{
+    return !s.empty() && IsIdentStart(s[0]) && std::all_of(s.begin(), s.end(), IsIdent);
+}
+
+// Whether the identifier `name` is at `i` as a whole word, not a field (a.name) or a method (a:name).
+bool WordAt(const std::string& t, const std::vector<char>& code, std::size_t i, const std::string& name)
+{
+    if (!code[i] || t.compare(i, name.size(), name) != 0) {
+        return false;
+    }
+    if (i > 0 && (IsIdent(t[i - 1]) || t[i - 1] == '.' || t[i - 1] == ':')) {
+        return false;
+    }
+    const std::size_t end = i + name.size();
+    return end >= t.size() || !IsIdent(t[end]);
+}
+
+// A statement about a variable: `V:Method(...)` or `V:Method{...}`, or the assignment `[local] V = ...`.
+struct Statement {
+    std::size_t begin = 0, end = 0;     // [begin, end): from `local` or the name to past the closing bracket
+    bool assignment = false;
+    std::string method;                 // the method called (for an assignment, the one on its right: CreatePicture)
+    std::string receiver;               // for an assignment, the object the method is called on (g_pUIDialog)
+    Range args;                         // inside the call's brackets ('(' or '{' kept out)
+};
+
+// Whether a statement may start at `i`: only spaces before it on its line, or a ';'.
+bool StatementStart(const std::string& t, std::size_t i)
+{
+    std::size_t j = i;
+    while (j > 0 && (t[j - 1] == ' ' || t[j - 1] == '\t')) {
+        --j;
+    }
+    return j == 0 || t[j - 1] == '\n' || t[j - 1] == ';' || (j == 3 && t.compare(0, 3, kBom) == 0);
+}
+
+// A call `name(` or `name{` at `i` (after spaces): the method's name, its brackets. False when not.
+bool CallAt(const std::string& t, const std::vector<char>& code, std::size_t i, std::string& method, std::size_t& open,
+            std::size_t& close)
+{
+    i = SkipSpaces(t, i, t.size());
+    const std::size_t nameBegin = i;
+    while (i < t.size() && IsIdent(t[i])) {
+        ++i;
+    }
+    if (i == nameBegin || !IsIdentStart(t[nameBegin])) {
+        return false;
+    }
+    method = t.substr(nameBegin, i - nameBegin);
+    i = SkipSpaces(t, i, t.size());
+    if (i >= t.size() || (t[i] != '(' && t[i] != '{') || !code[i]) {
+        return false;
+    }
+    open = i;
+    close = FindClose(t, code, open);
+    return close != npos;
+}
+
+// The statements about `name` in [from, to), in order.
+std::vector<Statement> StatementsOf(const std::string& t, const std::vector<char>& code, const std::string& name,
+                                    std::size_t from, std::size_t to)
+{
+    std::vector<Statement> out;
+    for (std::size_t i = from; i < to && i < t.size(); ++i) {
+        if (!WordAt(t, code, i, name)) {
+            continue;
+        }
+        Statement st;
+        std::size_t j = SkipSpaces(t, i + name.size(), t.size());
+        if (j < t.size() && t[j] == ':' && StatementStart(t, i)) {
+            std::size_t open = 0, close = 0;
+            if (CallAt(t, code, j + 1, st.method, open, close)) {
+                st.begin = i;
+                st.end = close + 1;
+                st.args = {open + 1, close};
+                out.push_back(st);
+                i = close;
+            }
+            continue;
+        }
+        if (j < t.size() && t[j] == '=' && (j + 1 >= t.size() || t[j + 1] != '=')) {
+            std::size_t begin = i;
+            std::size_t k = i;
+            while (k > 0 && (t[k - 1] == ' ' || t[k - 1] == '\t')) {
+                --k;
+            }
+            if (k >= 5 && t.compare(k - 5, 5, "local") == 0 && (k == 5 || !IsIdent(t[k - 6])) && StatementStart(t, k - 5)) {
+                begin = k - 5;
+            } else if (!StatementStart(t, i)) {
+                continue;
+            }
+            st.begin = begin;
+            st.assignment = true;
+            // The right side: recv:Method(...) for a creation, else up to the end of the line.
+            std::size_t r = SkipSpaces(t, j + 1, t.size());
+            const std::size_t recvBegin = r;
+            while (r < t.size() && IsIdent(t[r])) {
+                ++r;
+            }
+            std::size_t open = 0, close = 0;
+            if (r > recvBegin && r < t.size() && t[r] == ':' && CallAt(t, code, r + 1, st.method, open, close)) {
+                st.receiver = t.substr(recvBegin, r - recvBegin);
+                st.end = close + 1;
+                st.args = {open + 1, close};
+            } else {
+                st.end = t.find('\n', j);
+                st.end = st.end == npos ? t.size() : st.end;
+                while (st.end > j && (t[st.end - 1] == '\r' || IsSpace(t[st.end - 1]))) {
+                    --st.end;
+                }
+            }
+            out.push_back(st);
+            i = st.end - 1;
+        }
+    }
+    return out;
+}
+
+// Where an object's lines are: from its creation (the last assignment to `name` before `at`; `at`'s line when none) to
+// its next assignment (the text's end when none). `creation` is set when found.
+Range ObjectRange(const std::string& t, const std::vector<char>& code, const std::string& name, std::size_t at,
+                  std::optional<Statement>* creation = nullptr)
+{
+    Range range{LineBegin(t, at), t.size()};
+    for (const Statement& st : StatementsOf(t, code, name, 0, t.size())) {
+        if (!st.assignment) {
+            continue;
+        }
+        if (st.begin <= at) {
+            range.begin = st.begin;
+            if (creation != nullptr) {
+                *creation = st;
+            }
+        } else {
+            range.end = st.begin;
+            break;
+        }
+    }
+    return range;
+}
+
+// Whether `name` appears as a word in [from, to) outside the ranges given.
+bool UsedOutside(const std::string& t, const std::vector<char>& code, const std::string& name, Range in,
+                 const std::vector<Range>& except)
+{
+    for (std::size_t i = in.begin; i < in.end && i < t.size(); ++i) {
+        if (!WordAt(t, code, i, name)) {
+            continue;
+        }
+        if (std::none_of(except.begin(), except.end(), [&](const Range& r) { return i >= r.begin && i < r.end; })) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// A call found on a line: the object it is called on, its one argument (a plain name) and where the statement is.
+struct CallOnLine {
+    std::string receiver, argument;
+    Statement statement;
+};
+
+bool FindAddCall(const std::string& t, const std::vector<char>& code, int line, CallKind kind, CallOnLine& out,
+                 std::string& error)
+{
+    std::size_t open = 0, close = 0;
+    if (!FindCall(t, code, line, kind, open, close, error)) {
+        return false;
+    }
+    const std::string where = " on line " + std::to_string(line);
+    // The receiver: the name before the ':' before the method's name.
+    std::size_t colon = open;
+    while (colon > 0 && t[colon - 1] != ':') {
+        --colon;
+    }
+    std::size_t recvBegin = colon > 0 ? colon - 1 : 0;
+    while (recvBegin > 0 && IsIdent(t[recvBegin - 1])) {
+        --recvBegin;
+    }
+    out.receiver = colon > 0 ? t.substr(recvBegin, colon - 1 - recvBegin) : std::string();
+    out.argument = Trimmed(t, {open + 1, close});
+    if (!IsName(out.receiver) || (recvBegin > 0 && (t[recvBegin - 1] == '.' || t[recvBegin - 1] == ':'))) {
+        error = std::string(KindName(kind)) + where + " is not called on a plain name";
+        return false;
+    }
+    if (t[open] != '(' || !IsName(out.argument)) {
+        error = std::string(KindName(kind)) + where + " does not take a plain name";
+        return false;
+    }
+    if (!StatementStart(t, recvBegin)) {
+        error = std::string(KindName(kind)) + where + " is not a statement of its own";
+        return false;
+    }
+    out.statement.begin = recvBegin;
+    out.statement.end = close + 1;
+    out.statement.method = KindName(kind);
+    out.statement.args = {open + 1, close};
+    return true;
+}
+
+// A global name the text does not use yet: base, then base_2, base_3, ...
+std::string NewGlobal(const std::string& t, std::string base)
+{
+    for (char& c : base) {
+        if (!IsIdent(c)) {
+            c = '_';
+        }
+    }
+    const std::vector<char> code = CodeMask(t);
+    const auto used = [&](const std::string& name) {
+        for (std::size_t i = 0; i + name.size() <= t.size(); ++i) {
+            if (WordAt(t, code, i, name)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    std::string name = base;
+    for (int n = 2; used(name); ++n) {
+        name = base + "_" + std::to_string(n);
+    }
+    return name;
+}
+
+bool CheckControlName(const std::string& name, std::string& error)
+{
+    if (name.empty() || name.find_first_of("\"'\\\r\n") != npos) {
+        error = "a control's name is not empty and has no quotes";
+        return false;
+    }
+    return true;
+}
+
+bool CheckTexture(const std::string& texture, const std::string& key, std::string& error)
+{
+    if (texture.empty() || texture.find_first_of("\"'\\\r\n") != npos || key.find_first_of("\"'\\\r\n") != npos) {
+        error = "a texture and a key are plain names";
+        return false;
+    }
+    return true;
+}
+
+// Inserts the lines (each without its newline) at `at`, a line's start, indented as that line.
+void InsertLines(std::string& t, std::size_t at, const std::vector<std::string>& lines, const std::string& indent)
+{
+    const std::string nl = Newline(t);
+    std::string block;
+    for (const std::string& line : lines) {
+        block += indent + line + nl;
+    }
+    if (at == t.size() && !t.empty() && t.back() != '\n') {
+        block = nl + block;
+    }
+    t.insert(at, block);
+}
+
+// Removes the statements (sorted or not), and the lines they leave empty.
+void RemoveStatements(std::string& t, std::vector<Range> ranges)
+{
+    std::sort(ranges.begin(), ranges.end(), [](const Range& a, const Range& b) { return a.begin > b.begin; });
+    for (Range r : ranges) {
+        // A ';' right after it goes with it.
+        std::size_t end = r.end;
+        std::size_t k = end;
+        while (k < t.size() && (t[k] == ' ' || t[k] == '\t')) {
+            ++k;
+        }
+        if (k < t.size() && t[k] == ';') {
+            end = k + 1;
+        }
+        const std::size_t lineBegin = LineBegin(t, r.begin);
+        std::size_t lineEnd = t.find('\n', end);
+        lineEnd = lineEnd == npos ? t.size() : lineEnd;
+        const auto blank = [&](std::size_t from, std::size_t to) {
+            for (std::size_t i = from; i < to; ++i) {
+                if (t[i] != ' ' && t[i] != '\t' && t[i] != '\r') {
+                    return false;
+                }
+            }
+            return true;
+        };
+        if (blank(lineBegin, r.begin) && blank(end, lineEnd)) {
+            t.erase(lineBegin, std::min(lineEnd + 1, t.size()) - lineBegin);
+        } else {
+            t.erase(r.begin, end - r.begin);
+        }
+    }
+}
+
+// The text of a statement with its object's name replaced by another (only where it starts: the arguments are kept).
+std::string Renamed(const std::string& t, const Statement& st, const std::string& from, const std::string& to)
+{
+    std::string s = t.substr(st.begin, st.end - st.begin);
+    const std::size_t at = s.find(from);
+    if (at != npos) {
+        s.replace(at, from.size(), to);
+    }
+    return s;
+}
+
+// The text split into lines (without newlines), for InsertLines.
+void AppendLines(std::vector<std::string>& lines, const std::string& text)
+{
+    std::size_t from = 0;
+    while (true) {
+        const std::size_t nl = text.find('\n', from);
+        std::string line = text.substr(from, nl == npos ? npos : nl - from);
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
+        lines.push_back(line);
+        if (nl == npos) {
+            break;
+        }
+        from = nl + 1;
+    }
+}
+
+// A picture's lines to copy: the statements of `name` in its range but the ones that put it somewhere.
+struct ObjectLines {
+    std::optional<Statement> creation;
+    Range range;
+    std::vector<Statement> statements;
+};
+ObjectLines LinesOf(const std::string& t, const std::vector<char>& code, const std::string& name, std::size_t at)
+{
+    ObjectLines lines;
+    lines.range = ObjectRange(t, code, name, at, &lines.creation);
+    for (const Statement& st : StatementsOf(t, code, name, lines.range.begin, lines.range.end)) {
+        if (!st.assignment) {
+            lines.statements.push_back(st);
+        }
+    }
+    return lines;
+}
+
+// The line the first of the lines InsertLines puts at `at` gets.
+int FirstInsertedLine(const std::string& t, std::size_t at)
+{
+    return LineOf(t, at) + (at == t.size() && !t.empty() && t.back() != '\n' ? 1 : 0);
+}
+
+// Moves the point tables and texts copied to the lines from `first` by (dx, dy): `calls` holds each one's line, from
+// `first`, and kind.
+bool ShiftCopies(std::string& t, int first, const std::vector<std::pair<int, CallKind>>& calls, float dx, float dy,
+                 std::string& error)
+{
+    if (dx == 0.0f && dy == 0.0f) {
+        return true;
+    }
+    for (const auto& [offset, kind] : calls) {
+        if (!MoveCall(t, first + offset, kind, dx, dy, error)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// The kind of the call of a copied statement that places something, or false.
+bool PlacingKind(const std::string& method, CallKind& kind)
+{
+    if (KindMatches(CallKind::Point, method)) {
+        kind = CallKind::Point;
+        return true;
+    }
+    if (KindMatches(CallKind::String, method)) {
+        kind = CallKind::String;
+        return true;
+    }
+    return false;
+}
+
+// Adds a copied statement's lines to `lines`, noting where a placing call starts.
+void CopyStatement(std::vector<std::string>& lines, std::vector<std::pair<int, CallKind>>& placing, const std::string& text,
+                   const std::string& method)
+{
+    CallKind kind;
+    if (PlacingKind(method, kind)) {
+        placing.emplace_back(static_cast<int>(lines.size()), kind);
+    }
+    AppendLines(lines, text);
+}
+
+}  // namespace
+
+bool PictureToNewStatic(std::string& text, int addPicture, int addControl, const std::string& name, bool before,
+                        std::string& error)
+{
+    if (!CheckControlName(name, error)) {
+        return false;
+    }
+    const std::vector<char> code = CodeMask(text);
+    CallOnLine picture, control;
+    if (!FindAddCall(text, code, addPicture, CallKind::AddPicture, picture, error) ||
+        !FindAddCall(text, code, addControl, CallKind::AddControl, control, error)) {
+        return false;
+    }
+    if (picture.receiver != control.argument) {
+        error = "line " + std::to_string(addPicture) + " adds the picture to " + picture.receiver + ", line " +
+                std::to_string(addControl) + " adds " + control.argument;
+        return false;
+    }
+    const std::string var = NewGlobal(text, "g_pStatic_" + name);
+    const std::string& dialog = control.receiver;
+    const std::vector<std::string> create = {var + " = " + dialog + ":CreateStatic()", var + ":SetName(\"" + name + "\")"};
+    const std::string add = dialog + ":AddControl(" + var + ")";
+
+    std::string out = text;
+    // From the end of the text backwards, so earlier offsets hold: the picture's AddPicture names the new static, the
+    // new static is added before or after the old one, and it is created before both its uses.
+    out.replace(picture.statement.begin, picture.receiver.size(), var);
+    const std::size_t controlLine = LineBegin(text, control.statement.begin);
+    const std::size_t addAt = before ? controlLine : NextLine(text, control.statement.end);
+    const std::size_t pictureLine = LineBegin(text, picture.statement.begin);
+    const std::size_t createAt = std::min(pictureLine, controlLine);
+    struct Insert {
+        std::size_t at;
+        std::vector<std::string> lines;
+        std::string indent;
+    };
+    std::vector<Insert> inserts;
+    if (createAt == addAt) {
+        std::vector<std::string> lines = create;
+        lines.push_back(add);
+        inserts.push_back({createAt, lines, Indent(text, controlLine)});
+    } else {
+        inserts.push_back({createAt, create, Indent(text, createAt)});
+        inserts.push_back({addAt, {add}, Indent(text, controlLine)});
+    }
+    std::sort(inserts.begin(), inserts.end(), [](const Insert& a, const Insert& b) { return a.at > b.at; });
+    for (const Insert& insert : inserts) {
+        // The picture's statement is on a line at or after createAt: its replacement above did not move earlier text.
+        InsertLines(out, insert.at + (insert.at > picture.statement.begin ? var.size() - picture.receiver.size() : 0),
+                    insert.lines, insert.indent);
+    }
+    text = std::move(out);
+    return true;
+}
+
+bool AddStatic(std::string& text, const std::string& name, const std::string& texture, const std::string& key, float x,
+               float y, std::string& error)
+{
+    if (!CheckControlName(name, error) || !CheckTexture(texture, key, error)) {
+        return false;
+    }
+    const std::string var = NewGlobal(text, "g_pStatic_" + name);
+    const std::string pic = NewGlobal(text, "g_pPicture_" + name);
+    const std::string tex = key.empty() ? pic + ":SetTex2(\"" + texture + "\")"
+                                        : pic + ":SetTex(\"" + texture + "\", \"" + key + "\")";
+    InsertLines(text, text.size(),
+                {var + " = g_pUIDialog:CreateStatic()", var + ":SetName(\"" + name + "\")", "g_pUIDialog:AddControl(" + var + ")",
+                 pic + " = g_pUIDialog:CreatePicture()", var + ":AddPicture(" + pic + ")", tex,
+                 pic + ":SetPoint({ USE_TEXTURE_SIZE = true, LEFT_TOP = D3DXVECTOR2(" + FormatNumber(x) + ", " +
+                     FormatNumber(y) + ") })"},
+                "");
+    return true;
+}
+
+bool AddPictureAfter(std::string& text, int line, CallKind kind, const std::string& texture, const std::string& key,
+                     float x, float y, std::string& error)
+{
+    if (!CheckTexture(texture, key, error)) {
+        return false;
+    }
+    if (kind != CallKind::AddPicture && kind != CallKind::AddControl) {
+        error = "a picture is added after an AddPicture or an AddControl";
+        return false;
+    }
+    const std::vector<char> code = CodeMask(text);
+    CallOnLine call;
+    if (!FindAddCall(text, code, line, kind, call, error)) {
+        return false;
+    }
+    const std::string& target = kind == CallKind::AddPicture ? call.receiver : call.argument;
+    const std::string dialog = kind == CallKind::AddControl ? call.receiver : "g_pUIDialog";
+    const std::string pic = NewGlobal(text, "g_pPicture_" + target);
+    const std::string tex = key.empty() ? pic + ":SetTex2(\"" + texture + "\")"
+                                        : pic + ":SetTex(\"" + texture + "\", \"" + key + "\")";
+    // After the last line of what that call adds (the picture's SetTex and SetPoint after its AddPicture).
+    std::size_t last = call.statement.end;
+    const Range targetRange = ObjectRange(text, code, target, call.statement.begin);
+    for (const Statement& st : LinesOf(text, code, call.argument, call.statement.begin).statements) {
+        if (st.end <= targetRange.end) {
+            last = std::max(last, st.end);
+        }
+    }
+    const std::size_t at = NextLine(text, last);
+    InsertLines(text, at,
+                {pic + " = " + dialog + ":CreatePicture()", target + ":AddPicture(" + pic + ")", tex,
+                 pic + ":SetPoint({ USE_TEXTURE_SIZE = true, LEFT_TOP = D3DXVECTOR2(" + FormatNumber(x) + ", " +
+                     FormatNumber(y) + ") })"},
+                Indent(text, LineBegin(text, call.statement.begin)));
+    return true;
+}
+
+bool DuplicatePicture(std::string& text, int addPicture, float dx, float dy, std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    CallOnLine call;
+    if (!FindAddCall(text, code, addPicture, CallKind::AddPicture, call, error)) {
+        return false;
+    }
+    const ObjectLines picture = LinesOf(text, code, call.argument, call.statement.begin);
+    std::size_t last = call.statement.end;
+    for (const Statement& st : picture.statements) {
+        last = std::max(last, st.end);
+    }
+    const std::size_t at = NextLine(text, last);
+    // The static's name must still name it there.
+    const Range staticRange = ObjectRange(text, code, call.receiver, call.statement.begin);
+    if (at > staticRange.end) {
+        error = call.receiver + " names another object before the picture's last line";
+        return false;
+    }
+    const std::string copy = NewGlobal(text, call.argument + "_Copy");
+    const std::string dialog = picture.creation && !picture.creation->receiver.empty() ? picture.creation->receiver : "g_pUIDialog";
+    std::vector<std::string> lines = {copy + " = " + dialog + ":CreatePicture()", call.receiver + ":AddPicture(" + copy + ")"};
+    std::vector<std::pair<int, CallKind>> placing;
+    for (const Statement& st : picture.statements) {
+        CopyStatement(lines, placing, Renamed(text, st, call.argument, copy), st.method);
+    }
+    std::string out = text;
+    InsertLines(out, at, lines, Indent(text, LineBegin(text, call.statement.begin)));
+    if (!ShiftCopies(out, FirstInsertedLine(text, at), placing, dx, dy, error)) {
+        return false;
+    }
+    text = std::move(out);
+    return true;
+}
+
+bool DuplicateStatic(std::string& text, int addControl, const std::string& name, float dx, float dy, std::string& error)
+{
+    if (!CheckControlName(name, error)) {
+        return false;
+    }
+    const std::vector<char> code = CodeMask(text);
+    CallOnLine call;
+    if (!FindAddCall(text, code, addControl, CallKind::AddControl, call, error)) {
+        return false;
+    }
+    const std::string& dialog = call.receiver;
+    const ObjectLines control = LinesOf(text, code, call.argument, call.statement.begin);
+    const std::string var = NewGlobal(text, "g_pStatic_" + name);
+    std::vector<std::string> lines = {var + " = " + dialog + ":CreateStatic()"};
+    std::vector<std::pair<int, CallKind>> placing;
+    std::size_t last = call.statement.end;
+    std::string scratch = text;     // NewGlobal must see the names given so far
+    bool named = false;
+    for (const Statement& st : control.statements) {
+        last = std::max(last, st.end);
+        if (st.method == "SetName") {
+            lines.push_back(var + ":SetName(\"" + name + "\")");
+            named = true;
+            continue;
+        }
+        if (st.method != "AddPicture") {
+            CopyStatement(lines, placing, Renamed(text, st, call.argument, var), st.method);
+            continue;
+        }
+        const std::string pictureName = Trimmed(text, st.args);
+        if (!IsName(pictureName)) {
+            error = "an AddPicture on line " + std::to_string(LineOf(text, st.begin)) + " does not take a plain name";
+            return false;
+        }
+        const ObjectLines picture = LinesOf(text, code, pictureName, st.begin);
+        const std::string copy = NewGlobal(scratch, pictureName + "_Copy");
+        scratch += "\n" + copy;
+        const std::string from =
+            picture.creation && !picture.creation->receiver.empty() ? picture.creation->receiver : dialog;
+        lines.push_back(copy + " = " + from + ":CreatePicture()");
+        lines.push_back(var + ":AddPicture(" + copy + ")");
+        for (const Statement& ps : picture.statements) {
+            last = std::max(last, ps.end);
+            CopyStatement(lines, placing, Renamed(text, ps, pictureName, copy), ps.method);
+        }
+    }
+    if (!named) {
+        lines.insert(lines.begin() + 1, var + ":SetName(\"" + name + "\")");
+        for (auto& p : placing) {
+            ++p.first;
+        }
+    }
+    lines.push_back(dialog + ":AddControl(" + var + ")");
+    const std::size_t at = NextLine(text, last);
+    if (at > control.range.end) {
+        error = call.argument + " names another object before the static's last line";
+        return false;
+    }
+    std::string out = text;
+    InsertLines(out, at, lines, Indent(text, LineBegin(text, call.statement.begin)));
+    if (!ShiftCopies(out, FirstInsertedLine(text, at), placing, dx, dy, error)) {
+        return false;
+    }
+    text = std::move(out);
+    return true;
+}
+
+namespace {
+
+// The ranges that remove an object put somewhere by `put`: its creation and lines when nothing else uses its name in
+// its range, else nothing. Each picture the object adds is removed so too.
+void RemovalOf(const std::string& t, const std::vector<char>& code, const std::string& name, const Statement& put,
+               std::vector<Range>& ranges)
+{
+    const ObjectLines object = LinesOf(t, code, name, put.begin);
+    std::vector<Range> mine = {{put.begin, put.end}};
+    if (object.creation) {
+        mine.push_back({object.creation->begin, object.creation->end});
+    }
+    for (const Statement& st : object.statements) {
+        mine.push_back({st.begin, st.end});
+    }
+    std::vector<Range> pictures;
+    for (const Statement& st : object.statements) {
+        if (st.method == "AddPicture" && IsName(Trimmed(t, st.args))) {
+            RemovalOf(t, code, Trimmed(t, st.args), st, pictures);
+        }
+    }
+    if (UsedOutside(t, code, name, object.range, mine)) {
+        ranges.push_back({put.begin, put.end});     // only what puts it there: it stays, not drawn
+        return;
+    }
+    ranges.insert(ranges.end(), mine.begin(), mine.end());
+    ranges.insert(ranges.end(), pictures.begin(), pictures.end());
+}
+
+// The ranges without duplicates and without those inside others.
+std::vector<Range> Distinct(std::vector<Range> ranges)
+{
+    std::sort(ranges.begin(), ranges.end(), [](const Range& a, const Range& b) {
+        return a.begin != b.begin ? a.begin < b.begin : a.end > b.end;
+    });
+    std::vector<Range> out;
+    for (const Range& r : ranges) {
+        if (!out.empty() && r.begin < out.back().end) {
+            continue;
+        }
+        out.push_back(r);
+    }
+    return out;
+}
+
+}  // namespace
+
+bool RemovePicture(std::string& text, int addPicture, std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    CallOnLine call;
+    if (!FindAddCall(text, code, addPicture, CallKind::AddPicture, call, error)) {
+        return false;
+    }
+    std::vector<Range> ranges;
+    RemovalOf(text, code, call.argument, call.statement, ranges);
+    RemoveStatements(text, Distinct(ranges));
+    return true;
+}
+
+bool RemoveControl(std::string& text, int addControl, std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    CallOnLine call;
+    if (!FindAddCall(text, code, addControl, CallKind::AddControl, call, error)) {
+        return false;
+    }
+    std::vector<Range> ranges;
+    RemovalOf(text, code, call.argument, call.statement, ranges);
+    RemoveStatements(text, Distinct(ranges));
     return true;
 }
 

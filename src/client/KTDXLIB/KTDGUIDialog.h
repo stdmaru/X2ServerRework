@@ -107,6 +107,7 @@ class CKTDGUIDialog
 		CKTDGUIItem*		CreateItem()		{ CKTDGUIItem*	pControl; pControl = new CKTDGUIItem(); return pControl; }
 
 		void			AddControl( CKTDGUIControl* pControl );
+		void			AddControl_LUA( CKTDGUIControl* pControl );	// scripts' AddControl: noted for the UI editor
 #ifdef DLL_BUILD
 		void			AddControl_Front( CKTDGUIControl* pControl );
 #endif
@@ -602,6 +603,8 @@ private:
 			Point,			// a point table (SetPoint, SetNormalPoint, ...); the object is the picture or control it was set on
 			String,			// AddString; the object is the static
 			Texture,		// a picture's SetTex(file, key); the object is the picture
+			AddPicture,		// a static's AddPicture(picture); the object is the picture
+			AddControl,		// g_pUIDialog:AddControl(control); the object is the control
 		};
 		struct ScriptCall
 		{
@@ -611,9 +614,9 @@ private:
 			int				iLine = 0;		// 1-based, the line of the call's '('
 		};
 		const std::vector<ScriptCall>& GetScriptCalls() const { return m_vecScriptCalls; }
-		// Called by the setters a script reaches through lua_tinker: notes the running Lua call (its `self` is argument
-		// 1) into the dialog whose script is loading.
-		static void NoteScriptCall( ScriptCallKind eKind );
+		// Called by the setters a script reaches through lua_tinker: notes the running Lua call into the dialog whose
+		// script is loading, with the object at argument `iObject` (1: its `self`).
+		static void NoteScriptCall( ScriptCallKind eKind, int iObject = 1 );
 	private:
 		std::vector<ScriptCall> m_vecScriptCalls;
 		unsigned m_uLoadingScript = 0;		// the script running now: a script may load another (OpenScriptFile)

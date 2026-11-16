@@ -1170,7 +1170,7 @@ void CKTDXApp::RegisterLuabind( KLuabinder* pKLuabinder )
 	lua_tinker::class_def<CKTDGUIDialog>( L, "CreateControlList",				&CKTDGUIDialog::CreateControlList );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "CreateSlot",						&CKTDGUIDialog::CreateSlot );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "CreateItem",						&CKTDGUIDialog::CreateItem );
-	lua_tinker::class_def<CKTDGUIDialog>( L, "AddControl",						&CKTDGUIDialog::AddControl );
+	lua_tinker::class_def<CKTDGUIDialog>( L, "AddControl",						&CKTDGUIDialog::AddControl_LUA );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "SetFront",						&CKTDGUIDialog::SetFront );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "Move",							&CKTDGUIDialog::Move_LUA );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "SetEnableMoveByDrag",				&CKTDGUIDialog::SetEnableMoveByDrag_LUA );
@@ -1325,7 +1325,7 @@ void CKTDXApp::RegisterLuabind( KLuabinder* pKLuabinder )
 
 	lua_tinker::class_add<CKTDGUIStatic>( L, "CKTDGUIStatic" );
 	lua_tinker::class_inh< CKTDGUIStatic, CKTDGUIControl>( L );
-	lua_tinker::class_def<CKTDGUIStatic>( L, "AddPicture",					&CKTDGUIStatic::AddPicture );
+	lua_tinker::class_def<CKTDGUIStatic>( L, "AddPicture",					&CKTDGUIStatic::AddPicture_LUA );
 	lua_tinker::class_def<CKTDGUIStatic>( L, "AddString",					&CKTDGUIStatic::AddString_LUA );
 
 // #ifdef MOVIE_TEST	 	// 13-11-11, ???? ???? ????, kimjh, MOVIE_TEST ?? ??�� ????? Define ?? MOVIE_TEST_BASE ?? ????
