@@ -116,11 +116,14 @@ public:
         newArchives_ = std::move(edits.newArchives);
     }
 
-    // .kom/ignore.txt, written at once. Ignore(file) adds the file's own path, IgnoreFolder the folder; Unignore
-    // drops every pattern that matches the file (false if one is not its own path: `error` names it).
+    // .kom/ignore.txt, written at once. Ignore(file) adds the file's own path (a name not in client_data yet: the
+    // name, matching it in any folder), IgnoreFolder the folder, IgnorePattern any pattern (IgnoreList); Unignore
+    // drops every pattern that matches the file (false if one is not its own path: `error` names it). Patterns only
+    // keep out files the manifest does not hold.
     const IgnoreList& Ignores() const { return ignore_; }
     bool Ignore(std::string_view name, std::string& error);
     bool IgnoreFolder(std::string_view folder, std::string& error);
+    bool IgnorePattern(std::string_view pattern, std::string& error);
     bool Unignore(std::string_view name, std::string& error);
     bool SetIgnores(IgnoreList list, std::string& error);  // all of them (undo)
 
