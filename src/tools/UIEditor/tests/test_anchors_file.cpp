@@ -236,3 +236,57 @@ TEST_CASE("ui editor: UIAnchors.lua is found by name, and a new one goes with th
     CHECK(AnchorsFile::Find(game) == game / "data" / "UIAnchors.lua");
     fs::remove_all(game);
 }
+
+TEST_CASE("ui editor: UIAnchors.lua's particle anchors are set, changed and removed in place")
+{
+    const std::string particles = "\nUI_PARTICLE_ANCHORS =\n{\n\tNewComboDamage = \"LEFT\", OutLine = \"STRETCH\"\n}\n";
+    AnchorsFile file = AnchorsFile::Parse(kFile + particles);
+    CHECK(file.Particle("NewComboDamage") == "LEFT");
+    CHECK(file.Particle("Missing").empty());
+    file.SetParticle("OutLine", "SPAN");
+    CHECK(file.Text() == Replaced(kFile + particles, "\"STRETCH\"\n}", "\"SPAN\"\n}"));
+    file.SetParticle("CutIn_Talk_Right", "RIGHT");
+    CHECK(file.Particle("CutIn_Talk_Right") == "RIGHT");
+    CHECK(file.Text().find("\"SPAN\",\n\tCutIn_Talk_Right = \"RIGHT\",\n}") != std::string::npos);
+    file.SetParticle("NewComboDamage", "");
+    CHECK(file.Particle("NewComboDamage").empty());
+    CHECK(file.Text().find("NewComboDamage") == std::string::npos);
+    CHECK(AnchorsFile::Parse(file.Text()).Particle("OutLine") == "SPAN");
+    CHECK(file.Problem().empty());
+}
+
+TEST_CASE("ui editor: a particle anchor makes UI_PARTICLE_ANCHORS when the file has none")
+{
+    AnchorsFile file = AnchorsFile::Parse(kFile);
+    file.SetParticle("OutLine", "STRETCH");
+    CHECK(file.Text().compare(0, kFile.size(), kFile) == 0);
+    CHECK(file.Text().find("UI_PARTICLE_ANCHORS") != std::string::npos);
+    const AnchorsFile again = AnchorsFile::Parse(file.Text());
+    CHECK(again.Problem().empty());
+    CHECK(again.Particle("OutLine") == "STRETCH");
+    CHECK(again.Get("DLG_ChatBox_New.lua").dialog == "LEFT");
+}
+
+TEST_CASE("ui editor: UIAnchors.lua's picture anchors are read and written by id")
+{
+    AnchorsFile file = AnchorsFile::Parse(kFile);
+    AnchorEntry e = file.Get("DLG_Loading.lua");
+    e.SetPicture("PromotionMovie/BG_ALPHA_01", "STRETCH");
+    e.SetPicture("Static/#2", "RIGHT");
+    file.Set("DLG_Loading.lua", e);
+    CHECK(file.Text().find("PICTURES = {") < file.Text().find("CONTROLS = { Bar"));
+    const AnchorsFile again = AnchorsFile::Parse(file.Text());
+    CHECK(again.Problem().empty());
+    CHECK(again.Get("dlg_loading.lua").Picture("PromotionMovie/BG_ALPHA_01") == "STRETCH");
+    CHECK(again.Get("dlg_loading.lua").Picture("Static/#2") == "RIGHT");
+    CHECK(again.Get("dlg_loading.lua").Control("Bar") == file.Get("DLG_Loading.lua").Control("Bar"));
+    e.SetPicture("Static/#2", "");
+    e.SetPicture("PromotionMovie/BG_ALPHA_01", "");
+    file.Set("DLG_Loading.lua", e);
+    CHECK(file.Text() == kFile);
+
+    AnchorEntry fresh;
+    fresh.SetPicture("A/B", "LEFT");
+    file.Set("DLG_Fresh.lua", fresh);
+    CHECK(AnchorsFile::Parse(file.Text()).Get("DLG_Fresh.lua") == fresh);
+}

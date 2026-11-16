@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "./KTDGUIStatic.h"
 
+#include <optional>
+
 CKTDGUIStatic::CKTDGUIStatic()
 {
 	m_CustomMsgMouseDblClk	= -1;
@@ -120,6 +122,11 @@ HRESULT CKTDGUIStatic::OnFrameRender()
 			&& pPictureData->pTexture != NULL
 			&& pPictureData->pTexture->pTexture != NULL )
 		{
+			// T52: a picture with its own anchor draws under it instead of its static's.
+			std::optional<CKTDXApp::UIAnchorScope> oAnchor;
+			if ( pPictureData->HasAnchor() )
+				oAnchor.emplace( *g_pKTDXApp, pPictureData->GetAnchor(), &m_pDialog->GetStretch(), m_pDialog->GetPos().x );
+
 			if ( pPictureData->m_EdgeWidth != 0 )
 				DrawEdge( pPictureData->m_bDrawEdgeOut, pPictureData->m_EdgeWidth, pPictureData->m_EdgeColor, pPictureData->pPoint );
 

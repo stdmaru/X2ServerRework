@@ -180,7 +180,9 @@ struct EditorState {
     // and after each. Steps of one drag (merge: the dragged item) are one.
     struct Step {
         bool anchors = true;
+        bool particle = false;              // a UI particle's anchor: script is its sequence
         std::string script;                 // anchors: the entry's script; texts: the first script changed
+        std::string particleBefore, particleAfter;
         AnchorEntry before, after;
         struct Text {
             std::string script, before, after;  // tet: the texture whose .tet bytes these are
@@ -198,7 +200,27 @@ struct EditorState {
         char key[96] = {};
         float pos[2] = {};
         int before = 1;     // a picture to its own static: 1 before the static, 0 after
+        float addSize[2] = {};                      // a new picture's ADD_SIZE_X/Y
+        float color[4] = {1.0f, 1.0f, 1.0f, 1.0f};  // and its COLOR
+        bool behind = false;                        // under the static's other pictures
     } create;
+    // A new placement's fields ("New placement...").
+    struct NewPlacement {
+        char name[64] = {};
+        std::string anchor;
+        std::string target, control;    // the target's script and control (empty: a fixed placement)
+        float pos[2] = {};
+    } newPlacement;
+    // Choosing a placement's target on the screen: the next click on another dialog's control names it.
+    struct PickTarget {
+        bool active = false;
+        int dialog = -1;            // the dialog the placement is in
+        std::string placement;      // its name; empty: the new placement's fields
+    } pickTarget;
+    // UI particles (UIAnchors.lua's UI_PARTICLE_ANCHORS): the sequence the inspector shows (empty: none), and whether
+    // the screen draws the game's live ones (watch game).
+    std::string particle;
+    bool showParticles = true;
     std::string selectName;
     bool quitAsked = false;
     // Dragging the selected control on the screen: the move not applied yet (whole layout units are), and whether it
@@ -281,6 +303,25 @@ void EditAnchors(x2::ui_editor::Engine& engine, EditorState& state, const std::s
     SetAnchors(engine, state, script, entry);
 }
 
+// A UI particle sequence's anchor (empty: CENTER, the default), which undo takes back. The game reads it when it
+// starts.
+void EditParticle(EditorState& state, const std::string& sequence, const std::string& anchor)
+{
+    const std::string before = state.anchors.Particle(sequence);
+    if (before == anchor) {
+        return;
+    }
+    EditorState::Step step;
+    step.anchors = false;
+    step.particle = true;
+    step.script = sequence;
+    step.particleBefore = before;
+    step.particleAfter = anchor;
+    state.undo.push_back(std::move(step));
+    state.redo.clear();
+    state.anchors.SetParticle(sequence, anchor);
+}
+
 // Makes a script's text this one: it runs from it in every dialog loaded after, and the open dialogs built from it
 // are built again.
 void SetScript(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script, const std::string& text)
@@ -332,7 +373,10 @@ void Undo(x2::ui_editor::Engine& engine, EditorState& state, bool redo)
     EditorState::Step step = std::move(from.back());
     from.pop_back();
     step.merge = 0;
-    if (step.anchors) {
+    if (step.particle) {
+        state.anchors.SetParticle(step.script, redo ? step.particleAfter : step.particleBefore);
+        state.particle = step.script;
+    } else if (step.anchors) {
         SetAnchors(engine, state, step.script, redo ? step.after : step.before);
     } else {
         for (const EditorState::Step::Text& text : step.texts) {
@@ -956,12 +1000,45 @@ void DialogsPanel(x2::ui_editor::Engine& engine, EditorState& state)
         ImGui::SameLine();
         if (ImGui::Selectable(dialog.script.c_str(), state.selected.dialog == i && state.selected.control < 0)) {
             state.selected = {i, -1};
+            state.particle.clear();
         }
         ImGui::PopID();
     }
     if (!state.inspected.empty() && ImGui::Button("Close all")) {
         engine.CloseAll();
         state.selected = {};
+    }
+
+    // The 2D particle sequences UI_PARTICLE_ANCHORS can anchor; those the watched game draws now first.
+    if (ImGui::CollapsingHeader("UI particles")) {
+        static char filter[64] = {};
+        ImGui::SetNextItemWidth(-1.0f);
+        ImGui::InputTextWithHint("##particleFilter", "filter", filter, sizeof(filter));
+        std::set<std::string> live;
+        for (const auto& particle : state.live.particles) {
+            live.insert(particle.name);
+        }
+        const auto row = [&](const std::string& name, bool isLive) {
+            const std::string anchor = state.anchors.Particle(name);
+            const std::string label = name + (anchor.empty() ? "" : "  [" + anchor + "]") + (isLive ? "  (in game)" : "");
+            if (ImGui::Selectable((label + "##" + name).c_str(), state.particle == name)) {
+                state.particle = name;
+                state.selected = {};
+            }
+        };
+        if (ImGui::BeginChild("particles", ImVec2(0, 180), ImGuiChildFlags_Borders)) {
+            for (const std::string& name : live) {
+                if (ContainsNoCase(name, filter)) {
+                    row(name, true);
+                }
+            }
+            for (const auto& sequence : engine.UIParticleSequences()) {
+                if (live.count(sequence.name) == 0 && ContainsNoCase(sequence.name, filter)) {
+                    row(sequence.name, false);
+                }
+            }
+        }
+        ImGui::EndChild();
     }
 }
 
@@ -1776,7 +1853,31 @@ bool PictureFields(x2::ui_editor::Engine& engine, EditorState& state)
     }
     ImGui::SetNextItemWidth(ImGui::GetFontSize() * 12);
     ImGui::DragFloat2("left top", create.pos, 1.0f, -8192.0f, 8192.0f, "%.0f");
-    return create.texture[0] != '\0' && (!hasTet || tet.Find(create.key) != nullptr);
+    // Why it cannot be added yet, so the button is not just greyed out (2026-11-16: "New picture does not work").
+    if (create.texture[0] == '\0') {
+        ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "name a texture");
+        return false;
+    }
+    if (hasTet && tet.Find(create.key) == nullptr) {
+        ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), create.key[0] != '\0' ? "%s has no key %s: pick one above"
+                                                                            : "%s: pick a key above",
+                           create.texture, create.key);
+        return false;
+    }
+    return true;
+}
+
+// A new picture's look: its size beyond the key's and its color (the SetPoint's ADD_SIZE and COLOR).
+void NewPictureLook(EditorState& state)
+{
+    auto& create = state.create;
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 12);
+    ImGui::DragFloat2("add size", create.addSize, 1.0f, -8192.0f, 8192.0f, "%.0f");
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("ADD_SIZE_X/Y: added to the key's size (a 16 x 16 tile with 1008, 752 fills the screen)");
+    }
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 12);
+    ImGui::ColorEdit4("color", create.color, ImGuiColorEditFlags_Float);
 }
 
 void SetCreateName(EditorState& state, const std::string& name)
@@ -1798,6 +1899,11 @@ void SetCreatePicture(EditorState& state, const PictureInfo* picture)
 {
     std::snprintf(state.create.texture, sizeof(state.create.texture), "%s", picture != nullptr ? picture->texture.c_str() : "");
     std::snprintf(state.create.key, sizeof(state.create.key), "%s", picture != nullptr ? picture->key.c_str() : "");
+    state.create.addSize[0] = state.create.addSize[1] = 0.0f;
+    for (float& c : state.create.color) {
+        c = 1.0f;
+    }
+    state.create.behind = false;
 }
 
 // "New static": a static with one picture, at the end of the dialog's script.
@@ -1898,21 +2004,43 @@ void ControlStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, c
         ImGui::EndPopup();
     }
     if (ImGui::BeginPopup("new picture")) {
-        // After the static's last picture, or its AddControl when it has none the editor saw.
-        SourceRef after = control.add;
+        // After the static's last picture, or its AddControl when it has none the editor saw; behind: before its
+        // first picture.
+        SourceRef after = control.add, first;
         for (const PictureInfo& picture : control.pictures) {
-            if (picture.add.Known() && picture.add.shared == 1 && picture.add.script == control.add.script &&
-                picture.add.line > after.line) {
-                after = picture.add;
+            if (picture.add.Known() && picture.add.shared == 1 && picture.add.script == control.add.script) {
+                if (picture.add.line > after.line) {
+                    after = picture.add;
+                }
+                if (!first.Known() || picture.add.line < first.line) {
+                    first = picture.add;
+                }
             }
         }
         const bool pictured = PictureFields(engine, state);
+        NewPictureLook(state);
+        ImGui::BeginDisabled(!first.Known());
+        ImGui::Checkbox("behind its other pictures", &state.create.behind);
+        ImGui::EndDisabled();
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+            ImGui::SetTooltip("%s", first.Known() ? "Added before its first picture, so drawn under them (a background)"
+                                                  : "It has no picture the editor can put it before");
+        }
         ImGui::BeginDisabled(!pictured);
         if (ImGui::Button("Add")) {
             const auto& c = state.create;
-            const std::string texture = c.texture, key = c.key;
-            EditStructure(engine, state, after.script, [&](std::string& text, std::string& error) {
-                return x2::ui_editor::AddPictureAfter(text, after.line, after.kind, texture, key, c.pos[0], c.pos[1], error);
+            x2::ui_editor::NewPicture picture;
+            picture.texture = c.texture;
+            picture.key = c.key;
+            picture.x = c.pos[0];
+            picture.y = c.pos[1];
+            std::copy(std::begin(c.addSize), std::end(c.addSize), picture.addSize);
+            std::copy(std::begin(c.color), std::end(c.color), picture.color);
+            const bool behind = c.behind && first.Known();
+            const SourceRef at = behind ? first : after;
+            EditStructure(engine, state, at.script, [&](std::string& text, std::string& error) {
+                return behind ? x2::ui_editor::AddPictureBefore(text, at.line, picture, error)
+                              : x2::ui_editor::AddPictureAfter(text, at.line, at.kind, picture, error);
             }, "new picture in " + control.name, control.name);
             ImGui::CloseCurrentPopup();
         }
@@ -1943,7 +2071,8 @@ void PictureStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, c
     }
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
         ImGui::SetTooltip("%s", moveProblem.empty()
-                                    ? "Into a new static at the same place, so it can get its own anchor or STRETCH"
+                                    ? "Into a new static at the same place. For its own anchor use \"anchor\" below: a new static is\n"
+                                      "not shown or hidden by the game's code as its old one is"
                                     : moveProblem.c_str());
     }
     ImGui::EndDisabled();
@@ -2001,6 +2130,32 @@ void PictureStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, c
     }
 }
 
+bool AnchorCombo(const char* label, const char* none, std::string& value, int count);
+
+// A picture's own anchor (PICTURES in UIAnchors.lua): drawn under it instead of its static's, which the static's other
+// pictures, its texts and the game's code showing or hiding it keep.
+void PictureAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog,
+                         const ControlInfo& control, const PictureInfo& picture)
+{
+    AnchorEntry entry = state.anchors.Get(dialog.script);
+    std::string value = entry.Picture(picture.id);
+    const bool named = control.named && !picture.id.empty();
+    ImGui::BeginDisabled(!named);
+    if (AnchorCombo("anchor##picture", "(none: the static's)", value, 4)) {
+        entry.SetPicture(picture.id, value);
+        EditAnchors(engine, state, dialog.script, entry);
+    }
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip(named ? "PICTURES in UIAnchors.lua, as %s: this picture alone is drawn LEFT, RIGHT or STRETCH;\n"
+                                  "it stays in its static, so the game's code still shows and hides it with the static.\n"
+                                  "Named by its key (or its place, #n, when its static has the key twice): changing\n"
+                                  "them leaves the entry behind."
+                                : "UIAnchors.lua names its static: this one has no name",
+                          picture.id.c_str());
+    }
+}
+
 void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const ControlInfo& control,
                   const std::function<void(float, float)>& addZone, const MoveFunction& move)
 {
@@ -2012,11 +2167,14 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
         const auto& picture = control.pictures[p];
         ImGui::PushID(static_cast<int>(p));
         const std::string label = std::to_string(p + 1) + ": " + (picture.texture.empty() ? "(no texture)" : picture.texture) +
-                                  (picture.key.empty() ? "" : " / " + picture.key) + (picture.game.Any() ? kGameTag : "");
+                                  (picture.key.empty() ? "" : " / " + picture.key) +
+                                  (picture.anchorDeclared ? "  " + picture.anchor : std::string()) +
+                                  (picture.game.Any() ? kGameTag : "");
         if (ImGui::TreeNode(label.c_str())) {
             state.expandedPictures.push_back(static_cast<int>(p));
             GameSetsLines(picture.game, "picture");
             PictureStructureEditor(engine, state, dialog, control, p);
+            PictureAnchorEditor(engine, state, dialog, control, picture);
             ImGui::Text("shown: %s", picture.shown ? "yes" : "no");
             ImGui::TextDisabled("SetPoint: %s", SourceLabel(picture.point).c_str());
             if (picture.pos.Known()) {
@@ -2253,12 +2411,153 @@ void CutEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogIn
 
 // The named placements the dialog's script declares (AddPlacement, T52): the spots the game's code shows it at. One
 // is put into effect as the game's code would (ApplyPlacement); its POS is then what dragging the dialog moves.
-void PlacementsEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const MoveFunction& move)
+// A placement's POS from a target that keeps the dialog where it is at 4:3, where the game puts it at the target's
+// position + the control's offset + POS (docs/porting/client-ktdxlib.md, named placements).
+void PlacementOffset(const DialogInfo& dialog, const DialogInfo& target, const ControlInfo* control, float pos[2])
 {
-    if (dialog.placements.empty()) {
+    pos[0] = std::round(dialog.pos[0] - target.pos[0] - (control != nullptr ? control->offset[0] : 0.0f));
+    pos[1] = std::round(dialog.pos[1] - target.pos[1] - (control != nullptr ? control->offset[1] : 0.0f));
+}
+
+// A placement's field in its AddPlacement (ANCHOR, TARGET, CONTROL, POS): `value` as Lua, empty removes it.
+bool EditPlacementField(x2::ui_editor::Engine& engine, EditorState& state, const PlacementInfo& placement,
+                        const std::vector<std::pair<std::string, std::string>>& fields, const std::string& done)
+{
+    const SourceRef at = placement.source;
+    return EditStructure(engine, state, at.script, [&](std::string& text, std::string& error) {
+        for (const auto& [field, value] : fields) {
+            if (!x2::ui_editor::SetCallField(text, at.line, x2::ui_editor::CallKind::Placement, field, value, error)) {
+                return false;
+            }
+        }
+        return true;
+    }, done);
+}
+
+// The click that names a placement's target (EditorState::pickTarget).
+void PickedTarget(x2::ui_editor::Engine& engine, EditorState& state, const Selection& hover)
+{
+    auto& pick = state.pickTarget;
+    pick.active = false;
+    if (pick.dialog < 0 || pick.dialog >= static_cast<int>(state.inspected.size())) {
         return;
     }
+    const DialogInfo& dialog = state.inspected[static_cast<std::size_t>(pick.dialog)];
+    const DialogInfo& target = state.inspected[static_cast<std::size_t>(hover.dialog)];
+    const ControlInfo& control = target.controls[static_cast<std::size_t>(hover.control)];
+    const ControlInfo* named = control.named ? &control : nullptr;
+    float pos[2] = {};
+    PlacementOffset(dialog, target, named, pos);
+    const std::string what = target.script + (named != nullptr ? " / " + control.name : std::string());
+    if (pick.placement.empty()) {
+        auto& p = state.newPlacement;
+        p.target = target.script;
+        p.control = named != nullptr ? control.name : std::string();
+        p.pos[0] = pos[0];
+        p.pos[1] = pos[1];
+        state.message = "target: " + what + (named == nullptr ? " (the control has no name: its dialog)" : "");
+        return;
+    }
+    for (const PlacementInfo& placement : dialog.placements) {
+        if (placement.name != pick.placement) {
+            continue;
+        }
+        const std::string point = "D3DXVECTOR2(" + x2::ui_editor::FormatNumber(pos[0]) + ", " +
+                                  x2::ui_editor::FormatNumber(pos[1]) + ")";
+        EditPlacementField(engine, state, placement,
+                           {{"TARGET", x2::ui_editor::LuaString(target.script)},
+                            {"CONTROL", named != nullptr ? x2::ui_editor::LuaString(control.name) : std::string()},
+                            {"POS", point}},
+                           placement.name + " follows " + what);
+        if (dialog.placement == placement.name) {
+            engine.ApplyPlacement(pick.dialog, placement.name);
+        }
+    }
+}
+
+// "New placement...": a name, fixed or with a target picked on the screen, its anchor.
+void NewPlacementEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog)
+{
+    auto& p = state.newPlacement;
+    if (ImGui::SmallButton("New placement...")) {
+        p = {};
+        std::string base = "PLACEMENT";
+        std::string name = base;
+        for (int n = 2; std::any_of(dialog.placements.begin(), dialog.placements.end(),
+                                    [&](const PlacementInfo& other) { return other.name == name; }); ++n) {
+            name = base + "_" + std::to_string(n);
+        }
+        std::snprintf(p.name, sizeof(p.name), "%s", name.c_str());
+        p.pos[0] = std::round(dialog.pos[0]);
+        p.pos[1] = std::round(dialog.pos[1]);
+        ImGui::OpenPopup("new placement");
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("An AddPlacement in its script: a spot the game's code asks for by name (ApplyPlacement)");
+    }
+    if (!ImGui::BeginPopup("new placement")) {
+        return;
+    }
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 14);
+    ImGui::InputText("name", p.name, sizeof(p.name));
+    const std::string name = p.name;
+    const bool taken = std::any_of(dialog.placements.begin(), dialog.placements.end(),
+                                   [&](const PlacementInfo& other) { return other.name == name; });
+    AnchorCombo("anchor##newplacement", "(none: the dialog's)", p.anchor, 3);
+    if (p.target.empty()) {
+        ImGui::TextDisabled("fixed: the dialog goes to POS");
+    } else {
+        ImGui::Text("follows %s%s%s", p.target.c_str(), p.control.empty() ? "" : " / ", p.control.c_str());
+    }
+    if (ImGui::SmallButton(state.pickTarget.active ? "Click a control on the screen..." : "Pick target on screen")) {
+        state.pickTarget = {true, state.selected.dialog, {}};
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Open the target's dialog too (a scene), then click one of its controls");
+    }
+    if (!p.target.empty()) {
+        ImGui::SameLine();
+        if (ImGui::SmallButton("No target")) {
+            p.target.clear();
+            p.control.clear();
+            p.pos[0] = std::round(dialog.pos[0]);
+            p.pos[1] = std::round(dialog.pos[1]);
+        }
+    }
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 12);
+    ImGui::DragFloat2(p.target.empty() ? "POS" : "POS (from the target)", p.pos, 1.0f, -8192.0f, 8192.0f, "%.0f");
+    if (name.empty() || taken) {
+        ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), name.empty() ? "name it" : "the dialog has a placement of that name");
+    }
+    ImGui::BeginDisabled(name.empty() || taken);
+    if (ImGui::Button("Add")) {
+        x2::ui_editor::NewPlacement placement;
+        placement.name = name;
+        placement.x = p.pos[0];
+        placement.y = p.pos[1];
+        placement.anchor = p.anchor;
+        placement.target = p.target;
+        placement.control = p.control;
+        if (EditStructure(engine, state, dialog.script, [&](std::string& text, std::string& error) {
+                return x2::ui_editor::AddPlacementCall(text, placement, error);
+            }, "placement " + name + " added")) {
+            engine.ApplyPlacement(state.selected.dialog, name);
+        }
+        state.pickTarget.active = false;
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::EndDisabled();
+    ImGui::EndPopup();
+}
+
+void PlacementsEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const MoveFunction& move)
+{
     ImGui::SeparatorText("Placements");
+    NewPlacementEditor(engine, state, dialog);
+    if (dialog.placements.empty()) {
+        ImGui::TextDisabled("none: the game's code places it, or its SetPos does");
+        return;
+    }
     if (ImGui::RadioButton("none##placement", dialog.placement.empty())) {
         engine.ApplyPlacement(state.selected.dialog, "");
     }
@@ -2277,15 +2576,105 @@ void PlacementsEditor(x2::ui_editor::Engine& engine, EditorState& state, const D
             ImGui::TextDisabled("at %.0f, %.0f%s%s", static_cast<double>(p.pos[0]), static_cast<double>(p.pos[1]),
                                 p.anchor.empty() ? "" : ", ", p.anchor.c_str());
         } else {
-            ImGui::TextDisabled("%+.0f, %+.0f from %s%s%s%s", static_cast<double>(p.pos[0]), static_cast<double>(p.pos[1]),
-                                p.target.c_str(), p.control.empty() ? "" : " / ", p.control.c_str(),
+            ImGui::TextDisabled("%+.0f, %+.0f from %s%s%s%s%s%s", static_cast<double>(p.pos[0]),
+                                static_cast<double>(p.pos[1]), p.target.c_str(), p.control.empty() ? "" : " / ",
+                                p.control.c_str(), p.anchor.empty() ? "" : ", ", p.anchor.c_str(),
                                 p.resolved ? "" : " (not open)");
         }
         if (inEffect) {
+            ImGui::Indent();
             MoveField(state, "POS", p.pos, p.source.Known() ? std::vector<SourceRef>{p.source} : std::vector<SourceRef>{},
                       move);
+            ImGui::BeginDisabled(!p.source.Known());
+            std::string anchor = p.anchor;
+            if (AnchorCombo("anchor##placement", "(none: the dialog's)", anchor, 3)) {
+                if (EditPlacementField(engine, state, p, {{"ANCHOR", anchor.empty() ? std::string() : x2::ui_editor::LuaString(anchor)}},
+                                       p.name + (anchor.empty() ? ": the dialog's anchor" : ": " + anchor))) {
+                    engine.ApplyPlacement(state.selected.dialog, p.name);
+                }
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("The dialog's anchor while this placement is in effect (ANCHOR)");
+            }
+            const bool picking = state.pickTarget.active && state.pickTarget.placement == p.name &&
+                                 state.pickTarget.dialog == state.selected.dialog;
+            if (ImGui::SmallButton(picking ? "Click a control on the screen..." : "Pick target on screen")) {
+                state.pickTarget = {true, state.selected.dialog, p.name};
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Open the target's dialog too (a scene), then click one of its controls;\n"
+                                  "POS becomes the offset that keeps the dialog where it is at 4:3");
+            }
+            if (!p.target.empty()) {
+                ImGui::SameLine();
+                if (ImGui::SmallButton("No target")) {
+                    const std::string point = "D3DXVECTOR2(" + x2::ui_editor::FormatNumber(std::round(dialog.pos[0])) +
+                                              ", " + x2::ui_editor::FormatNumber(std::round(dialog.pos[1])) + ")";
+                    if (EditPlacementField(engine, state, p, {{"TARGET", {}}, {"CONTROL", {}}, {"POS", point}},
+                                           p.name + ": fixed where it is")) {
+                        engine.ApplyPlacement(state.selected.dialog, p.name);
+                    }
+                }
+            }
+            ImGui::SameLine();
+            if (ImGui::SmallButton("Delete")) {
+                const SourceRef at = p.source;
+                engine.ApplyPlacement(state.selected.dialog, "");
+                EditStructure(engine, state, at.script, [&](std::string& text, std::string& error) {
+                    return x2::ui_editor::RemoveCallLine(text, at.line, x2::ui_editor::CallKind::Placement, error);
+                }, "placement " + p.name + " deleted (the game's code may still ask for it: check it first)");
+            }
+            ImGui::EndDisabled();
+            ImGui::Unindent();
         }
         ImGui::PopID();
+    }
+}
+
+constexpr const char* kParticleAnchors[] = {"LEFT", "RIGHT", "STRETCH", "SPAN"};
+
+// A UI particle sequence: its anchor in UIAnchors.lua's UI_PARTICLE_ANCHORS, and where the watched game draws it.
+void ParticleInspector(x2::ui_editor::Engine& engine, EditorState& state)
+{
+    const std::string& name = state.particle;
+    ImGui::SeparatorText("UI particle");
+    ImGui::Text("sequence: %s", name.c_str());
+    for (const auto& sequence : engine.UIParticleSequences()) {
+        if (sequence.name == name) {
+            ImGui::TextDisabled("in %s", sequence.file.c_str());
+        }
+    }
+    std::string anchor = state.anchors.Particle(name);
+    if (ImGui::BeginCombo("anchor##particle", anchor.empty() ? "CENTER (default)" : anchor.c_str())) {
+        if (ImGui::Selectable("CENTER (default)", anchor.empty())) {
+            EditParticle(state, name, "");
+        }
+        for (const char* choice : kParticleAnchors) {
+            if (ImGui::Selectable(choice, anchor == choice)) {
+                EditParticle(state, name, choice);
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::TextDisabled("LEFT, RIGHT: moves with that edge. STRETCH: spans the screen, width too.\n"
+                        "SPAN: its x spans the screen, its size kept.");
+    int shown = 0;
+    for (const auto& particle : state.live.particles) {
+        if (particle.name != name) {
+            continue;
+        }
+        ImGui::Text("in game: %.0f, %.0f to %.0f, %.0f (layout, before the anchor)", static_cast<double>(particle.box[0]),
+                    static_cast<double>(particle.box[1]), static_cast<double>(particle.box[2]),
+                    static_cast<double>(particle.box[3]));
+        ++shown;
+    }
+    if (shown == 0) {
+        ImGui::TextDisabled("Not drawn by the watched game now.");
+    }
+    ImGui::TextDisabled("Its position comes from the game's code and its particle file; the game reads the anchor\n"
+                        "when it starts (save, then restart the game).");
+    if (ImGui::Button("Close##particle")) {
+        state.particle.clear();
     }
 }
 
@@ -2293,6 +2682,10 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     state.shownPictures.swap(state.expandedPictures);
     state.expandedPictures.clear();
+    if (!state.particle.empty()) {
+        ParticleInspector(engine, state);
+        return;
+    }
     const Selection& sel = state.selected;
     if (sel.dialog < 0 || sel.dialog >= static_cast<int>(state.inspected.size())) {
         ImGui::TextDisabled("Open a dialog, then click a control on the screen.");
@@ -2644,6 +3037,8 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
     ImGui::TextDisabled("%.0f%%", static_cast<double>(state.zoom * 100.0f));
     ImGui::SameLine();
     ImGui::Checkbox("all boxes", &state.showBounds);
+    ImGui::SameLine();
+    ImGui::Checkbox("particles", &state.showParticles);
     if (!state.message.empty()) {
         ImGui::SameLine();
         ImGui::TextDisabled("%s", state.message.c_str());
@@ -2826,7 +3221,43 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
                 }
             }
         }
-        if (ImGui::IsItemHovered()) {
+        // The game's live UI particles, under the anchor UIAnchors.lua has now (the editor's, when edited); the one
+        // under the pointer, the smallest, is picked before the controls.
+        const std::string* hoverParticle = nullptr;
+        if (state.showParticles) {
+            const ImVec2 mouse = ImGui::GetMousePos();
+            float hoverArea = 0.0f;
+            for (const auto& particle : state.live.particles) {
+                const std::string edited = state.anchors.Particle(particle.name);
+                int anchor = 0;
+                for (int k = 0; k < 4; ++k) {
+                    if (edited == kParticleAnchors[k]) {
+                        anchor = k + 1;
+                    }
+                }
+                float pixels[4];
+                engine.ParticlePixels(anchor, particle.box, pixels);
+                const ImVec2 a(origin.x + pixels[0] * zoom, origin.y + pixels[1] * zoom);
+                const ImVec2 b(origin.x + pixels[2] * zoom, origin.y + pixels[3] * zoom);
+                const bool chosen = state.particle == particle.name;
+                draw->AddRect(a, b, chosen ? IM_COL32(255, 170, 40, 255) : IM_COL32(255, 150, 40, 150), 0.0f,
+                              chosen ? 2.0f : 1.0f);
+                draw->AddText(ImVec2(a.x + 2, a.y + 1), IM_COL32(255, 170, 40, 220), particle.name.c_str());
+                const float area = (b.x - a.x) * (b.y - a.y);
+                if (ImGui::IsItemHovered() && mouse.x >= a.x && mouse.x < b.x && mouse.y >= a.y && mouse.y < b.y &&
+                    (hoverParticle == nullptr || area < hoverArea)) {
+                    hoverParticle = &particle.name;
+                    hoverArea = area;
+                }
+            }
+        }
+        if (ImGui::IsItemHovered() && hoverParticle != nullptr && !state.pickTarget.active) {
+            ImGui::SetTooltip("particle %s\nclick: its anchor", hoverParticle->c_str());
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                state.particle = *hoverParticle;
+                state.selected = {};
+            }
+        } else if (ImGui::IsItemHovered()) {
             const ImVec2 mouse = ImGui::GetMousePos();
             const float px = (mouse.x - origin.x) / zoom, py = (mouse.y - origin.y) / zoom;
             const Selection hover = Pick(state.inspected, px, py);
@@ -2842,8 +3273,22 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
             } else {
                 ImGui::SetTooltip("layout %.0f, %.0f", static_cast<double>(lx), static_cast<double>(ly));
             }
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !state.edgeDrag.active && !overCut && !state.cut.dragging) {
+            if (state.pickTarget.active) {
+                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+                    state.pickTarget.active = false;
+                    state.message = "no target chosen";
+                } else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                    if (hover.dialog >= 0 && hover.dialog != state.pickTarget.dialog) {
+                        PickedTarget(engine, state, hover);
+                    } else {
+                        state.message = "click a control of another dialog (right click or Esc: cancel)";
+                    }
+                }
+            } else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !state.edgeDrag.active && !overCut &&
+                       !state.cut.dragging) {
                 state.selected = hover;
+                state.particle.clear();
                 // Dragging it moves it in its scripts (Alt: its dialog), in whole layout units.
                 state.dragging = hover.dialog >= 0;
                 state.draggingDialog = ImGui::GetIO().KeyAlt;

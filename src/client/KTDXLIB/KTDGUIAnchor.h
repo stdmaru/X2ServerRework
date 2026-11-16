@@ -66,9 +66,11 @@ struct UIStretchState
 //         ["DLG_UI_Quick_Slot.lua"] = { DIALOG = "LEFT", CONTROLS = { Static_Exp = "STRETCH" } },
 //         ["DLG_Menu_Button_NEW.lua"] = { STRETCH_ZONES = { { 49, 494 }, { 569, 1011 } }, CONTROLS = { ... } },
 //         ["DLG_Login_Back.lua"] = { BACKDROPS = { Login = 64 } },
+//         ["DLG_Unit_Select_Back_New.lua"] = { PICTURES = { ["PromotionMovie/BG_ALPHA_01"] = "STRETCH" } },
 //     }
 //     UI_PARTICLE_ANCHORS = { NewComboDamage = "LEFT", OutLine = "STRETCH", BOSS_DANGER = "SPAN" }
 //
+// PICTURES: a static's picture with its own anchor, drawn under it instead of its static's (UIPictureId names it).
 // BACKDROPS: controls whose pictures are a full-screen image (control name -> fade width in layout units; see
 // CKTDGUIControl::SetBackdropFade). Read once, at the first dialog script. A script's own SetAnchor calls take
 // precedence; what neither declares is centered.
@@ -87,6 +89,7 @@ public:
 		std::unordered_map<std::wstring, UIAnchor> mapControls;
 		std::vector<std::pair<float, float>> vecStretchZones;
 		std::unordered_map<std::wstring, float> mapBackdrops;	// control -> fade width
+		std::unordered_map<std::wstring, UIAnchor> mapPictures;	// "static/picture" (UIPictureId) -> anchor
 	};
 
 private:
@@ -113,6 +116,10 @@ public:
 	// UILive.tsv in the game folder. Called by the dialog manager each frame.
 	static bool LiveIsOn();
 	static void NoteLive( const CKTDGUIDialogManager& kManager );
+	// A particle of a sequence drawn in layout units (RESOLUTIONCONVERT) this frame, for the live snapshot: its centre
+	// before the sequence's UI anchor and its half size, merged per sequence instance into the box the snapshot writes.
+	static void NoteLiveParticle( const void* pSequence, const std::wstring& wstrName, int iAnchor, float fX, float fY,
+		float fHalfWidth, float fHalfHeight );
 	// Whether controls note what they draw (CKTDGUIControl::GetDrawnBounds): while recording, or when a tool asks for
 	// it (the UI editor, tools/ui-editor), which reads the bounds without writing the record file.
 	static bool TracksDrawnBounds() { return IsOn() || s_bToolTracking; }

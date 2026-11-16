@@ -37,6 +37,11 @@ path ([Tools find files by name](client-data.md#managing-client_data)):
 - **Dialog anchor:** none (centered), `CENTER`, `LEFT` or `RIGHT`. **Control anchor:** none (the dialog's), `CENTER`,
   `LEFT`, `RIGHT` or `STRETCH`. Unnamed controls cannot be declared (the file names them), and anchors the script sets
   itself (`SetAnchor` in Lua, `IsAnchorFromScript`) cannot be changed here: they win over the file in the game.
+- **Picture anchor** (2026-11-16, user's request): a picture's own anchor (`PICTURES`, by `static/key` or
+  `static/#n`, [KTDXLIB](../porting/client-ktdxlib.md#anchors-2026-11-13-clientwidescreen-anchors)), for a piece that
+  must stretch while the rest of its static must not, when splitting the static would break code that shows it by
+  name. Its label shows the anchor; none follows the control.
+- **UI particles** (2026-11-16): see [UI particles](#ui-particles).
 - **Stretch zones** (`STRETCH_ZONES`, layout x from the dialog): added, dragged or typed (Ctrl + click), removed; a
   picture's "Make its width a stretch zone" adds the span of that piece (the plain middle of a bar).
 - **Backdrops** (`BACKDROPS`, [T51](../project/decisions.md), 2026-11-15): a named static's "full-screen backdrop"
@@ -112,7 +117,12 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   as it moves. While one is in effect, its `POS` field and dragging the dialog on the screen (Alt) move its
   `AddPlacement`'s `POS`, and the dialog built again after an edit is put at it again. "Watch game" puts a dialog at
   the placement the game has in effect (`placement` in `UILive.tsv`). Not yet: choosing a target control on the
-  screen, adding a placement, and its anchor in the inspector (edited in the script meanwhile).
+  screen, adding a placement, and its anchor in the inspector (edited in the script meanwhile) until later that day:
+  the section is always shown, with **New placement...** (a name, an anchor, a target picked on the screen or none,
+  its `POS`; added after the script's last `AddPlacement`, else after its first `g_pUIDialog:` lines), and for the
+  placement in effect its `POS`, its anchor (`ANCHOR`), **Pick target on screen** (the next click on a control of
+  another dialog names its script and control as `TARGET` and `CONTROL`; right click or Esc cancels), **No target**
+  and **Delete** (the `AddPlacement` line). Each is an edit of the script, one step of undo.
 
 ## Resizing a dialog
 
@@ -147,7 +157,10 @@ undo, saved with the others:
   a loop or a function, or when they are in different scripts.
 - **New static** (the dialog's "Controls" section): a named static with one picture (texture and key, `SetTex2` for a
   texture without a `.tet`) at a left top, its size the key's, at the end of the dialog's script: drawn over the rest.
-  **New picture** (a static's): the same picture added after the static's last picture and its lines.
+  **New picture** (a static's): the same picture added after the static's last picture and its lines, or, with
+  "behind its other pictures", before the first picture's creation (drawn under them). Both take an "add size"
+  (`ADD_SIZE_X/Y`) and a color; Add stays disabled with the reason beside it (no texture, or a key its `.tet` lacks:
+  before 2026-11-16 it was disabled with no reason, which looked like a broken button).
 - **Duplicate**: a picture is copied with its lines into its static, moved by 10, 10; a static (named, with a "moved
   by") with its lines, its pictures and their lines, and its texts, after its last line, and with its anchor.
 - **Delete**: a picture's `AddPicture`, a control's `AddControl`, with the object's creation and lines (and, for a
@@ -219,13 +232,30 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
   the same scripts (the n-th of them for the game's n-th), the others close, the missing ones open with their scripts,
   and each takes the game's state (`Engine::ApplyLive`: anchors first, then the position, which is in layout units under the anchor): statics are made what the game holds, so pictures code removed
   (the wake orbs of other classes) go, those it added or resized (gauges, quick slot items, quest marks) come, and so do
-  statics code added. The screen takes the game's exact viewport size ("(game)" next to the size; until 2026-11-14 the nearest of the editor's aspects and heights, so with the game at another aspect the anchors placed the script controls for a different aspect than the code had positioned items and icons for). Choosing an aspect or a height returns to the editor's sizes. Unchecking "Watch
+  statics code added. The game's UI particles come too ([UI particles](#ui-particles), `particle` lines, 2026-11-16).
+  The screen takes the game's exact viewport size ("(game)" next to the size; until 2026-11-14 the nearest of the editor's aspects and heights, so with the game at another aspect the anchors placed the script controls for a different aspect than the code had positioned items and icons for). Choosing an aspect or a height returns to the editor's sizes. Unchecking "Watch
   game" leaves the screen as it was last, to work on that state; dialogs opened by hand while watching close at the
   next change.
 - "Start game" runs this platform's client from the game folder (`x2`; `x2.exe` on Windows, so a folder holding both works; before 2026-11-14 it tried `x2.exe` first and failed on Linux) with `X2_UI_LIVE=1` and `X2_RECORD_UI_ANCHORS=1`, its output in the
   editor's terminal; closing the editor leaves it running.
 - Not mirrored: dialogs built in code without a script, controls of other types than statics that code adds (buttons,
   edit boxes), and what code changes in them besides being shown.
+
+## UI particles
+
+2026-11-16 (user's request). Particle sequences drawn in layout units (`RESOLUTIONCONVERT`) take an anchor from
+`UIAnchors.lua`'s `UI_PARTICLE_ANCHORS` ([KTDXLIB](../porting/client-ktdxlib.md#particle-anchors-2026-11-16-clientwidescreen-migration-t52)):
+
+- The dialogs panel's **UI particles** lists them, read once from the particle files the client loads (by name:
+  `UIMajorParticle.txt`, `UIMinorParticle.txt`, `GameMajorParticle*.txt`, `GameMinorParticle.txt`;
+  `Engine::UIParticleSequences`), with their anchor; those the watched game draws now come first, "(in game)".
+- While watching the game, the screen draws each live one as an orange box with its name, under the anchor the editor
+  holds (so an edit shows at once); "particles" beside "all boxes" hides them. A click on one (the smallest under the
+  pointer, before the controls) selects it.
+- The inspector shows the selected sequence, its file and its anchor (CENTER, LEFT, RIGHT, STRETCH, SPAN), one step
+  of undo, saved with `UIAnchors.lua`; the running game reads it when it starts.
+- Its position is not edited: it comes from the game's code (`CreateSequence` at a point) and the particle file, and
+  the snapshot gives the box before the anchor.
 
 ## What the game sets
 
@@ -280,14 +310,22 @@ move into the scripts with the widescreen migration ([T46](../project/decisions.
 `UIAnchors.lua` (`test_anchors_file.cpp`): entries read by script without folder or case; each kind of edit changes
 only its own text (a value, a control removed from the middle or the end of a line and with its line, added after a
 trailing comma or on one line, a name that needs quotes, the dialog's anchor, the zones and the backdrops added, changed and removed,
-an entry emptied and removed, a comment after it kept, `UI_PARTICLE_ANCHORS` left as it is); new entries under one section, long ones wrapped; a missing
+an entry emptied and removed, a comment after it kept, `UI_PARTICLE_ANCHORS` left as it is, its anchors set, changed,
+removed and its table made when missing, picture anchors written and read by id and removed back to the file); new entries under one section, long ones wrapped; a missing
 file written with its header; text that cannot be read reported. The client_data's own file (2026-11-14) reads
 without problems and is unchanged by setting its entries to what they are.
 The engine: an entry put into an open dialog and cleared, the script's own anchors kept, a backdrop declared and
 drawn at 21:9 (2026-11-15).
 Named placements (2026-11-16): a fixed one and its anchor (given back by the next), one following a centered and a
 right-anchored control at 16:9, the target moved, hidden and shown again, and an edited `POS` after a reload;
-`MoveCall` moves an `AddPlacement`'s `POS` (`test_script_edit.cpp`).
+`MoveCall` moves an `AddPlacement`'s `POS` (`test_script_edit.cpp`), placements added (after the first dialog lines,
+after the last placement, a name with quotes refused), a field set, changed and removed, a call line removed, a new
+picture's size and color, and one behind the static's others.
+The engine (2026-11-16): a picture anchored RIGHT draws 240 pixels further at 16:9 while its static's others stay, and
+goes back when cleared; a live particle's box under each anchor. The live snapshot's `particle` lines. With
+`X2_UI_EDITOR_GAME`, the client_data's particle files list 470 UI sequences (2026-11-16), the combo counter, the
+speech balloon and the boss warning among them; the tutorial pointer test applies the quick slots' entry itself, since
+the game reads `UIAnchors.lua` once a process (it failed in a full run, after the tests on a temporary folder).
 With `X2_UI_EDITOR_GAME`, the client_data's tutorial pointer (`DLG_Mouse_Click.lua`) has its 11 placements and
 follows the quick slots to the left edge at 16:9, at the original's point at 4:3.
 

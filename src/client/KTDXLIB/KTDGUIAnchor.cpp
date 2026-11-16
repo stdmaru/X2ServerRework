@@ -26,6 +26,53 @@ std::wstring UIScriptKey( const wchar_t* pwszName )
 	return wstrKey;
 }
 
+std::wstring UIPictureId( CKTDGUIStatic& kStatic, int iIndex )
+{
+	CKTDGUIControl::CPictureData* pPicture = kStatic.GetPicture( iIndex );
+	if ( pPicture == NULL )
+		return std::wstring();
+	std::wstring wstrPicture = L"#" + std::to_wstring( iIndex + 1 );
+	if ( pPicture->pTexture != NULL && pPicture->pTexture->keyName.empty() == false )
+	{
+		const std::wstring wstrKey = UIScriptKey( pPicture->pTexture->keyName.c_str() );
+		int iSame = 0;
+		for ( int i = 0; i < kStatic.GetPictureNum(); ++i )
+		{
+			const CKTDGUIControl::CPictureData* pOther = kStatic.GetPicture( i );
+			if ( pOther != NULL && pOther->pTexture != NULL && UIScriptKey( pOther->pTexture->keyName.c_str() ) == wstrKey )
+				++iSame;
+		}
+		if ( iSame == 1 )
+			wstrPicture = pPicture->pTexture->keyName;
+	}
+	return kStatic.GetName() + std::wstring( L"/" ) + wstrPicture;
+}
+
+CKTDGUIControl::CPictureData* FindUIPicture( CKTDGUIDialog& kDialog, const std::wstring& wstrPicture )
+{
+	const size_t uSlash = wstrPicture.find( L'/' );
+	if ( uSlash == std::wstring::npos )
+		return NULL;
+	CKTDGUIControl* pControl = kDialog.GetControl( wstrPicture.substr( 0, uSlash ).c_str() );
+	if ( pControl == NULL || pControl->GetType() != CKTDGUIControl::UCT_STATIC )
+		return NULL;
+	CKTDGUIStatic& kStatic = *static_cast<CKTDGUIStatic*>( pControl );
+	const std::wstring wstrName = wstrPicture.substr( uSlash + 1 );
+	if ( wstrName.size() > 1 && wstrName[0] == L'#' )
+	{
+		const int iIndex = std::wcstol( wstrName.c_str() + 1, NULL, 10 ) - 1;
+		return kStatic.GetPicture( iIndex );
+	}
+	const std::wstring wstrKey = UIScriptKey( wstrName.c_str() );
+	for ( int i = 0; i < kStatic.GetPictureNum(); ++i )
+	{
+		CKTDGUIControl::CPictureData* pPicture = kStatic.GetPicture( i );
+		if ( pPicture != NULL && pPicture->pTexture != NULL && UIScriptKey( pPicture->pTexture->keyName.c_str() ) == wstrKey )
+			return pPicture;
+	}
+	return NULL;
+}
+
 namespace
 {
 	std::wstring ScriptKey( const wchar_t* pwszName ) { return UIScriptKey( pwszName ); }
@@ -220,6 +267,23 @@ std::unordered_map<std::wstring, CKTDGUIAnchors::Entry> CKTDGUIAnchors::Load()
 				}
 				lua_pop( L, 1 );
 
+				lua_getfield( L, -1, "PICTURES" );	// { ["static/picture"] = anchor }
+				if ( lua_istable( L, -1 ) )
+				{
+					lua_pushnil( L );
+					while ( lua_next( L, -2 ) != 0 )
+					{
+						UIAnchor eAnchor = UIAnchor::Center;
+						if ( lua_type( L, -2 ) == LUA_TSTRING && lua_type( L, -1 ) == LUA_TSTRING
+							&& ParseUIAnchor( lua_tostring( L, -1 ), eAnchor ) )
+							kEntry.mapPictures[ToWide( lua_tostring( L, -2 ) )] = eAnchor;
+						else
+							std::fprintf( stderr, "UIAnchors.lua: bad picture anchor in %s\n", pszScript );
+						lua_pop( L, 1 );
+					}
+				}
+				lua_pop( L, 1 );
+
 				lua_getfield( L, -1, "CONTROLS" );
 				if ( lua_istable( L, -1 ) )
 				{
@@ -310,6 +374,20 @@ void CKTDGUIAnchors::Apply( CKTDGUIDialog& kDialog, const wchar_t* pwszScriptNam
 		}
 		else if ( pControl->HasAnchor() == false )
 			pControl->SetAnchor( eAnchor );
+	}
+
+	for ( const auto& [wstrPicture, eAnchor] : kEntry.mapPictures )
+	{
+		CKTDGUIControl::CPictureData* pPicture = FindUIPicture( kDialog, wstrPicture );
+		if ( pPicture == NULL )
+		{
+			std::string strPicture, strScript;
+			ConvertWCHARToChar( strPicture, wstrPicture );
+			ConvertWCHARToChar( strScript, it->first );
+			std::fprintf( stderr, "UIAnchors.lua: no picture %s in %s\n", strPicture.c_str(), strScript.c_str() );
+		}
+		else
+			pPicture->SetAnchor( eAnchor );
 	}
 
 	for ( const auto& [wstrControl, fFade] : kEntry.mapBackdrops )
@@ -567,6 +645,10 @@ bool CKTDGUIAnchorRecorder::LiveIsOn()
 //     picture  <control> <index> <shown> <texture> <key> <8 corners> <8 uv> <r g b a>
 //              every picture of a static; corners and uv left top, right top, left bottom, right bottom
 //     text     <control> <index> <font> <sort flags> <x> <y> <r g b a> <text>    every text of a static, escaped
+//     particle <sequence> <anchor> <left> <top> <right> <bottom>
+//              the sequences drawn in layout units (RESOLUTIONCONVERT) in the last frames, one line per instance, before
+//              the dialogs; the box their particles covered, in layout units before the anchor (UIParticleAnchor: 0
+//              center, 1 left, 2 right, 3 stretch, 4 span)
 // Written to a temporary file and renamed over the last one, and only when it changed.
 namespace
 {
@@ -608,10 +690,48 @@ namespace
 	}
 }
 
+namespace
+{
+	struct LiveParticle
+	{
+		std::wstring wstrName;
+		int iAnchor = 0;
+		float afBox[4] = {};	// left, top, right, bottom
+		unsigned uFrame = 0;
+	};
+	std::unordered_map<const void*, LiveParticle> s_mapLiveParticles;
+	unsigned s_uLiveFrame = 0;	// counts NoteLive calls, one a frame
+}
+
+void CKTDGUIAnchorRecorder::NoteLiveParticle( const void* pSequence, const std::wstring& wstrName, int iAnchor, float fX,
+	float fY, float fHalfWidth, float fHalfHeight )
+{
+	LiveParticle& kParticle = s_mapLiveParticles[pSequence];
+	const float afBox[4] = { fX - fHalfWidth, fY - fHalfHeight, fX + fHalfWidth, fY + fHalfHeight };
+	if ( kParticle.uFrame != s_uLiveFrame || kParticle.wstrName != wstrName )
+	{
+		kParticle.wstrName = wstrName;
+		std::copy( std::begin( afBox ), std::end( afBox ), kParticle.afBox );
+	}
+	else
+	{
+		kParticle.afBox[0] = std::min( kParticle.afBox[0], afBox[0] );
+		kParticle.afBox[1] = std::min( kParticle.afBox[1], afBox[1] );
+		kParticle.afBox[2] = std::max( kParticle.afBox[2], afBox[2] );
+		kParticle.afBox[3] = std::max( kParticle.afBox[3], afBox[3] );
+	}
+	kParticle.iAnchor = iAnchor;
+	kParticle.uFrame = s_uLiveFrame;
+}
+
 void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 {
 	static std::chrono::steady_clock::time_point s_tLast{};
 	static std::string s_strLast;
+	// Particles drawn since the last call belong to the frame that ends here; those not drawn for a few frames are gone.
+	const unsigned uFrame = s_uLiveFrame++;
+	for ( auto it = s_mapLiveParticles.begin(); it != s_mapLiveParticles.end(); )
+		it = uFrame - it->second.uFrame > 8 ? s_mapLiveParticles.erase( it ) : std::next( it );
 	const auto tNow = std::chrono::steady_clock::now();
 	if ( tNow - s_tLast < std::chrono::milliseconds( 200 ) )
 		return;
@@ -623,6 +743,22 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 	{
 		const D3DVIEWPORT9& kViewport = g_pKTDXApp->GetViewport();
 		str += "screen\t" + std::to_string( kViewport.Width ) + '\t' + std::to_string( kViewport.Height ) + '\n';
+	}
+	{
+		// Sorted, so the same particles write the same text.
+		std::vector<std::string> vecParticles;
+		for ( const auto& [pSequence, kParticle] : s_mapLiveParticles )
+		{
+			std::string strLine = "particle\t";
+			AppendEscaped( strLine, ToUtf8( kParticle.wstrName ) );
+			strLine += '\t' + std::to_string( kParticle.iAnchor );
+			AppendFloats( strLine, { std::round( kParticle.afBox[0] ), std::round( kParticle.afBox[1] ),
+				std::round( kParticle.afBox[2] ), std::round( kParticle.afBox[3] ) } );
+			vecParticles.push_back( strLine + '\n' );
+		}
+		std::sort( vecParticles.begin(), vecParticles.end() );
+		for ( const std::string& strLine : vecParticles )
+			str += strLine;
 	}
 	for ( CKTDGUIDialogType pDialog : kManager.GetDialogsInOrder() )
 	{

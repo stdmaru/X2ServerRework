@@ -5,6 +5,7 @@
 #include "layout_edit.h"
 #include "tet_file.h"
 
+#include <algorithm>
 #include <cmath>
 #include <doctest/doctest.h>
 
@@ -355,6 +356,67 @@ TEST_CASE("ui editor: UIAnchors.lua entries go into open dialogs, the script's o
     CHECK(dialogs[1].controls[0].anchor == "LEFT");
     CHECK(dialogs[1].controls[1].anchor == "RIGHT");
     CHECK_FALSE(dialogs[1].controls[1].anchorFromScript);
+}
+
+TEST_CASE("ui editor: a picture anchored on its own moves with its edge, its static's others stay")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Test.lua", error) == 0);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    auto dialogs = engine->Inspect();
+    const auto before = dialogs[0].controls[0].pictures[0];
+    CHECK(before.id == "Panel/#1");     // without a key: by index
+    CHECK_FALSE(before.anchorDeclared);
+
+    x2::ui_editor::AnchorEntry entry;
+    entry.SetPicture("Panel/#1", "RIGHT");
+    engine->ApplyAnchors(0, entry, {});
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    dialogs = engine->Inspect();
+    const auto& after = dialogs[0].controls[0].pictures[0];
+    CHECK(after.anchorDeclared);
+    CHECK(after.anchor == "RIGHT");
+    // 16:9 at 1080: the 1024 column starts at 240 pixels, which RIGHT adds.
+    CHECK(after.pixelMin[0] == doctest::Approx(before.pixelMin[0] + 240.0));
+    CHECK(dialogs[0].controls[1].pictures[0].pixelMin[0] ==
+          doctest::Approx(engine->UIOriginX() + (100.0 + 10.0) * engine->UIScale()));
+
+    engine->ApplyAnchors(0, {}, entry);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    CHECK(engine->Inspect()[0].controls[0].pictures[0].pixelMin[0] == doctest::Approx(before.pixelMin[0]));
+}
+
+TEST_CASE("ui editor: a live UI particle's box is drawn under its anchor")
+{
+    TempGame game;
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    const float box[4] = {100.0f, 10.0f, 200.0f, 30.0f};
+    float pixels[4];
+    engine->ParticlePixels(0, box, pixels);
+    CHECK(pixels[0] == doctest::Approx(240.0 + 100.0 * 1080.0 / 768.0));
+    CHECK(pixels[3] == doctest::Approx(30.0 * 1080.0 / 768.0));
+    engine->ParticlePixels(1, box, pixels);     // LEFT: the column's left edge is the screen's
+    CHECK(pixels[0] == doctest::Approx(100.0 * 1080.0 / 768.0));
+    engine->ParticlePixels(3, box, pixels);     // STRETCH: across the screen, width too
+    CHECK(pixels[0] == doctest::Approx(100.0 * 1920.0 / 1024.0));
+    CHECK(pixels[2] == doctest::Approx(200.0 * 1920.0 / 1024.0));
+    engine->ParticlePixels(4, box, pixels);     // SPAN: its middle moves, its size stays
+    CHECK(pixels[2] - pixels[0] == doctest::Approx(100.0 * 1080.0 / 768.0));
+    CHECK((pixels[0] + pixels[2]) * 0.5 == doctest::Approx(150.0 * 1920.0 / 1024.0));
 }
 
 TEST_CASE("ui editor: a picture wider than the screen pans only as far as it still covers the screen")
@@ -871,6 +933,10 @@ TEST_CASE("ui editor: the client_data's tutorial pointer follows the quick slots
     REQUIRE_MESSAGE(engine, error);
     REQUIRE_MESSAGE(engine->OpenDialog("DLG_UI_Quick_Slot.lua", error) == 0, error);
     REQUIRE_MESSAGE(engine->OpenDialog("DLG_Mouse_Click.lua", error) == 1, error);
+    // The game reads UIAnchors.lua once a process, which the tests on a temporary folder may have done first.
+    const auto anchors = x2::ui_editor::AnchorsFile::Load(x2::ui_editor::AnchorsFile::Find(folder), error);
+    REQUIRE(anchors.Get("DLG_UI_Quick_Slot.lua").dialog == "LEFT");
+    engine->ApplyAnchors(0, anchors.Get("DLG_UI_Quick_Slot.lua"), {});
     const auto opened = engine->Inspect();
     REQUIRE(opened[1].placements.size() == 11);
     for (const auto& placement : opened[1].placements) {
@@ -1085,4 +1151,23 @@ g_pPicture:SetPos(D3DXVECTOR2(-245, 0))
     CHECK(dialogs[0].controls[0].pictures[0].points[0][1] == 10.0f);
     CHECK(dialogs[0].controls[0].pictures[0].points[3][0] == 0.0f);    // still 200 wide
     engine.reset();
+}
+
+TEST_CASE("ui editor: the client_data's UI particle sequences are listed from its particle files" *
+          doctest::skip(std::getenv("X2_UI_EDITOR_GAME") == nullptr))
+{
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = std::getenv("X2_UI_EDITOR_GAME");
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    const auto& sequences = engine->UIParticleSequences();
+    MESSAGE(sequences.size(), " UI particle sequences");
+    const auto has = [&](const char* name) {
+        return std::any_of(sequences.begin(), sequences.end(), [&](const auto& s) { return s.name == name; });
+    };
+    CHECK(has("NewComboDamage"));
+    CHECK(has("CutIn_Talk_Right"));
+    CHECK(has("BOSS_DANGER"));
 }

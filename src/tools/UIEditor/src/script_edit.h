@@ -60,6 +60,39 @@ bool AddStatic(std::string& text, const std::string& name, const std::string& te
 bool AddPictureAfter(std::string& text, int line, CallKind kind, const std::string& texture, const std::string& key,
                      float x, float y, std::string& error);
 
+// A new picture: its texture and key, left top, ADD_SIZE (0: the key's size), color.
+struct NewPicture {
+    std::string texture, key;
+    float x = 0.0f, y = 0.0f;
+    float addSize[2] = {};
+    float color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+};
+// AddPictureAfter with all of a new picture's fields.
+bool AddPictureAfter(std::string& text, int line, CallKind kind, const NewPicture& picture, std::string& error);
+// Adds a picture before the one `S:AddPicture(P)` on `addPicture` adds (before P's creation), so it is drawn under
+// the static's pictures when that is the first.
+bool AddPictureBefore(std::string& text, int addPicture, const NewPicture& picture, std::string& error);
+
+// A named placement (T52): `g_pUIDialog:AddPlacement({ NAME, POS[, ANCHOR][, TARGET[, CONTROL]] })`.
+struct NewPlacement {
+    std::string name;
+    float x = 0.0f, y = 0.0f;
+    std::string anchor;     // empty: none
+    std::string target;     // a dialog script; empty: a fixed placement
+    std::string control;    // the target's control; empty: the target dialog
+};
+// Adds the placement after the script's last AddPlacement, else after its first lines on g_pUIDialog (SetName,
+// SetLayer, ...), else at the top.
+bool AddPlacementCall(std::string& text, const NewPlacement& placement, std::string& error);
+// Sets a field of the table the `kind` call on `line` takes (`value` as Lua: "\"LEFT\"", "D3DXVECTOR2(1, 2)"); an
+// empty value removes the field.
+bool SetCallField(std::string& text, int line, CallKind kind, const std::string& field, const std::string& value,
+                  std::string& error);
+// Removes the `kind` call on `line`, a statement of its own line, with that line.
+bool RemoveCallLine(std::string& text, int line, CallKind kind, std::string& error);
+// A Lua string literal of `text`.
+std::string LuaString(const std::string& text);
+
 // Copies the picture `S:AddPicture(P)` on `addPicture` adds, with its lines, into the same static after its last line,
 // moved by (dx, dy).
 bool DuplicatePicture(std::string& text, int addPicture, float dx, float dy, std::string& error);

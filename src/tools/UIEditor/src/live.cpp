@@ -85,6 +85,14 @@ LiveSnapshot LiveSnapshot::Parse(std::istream& in)
         } else if (kind == "screen" && f.size() >= 3) {
             snapshot.screen[0] = static_cast<unsigned>(Int(f[1]));
             snapshot.screen[1] = static_cast<unsigned>(Int(f[2]));
+        } else if (kind == "particle" && f.size() >= 7) {
+            Particle p;
+            p.name = Unescape(f[1]);
+            p.anchor = Int(f[2]);
+            for (int k = 0; k < 4; ++k) {
+                p.box[k] = Float(f[3 + static_cast<std::size_t>(k)]);
+            }
+            snapshot.particles.push_back(std::move(p));
         } else if (kind == "dialog" && f.size() >= 6) {
             Dialog d;
             d.script = f[1];

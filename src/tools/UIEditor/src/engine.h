@@ -11,6 +11,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -42,6 +43,9 @@ struct GameSets {
 };
 
 struct PictureInfo {
+    std::string id;             // "static/picture", as UIAnchors.lua's PICTURES names it
+    std::string anchor;         // its own anchor ("LEFT", "RIGHT", "STRETCH", "CENTER"); empty: its static's
+    bool anchorDeclared = false;
     std::string texture;        // file name, empty when none
     std::string key;            // the .tet key, empty when the whole texture is drawn
     float points[4][2] = {};    // left top, right top, left bottom, right bottom (layout units, relative to the control)
@@ -176,6 +180,16 @@ public:
     // .tet edits not saved yet (docs/tools/ui-editor.md#editing-textures-and-uv). The bytes of a texture's .tet: its
     // file's, from client_data or the archives, or the ones set here. False with `error` when it has none.
     bool TetBytes(const std::string& texture, std::string& bytes, std::string& error) const;
+    // The 2D particle sequences drawn in layout units (RESOLUTIONCONVERT) in the particle files the client loads,
+    // which UIAnchors.lua's UI_PARTICLE_ANCHORS can anchor; read once.
+    struct ParticleSequence {
+        std::string name, file;
+        float x = 0.0f;     // its initial position's x, when a number
+    };
+    const std::vector<ParticleSequence>& UIParticleSequences();
+    // A live particle's box (layout units, left top right bottom, before its anchor) where the last Render's canvas
+    // draws it under an anchor (UIParticleAnchor: 0 center, 1 left, 2 right, 3 stretch, 4 span), in render pixels.
+    void ParticlePixels(int anchor, const float box[4], float pixels[4]) const;
     // Makes a texture's UV rectangles these, a whole .tet file, in the pictures built after (ReloadDialog builds
     // the open ones again). False with `error` when the bytes are not a .tet or the texture does not load.
     bool SetTet(const std::string& texture, const std::string& bytes, std::string& error);
@@ -210,6 +224,7 @@ private:
     struct State;
     explicit Engine(std::unique_ptr<State> state);
     std::unique_ptr<State> m_state;
+    std::optional<std::vector<ParticleSequence>> m_particles;
 };
 
 // The dialog scripts (DLG_*.lua) under the game folder's data/ (client_data), sorted by name, without folders.
