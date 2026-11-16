@@ -518,6 +518,20 @@ g_pUIDialog:AddPlacement({ NAME = "NOWHERE", TARGET = "DLG_Missing.lua", POS = D
     CHECK(engine->Inspect()[1].pos[0] == doctest::Approx(310.0));
     REQUIRE(engine->ApplyPlacement(1, ""));
     CHECK(engine->Inspect()[1].placement.empty());
+
+    // An edited placement: the dialog built again from the edited script is where it puts it now.
+    REQUIRE(engine->ApplyPlacement(1, "MIDDLE"));
+    std::string text;
+    {
+        std::ifstream in(scripts / "DLG_Pointer.lua", std::ios::binary);
+        text.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    }
+    REQUIRE(x2::ui_editor::MoveCall(text, 3, x2::ui_editor::CallKind::Placement, -50, 0, error));
+    engine->SetScriptText("DLG_Pointer.lua", &text);
+    REQUIRE_MESSAGE(engine->ReloadDialog(1, error), error);
+    dialogs = engine->Inspect();
+    CHECK(dialogs[1].placement == "MIDDLE");
+    CHECK(dialogs[1].pos[0] == 200.0f);
 }
 
 namespace {

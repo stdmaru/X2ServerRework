@@ -104,6 +104,15 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   each one as a whole with its BOM (the files are UTF-8 with BOM, T42), and closing asks first.
 - **Dialogs placed by code** (T46 (3)): moving one changes its script's `SetPos` only, which the code overrides; the
   inspector says so. Their positions move into the scripts screen by screen, later.
+- **Named placements** (2026-11-16, `client/widescreen-migration`, [T52](../project/decisions.md)): a dialog whose
+  script declares placements (`AddPlacement`, [KTDXLIB](../porting/client-ktdxlib.md#named-placements-2026-11-16-clientwidescreen-migration-t52))
+  lists them in the inspector under **Placements**: a fixed one with its position and anchor, one with a target as
+  the offset from its target dialog and control ("not open" while no open dialog has that script). Choosing one puts
+  the dialog there as the game's code would (`Engine::ApplyPlacement`); a target placement follows the target dialog
+  as it moves. While one is in effect, its `POS` field and dragging the dialog on the screen (Alt) move its
+  `AddPlacement`'s `POS`, and the dialog built again after an edit is put at it again. "Watch game" puts a dialog at
+  the placement the game has in effect (`placement` in `UILive.tsv`). Not yet: choosing a target control on the
+  screen, adding a placement, and its anchor in the inspector (edited in the script meanwhile).
 
 ## Resizing a dialog
 
@@ -276,6 +285,9 @@ file written with its header; text that cannot be read reported. The client_data
 without problems and is unchanged by setting its entries to what they are.
 The engine: an entry put into an open dialog and cleared, the script's own anchors kept, a backdrop declared and
 drawn at 21:9 (2026-11-15).
+Named placements (2026-11-16): a fixed one and its anchor (given back by the next), one following a centered and a
+right-anchored control at 16:9, the target moved, hidden and shown again, and an edited `POS` after a reload;
+`MoveCall` moves an `AddPlacement`'s `POS` (`test_script_edit.cpp`).
 
 `x2_ui_editor_tests`, headless on the null render backend: the script list (sorted, `.kom/` skipped), the record file
 (positions by script without folder or case, each once, placed by code; scenes and their scripts, older records without
