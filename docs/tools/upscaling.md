@@ -32,6 +32,13 @@ commands; this page records what it is and what was learned.
    the client loads a file's chain, [D3D9](../porting/client-d3d9.md); atlases with a `.tet` load one level). A round trip of one file of every format kept the format
    (2026-11-15).
 
+   **Pillow 13 writes DXT3 alpha wrong** (found 2026-11-16 on Ruben's clouds): each texel gets `a & 15`, the low bits,
+   instead of its 4-bit value, so soft alpha wraps every 16 levels into contour lines (and RGB under it shows). The
+   original files survived a round trip only because DXT3 alpha decodes to multiples of 17 (`17n & 15 = n`).
+   `texconv.py` now rewrites every block's 8 alpha bytes (`a * 15 / 255` rounded); the upscaled alpha comes back
+   within ~2/255. DXT1 and DXT5 were not affected. Textures size is not a factor: the client takes any size
+   ([D3D9](../porting/client-d3d9.md)).
+
 Formats in the client_data (2026-11-15): DXT1 29,673, DXT5 1,808, DXT3 1,292, RGB24 778, RGB32 with alpha 438, DXT1
 volumes 49, RGB32 15, RGB16 with alpha 12; about a third have mipmaps.
 
