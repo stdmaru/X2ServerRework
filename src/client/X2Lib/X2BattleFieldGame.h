@@ -95,7 +95,6 @@ public:
 
 	void					CreateRaidPotal();
 	void					DestoryRaidPotalParticle();
-	void					CreateLoadingUI();
 	bool					GetShowLoadUi() const { if(m_pDLGLoadingState == NULL) return false; return true; }
 
 	void					ResetTimerForSendingPositionInfo(){ m_TimerForSendingPositionInfo.ResetSumOfElapsedTime();}

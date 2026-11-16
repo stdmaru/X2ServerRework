@@ -151,6 +151,7 @@ void    CKTDXDeviceManager::ProcessForegroundQueue( float /*fElapsedTime*/ )
         LoadAndCloseDevice( pDevice
 			, false
 			);
+        m_uLoadsFinished.fetch_add( 1, std::memory_order_release );
     }//if
 
 }//CKTDXDeviceManager::OnFrameMove()
@@ -541,6 +542,7 @@ CKTDXDevice*     CKTDXDeviceManager::PendDevice( const WCHAR* deviceID, CKTDXDev
             {
 		        CSLock locker( pendQueue.m_csPendingDevice );
                 pendQueue.m_listPendingDevice.push_back( pDevice );
+                m_uLoadsQueued.fetch_add( 1, std::memory_order_release );
             }
             if ( ePriority_ != PRIORITY_BLOCKING )
             {
@@ -612,6 +614,7 @@ CKTDXDevice*    CKTDXDeviceManager::CreateAndPendDevice( CKTDXDevice* pDevice, E
             {
 		        CSLock locker( pendQueue.m_csPendingDevice );
                 pendQueue.m_listPendingDevice.push_back( pActualDevice );
+                m_uLoadsQueued.fetch_add( 1, std::memory_order_release );
             }
             if ( ePriority_ != PRIORITY_BLOCKING )
             {
@@ -1283,11 +1286,11 @@ void        CKTDXDeviceManager::_CheckFullSyncInDeviceThread()
                         {
                             CKTDXDevice* pDevice = listTemp.front();
                             listTemp.pop_front();
-                            if ( pDevice == NULL )
-                                continue;
-							LoadAndCloseDevice( pDevice
-								, true
-								);
+                            if ( pDevice != NULL )
+							    LoadAndCloseDevice( pDevice
+								    , true
+								    );
+                            m_uLoadsFinished.fetch_add( 1, std::memory_order_release );
                         }//while
                     }//if
                 }//for

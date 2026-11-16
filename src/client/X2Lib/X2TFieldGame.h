@@ -387,6 +387,7 @@ class CX2TFieldGame
 		}
 
 		void SetLoadComplete(bool val);
+		bool GetLoadComplete() const { return m_bLoadComplete; }
 		bool GetShowMarketList() { return m_bShowMarketList; }
 		void CloseMarketList();
 

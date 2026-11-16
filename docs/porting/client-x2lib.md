@@ -329,6 +329,38 @@ windows are placed by `CX2UIManager` (top left, or beside another window open th
 them; the original's points were right only when the quest window was the first. Checked by the user in the game
 (2026-11-16): works as expected.
 
+## Scene loading screen (2026-11-16, `client/scene-loading`)
+
+**Behavior change** (user, 2026-11-16; no `src/define.h` switch, the user's call: a quality-of-life upgrade). Entering a
+village or a field builds the world at once but leaves its meshes and textures to the device manager's loading thread
+([D3D9](client-d3d9.md), background loading); with the upscaled textures the first frames showed the character floating
+in an empty world. The original covered this only after a warp or a channel change (`CX2TFieldGame::LoadUI`, the
+area's pictures from `DLG_PVP_Game_Loading_State.lua`) and on boss raid fields (`CX2BattleFieldGame::CreateLoadingUI`),
+both for a fixed 3 s whatever was loaded.
+
+`CX2SceneLoading` (`X2SceneLoading.h/.cpp`, owned by `CX2Main`) is now shown on every entry: `CX2Main::StateChange` to
+`XS_VILLAGE_MAP` or `XS_BATTLE_FIELD` (character select, village ↔ field, dungeon or PvP back to the village, channel
+change) and `CX2StateBattleField::MoveFromBattleFieldToOtherBattleField` (field to field, no state change). It uses the
+first login's layout, `DLG_First_Loading_Front.lua` (its background and bottom bar, the client version hidden), over a
+black fill of the whole canvas, and presents one frame at once, before the state's synchronous loading. It is
+`CKTDXApp`'s overlay stage ([KTDXLIB](client-ktdxlib.md#overlay-stage-and-load-counters-2026-11-16-clientscene-loading)),
+moved and drawn after every stage, so it outlives the state change and covers everything the new state draws.
+
+It closes when, together and for 0.15 s and 3 drawn frames:
+
+- the device manager's background loads are idle (everything queued since the screen opened finished, nothing new);
+- the state's entry is confirmed: the village sent `EGS_FIELD_LOADING_COMPLETE_REQ` (on its first frame) and has its
+  ACK (the dungeon lounge has no packet); the field has `EGS_GAME_LOADING_ACK`;
+- it has been up at least 0.5 s.
+
+The scene is drawn behind it all along, so when it fades out (0.3 s) the uploads were submitted and the pipelines
+built. After 30 s it closes anyway, with a line in the log. It closes at once if the state changes to one it does not
+cover (a disconnection). The bar (and `STR_ID_655`, "loading n%") shows finished over queued background loads for 85 %
+of its length and the server's confirmation for the rest; it never goes back.
+
+The two timed screens give way to it: `LoadUI` keeps only the warp's 3 s delay of the field and buff names and spends
+the warp/channel flags; the raid field no longer calls `CreateLoadingUI` (removed). Input is not blocked meanwhile.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

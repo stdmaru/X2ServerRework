@@ -956,6 +956,8 @@ void CX2StateBattleField::MoveFromBattleFieldToOtherBattleField()
 {
 	if ( NULL != m_pBattleFieldGame )
 	{
+		// a field to the next without a state change: the world is swapped in place
+		g_pMain->BeginSceneLoading();
 		m_pBattleFieldGame->ClearNpcCreatedInfoList();
 		m_pBattleFieldGame->DeleteAllNPCUnit();
 		m_pBattleFieldGame->SwapWorld();

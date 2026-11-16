@@ -90,6 +90,9 @@ class CKTDXApp
 		//}} seojt // 2009-8-19, 16:44
 
 		void InsertStage( CKTDXStage* stage );
+		// A stage moved and drawn after every stage of the chain, whatever the chain holds (the scene loading
+		// screen, docs/porting/client-x2lib.md). Not owned; NULL for none.
+		void SetOverlayStage( CKTDXStage* stage ) { m_pOverlayStage = stage; }
 		// Draws and presents one frame of stage_ at once, outside the frame loop (the loading screens, between loading
 		// steps). Port: one call in place of BeginScene/OnFrameRender/EndScene/Present at each call site (T38).
 		void RenderStageNow( CKTDXStage* stage_ );
@@ -561,6 +564,7 @@ class CKTDXApp
 		CKTDXCollision*			m_pCollision;
 
 		vector<CKTDXStage*>		m_vecStageChain;
+		CKTDXStage*				m_pOverlayStage = NULL;
 		queue<GameMessage>		m_GameMsgQ;
 
 		CKTDXDeviceManager*		m_pDeviceManager;

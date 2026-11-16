@@ -329,12 +329,11 @@ void CX2BattleFieldGame::SwapWorld()
 		//보스게이지 UI 제거
 		CX2GageManager::GetInstance()->ClearBossGageUIList();
 
-		// 레이드 필드일 경우 이름 보여주지 않고 로딩 광고 보여주기
+		// A raid field shows no field name. Port: nor its 3 s loading picture; the scene loading screen
+		// (CX2SceneLoading) covers the entry.
 		if( true == g_pData->GetBattleFieldManager().GetIsBossRaidFieldByFieldID( uiBattleFieldId ) )
 		{
-			CreateLoadingUI();
-
-			/// 화면 우측 상단의 필드명 갱신
+			/// the field name at the top right
 			if( NULL != g_pData && NULL != g_pInstanceData && NULL != g_pInstanceData->GetMiniMapUI() )
 				g_pInstanceData->GetMiniMapUI()->SetVillageMapID( g_pData->GetBattleFieldManager().GetBattleFieldIdWhereIam() );
 		}
@@ -1469,62 +1468,6 @@ void CX2BattleFieldGame::DestoryRaidPotalParticle()
 			GetMajorParticle()->DestroyInstanceHandle( hRaidGateEffectParticle );
 			hRaidGateEffectParticle = INVALID_PARTICLE_SEQUENCE_HANDLE;
 		}
-	}
-}
-/** @function : CreateLoadingUI
-	@brief : 필드 입장 시 출력할 광고UI
-			 관련 코드는 FieldGame코드 땡겨옴
-*/
-void CX2BattleFieldGame::CreateLoadingUI()
-{
-	// 워프로 마을도착 or 채널이동
-	if( NULL == m_pDLGLoadingState )
-		m_pDLGLoadingState = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_PVP_Game_Loading_State.lua", 0.0f );
-	ASSERT( m_pDLGLoadingState != NULL );
-
-	if ( m_pDLGLoadingState != NULL )
-		m_pDLGLoadingState->SetColor( D3DXCOLOR(1.0f,1.0f,1.0f,1.0f) );
-
-	wstring wstrImgL = L"";
-	wstring wstrImgR = L"";
-	CX2BossRaidManager::GetInstance()->GetLoadingUIFileName(wstrImgL, wstrImgR);
-	bool bCheck = false;
-	if(wstrImgL.empty() == false && wstrImgR.empty() == false )
-	{
-		CKTDGUIStatic* pStatic = ( m_pDLGLoadingState != NULL ) ? static_cast<CKTDGUIStatic*>(m_pDLGLoadingState->GetControl( L"Static_Loading_Dungeon_BG" )) : NULL;
-
-		// 그림 두장
-		if( pStatic != NULL )
-		{
-			if(pStatic->GetPicture(0) != NULL)
-			{
-				pStatic->GetPicture(0)->SetShow(false);
-			}
-
-			bool bCheck1 = false;
-			bool bCheck2 = false;
-			if(pStatic->GetPicture(1) != NULL)
-			{
-				bCheck1 = pStatic->GetPicture(1)->SetTex( wstrImgL.c_str() );
-			}
-			if(pStatic->GetPicture(2) != NULL)
-			{
-				bCheck2 = pStatic->GetPicture(2)->SetTex( wstrImgR.c_str() );
-			}
-			bCheck = bCheck1 && bCheck2;
-
-
-			if(bCheck == true)
-			{
-				pStatic->SetShow(true);
-				m_fLoadUIReaminTime = 0.f;
-			}
-		}
-	}
-
-	if( false == bCheck )
-	{
-		m_fLoadUIReaminTime = -1.f;
 	}
 }
 void CX2BattleFieldGame::OnFrameMove_LoadingUI(double fTime, float fElapsedTime)
