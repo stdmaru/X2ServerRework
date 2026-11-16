@@ -522,6 +522,64 @@ g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
     CHECK_FALSE(engine->LoadTextureImage("DLG_Missing.tga", image, error));
 }
 
+TEST_CASE("ui editor: a key the game's code set takes its edited rectangle, at the size it changed to")
+{
+    TempGame game;
+    x2::ui_editor::TetFile tet;
+    std::string error;
+    REQUIRE(x2::ui_editor::TetFile::Parse(EmptyTet(), tet, error));
+    REQUIRE(tet.Add("SCRIPT", Rect(0, 0, 1, 1), error));
+    REQUIRE(tet.Add("NAME", Rect(0, 0, 2, 1), error));
+    {
+        const std::string bytes = tet.Bytes();
+        std::ofstream(game.root / "data" / "ui" / "DLG_Test.TET", std::ios::binary).write(bytes.data(), bytes.size());
+        std::ofstream(game.root / "data" / "ui" / "scripts" / "DLG_Named.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pStatic = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pStatic)
+g_pPicture = g_pUIDialog:CreatePicture()
+g_pStatic:AddPicture(g_pPicture)
+g_pPicture:SetTex("DLG_Test.tga", "SCRIPT")
+g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(10, 10) })
+)lua";
+    }
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Named.lua", error) == 0);
+    // The game's code drew NAME there, 2 x 1 (Add's name_noclass in character creation).
+    x2::ui_editor::LiveSnapshot::Dialog live;
+    live.script = "dlg_named.lua";
+    live.controls = {{0, true, -1}};
+    x2::ui_editor::LiveSnapshot::Picture shown;
+    shown.texture = "DLG_Test.tga";
+    shown.key = "NAME";
+    shown.points[0][0] = shown.points[2][0] = 10.0f;
+    shown.points[1][0] = shown.points[3][0] = 12.0f;
+    shown.points[0][1] = shown.points[1][1] = 10.0f;
+    shown.points[2][1] = shown.points[3][1] = 11.0f;
+    shown.uv[1][0] = shown.uv[3][0] = 0.5f;
+    shown.uv[2][1] = shown.uv[3][1] = 0.25f;
+    shown.full = true;
+    live.pictures = {shown};
+    engine->ApplyLive(0, live);
+
+    // NAME widened to 3 x 1 in the .tet: drawn 3 wide, with the new rectangle.
+    x2::ui_editor::TetRect wide = *tet.Find("NAME");
+    REQUIRE(wide.Resize(1, 0));
+    REQUIRE(tet.Set("NAME", wide));
+    REQUIRE_MESSAGE(engine->SetTet("DLG_Test.tga", tet.Bytes(), error), error);
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    const auto picture = engine->Inspect()[0].controls[0].pictures.at(0);
+    CHECK(picture.key == "NAME");
+    CHECK(picture.points[0][0] == doctest::Approx(10.0f));
+    CHECK(picture.points[3][0] == doctest::Approx(13.0f));
+    CHECK(picture.points[3][1] == doctest::Approx(11.0f));
+    CHECK(picture.uv[3][0] == doctest::Approx(0.75f));      // 3 of the texture's 4 texels
+}
+
 TEST_CASE("ui editor: a dialog grows at a line: crossed pictures grow, those past it would move")
 {
     TempGame game;
