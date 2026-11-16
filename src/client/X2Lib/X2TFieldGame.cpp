@@ -3809,91 +3809,17 @@ void CX2TFieldGame::LoadFieldImage(wstring &imgL, wstring &imgR)
 
 void CX2TFieldGame::LoadUI()
 {
+	// Port: the warp's (and channel change's) 3 s loading screen with the area's pictures is gone; the scene loading
+	// screen (CX2SceneLoading) covers every entry until the scene is drawn. What the warp still does: the field
+	// and buff names wait 3 s, and the warp/channel flags are spent.
+	m_fLoadUiTime = 10.f;
 	if( g_pData != NULL && g_pData->GetLocationManager()->IsValidWarpField(g_pData->GetStateArg()) == false && g_pInstanceData->IsChangeChannel() == false)
-	{
-		// 정상적인 루트로 마을도착
-		m_fLoadUiTime = 10.f;
-		return;
-	}
+		return;	// arrived the usual way
 
 	m_fFieldNameTime = -3.f;
 	m_fBuffNameTime	= -3.f;
-	m_fLoadUiTime = 0.f;
 	g_pData->SetStateArg(0);
-
-
-
-	// 워프로 마을도착 or 채널이동
-    ASSERT( m_pDLGLoadingState == NULL );
-	m_pDLGLoadingState = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_PVP_Game_Loading_State.lua", 0.0f );
-    ASSERT( m_pDLGLoadingState != NULL );
-    if ( m_pDLGLoadingState != NULL )
-	    m_pDLGLoadingState->SetColor( D3DXCOLOR(1.0f,1.0f,1.0f,1.0f) );
-
-    ASSERT( m_pCX2GameLoadingTip == NULL );
-	m_pCX2GameLoadingTip	= new CX2GameLoadingTip();
-	if( NULL != m_pCX2GameLoadingTip )
-		m_pCX2GameLoadingTip->SetVillageSetting();
-    ASSERT( m_pCX2GameLoadingTip != NULL );
-
-	wstring wstrImgL = L"";
-	wstring wstrImgR = L"";
-	LoadFieldImage(wstrImgL, wstrImgR);
-
 	g_pInstanceData->SetChangeChannel(false);
-
-	if(wstrImgL.empty() == false && wstrImgR.empty() == false )
-	{
-        CKTDGUIStatic* pStatic = ( m_pDLGLoadingState != NULL ) ? (CKTDGUIStatic*) m_pDLGLoadingState->GetControl( L"Static_Loading_Dungeon_BG" ) : NULL;
-
-		// 그림 두장
-		if( pStatic != NULL )
-		{
-			bool bCheck = false;
-
-			if(pStatic->GetPicture(0) != NULL)
-			{
-				pStatic->GetPicture(0)->SetShow(false);
-			}
-
-			bool bCheck1 = false;
-			bool bCheck2 = false;
-			if(pStatic->GetPicture(1) != NULL)
-			{
-				bCheck1 = pStatic->GetPicture(1)->SetTex( wstrImgL.c_str() );
-			}
-			if(pStatic->GetPicture(2) != NULL)
-			{
-				bCheck2 = pStatic->GetPicture(2)->SetTex( wstrImgR.c_str() );
-			}
-			bCheck = bCheck1 && bCheck2;
-
-
-			if(bCheck == true)
-			{
-				// 정상적으로 그림이 나오는 상황 : LoadingTip Object를 한줄팁 표시로 바꾸자.
-				pStatic->SetShow(true);
-				// 로딩팁 생성
-                if ( m_pCX2GameLoadingTip != NULL )
-				    m_pCX2GameLoadingTip->CreateLoadingOneLineTip();
-			}
-			else
-			{
-				m_fLoadUiTime = 10.f;
-				return;
-			}
-		}
-		else
-		{
-			m_fLoadUiTime = 10.f;
-			return;
-		}
-	}
-	else
-	{
-		m_fLoadUiTime = 10.f;
-		return;
-	}
 }
 
 void CX2TFieldGame::OpenFieldName()

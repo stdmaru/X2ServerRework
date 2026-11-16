@@ -529,6 +529,16 @@ so the loading percentage (anchored to the right edge) sat on stray pixels. It n
 UI pieces scaled with linear filtering picked up their atlas neighbours (the vigor bar's end piece, `EXP_BG_RIGHT_2`,
 showed a light 1-pixel column at 1920×1080); fixed on 2026-11-15, see the next sections.
 
+## Overlay stage and load counters (2026-11-16, `client/scene-loading`)
+
+For the [scene loading screen](client-x2lib.md#scene-loading-screen-2026-11-16-clientscene-loading):
+
+- `CKTDXApp::SetOverlayStage`: one stage (not owned) moved after every stage of the chain in each step and drawn
+  after them in each frame, whatever the chain holds.
+- `CKTDXDeviceManager::GetPendingLoadCounts`: loads queued (`PendDevice`, `CreateAndPendDevice`, every priority) and
+  finished (after `LoadAndCloseDevice`, on the loading thread or the foreground queue) since start, as atomics. The
+  queue is idle when they are equal; a mesh's textures open inside its load, so they count with it.
+
 ## Pictures sample only their key (2026-11-15, `client/ui-atlas-clamp`, [T49](../project/decisions.md))
 
 **Behavior change.** `CKTDGUIControl::RenderVertex` (every textured UI picture) gives the device the bounding box of

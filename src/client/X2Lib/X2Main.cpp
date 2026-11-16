@@ -544,6 +544,12 @@ CX2Main::~CX2Main(void)
 
 	SAFE_DELETE(m_threadCheckWindowInfo);
 
+	if ( m_pSceneLoading != NULL )
+	{
+		g_pKTDXApp->SetOverlayStage( NULL );
+		SAFE_DELETE( m_pSceneLoading );
+	}
+
 
 
 
@@ -2631,6 +2637,8 @@ bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 
 		m_NowStateID = (X2_STATE)stateID;
 		StateInLog();
+		if ( m_NowStateID == XS_VILLAGE_MAP || m_NowStateID == XS_BATTLE_FIELD )
+			BeginSceneLoading();
 #ifdef X2_DEV_TOOLS
 		CKTDGUIAnchorRecorder::SetScene( StateName( m_NowStateID ) );
 #endif
@@ -4909,6 +4917,16 @@ void CX2Main::CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCust
 		}
 	}
 
+}
+
+void CX2Main::BeginSceneLoading()
+{
+	if ( m_pSceneLoading == NULL )
+	{
+		m_pSceneLoading = new CX2SceneLoading();
+		g_pKTDXApp->SetOverlayStage( m_pSceneLoading );
+	}
+	m_pSceneLoading->Begin();
 }
 
 void CX2Main::DeleteStateChangeDLG()

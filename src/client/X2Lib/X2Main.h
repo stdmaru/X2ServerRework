@@ -401,6 +401,7 @@
 #include "./X2StateSquareGame.h"
 
 #include "./X2StateField.h"
+#include "./X2SceneLoading.h"
 
 
 #include "./X2StatePVPResult.h"
@@ -1183,6 +1184,8 @@ class CX2Main : public CKTDXStage
 		D3DXVECTOR2		GetWindowPos( D3DXVECTOR2 windowSize, D3DXVECTOR2 wantMousePoint );
 		void			CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCustomLuaFileName = L"", wstring wstrPlaySoundFileName = L"" );
 		void			DeleteStateChangeDLG();
+		// The scene loading screen: shown until the village or field being entered is loaded and drawn.
+		void			BeginSceneLoading();
 
 
 		void			SetShowUnitViewerUI( bool bShow ) { CX2UnitViewerUI::SetShowUnitViewerUI( bShow ); }
@@ -1603,6 +1606,7 @@ class CX2Main : public CKTDXStage
 
 
 		CKTDGUIDialogType				m_pDLGStateChange;
+		CX2SceneLoading*				m_pSceneLoading = NULL;
 		vector<wstring>				m_KOMList;
 		vector<wstring>				m_MP3List;
 

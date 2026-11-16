@@ -61,6 +61,14 @@ class CKTDXDeviceManager :
 
         void    ResumeThread();
 
+        // Background loads (all priorities) queued and finished since start, for loading screens: the queue is idle
+        // when they are equal (docs/porting/client-x2lib.md, scene loading). Thread-safe.
+        void    GetPendingLoadCounts( uint32_t& uQueued, uint32_t& uFinished ) const
+        {
+            uFinished = m_uLoadsFinished.load( std::memory_order_acquire );
+            uQueued = m_uLoadsQueued.load( std::memory_order_acquire );
+        }
+
         bool    BeginFullSync();
         bool    EndFullSync();
 
@@ -223,6 +231,9 @@ class CKTDXDeviceManager :
         HANDLE                      m_hFullSyncEventForDeviceThread;
 
         int                         m_iForegroundLoadCounter;
+
+        std::atomic<uint32_t>       m_uLoadsQueued{ 0 };
+        std::atomic<uint32_t>       m_uLoadsFinished{ 0 };
 
 
 

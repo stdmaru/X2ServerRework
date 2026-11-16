@@ -451,13 +451,11 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       it runs. The window sets its Wayland `app_id` / X11 class `x2` and its own icon (from `src/client/X2/Elsword.ico`),
       and `tools/client/install.sh` installs `x2.desktop` and the icon. On the user's Hyprland + quickshell bar the
       embedded icon alone was not enough; the theme icon `x2` is what shows ([Client folder](../tools/client-folder.md)).
-- [ ] **Later** (user, 2026-11-14: after the UI editor): a loading screen when moving between village and field and when
-      entering a channel, where the original shows the map loading in place. The original already has the pieces:
-      `CX2TFieldGame::LoadUI` shows `DLG_PVP_Game_Loading_State.lua` with the area's pictures, but only after a warp or a
-      channel change; `CX2BattleFieldGame::CreateLoadingUI` does the same only for boss raids, and both close after a
-      fixed 3 s. Proposed: show it on every entry and close it when loading really ends (loading thread idle,
-      `EGS_FIELD_LOADING_COMPLETE_ACK`, units loaded), with a minimum time, a fade and a safety limit, behind a
-      `src/define.h` switch (T47). Estimated about a day; its own branch.
+- [ ] `client/scene-loading` (user, 2026-11-16; started 2026-11-16, PR #95): a loading screen on every village and
+      field entry (first login layout, bottom bar), closed only when the background loads are idle, the server
+      confirmed the entry and the scene was drawn behind it; replaces the timed 3 s warp/raid screens, no switch
+      (user's call) ([X2Lib](../porting/client-x2lib.md#scene-loading-screen-2026-11-16-clientscene-loading)).
+      Left: the user's check in game.
 
 ## Phase 5 — Deep cleanup
 

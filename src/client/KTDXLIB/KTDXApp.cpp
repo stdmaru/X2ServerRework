@@ -529,6 +529,8 @@ void CKTDXApp::FrameProcess()
 					pCKTDXStage->OnFrameMove( m_dTime, m_fConstElapsedTime );
 			}
 		}
+		if( m_pOverlayStage != NULL )
+			m_pOverlayStage->OnFrameMove( m_dTime, m_fConstElapsedTime );
 		//???????? ????
 		for( UINT i = 0; i < m_vecStageChain.size(); i++ )
 		{
@@ -617,6 +619,8 @@ HRESULT CKTDXApp::OnFrameRender()
 			pCKTDXStage->OnFrameRender();
 		}
 	}
+	if( m_pOverlayStage != NULL )
+		m_pOverlayStage->OnFrameRender();
 
 	if( bInterpolateView )
 		SetViewTransform( &m_TickViewMatrix );
