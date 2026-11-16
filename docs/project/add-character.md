@@ -99,6 +99,14 @@ and Elesis's first two (with the sync above) and Add's first (this PR) come next
   `CorrelateUnitClassTemplet`) but not the third paths; BR 2017 has all of them (and their job change quests in
   `FieldQuest.lua`), after the skill revamp; V5's `ClientScript` has the skills in our format.
 - **Server data**: V5's `StatTable` has 33–36 and 123–126; `ClassChangeSkill`/`ClassChangeTable` have Add's paths.
+- **Job change quests and their dialogue** (checked 2026-11-16): BR 2017's `FieldQuest.lua` has all of them in PT-BR,
+  none in BR 2014-08 or V5: Add 2nd 35540–35543 (Arc Tracer) and 35550–35554 (Mastermind), Add 3rd 35580–35583 and
+  35590–35594, Ara 3rd 35560–35563 and 35564–35568, Elesis 3rd 35569–35572 and 35573–35577. Bring them with
+  `tools/assets/merge_quests.py --quests <IDs> --source <BR 2017 data036>` once `Enum.lua` has the classes: the first
+  quest of each path is open to the base class, so adding them before the classes exist would offer a job change the
+  game cannot do. Every class we have today has its job change quests (checked 2026-11-16).
+- **Per-character scene lines** need nothing per class: a scene picks its line by unit type (`PLAYER_TEXT<type - 1>`),
+  and our scenes have all nine types since 2026-11-16 (`merge_player_text.py`, [client_data](../tools/client-data.md)).
 - **Still to check in PR 83**: packets or structs these classes need (T4: the original `x2.exe` must still connect);
   `Game01` (`gup_create_unit` and the job change procedures for the new classes); the character switches of PR 81.
 
