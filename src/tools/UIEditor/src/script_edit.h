@@ -16,6 +16,7 @@ enum class CallKind {
     AddPicture, // a static's AddPicture(picture)
     AddControl, // g_pUIDialog:AddControl(control)
     PicturePos, // a picture's SetPos(D3DXVECTOR2(x, y)), which places it over its SetPoint's LEFT_TOP
+    Placement,  // g_pUIDialog:AddPlacement({ NAME = ..., POS = ... }), a named placement (T52)
 };
 
 // Moves what the call of `kind` on `line` (1-based) sets by (dx, dy) layout units: the two arguments of SetPos or a picture's D3DXVECTOR2, every

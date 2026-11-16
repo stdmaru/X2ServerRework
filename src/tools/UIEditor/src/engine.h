@@ -93,6 +93,18 @@ struct ControlInfo {
     GameSets game;
 };
 
+// A named placement the dialog's script declares (AddPlacement, T52).
+struct PlacementInfo {
+    std::string name;
+    float pos[2] = {};          // fixed: the dialog's position; with a target: from the target's position (and control's offset)
+    std::string anchor;         // the placement's ANCHOR; empty: the dialog's own
+    std::string target;         // the target dialog's script (lower case); empty: a fixed placement
+    std::string control;        // the target's control; empty: the target dialog itself
+    bool resolved = false;      // where it puts the dialog now is known (its target is shown)
+    float resolvedPos[2] = {};  // that position (the dialog's GetPos)
+    SourceRef source;           // its AddPlacement
+};
+
 struct DialogInfo {
     std::string script;         // as opened (DLG_*.lua)
     std::string name;           // the dialog's SetName
@@ -105,6 +117,8 @@ struct DialogInfo {
     bool placedByCode = false;
     bool loaded = false;        // the script ran without error
     SourceRef posSource;        // its SetPos (the last one)
+    std::vector<PlacementInfo> placements;
+    std::string placement;      // the one in effect; empty: none
     std::vector<ControlInfo> controls;
 };
 
@@ -133,6 +147,9 @@ public:
     // Moves an open dialog to a layout position under its anchor, as the game's SetPos.
     void SetDialogPos(int index, float x, float y);
     void SetDialogShown(int index, bool shown);
+    // Puts an open dialog at one of its script's named placements, as the game's code does (ApplyPlacement); false
+    // when it declares none by that name. An empty name stops following one.
+    bool ApplyPlacement(int index, const std::string& name);
     // Loads another script into an open dialog, as the game's code does (CKTDGUIDialog::OpenScriptFile).
     bool LoadScriptInto(int index, const std::string& script, std::string& error);
     const std::vector<std::string>& DialogExtraScripts(int index) const;

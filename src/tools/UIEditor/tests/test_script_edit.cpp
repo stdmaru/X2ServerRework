@@ -47,6 +47,15 @@ TEST_CASE("script edit: a dialog's SetPos")
     CHECK_FALSE(MoveCall(text, 9, CallKind::DialogPos, 1, 1, error));
 }
 
+TEST_CASE("script edit: a named placement's POS")
+{
+    std::string text = "g_pUIDialog:AddPlacement({ NAME = \"MIDDLE\", POS = D3DXVECTOR2(250, 300) })\n";
+    std::string error;
+    REQUIRE_MESSAGE(MoveCall(text, 1, CallKind::Placement, -50, 4, error), error);
+    CHECK(text == "g_pUIDialog:AddPlacement({ NAME = \"MIDDLE\", POS = D3DXVECTOR2(200, 304) })\n");
+    CHECK_FALSE(MoveCall(text, 1, CallKind::DialogPos, 1, 1, error));
+}
+
 TEST_CASE("script edit: a picture's SetPos")
 {
     std::string text = "P:SetPos(D3DXVECTOR2(-245, BASE_Y))\nP:SetPos(1, 2)\n";

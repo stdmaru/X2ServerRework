@@ -15,19 +15,20 @@
 #include <set>
 #include <sstream>
 
+std::wstring UIScriptKey( const wchar_t* pwszName )
+{
+	std::wstring wstrKey = pwszName != NULL ? pwszName : L"";
+	const size_t uSlash = wstrKey.find_last_of( L"/\\" );
+	if ( uSlash != std::wstring::npos )
+		wstrKey.erase( 0, uSlash + 1 );
+	for ( wchar_t& c : wstrKey )
+		c = static_cast<wchar_t>( std::towlower( static_cast<wint_t>( c ) ) );
+	return wstrKey;
+}
+
 namespace
 {
-	// Dialog scripts are named without a folder, in any case.
-	std::wstring ScriptKey( const wchar_t* pwszName )
-	{
-		std::wstring wstrKey = pwszName != NULL ? pwszName : L"";
-		const size_t uSlash = wstrKey.find_last_of( L"/\\" );
-		if ( uSlash != std::wstring::npos )
-			wstrKey.erase( 0, uSlash + 1 );
-		for ( wchar_t& c : wstrKey )
-			c = static_cast<wchar_t>( std::towlower( static_cast<wint_t>( c ) ) );
-		return wstrKey;
-	}
+	std::wstring ScriptKey( const wchar_t* pwszName ) { return UIScriptKey( pwszName ); }
 
 	std::wstring ToWide( const char* pszUtf8 )
 	{
@@ -569,6 +570,12 @@ void CKTDGUIAnchorRecorder::NoteLive( const CKTDGUIDialogManager& kManager )
 			+ ( pDialog->GetFront() ? "1" : "0" ) + '\t' + std::to_string( static_cast<int>( pDialog->GetAnchor() ) ) + '\n';
 		for ( size_t s = 1; s < vecScripts.size(); ++s )
 			str += "script\t" + ToUtf8( ScriptKey( vecScripts[s].c_str() ) ) + '\n';
+		if ( const CKTDGUIDialog::Placement* pPlacement = pDialog->GetPlacementInEffect() )
+		{
+			str += "placement\t";
+			AppendEscaped( str, ToUtf8( pPlacement->wstrName ) );
+			str += '\n';
+		}
 		const std::vector<CKTDGUIControl*>& vecControls = pDialog->GetControlList();
 		for ( size_t i = 0; i < vecControls.size(); ++i )
 		{

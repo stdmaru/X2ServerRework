@@ -627,6 +627,35 @@ the width of its fade in layout units:
 The login screen (`DLG_Login_Back.lua`) is the first: its four 512×512 tiles became one 2560×1440 `DLG_Login_16x9.tga`
 ([client_data](../tools/client-data.md#content-changes-t42)).
 
+## Named placements (2026-11-16, `client/widescreen-migration`, [T52](../project/decisions.md))
+
+A dialog the game's code shows at fixed spots declares them in its own script, and the code asks for one by name
+instead of passing coordinates (`CKTDGUIDialog::ApplyPlacement`), so the [UI editor](../tools/ui-editor.md) edits them:
+
+```lua
+g_pUIDialog:AddPlacement({ NAME = "MIDDLE", POS = D3DXVECTOR2(250, 300) })
+g_pUIDialog:AddPlacement({ NAME = "LEFT_EDGE", POS = D3DXVECTOR2(0, 600), ANCHOR = "LEFT" })
+g_pUIDialog:AddPlacement({ NAME = "QUEST_MENU", TARGET = "DLG_UI_Menu.lua", CONTROL = "Button_Quest", POS = D3DXVECTOR2(10, 20) })
+```
+
+- **Fixed** (no `TARGET`): the dialog goes to `POS`, under the placement's `ANCHOR` while it is in effect (the dialog's
+  own anchor comes back with the next placement or `ClearPlacement`).
+- **With a target**: `TARGET` is a dialog script (matched as `UIAnchors.lua` matches, `UIScriptKey`), `CONTROL` one of
+  its controls (none: the dialog itself). `POS` is in the target's layout units, from its dialog's position plus the
+  control's offset: at 4:3 the dialog lands at target position + offset + `POS`, as the original's literal did. The
+  point goes through the control's anchor or stretch (`ControlXToDialogX`) onto the canvas, then under the dialog's own
+  anchor, so it follows the target at any width. The target is the topmost shown dialog the dialog manager has with
+  that script (`FindShownDialog`; every script loaded into a dialog counts, `HasScript`).
+- **Following:** `OnFrameMove` resolves the placement in effect each step (`FollowPlacementTarget`) and moves the
+  dialog by what the target moved, with its `Move` goal and queued moves, so the code's animations on top of it (the
+  tutorial pointer's bounce) stay relative to the target. While the target is not shown the dialog stays where it is;
+  if it was not shown when the placement was applied, the dialog jumps to it when it shows.
+- `ApplyPlacement` is from the script, not the code: the anchor recorder does not count it as placed by code. The live
+  snapshot (`UILive.tsv`) writes the placement in effect (`placement` line), and while a tool tracks, the
+  `AddPlacement` call is noted (`ScriptCallKind::Placement`) so the editor moves its `POS`.
+- A placement without `NAME`, an unknown `ANCHOR`, and `ApplyPlacement` of a name the script lacks are reported on
+  stderr; the last returns false and changes nothing.
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

@@ -96,6 +96,8 @@ LiveSnapshot LiveSnapshot::Parse(std::istream& in)
             snapshot.dialogs.push_back(std::move(d));
         } else if (kind == "script" && dialog != nullptr && f.size() >= 2) {
             dialog->extraScripts.push_back(f[1]);
+        } else if (kind == "placement" && dialog != nullptr && f.size() >= 2) {
+            dialog->placement = f[1];
         } else if (kind == "control" && dialog != nullptr && f.size() >= 3) {
             Control c{Int(f[1]), f[2] == "1", f.size() > 3 ? Int(f[3]) : -1, f.size() > 4 ? Int(f[4]) : -1};
             if (f.size() > 6) {

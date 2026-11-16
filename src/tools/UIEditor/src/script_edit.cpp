@@ -289,6 +289,8 @@ bool KindMatches(CallKind kind, const std::string& full)
         return name == "AddControl";
     case CallKind::PicturePos:
         return name == "SetPos";
+    case CallKind::Placement:
+        return name == "AddPlacement";
     }
     return false;
 }
@@ -310,6 +312,8 @@ const char* KindName(CallKind kind)
         return "AddControl";
     case CallKind::PicturePos:
         return "picture SetPos";
+    case CallKind::Placement:
+        return "AddPlacement";
     }
     return "?";
 }
