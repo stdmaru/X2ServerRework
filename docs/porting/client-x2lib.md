@@ -285,6 +285,15 @@ longer (two passes over a 59 MB script). LuaJIT allows 65,536 constants in a fun
 `wchar_t` while every reader expects UTF-16 (model names read as "M"); it now writes UTF-16 as the pointer overload
 ([KTDXLib](client-ktdxlib.md)).
 
+## Special skill speech balloon (2026-11-16, `client/cutin-talk-elesis-add`)
+
+`CX2GUUser::GetCutInFileName` picks the balloon (`HQ_CutIn_Talk_<L|R>_<name>_0n.dds`) shown with the portrait when a
+special active skill is used. The original had no case for Elesis or Add: the name ended in `_`, the texture failed to
+open and `CutIn_Talk_*` was drawn with the texture still bound, the portrait, so a second copy of the character appeared
+where the balloon goes. Fix: Elesis uses her own balloons (`Elesis`, `Saber_Knight` also for Grand Master,
+`Pyro_Knight` also for Blazing Heart); Add, who has none in the assets, and any class without a case get the generic
+`HQ_CutIn_Talk_<L|R>_<0..2>.dds` ("Toma essa!", ...).
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

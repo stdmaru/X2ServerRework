@@ -249,6 +249,35 @@ namespace _CONST_CUTIN_
 		L"Soma_02",
 		L"Soma_03",
 	};
+
+	static const wstring s_SkillCutInElesis[] =
+	{
+		L"Elesis_01",
+		L"Elesis_02",
+		L"Elesis_03",
+	};
+
+	static const wstring s_SkillCutInElesisSaber[] =
+	{
+		L"Saber_Knight_01",
+		L"Saber_Knight_02",
+		L"Saber_Knight_03",
+	};
+
+	static const wstring s_SkillCutInElesisPyro[] =
+	{
+		L"Pyro_Knight_01",
+		L"Pyro_Knight_02",
+		L"Pyro_Knight_03",
+	};
+
+	// Class-less speech balloons (HQ_CutIn_Talk_<L|R>_<n>.dds), for classes without their own.
+	static const wstring s_SkillCutInGeneric[] =
+	{
+		L"0",
+		L"1",
+		L"2",
+	};
 }
 
 
@@ -404,7 +433,22 @@ wstring CX2GUUser::GetCutInFileName(bool IsRight)
 	case CX2Unit::UC_ARA_YAMA_RAJA:
 		wstrCutIn += _CONST_CUTIN_::s_SkillCutInSoma[texID];
 		break;
+	case CX2Unit::UC_ELESIS_KNIGHT:
+		wstrCutIn += _CONST_CUTIN_::s_SkillCutInElesis[texID];
+		break;
+	case CX2Unit::UC_ELESIS_SABER_KNIGHT:
+	case CX2Unit::UC_ELESIS_GRAND_MASTER:
+		wstrCutIn += _CONST_CUTIN_::s_SkillCutInElesisSaber[texID];
+		break;
+	case CX2Unit::UC_ELESIS_PYRO_KNIGHT:
+	case CX2Unit::UC_ELESIS_BLAZING_HEART:
+		wstrCutIn += _CONST_CUTIN_::s_SkillCutInElesisPyro[texID];
+		break;
 	default:
+		// The original had no case for Elesis and Add: the name ended in "_", the texture failed
+		// to open and the balloon was drawn with the texture still bound (the portrait cut-in).
+		// Add has no balloons of its own; any class without a case gets the generic ones.
+		wstrCutIn += _CONST_CUTIN_::s_SkillCutInGeneric[texID];
 		break;
 	}
 	return wstrCutIn;
