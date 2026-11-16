@@ -155,7 +155,7 @@ TEST_CASE("assets: archive edits wait for a sync, which records new files and dr
     CHECK_FALSE(data.SetFolderArchive("../outside", "a.kom", count, error));
 
     SyncStats stats;
-    REQUIRE_MESSAGE(data.Sync(2, stats, error), error);
+    REQUIRE_MESSAGE(data.Sync(stats, error), error);
     CHECK(stats.added == 2);  // Jump.ogg, Sky.dds
     CHECK(stats.removed == 1);
     CHECK(stats.moved == 1);  // Floor.dds
@@ -265,7 +265,7 @@ TEST_CASE("assets: ignored files stay out of the manifest and the archives")
     REQUIRE(status.untracked.size() == 1);
 
     SyncStats stats;
-    REQUIRE_MESSAGE(data.Sync(2, stats, error), error);
+    REQUIRE_MESSAGE(data.Sync(stats, error), error);
     CHECK(stats.added == 1);  // Jump.ogg only
     CHECK(StateOf(data, "layout.txt") == FileState::Ignored);
     const PackStats packed = f.DoPack();
@@ -294,7 +294,7 @@ TEST_CASE("assets: a sync creates new archives, and pack writes them")
     REQUIRE_MESSAGE(data.SetArchive("Hit.ogg", "aa.kom", error), error);
 
     SyncStats stats;
-    REQUIRE_MESSAGE(data.Sync(2, stats, error), error);
+    REQUIRE_MESSAGE(data.Sync(stats, error), error);
     CHECK(stats.archives == 1);
     CHECK(data.Archives() == std::vector<std::string>{"a.kom", "aa.kom", "b.kom"});  // load order: by name
     CHECK(data.GetManifest().archives[1].count == 2);
@@ -334,7 +334,7 @@ TEST_CASE("assets: pack can rewrite only the archives that changed")
     CHECK(fs::exists(f.out / "b.kom"));
 }
 
-TEST_CASE("assets: a pack commits what it wrote: client_data has no changes after it")
+TEST_CASE("assets: a commit makes client_data's content the original, and a plain pack does not")
 {
     Fixture f;
     const Bytes wall = Pattern(4321, 16);
@@ -345,14 +345,28 @@ TEST_CASE("assets: a pack commits what it wrote: client_data has no changes afte
         ClientData data = f.Open();
         SyncStats synced;
         std::string error;
-        REQUIRE_MESSAGE(data.Sync(2, synced, error), error);  // adds Jump.ogg, drops Hit.ogg
+        REQUIRE_MESSAGE(data.Sync(synced, error), error);  // adds Jump.ogg, drops Hit.ogg
     }
     WriteFile(f.clientData / "sound" / "Miss.ogg", Pattern(333, 18));  // edited after the sync
     fs::remove(f.clientData / "ui" / "scripts" / "DLG_Other.lua");    // deleted after the sync
 
     const PackStats stats = f.DoPack();
-    CHECK(stats.committed == 4);  // Wall.dds and Miss.ogg edited, Jump.ogg new, DLG_Other.lua dropped
+    CHECK(stats.committed == 0);
     CHECK(stats.added == 1);
+    CHECK(StateOf(f.Open(), "Miss.ogg") == FileState::Modified);  // a pack only writes the archives
+    const Bytes a0 = ReadFile(f.out / "a.kom"), b0 = ReadFile(f.out / "b.kom");
+
+    ClientData::CommitStats committed;
+    std::string error;
+    ClientData data = f.Open();
+    REQUIRE_MESSAGE(data.Commit(2, committed, error), error);
+    CHECK(committed.sync.removed == 1);  // DLG_Other.lua, by the commit's sync
+    CHECK(committed.committed == 3);     // Wall.dds and Miss.ogg edited, Jump.ogg new
+    for (const ClientDataFile& file : data.Files())
+    {
+        CAPTURE(file.name);
+        CHECK(file.state == FileState::Unchanged);
+    }
     ClientData after = f.Open();
     for (const ClientDataFile& file : after.Files())
     {
@@ -360,10 +374,69 @@ TEST_CASE("assets: a pack commits what it wrote: client_data has no changes afte
         CHECK(file.state == FileState::Unchanged);
     }
 
-    // The next pack reproduces what was packed, byte for byte, from the committed manifest.
-    const Bytes a1 = ReadFile(f.out / "a.kom"), b1 = ReadFile(f.out / "b.kom");
+    // Packing the committed manifest gives the same archives as packing the changes did.
     fs::remove_all(f.out);
     f.DoPack();
-    CHECK(ReadFile(f.out / "a.kom") == a1);
-    CHECK(ReadFile(f.out / "b.kom") == b1);
+    CHECK(ReadFile(f.out / "a.kom") == a0);
+    CHECK(ReadFile(f.out / "b.kom") == b0);
+}
+
+TEST_CASE("assets: moving, renaming and trashing update the model without a rescan")
+{
+    Fixture f;
+    ClientData data = f.Open();
+    std::string error;
+    const std::string wallHash = data.Find("Wall.dds")->sha256;
+
+    REQUIRE_MESSAGE(data.MoveFile("Wall.dds", "art/walls", error), error);
+    CHECK(data.Find("Wall.dds")->folder == "art/walls");
+    CHECK(data.Find("Wall.dds")->sha256 == wallHash);
+    CHECK(data.Folders().contains("art"));
+    CHECK(fs::exists(f.clientData / "art" / "walls" / "Wall.dds"));
+    CHECK_FALSE(data.MoveFile("Wall.dds", "", error, "Floor.dds"));  // another file's name
+
+    REQUIRE_MESSAGE(data.MoveFile("Wall.dds", "art/walls", error, "Wall2.dds"), error);  // rename
+    CHECK(StateOf(data, "Wall.dds") == FileState::Deleted);  // the record's name is gone
+    CHECK(StateOf(data, "Wall2.dds") == FileState::Untracked);
+    REQUIRE_MESSAGE(data.MoveFile("Wall2.dds", "art/walls", error, "Wall.dds"), error);
+    CHECK(StateOf(data, "Wall.dds") == FileState::Unchanged);
+
+    REQUIRE_MESSAGE(data.MoveFolder("art", "ui", error), error);
+    CHECK(data.Find("Wall.dds")->folder == "ui/art/walls");
+    CHECK(data.Folders().contains("ui/art/walls"));
+    CHECK_FALSE(data.Folders().contains("art"));
+    CHECK_FALSE(data.MoveFolder("ui", "ui/art", error));  // into itself
+    REQUIRE_MESSAGE(data.MoveFolder("ui/art", "ui", error, "pictures"), error);
+    CHECK(data.Find("Wall.dds")->folder == "ui/pictures/walls");
+
+    REQUIRE_MESSAGE(data.CreateFolder("empty/one", error), error);
+    CHECK(data.Folders().contains("empty/one"));
+    REQUIRE_MESSAGE(data.RemoveEmptyFolder("empty/one", error), error);
+    CHECK_FALSE(data.Folders().contains("empty/one"));
+
+    const fs::path trash = f.clientData / ".kom" / "trash" / "test";
+    ClientData::Trashed folder, file;
+    REQUIRE_MESSAGE(data.Trash("ui/pictures", true, trash, folder, error), error);
+    CHECK(StateOf(data, "Wall.dds") == FileState::Deleted);
+    CHECK(folder.files.size() == 1);
+    REQUIRE_MESSAGE(data.Trash("sound/Hit.ogg", false, trash, file, error), error);
+    CHECK(StateOf(data, "Hit.ogg") == FileState::Deleted);
+    CHECK(fs::exists(trash / "sound" / "Hit.ogg"));
+
+    REQUIRE_MESSAGE(data.Restore(folder, trash, error), error);
+    REQUIRE_MESSAGE(data.Restore(file, trash, error), error);
+    CHECK(StateOf(data, "Wall.dds") == FileState::Unchanged);
+    CHECK(StateOf(data, "Hit.ogg") == FileState::Unchanged);
+    CHECK(data.Locate("Wall.dds") == f.clientData / "ui" / "pictures" / "walls" / "Wall.dds");
+
+    // What the model says is what a fresh read finds.
+    ClientData fresh = f.Open();
+    for (const ClientDataFile& file2 : data.Files())
+    {
+        CAPTURE(file2.name);
+        const ClientDataFile* g = fresh.Find(file2.name);
+        REQUIRE(g);
+        CHECK(g->folder == file2.folder);
+        CHECK(g->state == file2.state);
+    }
 }

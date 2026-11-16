@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <functional>
 #include <map>
+#include <set>
 #include <span>
 #include <string>
 #include <string_view>
@@ -41,6 +42,7 @@ struct ClientDataFile
     FileState state = FileState::Unchanged;
     std::ptrdiff_t record = -1;  // in Manifest().files; -1: untracked
     std::uint64_t size = 0;      // on disk
+    std::int64_t time = 0;       // on disk (last write), for the hash cache
     std::string sha256;          // of the file on disk
 };
 
@@ -66,6 +68,8 @@ public:
     const std::filesystem::path& Root() const { return root_; }
     const Manifest& GetManifest() const { return manifest_; }
     const std::vector<ClientDataFile>& Files() const { return files_; }
+    // Every folder of client_data (relative, '/'), empty ones included.
+    const std::set<std::string>& Folders() const { return folders_; }
 
     // By name, ASCII case-insensitive; a deleted file too. Null if unknown.
     const ClientDataFile* Find(std::string_view name) const;
@@ -99,6 +103,18 @@ public:
         edits_.clear();
         newArchives_.clear();
     }
+    // The edits as a value, to put them back (undo).
+    struct Edits
+    {
+        std::map<std::string, std::string> archives;
+        std::vector<std::string> newArchives;
+    };
+    Edits GetEdits() const { return {edits_, newArchives_}; }
+    void SetEdits(Edits edits)
+    {
+        edits_ = std::move(edits.archives);
+        newArchives_ = std::move(edits.newArchives);
+    }
 
     // .kom/ignore.txt, written at once. Ignore(file) adds the file's own path, IgnoreFolder the folder; Unignore
     // drops every pattern that matches the file (false if one is not its own path: `error` names it).
@@ -106,24 +122,61 @@ public:
     bool Ignore(std::string_view name, std::string& error);
     bool IgnoreFolder(std::string_view folder, std::string& error);
     bool Unignore(std::string_view name, std::string& error);
+    bool SetIgnores(IgnoreList list, std::string& error);  // all of them (undo)
 
     // Writes the manifest: untracked files become new records (in ArchiveOf, with the archive's most common
     // algorithm), deleted files' records are dropped, archive edits are applied. Modified files stay modified (the
-    // manifest keeps their original). The previous manifest is kept as manifest.tsv.bak. Then rescans.
-    bool Sync(unsigned jobs, SyncStats& stats, std::string& error);
+    // manifest keeps their original). The previous manifest is kept as manifest.tsv.bak.
+    bool Sync(SyncStats& stats, std::string& error);
 
-    // On disk, at once (no sync needed to see them, a sync to record them). Folders are relative, '/'.
+    // Makes client_data's content the original (.kom are the source of truth, client_data the workspace): a Sync,
+    // then the manifest takes every file as it is now (modified and new files become originals, encoded as a pack
+    // would; deleted ones leave it). Nothing is written but the manifest (previous one: manifest.tsv.bak) and
+    // .kom/originals; afterwards client_data shows no changes and a pack writes these contents.
+    struct CommitStats
+    {
+        SyncStats sync;
+        std::size_t committed = 0;  // records that took the file's content
+    };
+    bool Commit(unsigned jobs, CommitStats& stats, std::string& error);
+
+    // On disk, at once, and in this model (no rescan needed to see them, a sync to record them). Folders are
+    // relative, '/'. A new name keeps the file's or folder's when empty.
     bool AddFile(const std::filesystem::path& source, std::string_view folder, std::string& error);  // copies it in
-    bool RemoveFile(std::string_view name, std::string& error);
-    bool MoveFile(std::string_view name, std::string_view folder, std::string& error);
+    bool RemoveFile(std::string_view name, std::string& error);  // for good
+    bool MoveFile(std::string_view name, std::string_view folder, std::string& error, std::string_view newName = {});
+    bool MoveFolder(std::string_view path, std::string_view parent, std::string& error, std::string_view newName = {});
+    bool CreateFolder(std::string_view path, std::string& error);
+    bool RemoveEmptyFolder(std::string_view path, std::string& error);
+
+    // A file (its path) or a folder moved to `trash` (a folder under .kom/, kept at the same relative path), so it can
+    // be restored with what this model knew of it.
+    struct Trashed
+    {
+        std::string path;
+        bool folder = false;
+        std::vector<ClientDataFile> files;
+        std::vector<std::string> folders;
+    };
+    bool Trash(std::string_view path, bool folder, const std::filesystem::path& trash, Trashed& out,
+               std::string& error);
+    bool Restore(const Trashed& item, const std::filesystem::path& trash, std::string& error);
+
+    // Writes the hash cache from the files as this model has them (moved files keep their hashes).
+    void SaveHashCache() const;
 
 private:
     std::string RecordKey(const ClientDataFile& file) const;
     bool Hash(unsigned jobs, std::string& error, const Progress& progress);
+    // States against the manifest of the files on disk; rebuilds the indexes.
+    void Classify(std::vector<ClientDataFile> disk);
+    std::vector<ClientDataFile> OnDisk() const;  // files_ but the deleted
+    void AddFolderChain(const std::string& path);
 
     std::filesystem::path root_;
     Manifest manifest_;
     std::vector<ClientDataFile> files_;
+    std::set<std::string> folders_;
     std::unordered_map<std::string, std::size_t> byName_;  // AsciiLower(name) -> files_
     std::map<std::string, std::string> edits_;             // AsciiLower(record or file name) -> archive
     std::vector<std::string> newArchives_;                 // CreateArchive, until a sync

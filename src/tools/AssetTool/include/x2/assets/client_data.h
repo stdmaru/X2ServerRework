@@ -60,8 +60,9 @@ struct IgnoreList
 std::filesystem::path IgnorePath(const std::filesystem::path& clientData);
 
 // The files of client_data by name (ASCII case-insensitive), skipping .kom/. Fails if a name is in two folders.
+// `folders`, when given, gets every folder (empty ones too).
 bool IndexFiles(const std::filesystem::path& clientData, std::vector<std::filesystem::path>& files,
-                std::string& error);
+                std::string& error, std::vector<std::filesystem::path>* folders = nullptr);
 
 struct Status
 {
@@ -83,10 +84,12 @@ struct PackOptions
     // PackStatePath), so packing after a small edit does not rewrite gigabytes. Archives missing there, or changed
     // there since, are written.
     bool onlyChanged = false;
-    // The archives written become the source of truth: the manifest takes what was packed (edited and new files
-    // become originals, files missing from client_data leave it; the previous manifest is kept as .bak), so
-    // client_data shows no changes after a pack. Off: the manifest is left as it was (a pack for elsewhere).
-    bool commit = true;
+    // The manifest takes what was packed (edited and new files become originals, files missing from client_data
+    // leave it; the previous manifest is kept as .bak), so client_data shows no changes afterwards. ClientData::Commit
+    // uses it with `write` off; a plain pack leaves the manifest as it is.
+    bool commit = false;
+    // Off: no archive is written (no destination needed), only what `commit` does; unchanged files are not read.
+    bool write = true;
     LogSink log;
     std::function<void(std::size_t done, std::size_t total)> progress;  // archives; from worker threads
 };
