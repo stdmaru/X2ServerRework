@@ -15,14 +15,25 @@ namespace x2::platform::detail {
 
 // One lock/condition for every kernel object keeps multi-object waits simple and correct.
 // Signals are rare compared to the work done between them, so contention is not a concern.
-std::mutex              g_mutex;
-std::condition_variable g_cond;
+// Never destroyed: a thread can still be waiting when the process exits (on Windows, ExitProcess ends it), and
+// glibc's pthread_cond_destroy, run by exit() for a static condition variable, blocks while anyone waits on it.
+std::mutex& Mutex()
+{
+    static std::mutex* const mutex = new std::mutex;
+    return *mutex;
+}
+
+std::condition_variable& Cond()
+{
+    static std::condition_variable* const cond = new std::condition_variable;
+    return *cond;
+}
 
 struct KernelObject
 {
     virtual ~KernelObject() = default;
-    virtual bool IsSignaled() const = 0;   // called with g_mutex held
-    virtual void OnWaitSatisfied() {}      // called with g_mutex held
+    virtual bool IsSignaled() const = 0;   // called with Mutex() held
+    virtual void OnWaitSatisfied() {}      // called with Mutex() held
 };
 
 struct Event final : KernelObject
@@ -71,18 +82,18 @@ HANDLE CreateEvent(const void*, BOOL manualReset, BOOL initialState, const wchar
 
 BOOL SetEvent(HANDLE h)
 {
-    std::lock_guard lock(g_mutex);
+    std::lock_guard lock(Mutex());
     Event* ev = As<Event>(h);
     if (!ev)
         return FALSE;
     ev->signaled = true;
-    g_cond.notify_all();
+    Cond().notify_all();
     return TRUE;
 }
 
 BOOL ResetEvent(HANDLE h)
 {
-    std::lock_guard lock(g_mutex);
+    std::lock_guard lock(Mutex());
     Event* ev = As<Event>(h);
     if (!ev)
         return FALSE;
@@ -95,7 +106,7 @@ BOOL CloseHandle(HANDLE h)
     if (!h || h == INVALID_HANDLE_VALUE)
         return FALSE;
     // the object itself lives on while a running thread still references it
-    std::lock_guard lock(g_mutex);
+    std::lock_guard lock(Mutex());
     delete h;
     return TRUE;
 }
@@ -105,7 +116,7 @@ DWORD WaitForMultipleObjects(DWORD count, const HANDLE* handles, BOOL waitAll, D
     if (count == 0 || count > MAXIMUM_WAIT_OBJECTS || !handles)
         return WAIT_FAILED;
 
-    std::unique_lock lock(g_mutex);
+    std::unique_lock lock(Mutex());
     std::vector<KernelObject*> objects(count);
     for (DWORD i = 0; i < count; ++i) {
         if (!handles[i] || handles[i] == INVALID_HANDLE_VALUE || !handles[i]->object)
@@ -135,9 +146,9 @@ DWORD WaitForMultipleObjects(DWORD count, const HANDLE* handles, BOOL waitAll, D
     };
 
     if (milliseconds == INFINITE)
-        g_cond.wait(lock, ready);
+        Cond().wait(lock, ready);
     else
-        g_cond.wait_for(lock, std::chrono::milliseconds(milliseconds), ready);
+        Cond().wait_for(lock, std::chrono::milliseconds(milliseconds), ready);
     return result;
 }
 
@@ -164,10 +175,10 @@ std::uintptr_t _beginthreadex(void*, unsigned, unsigned (*start)(void*), void* a
             }
             idReady.notify_one();
             const unsigned code = start(arg);
-            std::lock_guard lock(g_mutex);
+            std::lock_guard lock(Mutex());
             th->exitCode = code;
             th->finished = true;
-            g_cond.notify_all();
+            Cond().notify_all();
         }).detach();
     } catch (...) {
         delete box;
@@ -182,7 +193,7 @@ std::uintptr_t _beginthreadex(void*, unsigned, unsigned (*start)(void*), void* a
 
 BOOL GetExitCodeThread(HANDLE h, DWORD* exitCode)
 {
-    std::lock_guard lock(g_mutex);
+    std::lock_guard lock(Mutex());
     Thread* th = As<Thread>(h);
     if (!th || !exitCode)
         return FALSE;

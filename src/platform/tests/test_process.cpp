@@ -69,6 +69,19 @@ TEST_CASE("process: a child knows its parent")
     CHECK(p->Wait() == 0);
 }
 
+TEST_CASE("process: exits while threads still wait on events or on themselves")
+{
+    // On Linux exit() used to block in the static condition variable of the event emulation (sync_posix.cpp): the
+    // client hung after quitting, its session thread waiting on its own handle (2026-11-16).
+    auto p = Helper({"exit-waiting"});
+    std::string line;
+    REQUIRE(p->ReadLine(line));
+    CHECK(line == "waiting");
+    const std::optional<int> code = p->WaitFor(10s);
+    REQUIRE_MESSAGE(code.has_value(), "the child did not exit");
+    CHECK(*code == 0);
+}
+
 TEST_CASE("process: this process's memory")
 {
     std::size_t current = 0, peak = 0;
