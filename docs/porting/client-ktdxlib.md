@@ -674,7 +674,8 @@ UI_PARTICLE_ANCHORS = { NewComboDamage = "LEFT", OutLine = "STRETCH", BOSS_DANGE
   `m_iUIAnchor`); clones keep the name. A sequence the table lacks stays centered, as before.
 
 The client_data's table (2026-11-16): the combo counter (`NewComboDamage`, `ComboPicChar`/`ComboPicCharBig` and the
-13 `NewCombo*` interjections) LEFT; the special-attack comic frame (`OutLine`, `OutLine_Left`) STRETCH; the boss and
+13 `NewCombo*` interjections) LEFT; the special-attack comic frame (`OutLine`, `OutLine_Left`) STRETCH and its speech balloon
+(`CutIn_Talk_Right`/`_Left` and their `_for_BOT` copies, at x 830 / 190) RIGHT / LEFT; the boss and
 sub-boss warning (`BOSS_DANGER`, `BOSS_DANGER_ADD`, `SUB_BOSS_DANGER`, `SUB_BOSS_DANGER_ADD`, `BOSS_NAME`) SPAN.
 `FocusLine` (the speed lines around the centre) stays centered.
 
