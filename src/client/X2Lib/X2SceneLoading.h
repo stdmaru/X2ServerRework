@@ -3,8 +3,9 @@
 // The scene loading screen (docs/porting/client-x2lib.md, scene loading). Entering a village or a field builds the
 // world at once but leaves its meshes and textures to the device manager's loading thread, so the first frames showed
 // the character in an empty world. This screen, the first login's layout (DLG_First_Loading_Front.lua, bar along the
-// bottom), covers the scene from the state change until the loading queues are idle, the server confirmed the entry
-// and the scene was drawn a few times behind it, then fades out. Its bar follows the background loads.
+// bottom; the destination's own art in place of its background when there is one), covers the scene from the state
+// change until the loading queues are idle, the server confirmed the entry and the scene was drawn a few times behind
+// it, then fades out. Its bar follows the background loads.
 //
 // It is CKTDXApp's overlay stage: moved and drawn after every stage, so it outlives the state changes it covers.
 class CX2SceneLoading : public CKTDXStage
@@ -29,6 +30,8 @@ private:
 		STEP_FADE_OUT,
 	};
 
+	void CreateDialog();
+	void SetBackground();
 	bool IsStateReady() const;
 	bool IsCoveredState() const;
 	void SetProgress( float fProgress );

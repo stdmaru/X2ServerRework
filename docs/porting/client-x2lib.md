@@ -361,6 +361,20 @@ of its length and the server's confirmation for the rest; it never goes back.
 The two timed screens give way to it: `LoadUI` keeps only the warp's 3 s delay of the field and buff names and spends
 the warp/channel flags; the raid field no longer calls `CreateLoadingUI` (removed). Input is not blocked meanwhile.
 
+**Backgrounds** (user, 2026-11-16): every destination uses the same dialog; only the textures of `First_Loading_Back`
+change, chosen at `Begin` (the location and field managers already know the destination; the channel change flag is
+spent only while the village is built). The table in `X2SceneLoading.cpp` holds the art of the original's two timed
+screens, now shown on every entry, not only after a warp: the 8 villages and 6 rest fields (`LoadFieldImage`, moved
+there from `CX2TFieldGame`), the channel change (`Channel_A`/`Channel_B`) and the boss raid fields
+(`HQ_LoadingField_Boss_Gate_01/02`, the original's one picture for every raid). Other destinations (the ordinary
+fields, the dungeon lounge) draw one of the generic `HQ_LoadingBasic_*.tga` at random (user, 2026-11-16; 1024×512
+textures made to be stretched to 4:3, as the dungeon loading screen draws them; 12 distinct, the byte-identical
+`HQ_LoadingBasic`/`_2` = `_1` and `_111_2` = `_111_1` left out). An entry is either two 512×768 halves of a 4:3
+image or a single picture, 4:3 (over the 1024 column) or, for the 16:9 redraws planned under
+[T51](../project/decisions.md) (one texture each), 1365.33 units wide centered on the column; the second picture is
+then hidden (or absent, once the dialog's own background is one 16:9 picture). If a texture is missing the dialog is
+rebuilt with its own background, the first login's.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them
