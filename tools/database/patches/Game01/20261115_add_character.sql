@@ -6,6 +6,9 @@
 -- skills 9000 (SI_SA_AN_*) and 9200 (SI_A_*), equipment 112991-112995 and the promotion items 41757-41761, all in
 -- our client's Item.lua.
 --
+-- Admin accounts (Account.dbo.MUser.AuthLevel >= 2) skip the limit of 4 units created a day (error -23), to test
+-- characters (client/unit-wait-delete, 2026-11-16).
+--
 -- Can be run again. Apply: sqlcmd -C -S localhost -U sa -P <password> -d Game01 -i <this file>
 
 SET NOCOUNT ON;
@@ -67,8 +70,9 @@ IF @bDeleted = 1    -- 해당 UserUID가 이미 삭제된 경우
 if (select count(*) from dbo.gunit(NOLOCK) where deleted = 0 and UserUID = @iUserUID_) >= @iUsSize
     BEGIN    SELECT @iOK = -3    GOTO END_PROC    END
 
--- 일일 최대 생성수에 걸리는 경우
-IF ((select count(*) from dbo.gunit with (nolock) where useruid = @iUserUID_ and regdate between convert(nvarchar(10), @sdtNow, 120)+' 00:00:00' and convert(nvarchar(10), @sdtNow, 120)+' 23:59:00') = 4)
+-- At most 4 units created a day, except on admin accounts (AuthLevel >= 2, UAL_GM and above; 2026-11-16)
+IF NOT EXISTS (SELECT * FROM Account.dbo.MUser WITH(NOLOCK) WHERE UserUID = @iUserUID_ AND AuthLevel >= 2)
+	AND ((select count(*) from dbo.gunit with (nolock) where useruid = @iUserUID_ and regdate between convert(nvarchar(10), @sdtNow, 120)+' 00:00:00' and convert(nvarchar(10), @sdtNow, 120)+' 23:59:00') >= 4)
 	BEGIN	SELECT @iOK = -23    GOTO END_PROC    END
 
 -- 동일한 닉네임이 존재하는 경우
