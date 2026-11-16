@@ -210,12 +210,17 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         keys of `KOMView.exe`; `tools/kom/keyrecover.py` recovers keys of other clients from their archives (2026-11-15).
         The Brazilian January 2016 archive opens with the EU key; `kim.py` reads and writes the 2016 and 2017 `Item.kim`
         layouts byte for byte (2026-11-15). See [Inventory](../original/inventory.md) and [Server package](../tools/runtime.md#toolskom).
-  - Packing `client_data` for distribution (rebuild only the changed archives, a rule for new files) moved to
-    x2 studio's export to `.kom` (user, 2026-11-05; [Later](#later--x2-studio)).
-  - [ ] `tools/assets-manager` ([T50](decisions.md), user, 2026-11-15; started 2026-11-16): `x2_assets` as the client_data manager, an
-        SDL3 + ImGui window (browse by folder and archive, file states, add/remove files with the manifest in sync,
-        the archive of a new file, import/status/pack) and `--cli` with every operation. New files then get an archive
-        and are packed: unblocks PR 82's (Add's skill screenshots and item assets) in release builds.
+  - Packing `client_data` for distribution (rebuild only the changed archives, a rule for new files) moved from
+    x2 studio's export (user, 2026-11-05) into `x2_assets` ([T50](decisions.md), 2026-11-16).
+  - [x] `tools/assets-manager` ([T50](decisions.md), user, 2026-11-15; done 2026-11-16, in review): `x2_assets` as the
+        client_data manager. An SDL3 + ImGui window: an explorer by folder or archive with file states in colors,
+        icons, multi-select, drag and drop, cut/paste, rename, delete to a trash, undo/redo; an inspector (metadata,
+        target archive for files and folders, new archives, ignore); Sync data structure, Commit and Pack (only the
+        changed archives, into a destination field) as separate operations. `--cli` with every operation and help
+        (`status`, `info`, `where`, `add`, `remove`, `move`, `rename`, `mkdir`, `set-archive`, `ignore`, `sync`,
+        `commit`, `pack`, ...). New files get an archive and are packed: unblocks PR 82's (Add's skill screenshots and
+        item assets) in release builds once committed and packed. Tools find client_data files by name (UI editor,
+        `merge_quests.py`, `merge_player_text.py`). See [client_data](../tools/client-data.md#managing-client_data).
   - [x] `client/kom-mass-file`: the client's `KGCMassFileManager` on `x2::kom` (`x2::client_massfile`): `CX2Main`'s fixed
         list in load order, first-wins, entries decoded by algorithm, full names; with `X2_DEV_TOOLS` the loose files of
         `/data/data` (a client_data works) preferred; nothing deleted at start, a missing or rejected archive named before
@@ -451,9 +456,10 @@ from the previous phases. Only after everything runs.
 The definitive game editing tool (user, 2026-11-05): edit the game, maps and everything else on `client_data`
 ([client_data](../tools/client-data.md)), on `x2::kom` and the SDL3 + ImGui foundation (T32). Not planned in detail yet.
 
-- [ ] **Export to `.kom`**: pack `client_data` for distribution, rebuilding only the archives that changed; new files
-      go to archives chosen by a rule (2 GB limit; today the client loads a fixed list of 173 names). Builds on
-      `x2_assets pack`, which already rewrites every archive byte for byte when nothing changed.
+- [ ] **One suite** (user, 2026-11-16): `x2_assets` (the client_data manager: files, archives, sync, commit, pack) and
+      the UI editor merge into x2 studio, with the tools to come. Export to `.kom` is `x2_assets pack` (only the
+      changed archives, new files in their archive's chosen by default from their folder; T50, 2026-11-16); left: the
+      2 GB archive limit, and the client's fixed list of archives (new ones are not loaded).
 
 ## Phase 6 — Server: historical client compatibility
 

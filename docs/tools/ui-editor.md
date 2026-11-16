@@ -31,7 +31,8 @@ Slice (a) inspects, slice (b) edits the anchors ([below](#editing-anchors)), sli
 
 Slice (b), 2026-11-14 (`tools/ui-editor-anchors`). The inspector edits the selected dialog's entry in
 `UIAnchors.lua` ([KTDXLIB](../porting/client-ktdxlib.md#anchors-2026-11-13-clientwidescreen-anchors)), found under the
-client_data (`data/`, any folder; a new one goes to `data/ui/scripts/`):
+client_data (`data/`) by name in any folder; a new one goes with the first dialog script found, never to a fixed
+path ([Tools find files by name](client-data.md#managing-client_data)):
 
 - **Dialog anchor:** none (centered), `CENTER`, `LEFT` or `RIGHT`. **Control anchor:** none (the dialog's), `CENTER`,
   `LEFT`, `RIGHT` or `STRETCH`. Unnamed controls cannot be declared (the file names them), and anchors the script sets
