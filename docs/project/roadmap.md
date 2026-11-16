@@ -451,11 +451,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       it runs. The window sets its Wayland `app_id` / X11 class `x2` and its own icon (from `src/client/X2/Elsword.ico`),
       and `tools/client/install.sh` installs `x2.desktop` and the icon. On the user's Hyprland + quickshell bar the
       embedded icon alone was not enough; the theme icon `x2` is what shows ([Client folder](../tools/client-folder.md)).
-- [ ] `client/scene-loading` (user, 2026-11-16; started 2026-11-16, PR #95): a loading screen on every village and
+- [x] `client/scene-loading` (user, 2026-11-16; done 2026-11-16, PR #95): a loading screen on every village and
       field entry (first login layout, bottom bar), closed only when the background loads are idle, the server
-      confirmed the entry and the scene was drawn behind it; replaces the timed 3 s warp/raid screens, no switch
-      (user's call) ([X2Lib](../porting/client-x2lib.md#scene-loading-screen-2026-11-16-clientscene-loading)).
-      Left: the user's check in game.
+      confirmed the entry and the scene was drawn behind it; the destination's art as background (a random generic
+      picture elsewhere); replaces the timed 3 s warp/raid screens, no switch (user's call)
+      ([X2Lib](../porting/client-x2lib.md#scene-loading-screen-2026-11-16-clientscene-loading)). Checked by the user
+      in game (2026-11-16).
 
 ## Phase 5 — Deep cleanup
 
