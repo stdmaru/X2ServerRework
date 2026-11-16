@@ -6,6 +6,7 @@
 // time; a new file's folder comes from FolderForNew, not from a path a tool assumes.
 #pragma once
 
+#include "x2/assets/client_data.h"
 #include "x2/assets/manifest.h"
 
 #include <cstddef>
@@ -28,6 +29,7 @@ enum class FileState
     Deleted,    // in the manifest, not in client_data: a sync drops it
     Untracked,  // in client_data, not in the manifest: a sync adds it
     Added,      // in the manifest as a new file (Encoding::New), in no original archive
+    Ignored,    // in client_data, not in the manifest, kept out by .kom/ignore.txt (IgnoreList)
 };
 
 std::string_view ToString(FileState state);
@@ -47,6 +49,7 @@ struct SyncStats
     std::size_t added = 0;    // untracked files given a record
     std::size_t removed = 0;  // records of deleted files dropped
     std::size_t moved = 0;    // records given another archive
+    std::size_t archives = 0; // archives created
 };
 
 class ClientData
@@ -79,13 +82,30 @@ public:
     std::string ArchiveOf(const ClientDataFile& file) const;
     bool HasArchiveEdit(const ClientDataFile& file) const;
 
-    // Edits, applied by Sync. The archive must be in the manifest; a deleted file cannot be edited. Choosing the
-    // archive the file would get anyway removes the edit.
+    // The archives of the manifest in load order, then the ones created since the last sync.
+    std::vector<std::string> Archives() const;
+    // A new archive, created by the next sync (and written by pack, with a generated header): a file name ending in
+    // .kom that no archive has. Files get it through SetArchive.
+    bool CreateArchive(std::string_view name, std::string& error);
+
+    // Edits, applied by Sync. The archive must be in Archives(); a deleted or ignored file cannot be edited. Choosing
+    // the archive the file would get anyway removes the edit.
     bool SetArchive(std::string_view name, std::string_view archive, std::string& error);
     // Every file under `folder` (recursive, "" for all) but the deleted ones; `count` files changed.
     bool SetFolderArchive(std::string_view folder, std::string_view archive, std::size_t& count, std::string& error);
-    std::size_t EditCount() const { return edits_.size(); }
-    void DiscardEdits() { edits_.clear(); }
+    std::size_t EditCount() const { return edits_.size() + newArchives_.size(); }
+    void DiscardEdits()
+    {
+        edits_.clear();
+        newArchives_.clear();
+    }
+
+    // .kom/ignore.txt, written at once. Ignore(file) adds the file's own path, IgnoreFolder the folder; Unignore
+    // drops every pattern that matches the file (false if one is not its own path: `error` names it).
+    const IgnoreList& Ignores() const { return ignore_; }
+    bool Ignore(std::string_view name, std::string& error);
+    bool IgnoreFolder(std::string_view folder, std::string& error);
+    bool Unignore(std::string_view name, std::string& error);
 
     // Writes the manifest: untracked files become new records (in ArchiveOf, with the archive's most common
     // algorithm), deleted files' records are dropped, archive edits are applied. Modified files stay modified (the
@@ -106,6 +126,8 @@ private:
     std::vector<ClientDataFile> files_;
     std::unordered_map<std::string, std::size_t> byName_;  // AsciiLower(name) -> files_
     std::map<std::string, std::string> edits_;             // AsciiLower(record or file name) -> archive
+    std::vector<std::string> newArchives_;                 // CreateArchive, until a sync
+    IgnoreList ignore_;
     std::unordered_map<std::string, std::vector<std::uint32_t>> folderCounts_;  // folder -> tracked files by archive
 };
 

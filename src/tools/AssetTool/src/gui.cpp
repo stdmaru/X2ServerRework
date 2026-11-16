@@ -1,6 +1,7 @@
 #include "gui.h"
 
 #include "x2/app/imgui_layer.h"
+#include "x2/assets/client_data.h"
 #include "x2/assets/workspace.h"
 #include "x2/kom/codec.h"
 
@@ -9,6 +10,8 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <chrono>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -23,7 +26,7 @@ namespace x2::assets {
 
 namespace {
 
-constexpr std::size_t kStates = 5;
+constexpr std::size_t kStates = 6;
 
 std::size_t Index(FileState s) { return static_cast<std::size_t>(s); }
 
@@ -35,6 +38,7 @@ ImVec4 StateColor(FileState state)
     case FileState::Deleted: return {0.95f, 0.40f, 0.40f, 1.0f};
     case FileState::Untracked: return {0.45f, 0.85f, 0.45f, 1.0f};
     case FileState::Added: return {0.50f, 0.75f, 1.00f, 1.0f};
+    case FileState::Ignored: return ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
     case FileState::Unchanged: break;
     }
     return ImGui::GetStyleColorVec4(ImGuiCol_Text);
@@ -49,6 +53,7 @@ const char* StateLabel(FileState state)
     case FileState::Deleted: return "deleted (a sync drops it from the manifest)";
     case FileState::Untracked: return "new, not in the manifest (a sync adds it)";
     case FileState::Added: return "new, in the manifest";
+    case FileState::Ignored: return "ignored (.kom/ignore.txt): never synced or packed";
     }
     return "?";
 }
@@ -67,16 +72,151 @@ std::string FormatSize(std::uint64_t bytes)
     return text;
 }
 
-// Where the window remembers the last client_data opened.
-std::filesystem::path LastFolderFile()
+// What the window remembers between runs (the last client_data, the pack destination), one file each.
+std::filesystem::path PrefFile(const char* name)
 {
     char* pref = SDL_GetPrefPath("x2", "x2_assets");
     if (!pref)
         return {};
     std::filesystem::path path = PathFromUtf8(pref);
     SDL_free(pref);
-    return path / "last_client_data.txt";
+    return path / name;
 }
+
+std::string ReadPref(const char* name)
+{
+    std::ifstream in(PrefFile(name));
+    std::string line;
+    std::getline(in, line);
+    return line;
+}
+
+void WritePref(const char* name, const std::string& value)
+{
+    std::ofstream(PrefFile(name), std::ios::trunc) << value;
+}
+
+// --- Icons, drawn (no icon font) ----------------------------------------------------------------------------------------
+
+enum class Icon
+{
+    Folder,
+    FolderOpen,
+    Archive,
+    Image,
+    Script,
+    Sound,
+    Model,
+    Text,
+    File,
+};
+
+Icon IconOf(std::string_view name)
+{
+    const std::string lower = Lower(name);
+    const auto dot = lower.rfind('.');
+    const std::string ext = dot == std::string::npos ? std::string() : lower.substr(dot + 1);
+    for (const char* e : {"dds", "tga", "png", "jpg", "jpeg", "bmp"})
+        if (ext == e)
+            return Icon::Image;
+    for (const char* e : {"lua", "kim", "fx", "fxo"})
+        if (ext == e)
+            return Icon::Script;
+    for (const char* e : {"ogg", "wav", "mp3"})
+        if (ext == e)
+            return Icon::Sound;
+    for (const char* e : {"x", "y", "xet", "skn", "skin"})
+        if (ext == e)
+            return Icon::Model;
+    for (const char* e : {"txt", "xml", "ini", "tet", "tsv", "csv"})
+        if (ext == e)
+            return Icon::Text;
+    return Icon::File;
+}
+
+ImU32 IconColor(Icon icon)
+{
+    switch (icon)
+    {
+    case Icon::Folder:
+    case Icon::FolderOpen: return IM_COL32(222, 178, 90, 255);
+    case Icon::Archive: return IM_COL32(178, 140, 240, 255);
+    case Icon::Image: return IM_COL32(100, 190, 240, 255);
+    case Icon::Script: return IM_COL32(140, 215, 140, 255);
+    case Icon::Sound: return IM_COL32(240, 155, 90, 255);
+    case Icon::Model: return IM_COL32(215, 140, 190, 255);
+    case Icon::Text: return IM_COL32(190, 190, 190, 255);
+    case Icon::File: break;
+    }
+    return IM_COL32(150, 150, 150, 255);
+}
+
+ImU32 Darker(ImU32 color)
+{
+    ImVec4 c = ImGui::ColorConvertU32ToFloat4(color);
+    return ImGui::ColorConvertFloat4ToU32(ImVec4(c.x * 0.6f, c.y * 0.6f, c.z * 0.6f, c.w));
+}
+
+void DrawIcon(ImDrawList* draw, ImVec2 p, float s, Icon icon)
+{
+    const ImU32 color = IconColor(icon);
+    const auto at = [&](float x, float y) { return ImVec2(std::floor(p.x + x * s), std::floor(p.y + y * s)); };
+    switch (icon)
+    {
+    case Icon::Folder:
+        draw->AddRectFilled(at(0.06f, 0.18f), at(0.46f, 0.34f), color, 1.5f);
+        draw->AddRectFilled(at(0.06f, 0.28f), at(0.94f, 0.84f), color, 1.5f);
+        return;
+    case Icon::FolderOpen:
+        draw->AddRectFilled(at(0.06f, 0.18f), at(0.46f, 0.34f), Darker(color), 1.5f);
+        draw->AddRectFilled(at(0.06f, 0.28f), at(0.90f, 0.84f), Darker(color), 1.5f);
+        draw->AddQuadFilled(at(0.22f, 0.44f), at(1.00f, 0.44f), at(0.86f, 0.84f), at(0.06f, 0.84f), color);
+        return;
+    case Icon::Archive:
+        draw->AddRectFilled(at(0.10f, 0.34f), at(0.90f, 0.88f), color, 1.5f);
+        draw->AddRectFilled(at(0.04f, 0.16f), at(0.96f, 0.38f), Darker(color), 1.5f);
+        draw->AddRectFilled(at(0.38f, 0.46f), at(0.62f, 0.56f), Darker(color), 1.0f);
+        return;
+    default: break;
+    }
+    // A page with a folded corner, in the type's color.
+    const float c = 0.26f;
+    const ImVec2 page[] = {at(0.18f, 0.08f), at(0.82f - c, 0.08f), at(0.82f, 0.08f + c), at(0.82f, 0.92f),
+                           at(0.18f, 0.92f)};
+    draw->AddConvexPolyFilled(page, 5, color);
+    draw->AddTriangleFilled(at(0.82f - c, 0.08f), at(0.82f, 0.08f + c), at(0.82f - c, 0.08f + c), Darker(color));
+}
+
+// An icon, then the rest of the line.
+void IconHere(Icon icon)
+{
+    const float s = ImGui::GetFontSize();
+    DrawIcon(ImGui::GetWindowDrawList(), ImGui::GetCursorScreenPos(), s, icon);
+    ImGui::Dummy(ImVec2(s, s));
+    ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+}
+
+// Spaces that make room for an icon in a tree node's label; DrawNodeIcon draws it there.
+const std::string& IconRoom()
+{
+    static std::string room;
+    if (room.empty())
+    {
+        const float space = std::max(1.0f, ImGui::CalcTextSize(" ").x);
+        room.assign(static_cast<std::size_t>(std::ceil((ImGui::GetFontSize() + 4) / space)), ' ');
+    }
+    return room;
+}
+
+void DrawNodeIcon(Icon icon)
+{
+    const float s = ImGui::GetFontSize();
+    const ImVec2 min = ImGui::GetItemRectMin(), max = ImGui::GetItemRectMax();
+    const float x = min.x + s + ImGui::GetStyle().FramePadding.x * 2;  // after the arrow, where the label starts
+    DrawIcon(ImGui::GetWindowDrawList(), ImVec2(x, (min.y + max.y - s) / 2), s, icon);
+}
+
+// --- State ------------------------------------------------------------------------------------------------------------
 
 struct Folder
 {
@@ -88,17 +228,19 @@ struct Folder
     std::size_t total = 0;
 };
 
-// Work on a copy of the data in the background (open, rescan, sync), swapped in when done.
+// Work in the background (open, rescan, sync on a copy of the data, swapped in when done; pack).
 struct Job
 {
     std::thread thread;
     std::atomic<bool> done{false};
     std::atomic<std::size_t> progress{0}, total{0};
     std::string label;
-    std::unique_ptr<ClientData> result;
+    const char* unit = "files";
+    std::unique_ptr<ClientData> result;  // null: the data stays as it is
     std::string error;
     std::string message;  // on success
     bool ok = false;
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 };
 
 enum class View
@@ -115,6 +257,12 @@ enum class Selected
     Archive,
 };
 
+enum class Pick
+{
+    ClientData,
+    PackDestination,
+};
+
 struct State
 {
     std::filesystem::path root;
@@ -125,7 +273,8 @@ struct State
     // Explorer
     std::vector<Folder> folders;  // [0]: the root
     std::vector<std::size_t> deleted;
-    std::vector<std::vector<std::size_t>> byArchive;  // ArchiveOf, per manifest archive; then the unassigned
+    std::vector<std::vector<std::size_t>> byArchive;  // ArchiveOf, per Archives(); then the unassigned
+    std::vector<std::string> archiveNames;
     unsigned archivesBuilt = ~0u;
     std::array<std::size_t, kStates> counts{};
     View view = View::Folders;
@@ -142,15 +291,24 @@ struct State
     // Inspector
     char moveTo[260] = {};
     int folderArchive = -1;
+    char newArchive[64] = {};
+    bool newArchiveAsked = false;
+    bool newArchiveForFolder = false;
+
+    // Pack
+    std::string packTo;
+    bool packAsked = false;
 
     std::string message;
     bool messageIsError = false;
     bool quitAsked = false;
+    bool closeAfterSync = false;
     bool syncAsked = false;
     bool removeAsked = false;
     std::vector<std::string> dropped;
 
-    std::string pickFrom;    // the folder dialog's start, alive while it is open
+    std::string pickFrom;  // the folder dialog's start, alive while it is open
+    Pick picking = Pick::ClientData;
     std::mutex pickedMutex;  // the folder dialog answers from another thread
     std::optional<std::string> picked;
 
@@ -160,6 +318,10 @@ struct State
         messageIsError = error;
     }
     bool Busy() const { return job != nullptr; }
+    std::size_t Pending() const
+    {
+        return counts[Index(FileState::Untracked)] + counts[Index(FileState::Deleted)] + (data ? data->EditCount() : 0);
+    }
 };
 
 void BuildTree(State& s)
@@ -225,16 +387,18 @@ void BuildTree(State& s)
 
 void BuildArchives(State& s)
 {
-    const auto& archives = s.data->GetManifest().archives;
+    s.archiveNames = s.data->Archives();
     std::unordered_map<std::string, std::size_t> order;
-    for (std::size_t a = 0; a < archives.size(); ++a)
-        order.emplace(archives[a].name, a);
-    s.byArchive.assign(archives.size() + 1, {});
+    for (std::size_t a = 0; a < s.archiveNames.size(); ++a)
+        order.emplace(s.archiveNames[a], a);
+    s.byArchive.assign(s.archiveNames.size() + 1, {});
     const auto& files = s.data->Files();
     for (std::size_t i = 0; i < files.size(); ++i)
     {
+        if (files[i].state == FileState::Ignored)
+            continue;
         const auto it = order.find(s.data->ArchiveOf(files[i]));
-        s.byArchive[it == order.end() ? archives.size() : it->second].push_back(i);
+        s.byArchive[it == order.end() ? s.archiveNames.size() : it->second].push_back(i);
     }
     s.archivesBuilt = s.generation;
 }
@@ -245,19 +409,20 @@ void Changed(State& s)
     s.flatKey.clear();
 }
 
-void StartJob(State& s, std::string label, std::unique_ptr<ClientData> data,
-              std::function<bool(ClientData&, Job&, std::string&)> work)
+Job& StartJob(State& s, std::string label, std::unique_ptr<ClientData> data,
+              std::function<bool(ClientData*, Job&, std::string&)> work)
 {
     auto job = std::make_unique<Job>();
     job->label = std::move(label);
     job->result = std::move(data);
     Job* j = job.get();
     job->thread = std::thread([j, work = std::move(work)] {
-        j->ok = work(*j->result, *j, j->error);
+        j->ok = work(j->result.get(), *j, j->error);
         j->done = true;
         app::WakeEventLoop();
     });
     s.job = std::move(job);
+    return *j;
 }
 
 ClientData::Progress ProgressOf(Job& job)
@@ -265,6 +430,7 @@ ClientData::Progress ProgressOf(Job& job)
     return [&job](std::size_t done, std::size_t total) {
         job.progress = done;
         job.total = total;
+        app::WakeEventLoop();
     };
 }
 
@@ -274,8 +440,8 @@ void OpenFolder(State& s, const std::filesystem::path& root)
         return;
     s.root = root;
     StartJob(s, "Opening " + PathToUtf8(root), std::make_unique<ClientData>(),
-             [root](ClientData& data, Job& job, std::string& error) {
-                 return data.Open(root, 0, error, ProgressOf(job));
+             [root](ClientData* data, Job& job, std::string& error) {
+                 return data->Open(root, 0, error, ProgressOf(job));
              });
 }
 
@@ -284,7 +450,7 @@ void Rescan(State& s)
     if (s.Busy() || !s.data)
         return;
     StartJob(s, "Reading client_data", std::make_unique<ClientData>(*s.data),
-             [](ClientData& data, Job& job, std::string& error) { return data.Rescan(0, error, ProgressOf(job)); });
+             [](ClientData* data, Job& job, std::string& error) { return data->Rescan(0, error, ProgressOf(job)); });
 }
 
 void Sync(State& s)
@@ -292,16 +458,45 @@ void Sync(State& s)
     if (s.Busy() || !s.data)
         return;
     StartJob(s, "Syncing the manifest", std::make_unique<ClientData>(*s.data),
-             [](ClientData& data, Job& job, std::string& error) {
+             [](ClientData* data, Job& job, std::string& error) {
                  SyncStats stats;
-                 if (!data.Sync(0, stats, error))
+                 if (!data->Sync(0, stats, error))
                      return false;
-                 char text[160];
-                 std::snprintf(text, sizeof text, "Manifest synced: %zu files added, %zu dropped, %zu moved to another archive",
-                               stats.added, stats.removed, stats.moved);
+                 char text[200];
+                 std::snprintf(text, sizeof text,
+                               "Manifest synced: %zu files added, %zu dropped, %zu moved to another archive, %zu "
+                               "archives created",
+                               stats.added, stats.removed, stats.moved, stats.archives);
                  job.message = text;
                  return true;
              });
+}
+
+void Pack(State& s, bool onlyChanged)
+{
+    if (s.Busy() || !s.data || s.packTo.empty())
+        return;
+    const std::filesystem::path root = s.root, destination = PathFromUtf8(s.packTo);
+    Job& job = StartJob(s, onlyChanged ? "Packing the changed archives" : "Packing every archive", nullptr,
+                        [root, destination, onlyChanged](ClientData*, Job& job, std::string& error) {
+                            PackOptions options;
+                            options.clientData = root;
+                            options.destination = destination;
+                            options.onlyChanged = onlyChanged;
+                            options.progress = ProgressOf(job);
+                            PackStats stats;
+                            if (!x2::assets::Pack(options, stats, error))
+                                return false;
+                            char text[300];
+                            std::snprintf(text, sizeof text,
+                                          "Packed into %s: %zu archives written, %zu unchanged left as they were; "
+                                          "%zu files changed, %zu new",
+                                          PathToUtf8(destination).c_str(), stats.archives - stats.skipped,
+                                          stats.skipped, stats.changed, stats.added);
+                            job.message = text;
+                            return true;
+                        });
+    job.unit = "archives";
 }
 
 void FinishJob(State& s)
@@ -310,19 +505,23 @@ void FinishJob(State& s)
         return;
     s.job->thread.join();
     std::unique_ptr<Job> job = std::move(s.job);
+    std::fprintf(stderr, "x2_assets: %s: %.2f s\n", job->label.c_str(),
+                 std::chrono::duration<double>(std::chrono::steady_clock::now() - job->start).count());
     if (!job->ok)
     {
         s.Say(job->error, true);
         return;
     }
-    s.data = std::move(job->result);
     if (!job->message.empty())
         s.Say(job->message);
-    else if (s.message.empty() || s.messageIsError)
+    else if (s.messageIsError)
         s.Say("");
+    if (!job->result)
+        return;
+    s.data = std::move(job->result);
     BuildTree(s);
     Changed(s);
-    std::ofstream(LastFolderFile(), std::ios::trunc) << PathToUtf8(s.root);
+    WritePref("last_client_data.txt", PathToUtf8(s.root));
 }
 
 void Select(State& s, Selected what, std::string name)
@@ -355,6 +554,7 @@ void FileRow(State& s, std::size_t index)
     const ClientDataFile& f = s.data->Files()[index];
     const bool edited = s.data->HasArchiveEdit(f);
     ImGui::PushID(static_cast<int>(index));
+    IconHere(IconOf(f.name));
     ImGui::PushStyleColor(ImGuiCol_Text, StateColor(f.state));
     const std::string label = edited ? f.name + "  (archive edited)" : f.name;
     if (ImGui::Selectable(label.c_str(), s.selected == Selected::File && Lower(s.selection) == Lower(f.name)))
@@ -384,12 +584,16 @@ void FolderNode(State& s, std::size_t index)
             f && (f->folder == folder.path || f->folder.starts_with(folder.path + "/")))
             ImGui::SetNextItemOpen(true);
     const bool changed = folder.counts[Index(FileState::Modified)] || folder.counts[Index(FileState::Untracked)];
-    if (changed)
-        ImGui::PushStyleColor(ImGuiCol_Text, StateColor(folder.counts[Index(FileState::Modified)]
+    const bool ignored = folder.total && folder.counts[Index(FileState::Ignored)] == folder.total;
+    if (changed || ignored)
+        ImGui::PushStyleColor(ImGuiCol_Text, StateColor(ignored ? FileState::Ignored
+                                                        : folder.counts[Index(FileState::Modified)]
                                                             ? FileState::Modified
                                                             : FileState::Untracked));
-    const bool open = ImGui::TreeNodeEx(folder.path.c_str(), flags, "%s", folder.name.c_str());
-    if (changed)
+    const bool open =
+        ImGui::TreeNodeEx(folder.path.c_str(), flags, "%s%s", IconRoom().c_str(), folder.name.c_str());
+    DrawNodeIcon(open ? Icon::FolderOpen : Icon::Folder);
+    if (changed || ignored)
         ImGui::PopStyleColor();
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
         Select(s, Selected::Folder, folder.path);
@@ -415,7 +619,8 @@ void UpdateFlat(State& s)
     const auto& files = s.data->Files();
     for (std::size_t i = 0; i < files.size(); ++i)
     {
-        if (s.onlyChanges && files[i].state == FileState::Unchanged && !s.data->HasArchiveEdit(files[i]))
+        if (s.onlyChanges && (files[i].state == FileState::Unchanged || files[i].state == FileState::Ignored) &&
+            !s.data->HasArchiveEdit(files[i]))
             continue;
         if (!needle.empty() && Lower(files[i].name).find(needle) == std::string::npos)
             continue;
@@ -447,6 +652,7 @@ void FlatList(State& s)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::PushID(static_cast<int>(i));
+            IconHere(IconOf(f.name));
             ImGui::PushStyleColor(ImGuiCol_Text, StateColor(f.state));
             if (ImGui::Selectable(f.name.c_str(), s.selected == Selected::File && Lower(s.selection) == Lower(f.name),
                                   ImGuiSelectableFlags_SpanAllColumns))
@@ -458,7 +664,7 @@ void FlatList(State& s)
             ImGui::TableNextColumn();
             ImGui::TextColored(StateColor(f.state), "%s", std::string(ToString(f.state)).c_str());
             ImGui::TableNextColumn();
-            const std::string archive = s.data->ArchiveOf(f);
+            const std::string archive = f.state == FileState::Ignored ? std::string("-") : s.data->ArchiveOf(f);
             ImGui::Text("%s%s", archive.empty() ? "(none)" : archive.c_str(), s.data->HasArchiveEdit(f) ? " *" : "");
         }
     ImGui::EndTable();
@@ -468,20 +674,20 @@ void ArchiveTree(State& s)
 {
     if (s.archivesBuilt != s.generation)
         BuildArchives(s);
-    const auto& archives = s.data->GetManifest().archives;
     for (std::size_t a = 0; a < s.byArchive.size(); ++a)
     {
         const auto& files = s.byArchive[a];
-        if (a == archives.size() && files.empty())
+        if (a == s.archiveNames.size() && files.empty())
             continue;
-        const std::string name = a < archives.size() ? archives[a].name : "(no archive)";
+        const std::string name = a < s.archiveNames.size() ? s.archiveNames[a] : "(no archive)";
         std::array<std::size_t, kStates> counts{};
         for (const std::size_t i : files)
             ++counts[Index(s.data->Files()[i].state)];
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
         if (s.selected == Selected::Archive && s.selection == name)
             flags |= ImGuiTreeNodeFlags_Selected;
-        const bool open = ImGui::TreeNodeEx(name.c_str(), flags);
+        const bool open = ImGui::TreeNodeEx(name.c_str(), flags, "%s%s", IconRoom().c_str(), name.c_str());
+        DrawNodeIcon(Icon::Archive);
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
             Select(s, Selected::Archive, name);
         ImGui::SameLine();
@@ -520,8 +726,9 @@ void Explorer(State& s)
         if (!s.deleted.empty())
         {
             ImGui::PushStyleColor(ImGuiCol_Text, StateColor(FileState::Deleted));
-            const bool open = ImGui::TreeNodeEx("##deleted", ImGuiTreeNodeFlags_SpanAvailWidth, "Deleted (%zu)",
-                                                s.deleted.size());
+            const bool open = ImGui::TreeNodeEx("##deleted", ImGuiTreeNodeFlags_SpanAvailWidth, "%sDeleted (%zu)",
+                                                IconRoom().c_str(), s.deleted.size());
+            DrawNodeIcon(Icon::File);
             ImGui::PopStyleColor();
             if (open)
             {
@@ -544,15 +751,23 @@ void Explorer(State& s)
 
 // --- Inspector --------------------------------------------------------------------------------------------------------
 
-bool ArchiveCombo(const char* label, const Manifest& manifest, const std::string& current, int& chosen)
+constexpr int kNewArchive = -2;
+
+// The archives in load order, then "New archive...". `chosen`: an index into Archives(), or kNewArchive.
+bool ArchiveCombo(const char* label, const std::vector<std::string>& archives, const std::string& current, int& chosen)
 {
     bool picked = false;
     if (ImGui::BeginCombo(label, current.empty() ? "(none)" : current.c_str(), ImGuiComboFlags_HeightLarge))
     {
-        for (std::size_t a = 0; a < manifest.archives.size(); ++a)
+        if (ImGui::Selectable("New archive..."))
         {
-            const std::string& name = manifest.archives[a].name;
-            if (ImGui::Selectable(name.c_str(), name == current))
+            chosen = kNewArchive;
+            picked = true;
+        }
+        ImGui::Separator();
+        for (std::size_t a = 0; a < archives.size(); ++a)
+        {
+            if (ImGui::Selectable(archives[a].c_str(), archives[a] == current))
             {
                 chosen = static_cast<int>(a);
                 picked = true;
@@ -574,6 +789,7 @@ void Row(const char* label, const std::string& value)
 
 void FileInspector(State& s, const ClientDataFile& f)
 {
+    IconHere(IconOf(f.name));
     ImGui::TextUnformatted(f.name.c_str());
     ImGui::TextColored(StateColor(f.state), "%s", StateLabel(f.state));
     ImGui::Separator();
@@ -601,41 +817,78 @@ void FileInspector(State& s, const ClientDataFile& f)
     if (f.state == FileState::Deleted)
         return;
 
-    ImGui::SeparatorText("Target archive");
-    const Manifest& manifest = s.data->GetManifest();
-    const std::string archive = s.data->ArchiveOf(f);
-    int chosen = -1;
-    ImGui::SetNextItemWidth(-FLT_MIN);
-    if (ArchiveCombo("##archive", manifest, archive, chosen))
+    if (f.state == FileState::Ignored)
     {
-        std::string error;
-        if (!s.data->SetArchive(f.name, manifest.archives[static_cast<std::size_t>(chosen)].name, error))
-            s.Say(error, true);
-        Changed(s);
-    }
-    if (s.data->HasArchiveEdit(f))
-    {
-        ImGui::TextColored(StateColor(FileState::Modified), "Edited: applied by Sync data structure");
-        if (ImGui::Button("Revert"))
+        ImGui::SeparatorText("Ignored");
+        if (ImGui::Button("Stop ignoring"))
         {
             std::string error;
-            const std::string base = f.record >= 0
-                                         ? manifest.files[static_cast<std::size_t>(f.record)].archive
-                                         : s.data->DefaultArchive(f.folder);
-            if (!base.empty() && !s.data->SetArchive(f.name, base, error))
+            if (s.data->Unignore(f.name, error))
+            {
+                s.Say(f.name + " is no longer ignored: a sync adds it");
+                Rescan(s);
+            }
+            else
                 s.Say(error, true);
-            Changed(s);
         }
     }
-    else if (f.record < 0)
+    else
     {
-        ImGui::TextDisabled("The folder's default (its most common archive)");
+        ImGui::SeparatorText("Target archive");
+        const std::vector<std::string> archives = s.data->Archives();
+        const std::string archive = s.data->ArchiveOf(f);
+        int chosen = -1;
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        if (ArchiveCombo("##archive", archives, archive, chosen))
+        {
+            if (chosen == kNewArchive)
+            {
+                s.newArchiveAsked = true;
+                s.newArchiveForFolder = false;
+            }
+            else
+            {
+                std::string error;
+                if (!s.data->SetArchive(f.name, archives[static_cast<std::size_t>(chosen)], error))
+                    s.Say(error, true);
+                Changed(s);
+            }
+        }
+        if (s.data->HasArchiveEdit(f))
+        {
+            ImGui::TextColored(StateColor(FileState::Modified), "Edited: applied by Sync data structure");
+            if (ImGui::Button("Revert"))
+            {
+                std::string error;
+                const std::string base = f.record >= 0
+                                             ? s.data->GetManifest().files[static_cast<std::size_t>(f.record)].archive
+                                             : s.data->DefaultArchive(f.folder);
+                if (!base.empty() && !s.data->SetArchive(f.name, base, error))
+                    s.Say(error, true);
+                Changed(s);
+            }
+        }
+        else if (f.record < 0)
+        {
+            ImGui::TextDisabled("The folder's default (its most common archive)");
+        }
+        if (f.state == FileState::Untracked && ImGui::Button("Ignore (never sync or pack it)"))
+        {
+            std::string error;
+            if (s.data->Ignore(f.name, error))
+            {
+                s.Say(f.name + " is ignored (.kom/ignore.txt)");
+                Rescan(s);
+            }
+            else
+                s.Say(error, true);
+        }
     }
 
     ImGui::SeparatorText("File");
     ImGui::SetNextItemWidth(-FLT_MIN);
     ImGui::InputTextWithHint("##move", "Folder to move it to (e.g. ui/textures)", s.moveTo, sizeof s.moveTo);
-    ImGui::BeginDisabled(s.Busy() || !s.moveTo[0]);
+    ImGui::BeginDisabled(!s.moveTo[0]);
     if (ImGui::Button("Move"))
     {
         std::string error;
@@ -650,10 +903,8 @@ void FileInspector(State& s, const ClientDataFile& f)
     }
     ImGui::EndDisabled();
     ImGui::SameLine();
-    ImGui::BeginDisabled(s.Busy());
     if (ImGui::Button("Delete from client_data..."))
         s.removeAsked = true;
-    ImGui::EndDisabled();
 }
 
 void FolderInspector(State& s, const std::string& path)
@@ -661,12 +912,14 @@ void FolderInspector(State& s, const std::string& path)
     const auto it = std::find_if(s.folders.begin(), s.folders.end(), [&](const Folder& f) { return f.path == path; });
     if (it == s.folders.end())
         return;
+    IconHere(Icon::Folder);
     ImGui::TextUnformatted(path.empty() ? "(root)" : path.c_str());
     ImGui::TextDisabled("Folder, %zu files", it->total);
     ImGui::Separator();
     if (ImGui::BeginTable("folder", 2, ImGuiTableFlags_SizingStretchProp))
     {
-        for (const FileState st : {FileState::Unchanged, FileState::Modified, FileState::Untracked, FileState::Added})
+        for (const FileState st : {FileState::Unchanged, FileState::Modified, FileState::Untracked, FileState::Added,
+                                   FileState::Ignored})
             if (it->counts[Index(st)])
                 Row(std::string(ToString(st)).c_str(), std::to_string(it->counts[Index(st)]));
         const std::string def = s.data->DefaultArchive(path);
@@ -674,12 +927,23 @@ void FolderInspector(State& s, const std::string& path)
         ImGui::EndTable();
     }
     ImGui::SeparatorText("Target archive of every file in it");
-    const Manifest& manifest = s.data->GetManifest();
-    const std::string current =
-        s.folderArchive >= 0 ? manifest.archives[static_cast<std::size_t>(s.folderArchive)].name : std::string();
+    const std::vector<std::string> archives = s.data->Archives();
+    if (s.folderArchive >= static_cast<int>(archives.size()))
+        s.folderArchive = -1;
+    const std::string current = s.folderArchive >= 0 ? archives[static_cast<std::size_t>(s.folderArchive)] : std::string();
     ImGui::SetNextItemWidth(-FLT_MIN);
-    ArchiveCombo("##folderArchive", manifest, current, s.folderArchive);
-    ImGui::BeginDisabled(s.Busy() || s.folderArchive < 0);
+    int chosen = s.folderArchive;
+    if (ArchiveCombo("##folderArchive", archives, current, chosen))
+    {
+        if (chosen == kNewArchive)
+        {
+            s.newArchiveAsked = true;
+            s.newArchiveForFolder = true;
+        }
+        else
+            s.folderArchive = chosen;
+    }
+    ImGui::BeginDisabled(s.folderArchive < 0);
     if (ImGui::Button("Apply to the folder and its subfolders"))
     {
         std::size_t count = 0;
@@ -691,21 +955,39 @@ void FolderInspector(State& s, const std::string& path)
         Changed(s);
     }
     ImGui::EndDisabled();
+    if (!path.empty())
+    {
+        ImGui::SeparatorText("Ignore");
+        if (ImGui::Button("Ignore this folder (its new files are never synced or packed)"))
+        {
+            std::string error;
+            if (s.data->IgnoreFolder(path, error))
+            {
+                s.Say(path + "/ is ignored (.kom/ignore.txt)");
+                Rescan(s);
+            }
+            else
+                s.Say(error, true);
+        }
+    }
+    ImGui::Spacing();
     ImGui::TextDisabled("Drop files on the window to add them to this folder.");
 }
 
 void ArchiveInspector(State& s, const std::string& name)
 {
+    IconHere(Icon::Archive);
     ImGui::TextUnformatted(name.c_str());
     if (s.archivesBuilt != s.generation)
         BuildArchives(s);
-    const auto& archives = s.data->GetManifest().archives;
-    for (std::size_t a = 0; a < archives.size(); ++a)
-        if (archives[a].name == name)
+    for (std::size_t a = 0; a < s.archiveNames.size(); ++a)
+        if (s.archiveNames[a] == name)
         {
-            ImGui::TextDisabled("Archive %zu of %zu in load order, %zu files after a sync", a + 1, archives.size(),
-                                s.byArchive[a].size());
-            ImGui::TextDisabled("The manifest lists %u entries now.", archives[a].count);
+            ImGui::TextDisabled("Archive %zu of %zu in load order, %zu files after a sync", a + 1,
+                                s.archiveNames.size(), s.byArchive[a].size());
+            const auto& manifest = s.data->GetManifest().archives;
+            if (a >= manifest.size() || manifest[a].name != name)
+                ImGui::TextColored(StateColor(FileState::Untracked), "New: created by the next sync");
         }
 }
 
@@ -717,17 +999,9 @@ void Inspector(State& s)
     {
     case Selected::File:
         if (const ClientDataFile* f = s.data->Find(s.selection))
-        {
-            ImGui::BeginDisabled(s.Busy());  // edits made now would be lost when the job's copy comes back
             FileInspector(s, *f);
-            ImGui::EndDisabled();
-        }
         break;
-    case Selected::Folder:
-        ImGui::BeginDisabled(s.Busy());
-        FolderInspector(s, s.selection);
-        ImGui::EndDisabled();
-        break;
+    case Selected::Folder: FolderInspector(s, s.selection); break;
     case Selected::Archive: ArchiveInspector(s, s.selection); break;
     case Selected::None: ImGui::TextDisabled("Select a file, a folder or an archive."); break;
     }
@@ -735,9 +1009,10 @@ void Inspector(State& s)
 
 // --- Toolbar and popups -----------------------------------------------------------------------------------------------
 
-void PickFolder(State& s, SDL_Window* window)
+void PickFolder(State& s, SDL_Window* window, Pick what)
 {
-    s.pickFrom = PathToUtf8(s.root);
+    s.picking = what;
+    s.pickFrom = what == Pick::ClientData ? PathToUtf8(s.root) : s.packTo;
     SDL_ShowOpenFolderDialog(
         [](void* user, const char* const* list, int) {
             auto* state = static_cast<State*>(user);
@@ -753,68 +1028,93 @@ void PickFolder(State& s, SDL_Window* window)
 
 void Toolbar(State& s, SDL_Window* window)
 {
-    ImGui::BeginDisabled(s.Busy());
     if (ImGui::Button("Open..."))
-        PickFolder(s, window);
+        PickFolder(s, window, Pick::ClientData);
     ImGui::SameLine();
     if (ImGui::Button("Rescan (F5)"))
         Rescan(s);
+    ImGui::SetItemTooltip("Reads client_data again, for changes made outside (only what changed is hashed again).");
     ImGui::SameLine();
     const std::size_t edits = s.data ? s.data->EditCount() : 0;
-    const std::size_t pending = s.counts[Index(FileState::Untracked)] + s.counts[Index(FileState::Deleted)] + edits;
-    ImGui::BeginDisabled(!s.data || pending == 0);
+    ImGui::BeginDisabled(!s.data || s.Pending() == 0);
     if (ImGui::Button("Sync data structure"))
         s.syncAsked = true;
     ImGui::EndDisabled();
-    ImGui::EndDisabled();
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
         ImGui::SetTooltip("Writes the manifest: adds the %zu new files, drops the %zu deleted ones and applies %zu "
-                          "archive edits.\nModified files stay modified: the manifest keeps their original.",
+                          "edits (archives).\nModified files stay modified: the manifest keeps their original.",
                           s.counts[Index(FileState::Untracked)], s.counts[Index(FileState::Deleted)], edits);
+    ImGui::SameLine();
+    ImGui::BeginDisabled(!s.data);
+    if (ImGui::Button("Pack..."))
+        s.packAsked = true;
+    ImGui::EndDisabled();
+    ImGui::SetItemTooltip("Writes the .kom archives, only the ones that changed since the last pack.");
     ImGui::SameLine();
     ImGui::TextDisabled("%s", s.root.empty() ? "No client_data open" : PathToUtf8(s.root).c_str());
     if (s.data)
     {
+        const auto count = [&](FileState state, const char* what) {
+            ImGui::SameLine();
+            ImGui::TextColored(StateColor(state), "%zu %s", s.counts[Index(state)], what);
+        };
         ImGui::SameLine();
         ImGui::TextDisabled("|");
-        ImGui::SameLine();
-        ImGui::TextColored(StateColor(FileState::Untracked), "%zu new", s.counts[Index(FileState::Untracked)]);
-        ImGui::SameLine();
-        ImGui::TextColored(StateColor(FileState::Modified), "%zu modified", s.counts[Index(FileState::Modified)]);
-        ImGui::SameLine();
-        ImGui::TextColored(StateColor(FileState::Deleted), "%zu deleted", s.counts[Index(FileState::Deleted)]);
-        ImGui::SameLine();
-        ImGui::TextColored(StateColor(FileState::Added), "%zu added", s.counts[Index(FileState::Added)]);
+        count(FileState::Untracked, "new");
+        count(FileState::Modified, "modified");
+        count(FileState::Deleted, "deleted");
+        count(FileState::Added, "added");
+        count(FileState::Ignored, "ignored");
         if (edits)
         {
             ImGui::SameLine();
-            ImGui::TextColored(StateColor(FileState::Modified), "| %zu unsynced archive edits", edits);
+            ImGui::TextColored(StateColor(FileState::Modified), "| %zu unsynced edits", edits);
         }
     }
 }
 
 void StatusBar(State& s)
 {
-    if (s.job)
-    {
-        const std::size_t total = s.job->total, done = s.job->progress;
-        char overlay[128];
-        std::snprintf(overlay, sizeof overlay, "%s: %zu / %zu files", s.job->label.c_str(), done, total);
-        ImGui::ProgressBar(total ? static_cast<float>(done) / static_cast<float>(total) : 0.0f, ImVec2(-FLT_MIN, 0),
-                           overlay);
-    }
-    else if (!s.message.empty())
-    {
-        if (s.messageIsError)
-            ImGui::TextColored(StateColor(FileState::Deleted), "%s", s.message.c_str());
-        else
-            ImGui::TextUnformatted(s.message.c_str());
-    }
+    if (s.message.empty())
+        return;
+    if (s.messageIsError)
+        ImGui::TextColored(StateColor(FileState::Deleted), "%s", s.message.c_str());
+    else
+        ImGui::TextUnformatted(s.message.c_str());
 }
 
 // True when the window should close.
-bool Popups(State& s)
+bool Popups(State& s, SDL_Window* window)
 {
+    // Work in the background blocks the window: what it reads or writes must not change under it.
+    if (s.job && !ImGui::IsPopupOpen("##busy"))
+        ImGui::OpenPopup("##busy");
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowSize(ImVec2(std::min(560.0f, viewport->WorkSize.x * 0.8f), 0));
+    if (ImGui::BeginPopupModal("##busy", nullptr,
+                               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                                   ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        if (!s.job)
+            ImGui::CloseCurrentPopup();
+        else
+        {
+            const std::size_t total = s.job->total, done = s.job->progress;
+            ImGui::TextUnformatted(s.job->label.c_str());
+            char overlay[96];
+            if (total)
+                std::snprintf(overlay, sizeof overlay, "%zu / %zu %s", done, total, s.job->unit);
+            else
+                std::snprintf(overlay, sizeof overlay, "listing files...");
+            ImGui::ProgressBar(total ? static_cast<float>(done) / static_cast<float>(total) : -1.0f * static_cast<float>(ImGui::GetTime()),
+                               ImVec2(-FLT_MIN, 0), overlay);
+        }
+        ImGui::EndPopup();
+    }
+    if (s.job)
+        return false;
+
     if (s.syncAsked)
     {
         s.syncAsked = false;
@@ -831,6 +1131,85 @@ bool Popups(State& s)
         if (ImGui::Button("Sync"))
         {
             Sync(s);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+            ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+
+    if (s.packAsked)
+    {
+        s.packAsked = false;
+        if (s.packTo.empty())
+            s.packTo = ReadPref("pack_destination.txt");
+        ImGui::OpenPopup("Pack");
+    }
+    if (ImGui::BeginPopupModal("Pack", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::TextUnformatted("Writes the client's .kom archives from client_data into:");
+        ImGui::TextColored(StateColor(FileState::Added), "%s", s.packTo.empty() ? "(choose a folder)" : s.packTo.c_str());
+        ImGui::SameLine();
+        if (ImGui::Button("Change..."))
+            PickFolder(s, window, Pick::PackDestination);
+        if (s.Pending())
+            ImGui::TextColored(StateColor(FileState::Modified),
+                               "Not synced yet: %zu new files, %zu deleted, %zu edits. Pack writes what the manifest "
+                               "says now;\nsync first to include them.",
+                               s.counts[Index(FileState::Untracked)], s.counts[Index(FileState::Deleted)],
+                               s.data ? s.data->EditCount() : 0);
+        ImGui::TextDisabled("Only the archives whose content changed since the last pack there are written.");
+        ImGui::BeginDisabled(s.packTo.empty());
+        if (ImGui::Button("Pack changed archives"))
+        {
+            Pack(s, true);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Pack every archive"))
+        {
+            Pack(s, false);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndDisabled();
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+            ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+
+    if (s.newArchiveAsked)
+    {
+        s.newArchiveAsked = false;
+        s.newArchive[0] = 0;
+        ImGui::OpenPopup("New archive");
+    }
+    if (ImGui::BeginPopupModal("New archive", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::TextUnformatted("A new .kom, created by the next sync. Its place in the load order is its name's.");
+        if (ImGui::IsWindowAppearing())
+            ImGui::SetKeyboardFocusHere();
+        ImGui::InputTextWithHint("##name", "e.g. data151.kom", s.newArchive, sizeof s.newArchive);
+        if (ImGui::Button("Create"))
+        {
+            std::string error;
+            std::string name = s.newArchive;
+            if (!Lower(name).ends_with(".kom"))
+                name += ".kom";
+            if (!s.data->CreateArchive(name, error))
+                s.Say(error, true);
+            else if (s.newArchiveForFolder)
+            {
+                const auto archives = s.data->Archives();
+                s.folderArchive = static_cast<int>(archives.size()) - 1;
+                s.Say(name + " will be created by the next sync; apply it to the folder");
+            }
+            else if (s.data->SetArchive(s.selection, name, error))
+                s.Say(s.selection + " will go to the new " + name + " (applied by Sync data structure)");
+            else
+                s.Say(error, true);
+            Changed(s);
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
@@ -875,7 +1254,14 @@ bool Popups(State& s)
     bool quit = false;
     if (ImGui::BeginPopupModal("Unsynced changes", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Text("%zu archive edits are not in the manifest yet.", s.data ? s.data->EditCount() : 0);
+        ImGui::Text("%zu edits (archives) are not in the manifest yet.", s.data ? s.data->EditCount() : 0);
+        if (ImGui::Button("Sync and close"))
+        {
+            Sync(s);
+            s.closeAfterSync = true;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
         if (ImGui::Button("Close without syncing"))
         {
             quit = true;
@@ -953,6 +1339,10 @@ int RunWindow(const std::filesystem::path& clientData)
         std::fprintf(stderr, "x2_assets: %s\n", device->LastError().c_str());
         return 1;
     }
+    // A window drawn only after events: with FIFO (vsync) the first frame after a wait blocked 100-400 ms in
+    // acquiring the swapchain image on Wayland (Hyprland, 2026-11-16). Mailbox does not wait.
+    if (device->WindowSupportsPresentMode(window->Handle(), render::PresentMode::Mailbox))
+        device->SetSwapchainParameters(window->Handle(), render::PresentMode::Mailbox);
     auto gui = app::ImGuiLayer::Create(*window, *device, {}, error);
     if (!gui)
     {
@@ -963,12 +1353,7 @@ int RunWindow(const std::filesystem::path& clientData)
     State s;
     std::filesystem::path start = clientData;
     if (start.empty())
-    {
-        std::ifstream in(LastFolderFile());
-        std::string last;
-        if (std::getline(in, last) && !last.empty())
-            start = PathFromUtf8(last);
-    }
+        start = PathFromUtf8(ReadPref("last_client_data.txt"));
     if (!start.empty())
         OpenFolder(s, std::filesystem::absolute(start));
     else
@@ -990,27 +1375,36 @@ int RunWindow(const std::filesystem::path& clientData)
                     s.dropped.emplace_back(event.drop.data);
                 if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_F5)
                     Rescan(s);
-                if (event.type == SDL_EVENT_WINDOW_FOCUS_GAINED && s.data)
-                    Rescan(s);  // files may have changed outside
             },
             window->Id());
-        if (!running && s.data && s.data->EditCount() > 0)
+        if (!running && (s.Busy() || (s.data && s.data->EditCount() > 0)))
         {
             running = true;
-            s.quitAsked = true;
+            s.quitAsked = !s.Busy();
         }
         {
             const std::lock_guard lock(s.pickedMutex);
             if (s.picked)
             {
-                if (!s.data || s.data->EditCount() == 0)
+                if (s.picking == Pick::PackDestination)
+                {
+                    s.packTo = *s.picked;
+                    WritePref("pack_destination.txt", s.packTo);
+                }
+                else if (!s.data || s.data->EditCount() == 0)
                     OpenFolder(s, PathFromUtf8(*s.picked));
                 else
-                    s.Say("Sync or revert the archive edits before opening another client_data", true);
+                    s.Say("Sync or revert the edits before opening another client_data", true);
                 s.picked.reset();
             }
         }
         FinishJob(s);
+        if (s.closeAfterSync && !s.job)
+        {
+            if (!s.messageIsError)
+                break;
+            s.closeAfterSync = false;  // the sync failed: stay, with its error
+        }
         AddDropped(s);
         if (window->Minimized())
             continue;
@@ -1042,7 +1436,7 @@ int RunWindow(const std::filesystem::path& clientData)
         if (ImGui::Begin("Status", nullptr, fixed))
             StatusBar(s);
         ImGui::End();
-        if (Popups(s))
+        if (Popups(s, window->Handle()))
             running = false;
 
         render::CommandBuffer* commands = device->AcquireCommandBuffer();
