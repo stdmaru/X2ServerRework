@@ -333,3 +333,37 @@ TEST_CASE("assets: pack can rewrite only the archives that changed")
     CHECK(stats.skipped == 1);  // a.kom now
     CHECK(fs::exists(f.out / "b.kom"));
 }
+
+TEST_CASE("assets: a pack commits what it wrote: client_data has no changes after it")
+{
+    Fixture f;
+    const Bytes wall = Pattern(4321, 16);
+    WriteFile(f.clientData / "ui" / "textures" / "Wall.dds", wall);
+    WriteFile(f.clientData / "sound" / "Jump.ogg", Pattern(222, 17));
+    fs::remove(f.clientData / "sound" / "Hit.ogg");
+    {
+        ClientData data = f.Open();
+        SyncStats synced;
+        std::string error;
+        REQUIRE_MESSAGE(data.Sync(2, synced, error), error);  // adds Jump.ogg, drops Hit.ogg
+    }
+    WriteFile(f.clientData / "sound" / "Miss.ogg", Pattern(333, 18));  // edited after the sync
+    fs::remove(f.clientData / "ui" / "scripts" / "DLG_Other.lua");    // deleted after the sync
+
+    const PackStats stats = f.DoPack();
+    CHECK(stats.committed == 4);  // Wall.dds and Miss.ogg edited, Jump.ogg new, DLG_Other.lua dropped
+    CHECK(stats.added == 1);
+    ClientData after = f.Open();
+    for (const ClientDataFile& file : after.Files())
+    {
+        CAPTURE(file.name);
+        CHECK(file.state == FileState::Unchanged);
+    }
+
+    // The next pack reproduces what was packed, byte for byte, from the committed manifest.
+    const Bytes a1 = ReadFile(f.out / "a.kom"), b1 = ReadFile(f.out / "b.kom");
+    fs::remove_all(f.out);
+    f.DoPack();
+    CHECK(ReadFile(f.out / "a.kom") == a1);
+    CHECK(ReadFile(f.out / "b.kom") == b1);
+}

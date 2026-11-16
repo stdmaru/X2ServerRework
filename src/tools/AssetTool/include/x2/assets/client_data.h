@@ -83,6 +83,10 @@ struct PackOptions
     // PackStatePath), so packing after a small edit does not rewrite gigabytes. Archives missing there, or changed
     // there since, are written.
     bool onlyChanged = false;
+    // The archives written become the source of truth: the manifest takes what was packed (edited and new files
+    // become originals, files missing from client_data leave it; the previous manifest is kept as .bak), so
+    // client_data shows no changes after a pack. Off: the manifest is left as it was (a pack for elsewhere).
+    bool commit = true;
     LogSink log;
     std::function<void(std::size_t done, std::size_t total)> progress;  // archives; from worker threads
 };
@@ -100,6 +104,7 @@ struct PackStats
     std::size_t untracked = 0;         // not packed: not in the manifest (a sync adds them)
     std::size_t ignored = 0;           // not packed: untracked and in .kom/ignore.txt
     std::size_t skipped = 0;           // onlyChanged: archives left as they were in the destination
+    std::size_t committed = 0;         // records the manifest took from what was packed (commit)
     std::size_t notReproduced = 0;     // unchanged content whose re-encoding differs (another zlib)
 };
 
