@@ -27,6 +27,7 @@
 #include <cstring>
 #include <filesystem>
 #include <functional>
+#include <future>
 #include <fstream>
 #include <map>
 #include <optional>
@@ -122,6 +123,8 @@ struct EditorState {
     // The script lines that name a texture's key (FindKeyUses), by "texture|key" lowercase, and the keys whose UV the
     // user chose to change in place although others use them.
     std::unordered_map<std::string, std::vector<x2::ui_editor::KeyUse>> keyUses;
+    // The scripts' lines that name files, read in the background at start and after saving (KeyUseIndex).
+    std::shared_future<x2::ui_editor::KeyUseIndex> keyIndex;
     std::set<std::string> keysInPlace;
     std::set<std::string> noTet;    // textures without a .tet the game reads (Key), not looked for again
     // A shared key's UV about to change: asks whether in place or in a new key (KeyPopup).
@@ -498,9 +501,17 @@ void ApplyTexts(x2::ui_editor::Engine& engine, EditorState& state, const std::ve
     }
 }
 
+void IndexKeyUses(EditorState& state);
+
 // Writes the scripts whose text changed to their loose files in the client_data.
 bool SaveScripts(EditorState& state)
 {
+    bool wrote = false;
+    const auto reindex = [&] {
+        if (wrote) {
+            IndexKeyUses(state);    // the files the key search reads changed
+        }
+    };
     for (const auto& [key, text] : state.scriptTexts) {
         if (const auto saved = state.scriptSaved.find(key); saved != state.scriptSaved.end() && saved->second == text) {
             continue;
@@ -509,17 +520,21 @@ bool SaveScripts(EditorState& state)
         const std::filesystem::path path = x2::ui_editor::FindLooseScript(state.gameFolder, name);
         if (path.empty()) {
             state.message = name + ": not in the client_data (data/)";
+            reindex();
             return false;
         }
         std::ofstream out(path, std::ios::binary | std::ios::trunc);
         out.write(text.data(), static_cast<std::streamsize>(text.size()));
         if (!out) {
             state.message = "cannot write " + path.string();
+            reindex();
             return false;
         }
         state.scriptSaved[key] = text;
         state.message = "saved " + path.string();
+        wrote = true;
     }
+    reindex();
     return true;
 }
 
@@ -1029,13 +1044,24 @@ bool PictureTet(x2::ui_editor::Engine& engine, EditorState& state, const std::st
     return true;
 }
 
+// Reads the scripts' lines that name files again, in the background (the files as saved).
+void IndexKeyUses(EditorState& state)
+{
+    state.keyUses.clear();
+    state.keyIndex = std::async(std::launch::async, x2::ui_editor::KeyUseIndex::Build, state.gameFolder).share();
+}
+
 // The script lines that name a texture's key, searched once a run (the files as saved).
 const std::vector<x2::ui_editor::KeyUse>& KeyUses(EditorState& state, const std::string& texture, const std::string& key)
 {
     const std::string id = LowerText(texture + "|" + key);
     auto it = state.keyUses.find(id);
     if (it == state.keyUses.end()) {
-        it = state.keyUses.emplace(id, x2::ui_editor::FindKeyUses(state.gameFolder, texture, key)).first;
+        if (!state.keyIndex.valid()) {
+            IndexKeyUses(state);
+        }
+        // Read in the background since the editor started: waits only when asked for in its first seconds.
+        it = state.keyUses.emplace(id, state.keyIndex.get().Find(texture, key)).first;
     }
     return it->second;
 }
@@ -1599,6 +1625,19 @@ bool EditStructure(x2::ui_editor::Engine& engine, EditorState& state, const std:
     return true;
 }
 
+// Gives a new control the anchor UIAnchors.lua declares for the one it came from, so it is drawn where that one was
+// (a step of undo of its own).
+void CopyAnchor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const ControlInfo& from,
+                const std::string& to)
+{
+    AnchorEntry entry = state.anchors.Get(dialog.script);
+    const std::string anchor = from.named ? entry.Control(from.name) : std::string();
+    if (!anchor.empty()) {
+        entry.SetControl(to, anchor);
+        EditAnchors(engine, state, dialog.script, entry);
+    }
+}
+
 // Why a script call cannot be edited structurally, or empty.
 std::string StructureProblem(const SourceRef& ref, const char* what)
 {
@@ -1767,9 +1806,11 @@ void ControlStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, c
             const SourceRef add = control.add;
             const std::string name = state.create.name;
             const float dx = state.create.pos[0], dy = state.create.pos[1];
-            EditStructure(engine, state, add.script, [&](std::string& text, std::string& error) {
-                return x2::ui_editor::DuplicateStatic(text, add.line, name, dx, dy, error);
-            }, control.name + " duplicated as " + name, name);
+            if (EditStructure(engine, state, add.script, [&](std::string& text, std::string& error) {
+                    return x2::ui_editor::DuplicateStatic(text, add.line, name, dx, dy, error);
+                }, control.name + " duplicated as " + name, name)) {
+                CopyAnchor(engine, state, dialog, control, name);
+            }
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndDisabled();
@@ -1867,9 +1908,11 @@ void PictureStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, c
             const SourceRef pictureAdd = picture.add, controlAdd = control.add;
             const std::string name = state.create.name;
             const bool before = state.create.before != 0;
-            EditStructure(engine, state, pictureAdd.script, [&](std::string& text, std::string& error) {
-                return x2::ui_editor::PictureToNewStatic(text, pictureAdd.line, controlAdd.line, name, before, error);
-            }, "picture moved to " + name + ": give it an anchor below", name);
+            if (EditStructure(engine, state, pictureAdd.script, [&](std::string& text, std::string& error) {
+                    return x2::ui_editor::PictureToNewStatic(text, pictureAdd.line, controlAdd.line, name, before, error);
+                }, "picture moved to " + name + ": give it an anchor below", name)) {
+                CopyAnchor(engine, state, dialog, control, name);
+            }
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndDisabled();
@@ -2759,6 +2802,7 @@ int main(int argc, char** argv)
         }
     }
     state.gameFolder = std::filesystem::absolute(state.gameFolder);
+    IndexKeyUses(state);
 
     std::string error;
     auto sdl = x2::app::Sdl::Init(error);

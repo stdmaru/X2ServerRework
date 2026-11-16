@@ -7,6 +7,7 @@
 #include <cstring>
 #include <fstream>
 #include <iterator>
+#include <string_view>
 #include <system_error>
 
 namespace x2::ui_editor {
@@ -264,11 +265,9 @@ std::string UpperKey(const std::string& key)
     return upper;
 }
 
-std::vector<KeyUse> FindKeyUses(const std::filesystem::path& gameFolder, const std::string& texture,
-                                const std::string& key)
+KeyUseIndex KeyUseIndex::Build(const std::filesystem::path& gameFolder)
 {
-    std::vector<KeyUse> uses;
-    const std::string tex = Lower(texture), k = Lower(key);
+    KeyUseIndex index;
     const std::filesystem::path data = gameFolder / "data";
     std::error_code ec;
     for (auto it = std::filesystem::recursive_directory_iterator(
@@ -286,25 +285,71 @@ std::vector<KeyUse> FindKeyUses(const std::filesystem::path& gameFolder, const s
         }
         std::ifstream in(it->path(), std::ios::binary);
         const std::string text = Lower(std::string(std::istreambuf_iterator<char>(in), {}));
-        if (text.find(tex) == std::string::npos) {
-            continue;
-        }
+        std::size_t script = SIZE_MAX;
         int line = 1;
-        for (std::size_t begin = 0; begin < text.size();) {
+        for (std::size_t begin = 0; begin < text.size(); ++line) {
             std::size_t end = text.find('\n', begin);
             end = end == std::string::npos ? text.size() : end;
-            const std::string l = text.substr(begin, end - begin);
-            if (HasQuoted(l, k) && HasQuoted(l, tex)) {
-                uses.push_back({std::filesystem::relative(it->path(), data, ec), line});
-            }
+            const std::string_view l(text.data() + begin, end - begin);
             begin = end + 1;
-            ++line;
+            if (l.find('.') == std::string_view::npos) {
+                continue;
+            }
+            // Every quoted name with a '.' on the line (a file), each once.
+            std::vector<std::string> names;
+            for (std::size_t q = 0; q < l.size(); ++q) {
+                if (l[q] != '"' && l[q] != '\'') {
+                    continue;
+                }
+                const std::size_t close = l.find(l[q], q + 1);
+                if (close == std::string_view::npos) {
+                    break;
+                }
+                const std::string_view quoted = l.substr(q + 1, close - q - 1);
+                if (quoted.find('.') != std::string_view::npos &&
+                    std::find(names.begin(), names.end(), quoted) == names.end()) {
+                    names.emplace_back(quoted);
+                }
+                q = close;
+            }
+            if (names.empty()) {
+                continue;
+            }
+            if (script == SIZE_MAX) {
+                script = index.m_scripts.size();
+                index.m_scripts.push_back(std::filesystem::relative(it->path(), data, ec));
+            }
+            for (const std::string& n : names) {
+                index.m_lines[n].push_back({script, line, std::string(l)});
+            }
+        }
+    }
+    return index;
+}
+
+std::vector<KeyUse> KeyUseIndex::Find(const std::string& texture, const std::string& key) const
+{
+    std::vector<KeyUse> uses;
+    const auto found = m_lines.find(Lower(texture));
+    if (found == m_lines.end()) {
+        return uses;
+    }
+    const std::string k = Lower(key);
+    for (const Line& line : found->second) {
+        if (HasQuoted(line.text, k)) {
+            uses.push_back({m_scripts[line.script], line.line});
         }
     }
     std::sort(uses.begin(), uses.end(), [](const KeyUse& a, const KeyUse& b) {
         return a.script != b.script ? a.script < b.script : a.line < b.line;
     });
     return uses;
+}
+
+std::vector<KeyUse> FindKeyUses(const std::filesystem::path& gameFolder, const std::string& texture,
+                                const std::string& key)
+{
+    return KeyUseIndex::Build(gameFolder).Find(texture, key);
 }
 
 }  // namespace x2::ui_editor
