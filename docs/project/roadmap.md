@@ -380,6 +380,13 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           X2Lib: 220 dialog `SetPos` (30 literal), 89 dialog `Move`, 181 `SetOffsetPos`, 42 control `SetPos`, 288
           picture point/size calls, 146 UI particles, 7 code anchors, 9 dialogs and 23 controls built without a
           script. Plan on PR #90. PvP's view width waits on [D10](decisions.md#pending).
+          **Merged 2026-11-16 as it stands** (user, PR #90): named placements ([T52](decisions.md); the tutorial
+          pointer converted, user checked), particle anchors (combo counter, special-attack frame and balloon, boss
+          warning; user checked), and in the UI editor: picture anchors, placements (add, target picked on the screen,
+          anchor, delete) and UI particle anchors shown live while watching the game. Next: convert the rest of the
+          placement inventory kind by kind (PR #90's plan), the event scenes' NPCs (positions from the screen's
+          centre, no anchor: `EventSceneObject.lua`), a particle preview in the editor, and the editor's consistency
+          pass once the user lists what confuses them.
           Left for the user (screens): PvP rooms, cash shop, boss bars, the character select background and the
           30 dialogs `propose.py` lists for review.
           Full-screen black shades found by a scan (2026-11-13), to stretch with their screens: cash shop popups,
