@@ -47,6 +47,7 @@ using x2::ui_editor::PlanCut;
 using x2::ui_editor::ControlInfo;
 using x2::ui_editor::DialogInfo;
 using x2::ui_editor::PictureInfo;
+using x2::ui_editor::PlacementInfo;
 using x2::ui_editor::SourceRef;
 using x2::ui_editor::TetFile;
 using x2::ui_editor::TetRect;
@@ -2250,6 +2251,44 @@ void ControlAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, cons
 
 void CutEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog);
 
+// The named placements the dialog's script declares (AddPlacement, T52): the spots the game's code shows it at. One
+// is put into effect as the game's code would (ApplyPlacement); its POS is then what dragging the dialog moves.
+void PlacementsEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const MoveFunction& move)
+{
+    if (dialog.placements.empty()) {
+        return;
+    }
+    ImGui::SeparatorText("Placements");
+    if (ImGui::RadioButton("none##placement", dialog.placement.empty())) {
+        engine.ApplyPlacement(state.selected.dialog, "");
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Where the script's SetPos puts it; the game's code asks for a placement by name");
+    }
+    for (std::size_t i = 0; i < dialog.placements.size(); ++i) {
+        const PlacementInfo& p = dialog.placements[i];
+        ImGui::PushID(static_cast<int>(i));
+        const bool inEffect = p.name == dialog.placement;
+        if (ImGui::RadioButton(p.name.c_str(), inEffect)) {
+            engine.ApplyPlacement(state.selected.dialog, p.name);
+        }
+        ImGui::SameLine();
+        if (p.target.empty()) {
+            ImGui::TextDisabled("at %.0f, %.0f%s%s", static_cast<double>(p.pos[0]), static_cast<double>(p.pos[1]),
+                                p.anchor.empty() ? "" : ", ", p.anchor.c_str());
+        } else {
+            ImGui::TextDisabled("%+.0f, %+.0f from %s%s%s%s", static_cast<double>(p.pos[0]), static_cast<double>(p.pos[1]),
+                                p.target.c_str(), p.control.empty() ? "" : " / ", p.control.c_str(),
+                                p.resolved ? "" : " (not open)");
+        }
+        if (inEffect) {
+            MoveField(state, "POS", p.pos, p.source.Known() ? std::vector<SourceRef>{p.source} : std::vector<SourceRef>{},
+                      move);
+        }
+        ImGui::PopID();
+    }
+}
+
 void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
 {
     state.shownPictures.swap(state.expandedPictures);
@@ -2281,6 +2320,7 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     if (dialog.placedByCode) {
         ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "The game's code places it: this moves its script's SetPos only");
     }
+    PlacementsEditor(engine, state, dialog, move);
     if (const auto* positions = state.record.Positions(dialog.script); positions != nullptr) {
         const auto& r = state.record.Of(dialog.script);
         ImGui::Text("recorded: %zu position(s)%s", positions->size(), r.placedByCode ? ", placed by code" : "");
@@ -2471,6 +2511,12 @@ bool MoveSelected(x2::ui_editor::Engine& engine, EditorState& state, bool dialog
     }
     const DialogInfo& info = state.inspected[static_cast<std::size_t>(sel.dialog)];
     if (dialog) {
+        // In a placement, the dialog is where its POS puts it.
+        for (const PlacementInfo& placement : info.placements) {
+            if (placement.name == info.placement) {
+                return MoveSources(engine, state, {placement.source}, dx, dy, merge);
+            }
+        }
         return MoveSources(engine, state, {info.posSource}, dx, dy, merge);
     }
     if (sel.control < 0 || sel.control >= static_cast<int>(info.controls.size())) {

@@ -677,9 +677,13 @@ bool Engine::ReloadDialog(int index, std::string& error)
     CKTDGUIDialogManager* manager = g_pKTDXApp->GetDGManager()->GetDialogManager();
     D3DXVECTOR2 drawnPos(0, 0);
     bool shown = true;
+    std::wstring placement;
     if (CKTDGUIDialog* old = CKTDGUIDialog::GetObjectByUID(open.dialog.GetHandle()); old != nullptr) {
         drawnPos = old->GetPos();
         shown = old->GetShow();
+        if (const CKTDGUIDialog::Placement* inEffect = old->GetPlacementInEffect()) {
+            placement = inEffect->wstrName;
+        }
     }
     const D3DXVECTOR2 scriptPos = open.layout.pos;
     if (open.dialog != NULL) {
@@ -701,6 +705,9 @@ bool Engine::ReloadDialog(int index, std::string& error)
     } else {
         dialog->SetPos(drawnPos + (open.layout.pos - scriptPos));
         dialog->SetShowEnable(shown, shown);
+    }
+    if (!placement.empty()) {
+        dialog->ApplyPlacement(placement.c_str());   // where its edited placement puts it now
     }
     if (!open.loaded) {
         error = open.script + ": the script failed (ErrorLog.txt in the game folder)";
@@ -860,6 +867,9 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
         dialog->SetAnchor(static_cast<UIAnchor>(live.anchor));
     }
     dialog->SetPos(D3DXVECTOR2(live.pos[0], live.pos[1]) + (open.layout.pos - before.pos));
+    if (!live.placement.empty()) {
+        dialog->ApplyPlacement(Wide(live.placement).c_str());     // from the script: edits move it
+    }
     if (dialog->GetLayer() != live.layer) {
         dialog->SetLayer(live.layer);
     }
