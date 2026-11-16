@@ -458,7 +458,7 @@ The definitive game editing tool (user, 2026-11-05): edit the game, maps and eve
 
 - [ ] **One suite** (user, 2026-11-16): `x2_assets` (the client_data manager: files, archives, sync, commit, pack) and
       the UI editor merge into x2 studio, with the tools to come. Export to `.kom` is `x2_assets pack` (only the
-      changed archives, new files in their archive's chosen by default from their folder; T50, 2026-11-16); left: the
+      changed archives, new files in the archive chosen for them, by default their folder's; T50, 2026-11-16); left: the
       2 GB archive limit, and the client's fixed list of archives (new ones are not loaded).
 
 ## Phase 6 — Server: historical client compatibility
