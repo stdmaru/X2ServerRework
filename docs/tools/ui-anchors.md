@@ -52,6 +52,52 @@ those, found by review.
 The proposal is reviewed with screen captures before it goes into the client_data's `UIAnchors.lua`
 (`client/widescreen-migration`).
 
+## Placement scan (`scan_placement.py`, T52)
+
+Lists the places where X2Lib's code still lays out the UI ([T52](../project/decisions.md)), the checklist of
+`client/widescreen-migration` part 3: converted sites stop matching, so the list shrinks as the code leaves the layout
+to the content.
+
+```bash
+python3 tools/ui-anchors/scan_placement.py -o placement.tsv          # default root: src/client/X2Lib
+python3 tools/ui-anchors/tests/test_scan_placement.py                # tests
+```
+
+One row per site: file, line, function, kind (T52's A–G, plus `data` for sizes that stay code), call, receiver,
+dialog script, arguments and flags. How it finds them:
+
+- `SetPos`, `Move`, `SetOffsetPos`, `SetPoint`, `SetSize*` and `SetAnchor` on UI receivers only: a receiver's type
+  comes from its declarations in X2Lib's sources and headers (`CKTDGUI*`, `CPictureData`), else from its name; meshes,
+  particles, units and effects also have `SetPos`. Comments and `#if 0` blocks are skipped.
+- A dialog variable's script is the `L"DLG_*.lua"` of its `new CKTDGUIDialog`, in the same file or any other.
+- A value passed in a local variable is followed to its assignments in the function (`via:<name>`): all literal, the
+  site is fixed (A or D).
+- A function placing a dialog with its own parameter is followed to its callers, through several levels and inline
+  methods in headers (`through:<function>`): `CreateMouseClickUI` → `MouseClickUI` → `SetPos( vPos )` puts the
+  tutorial pointer's spots at `X2PlayGuide`, `X2DungeonGame` and `X2StateDungeonRoom`. A name defined in several
+  classes and called more than 60 times is not followed (reported on stderr; 2026-11-16: `AddComboPicture`).
+- Flags: `screen` (computed with 1024/768/512/384 literals, which do not follow the canvas), `mouse`, `default` (the
+  message boxes' `(-999, -999)`, their own default spot from `GetWindowPos`), `param` (placed with the function's
+  parameter: the spots are at the callers).
+
+Guesses are a starting point: B (a spot on another dialog's element) is found by review, so it is reported as A.
+
+First scan, 2026-11-16: 2,156 sites in 112 files. A 620, C 1,132, D 143, E 119, F 5, G 31, data 106.
+
+- The message boxes are most of A: `KTDGUIOKMsgBox` 745 calls (443 at fixed spots, the rest at the default),
+  `KTDGUIOkAndCancelMsgBox` 163 (80 fixed), `KTDGUIMsgBox` 35. Their spots are few: (250, 300) 384 times,
+  (305, 375) 77, (270, 350) 40, and a handful of others. They stand for "in the middle", so one placement per box,
+  in the box's script, replaces them.
+- The tutorial pointer `DLG_Mouse_Click.lua`: 5 calls through `CreateMouseClickUI`, 13 spots in all, each on another
+  dialog's control (B).
+- Dialogs placed at several fixed spots (named placements): the dungeon ending event's speech (4) and character (3),
+  the local map (3), the random item background (2), the PvP score boards (2 each).
+- C: 389 message-box defaults, 313 through functions with computed arguments (305 of them `AddComboPicture`, the
+  training game's combo pictures), 40 `param`, 13 at the mouse, 377 others (positions from other elements or
+  variables) to review; 16 sites use screen literals.
+- Most sites: `X2StateTrainingGame` 307, `X2UIInventory` 239, `X2StateServerSelect` 75, `X2StateMenu` 67,
+  `X2UIShop` 67, `X2StateDungeonResult` 66, `X2Main` 64, `X2Community` 63.
+
 ## Status
 
 2026-11-13: recording and proposal work; the login screen recorded as expected (buttons and background centered).
