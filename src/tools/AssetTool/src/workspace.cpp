@@ -956,4 +956,66 @@ bool ClientData::Commit(unsigned jobs, CommitStats& stats, std::string& error)
     return true;
 }
 
+std::vector<std::string> ClientData::FilesUnder(std::string_view folder) const
+{
+    const std::string base = kom::AsciiLower(folder);
+    std::vector<std::string> names;
+    for (const ClientDataFile& f : files_)
+    {
+        if (f.state == FileState::Deleted)
+            continue;
+        const std::string at = kom::AsciiLower(f.folder);
+        if (base.empty() || at == base || at.starts_with(base + "/"))
+            names.push_back(f.name);
+    }
+    return names;
+}
+
+bool ClientData::Export(std::span<const std::string> names, const std::filesystem::path& destination, unsigned jobs,
+                        std::size_t& copied, std::string& error, const Progress& progress) const
+{
+    copied = 0;
+    std::error_code ec;
+    const std::filesystem::path dest = std::filesystem::weakly_canonical(destination, ec);
+    const std::filesystem::path root = std::filesystem::weakly_canonical(root_, ec);
+    const auto [r, d] = std::mismatch(root.begin(), root.end(), dest.begin(), dest.end());
+    if (r == root.end())
+    {
+        error = "cannot export into client_data itself (" + PathToUtf8(destination) + ")";
+        return false;
+    }
+    std::vector<const ClientDataFile*> files;
+    std::set<std::string> seen;
+    for (const std::string& name : names)
+    {
+        const ClientDataFile* f = Find(name);
+        if (!f || f->state == FileState::Deleted)
+        {
+            error = name + ": not in client_data";
+            return false;
+        }
+        if (seen.insert(kom::AsciiLower(f->name)).second)
+            files.push_back(f);
+    }
+    std::atomic<std::size_t> done{0};
+    if (!ParallelFor(files.size(), jobs, [&](std::size_t i, std::string& e) {
+            const ClientDataFile& f = *files[i];
+            const std::filesystem::path dir = f.folder.empty() ? dest : dest / PathFromUtf8(f.folder);
+            std::error_code fec;
+            std::filesystem::create_directories(dir, fec);
+            if (!std::filesystem::copy_file(Locate(f.name), dir / PathFromUtf8(f.name),
+                                            std::filesystem::copy_options::overwrite_existing, fec))
+            {
+                e = "cannot copy " + f.name + " to " + PathToUtf8(dir) + ": " + fec.message();
+                return false;
+            }
+            if (progress)
+                progress(++done, files.size());
+            return true;
+        }, error))
+        return false;
+    copied = files.size();
+    return true;
+}
+
 } // namespace x2::assets

@@ -148,14 +148,16 @@ archive, ignore, move, rename, delete; for one file, a folder, an archive or sev
 file explorer: a click opens a folder; Ctrl, Shift, a box drag or Ctrl+A select many; dragging moves the selection into
 a folder or sets its target archive; Ctrl+X/Ctrl+V move, F2 renames, Del deletes (into `.kom/trash/`, emptied on exit,
 so undo can restore it), and Ctrl+Z/Ctrl+Y undo and redo every operation until a sync or commit; files dropped from
-outside are copied into the folder under the mouse. Work on many files (open, rescan, commit, pack) runs in the
+outside are copied into the folder under the mouse. **Export...** (right-click, or the inspector) copies the selected
+files, folders meaning every file under them, into a folder you choose, each at its path in client_data: filter by name
+(e.g. `.dds`), select all and export to upscale textures elsewhere (`ClientData::Export`; client_data does not change). Work on many files (open, rescan, commit, pack) runs in the
 background behind a progress overlay. Closing with unsynced archive edits asks first. The last client_data and the
 pack destination are remembered (SDL's preference folder). Opening the full client_data hashes its 105,033 files
 once (about 20 s) and then takes about 5 s with the hash cache (2026-11-16, `linux-debug`).
 
 **The command line** (`x2_assets --cli help` lists the commands, `help <command>` explains one with examples):
 `status`, `info`, `where`, `archives`, `add`, `remove`, `move`, `rename`, `mkdir`, `set-archive`, `ignore`, `unignore`,
-`sync`, `commit` and `pack`, besides `import`, `layout` and `texture-sizes`. The command line keeps nothing between
+`sync`, `commit`, `pack` and `export` (`--match=<pattern>`, the patterns of `.kom/ignore.txt`), besides `import`, `layout` and `texture-sizes`. The command line keeps nothing between
 runs, so `add`, `remove` and `set-archive` sync at once (`--no-sync` to leave added or removed files for later).
 
 **Tools find files by name** (AGENTS.md, user, 2026-11-16): client_data's organization is x2_assets' and can change at
@@ -219,7 +221,7 @@ truncated one kept, an Item.kim converted with Enum.lua's names, an unchanged pa
 as source and Item.kim compiled again, scripts that do not load refused, and `--no-lua`. The manager
 (`test_workspace.cpp`): file states and lookup by name, the default archive, sync with edits, new archives and the
 indices it gives, add/move/remove, the ignore list, incremental pack, commit against pack, and the in-place operations
-with the trash and restore.
+with the trash and restore, and export with client_data's structure.
 
 **Opt-in**: `X2_ASSETS_CLIENT_DATA=<client data folder> x2_assets_tests -tc="*client*"` imports with
 `tools/assets/layout.txt`, checks that every script decompiled and Item.kim was converted, that the status is clean, packs and compares every archive byte for byte. It needs about
