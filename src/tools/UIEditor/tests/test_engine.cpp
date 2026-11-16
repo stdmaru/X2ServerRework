@@ -484,6 +484,35 @@ g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
     CHECK(bytes == tet.Bytes());
     CHECK_FALSE(engine->SetTet("DLG_Test.tga", "nope", error));
 
+    // After the game's state went in (watched, then unchecked), a key the script changed to is drawn, at its size and
+    // with its rectangle, not the game's (2026-11-16).
+    x2::ui_editor::LiveSnapshot::Dialog live;
+    live.script = "dlg_keyed.lua";
+    live.controls = {{0, true, -1}};
+    x2::ui_editor::LiveSnapshot::Picture shown;
+    shown.texture = "DLG_Test.tga";
+    shown.key = "HALF";
+    shown.points[1][0] = shown.points[3][0] = 4.0f;
+    shown.points[2][1] = shown.points[3][1] = 4.0f;
+    shown.uv[1][0] = shown.uv[3][0] = 1.0f;
+    shown.uv[2][1] = shown.uv[3][1] = 1.0f;
+    shown.full = true;
+    live.pictures = {shown};
+    engine->ApplyLive(0, live);
+    REQUIRE(tet.Add("OTHER", Rect(0, 2, 1, 3), error));
+    REQUIRE_MESSAGE(engine->SetTet("DLG_Test.tga", tet.Bytes(), error), error);
+    std::string text;
+    REQUIRE_MESSAGE(engine->ScriptText("DLG_Keyed.lua", text, error), error);
+    REQUIRE_MESSAGE(x2::ui_editor::SetTexCall(text, 6, "DLG_Test.tga", "OTHER", error), error);
+    engine->SetScriptText("DLG_Keyed.lua", &text);
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    picture = engine->Inspect()[0].controls[0].pictures.at(0);
+    CHECK(picture.key == "OTHER");
+    // The game's 4 by what the edits changed since the game started: OTHER's 1 x 1 instead of HALF's first 2 x 4.
+    CHECK(picture.points[3][0] == doctest::Approx(3.0f));
+    CHECK(picture.points[3][1] == doctest::Approx(1.0f));
+    CHECK(picture.uv[0][1] == doctest::Approx(0.5f));       // OTHER's rectangle: from y 2 of 4
+
     // The texture itself, for Interactive Select: its size in texels, as the .tet's.
     x2::ui_editor::Engine::TextureImage image;
     REQUIRE_MESSAGE(engine->LoadTextureImage("DLG_Test.tga", image, error), error);
@@ -724,6 +753,9 @@ TEST_CASE("ui editor: the client_data's pictures can be moved to statics of thei
     REQUIRE_MESSAGE(engine, error);
     int pictures = 0, unknown = 0, shared = 0, failed = 0, drawn = 0, moved = 0;
     const char* filter = std::getenv("X2_UI_EDITOR_FILTER");
+    // The new static gets the old one's anchor, as the editor gives it.
+    const x2::ui_editor::AnchorsFile anchors =
+        x2::ui_editor::AnchorsFile::Load(x2::ui_editor::AnchorsFile::Find(folder), error);
     for (const std::string& script : x2::ui_editor::FindDialogScripts(folder)) {
         if (filter != nullptr && script.rfind(filter, 0) != 0) {
             continue;
@@ -762,7 +794,17 @@ TEST_CASE("ui editor: the client_data's pictures can be moved to statics of thei
                 checked = true;
                 engine->SetScriptText(picture.add.script, &text);
                 ++drawn;
-                if (engine->ReloadDialog(0, error) && engine->Render(1280, 720, 0.0f, error)) {
+                const int movedBefore = moved;
+                const x2::ui_editor::AnchorEntry entry = anchors.Get(script);
+                x2::ui_editor::AnchorEntry withNew = entry;
+                if (control.named && !entry.Control(control.name).empty()) {
+                    withNew.SetControl("Moved_By_Test", entry.Control(control.name));
+                }
+                const bool reloaded = engine->ReloadDialog(0, error);
+                if (reloaded) {
+                    engine->ApplyAnchors(0, withNew, entry);
+                }
+                if (reloaded && engine->Render(1280, 720, 0.0f, error)) {
                     const auto reloaded = engine->Inspect();
                     for (const auto& c : reloaded[0].controls) {
                         if (c.name == "Moved_By_Test" && c.pictures.size() == 1 &&
@@ -772,8 +814,10 @@ TEST_CASE("ui editor: the client_data's pictures can be moved to statics of thei
                         }
                     }
                 }
-                if (moved != drawn && drawn - moved <= 20) {
-                    MESSAGE(script << ": the moved picture is not drawn where it was");
+                if (moved == movedBefore && drawn - moved <= 30) {
+                    MESSAGE(script << ": " << control.name << " picture " << p << " (" << picture.key
+                                   << ") is not drawn where it was; anchor " << control.anchor
+                                   << (control.anchorDeclared ? " declared" : "") << ", backdrop " << control.backdropFade);
                 }
                 engine->SetScriptText(picture.add.script, nullptr);
             }

@@ -60,10 +60,18 @@ std::string ScriptKey(const std::string& script)
 
 // What a dialog's scripts placed, before any game state is put into it: its position, and per control the corners
 // of each picture (so a resize shows too) and the position of each text. An edit's change is the difference of two.
+// and its texture, key and texture coordinates (an edit of the script or the .tet changes them).
 using Corners = std::array<D3DXVECTOR2, 4>;     // left top, right top, left bottom, right bottom
+struct PictureLayout {
+    Corners corners{};
+    std::wstring texture, key;
+    Corners uv{};
+
+    bool SameTexture(const PictureLayout& other) const { return texture == other.texture && key == other.key; }
+};
 struct ScriptLayout {
     D3DXVECTOR2 pos{0, 0};
-    std::vector<std::vector<Corners>> pictures;         // [control][picture]
+    std::vector<std::vector<PictureLayout>> pictures;   // [control][picture]
     std::vector<std::vector<D3DXVECTOR2>> strings;      // [control][string]
 };
 
@@ -81,12 +89,19 @@ ScriptLayout CaptureLayout(CKTDGUIDialog& dialog)
         auto* control = static_cast<CKTDGUIStatic*>(controls[c]);
         for (int p = 0; p < control->GetPictureNum(); ++p) {
             const CKTDGUIControl::CPictureData* picture = control->GetPicture(p);
-            Corners corners{};
+            PictureLayout pl;
             if (picture != NULL && picture->pPoint != NULL) {
-                corners = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint, picture->pPoint->leftBottomPoint,
-                           picture->pPoint->rightBottomPoint};
+                pl.corners = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint,
+                              picture->pPoint->leftBottomPoint, picture->pPoint->rightBottomPoint};
             }
-            layout.pictures[c].push_back(corners);
+            if (picture != NULL && picture->pTexture != NULL) {
+                pl.texture = picture->pTexture->texName;
+                pl.key = picture->pTexture->keyName;
+                for (std::size_t k = 0; k < pl.uv.size(); ++k) {
+                    pl.uv[k] = picture->pTexture->uvTexture[k];
+                }
+            }
+            layout.pictures[c].push_back(pl);
         }
         for (int t = 0; t < control->GetStringNum(); ++t) {
             const CKTDGUIControl::UIStringData* string = control->GetString(t);
@@ -107,17 +122,29 @@ D3DXVECTOR2 Moved(const std::vector<std::vector<D3DXVECTOR2>>& a, const std::vec
 }
 
 // The same for each corner of a picture.
-Corners Moved(const std::vector<std::vector<Corners>>& a, const std::vector<std::vector<Corners>>& b, std::size_t control,
-              std::size_t item)
+Corners Moved(const std::vector<std::vector<PictureLayout>>& a, const std::vector<std::vector<PictureLayout>>& b,
+              std::size_t control, std::size_t item)
 {
     Corners moved{};
     if (control >= a.size() || control >= b.size() || item >= a[control].size() || item >= b[control].size()) {
         return moved;
     }
     for (std::size_t k = 0; k < moved.size(); ++k) {
-        moved[k] = b[control][item][k] - a[control][item][k];
+        moved[k] = b[control][item].corners[k] - a[control][item].corners[k];
     }
     return moved;
+}
+
+// The picture as the scripts place it now, when an edit changed it from what they placed first; nullptr otherwise.
+const PictureLayout* Edited(const std::vector<std::vector<PictureLayout>>& first,
+                            const std::vector<std::vector<PictureLayout>>& now, std::size_t control, std::size_t item)
+{
+    if (control >= first.size() || control >= now.size() || item >= first[control].size() || item >= now[control].size()) {
+        return nullptr;
+    }
+    const PictureLayout& a = first[control][item];
+    const PictureLayout& b = now[control][item];
+    return a.SameTexture(b) && a.uv == b.uv ? nullptr : &b;
 }
 
 const char* AnchorName(UIAnchor anchor)
@@ -815,6 +842,26 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
                     picture->pPoint->rightTopPoint += moved[1];
                     picture->pPoint->leftBottomPoint += moved[2];
                     picture->pPoint->rightBottomPoint += moved[3];
+                }
+                // A texture, key or UV rectangle an edit changed: the script's and the .tet's, not the game's
+                // (2026-11-16: the game's key came back, so a key change did not show while watching).
+                const PictureLayout* edited =
+                    picture != NULL ? Edited(before.pictures, open.layout.pictures, ci, static_cast<std::size_t>(p.index))
+                                    : nullptr;
+                if (edited != nullptr) {
+                    if (picture->pTexture == NULL || picture->pTexture->texName != edited->texture ||
+                        picture->pTexture->keyName != edited->key) {
+                        if (edited->key.empty()) {
+                            picture->SetTex(edited->texture.c_str());
+                        } else {
+                            picture->SetTex(edited->texture.c_str(), edited->key.c_str());
+                        }
+                    }
+                    if (picture->pTexture != NULL) {
+                        for (std::size_t k = 0; k < edited->uv.size(); ++k) {
+                            picture->pTexture->uvTexture[k] = edited->uv[k];
+                        }
+                    }
                 }
             }
             for (const LiveSnapshot::Text& t : live.texts) {

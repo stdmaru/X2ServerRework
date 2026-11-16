@@ -6,6 +6,7 @@
 // the rectangles, then the keys (WORD length, UTF-16LE, a null), keys sorted by code unit for the client's binary search.
 
 #include <filesystem>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -64,5 +65,23 @@ struct KeyUse {
 };
 std::vector<KeyUse> FindKeyUses(const std::filesystem::path& gameFolder, const std::string& texture,
                                 const std::string& key);
+
+// The same search over an index of the scripts' lines that name a file in quotes ("x.tga"), read once: the
+// client_data's .lua are 177 MB in 4,565 files among 105,000 (2026-11-16), about 10 s to read, so the editor builds the
+// index in the background when it starts and again after saving.
+class KeyUseIndex {
+public:
+    static KeyUseIndex Build(const std::filesystem::path& gameFolder);
+    std::vector<KeyUse> Find(const std::string& texture, const std::string& key) const;
+
+private:
+    struct Line {
+        std::size_t script = 0;     // into m_scripts
+        int line = 0;
+        std::string text;           // lowercase
+    };
+    std::vector<std::filesystem::path> m_scripts;
+    std::unordered_map<std::string, std::vector<Line>> m_lines;     // by each quoted name with a '.', lowercase
+};
 
 }  // namespace x2::ui_editor
