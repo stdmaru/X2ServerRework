@@ -499,6 +499,9 @@ bool AnchorsFile::Save(const std::filesystem::path& path, std::string& error)
 std::filesystem::path AnchorsFile::Find(const std::filesystem::path& gameFolder)
 {
     const std::filesystem::path data = gameFolder / "data";
+    // Found by name, wherever client_data keeps it; a new one goes with the dialog scripts it describes (the
+    // first found), else in the root: never a fixed path (client_data's organization is x2_assets').
+    std::filesystem::path dialogs;
     std::error_code ec;
     for (auto it = std::filesystem::recursive_directory_iterator(
              data, std::filesystem::directory_options::skip_permission_denied, ec);
@@ -506,11 +509,17 @@ std::filesystem::path AnchorsFile::Find(const std::filesystem::path& gameFolder)
         const std::string name = it->path().filename().string();
         if (it->is_directory(ec) && !name.empty() && name[0] == '.') {
             it.disable_recursion_pending();     // client_data's .kom/
-        } else if (ScriptKey(name) == "uianchors.lua" && it->is_regular_file(ec)) {
+            continue;
+        }
+        const std::string key = ScriptKey(name);
+        if (key == "uianchors.lua" && it->is_regular_file(ec)) {
             return it->path();
         }
+        if (dialogs.empty() && key.starts_with("dlg_") && key.ends_with(".lua")) {
+            dialogs = it->path().parent_path();
+        }
     }
-    return data / "ui" / "scripts" / "UIAnchors.lua";
+    return (dialogs.empty() ? data : dialogs) / "UIAnchors.lua";
 }
 
 AnchorEntry AnchorsFile::Get(const std::string& script) const

@@ -50,7 +50,8 @@ public:
     // What in the text could not be read (the game reports the same on stderr); empty when all of it was.
     const std::string& Problem() const { return m_problem; }
 
-    // Where the file is in a game folder's client_data (data/), or where a new one goes (data/ui/scripts).
+    // Where the file is in a game folder's client_data (data/), found by name; or where a new one goes: with the
+    // first dialog script (DLG_*.lua) found, else in client_data's root.
     static std::filesystem::path Find(const std::filesystem::path& gameFolder);
 
 private:

@@ -12,7 +12,7 @@ A <dir> holds a client's FieldQuest.lua, FieldSubQuest.lua, EventScene.lua and E
 - Text (titles, quest text, sub-quest descriptions) of a --source is kept unless it is Korean; a --fallback's (e.g. an
   English client) and Korean text are replaced by --text's, by ID, when that one has it.
 - Unit classes our Enum.lua lacks are dropped from class lists (a quest that changes to one is an error).
-- STR_ID_<n> the scenes use are defined in strings/StringID_def.lua, and their strings are copied from --strings into
+- STR_ID_<n> the scenes use are defined in StringID_def.lua, and their strings are copied from --strings into
   --ess where ours lacks them (an ID our table has with its own name as text counts as missing).
 - References to items, dungeons and NPCs that the client_data lacks are reported.
 Every run can be repeated (a second run changes nothing). See docs/tools/client-data.md (Bringing data from other
@@ -23,6 +23,8 @@ import re
 import struct
 import sys
 from pathlib import Path
+
+from client_data import ClientData
 
 HANGUL = re.compile("[ᄀ-ᇿ㄰-㆏가-힣]")
 QUEST, SUB = "AddQuestTemplet_LUA", "AddSubQuestTemplet_LUA"
@@ -100,11 +102,10 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    cd = Path(args.client_data)
-    files = {"quest": cd / "data/FieldQuest.lua", "sub": cd / "data/FieldSubQuest.lua",
-             "scene": cd / "data/EventScene.lua", "object": cd / "data/EventSceneObject.lua"}
+    cd = ClientData(args.client_data)
     names = {"quest": "FieldQuest.lua", "sub": "FieldSubQuest.lua", "scene": "EventScene.lua",
              "object": "EventSceneObject.lua"}
+    files = {k: cd.find(n) for k, n in names.items()}
     calls = {"quest": (QUEST, "m_iID"), "sub": (SUB, "m_iID"), "scene": (SCENE, "EVENT_SCENE_ID"),
              "object": (OBJECT, "SCENE_OBJECT_NAME")}
 
@@ -118,7 +119,7 @@ def main():
     ours = {k: blocks(read(p), *calls[k]) for k, p in files.items()}
     sources = [(d, load(d), False) for d in args.source] + [(d, load(d), True) for d in args.fallback]
     text = load(args.text)
-    enum = read(cd / "data/Enum.lua")
+    enum = read(cd.find("Enum.lua"))
     classes = set(re.findall(r"^\s*(UC_\w+)\s*=", enum, re.M))
 
     def take(kind, key, extra=()):
@@ -173,7 +174,7 @@ def main():
             added["object"].append(ob)
 
     # Strings the new scenes use.
-    def_path = cd / "strings/StringID_def.lua"
+    def_path = cd.find("StringID_def.lua")
     defs = read(def_path)
     defined = set(map(int, re.findall(r"^STR_ID_(\d+) = ", defs, re.M)))
     used = sorted({int(n) for b in added["scene"] for n in re.findall(r"\bSTR_ID_(\d+)\b", b)})
@@ -186,8 +187,8 @@ def main():
     new_strings = [n for n in new_strings if n in theirs]
 
     # References to report.
-    item_ids = set(map(int, re.findall(r"m_ItemID = (\d+)", read(cd / "items/Item.lua"))))
-    dungeon_enum = read(cd / "data/DungeonEnum.lua")
+    item_ids = set(map(int, re.findall(r"m_ItemID = (\d+)", read(cd.find("Item.lua")))))
+    dungeon_enum = read(cd.find("DungeonEnum.lua"))
     dungeons = set(map(int, re.findall(r"^\s*DI_\w+\s*=\s*(\d+)", dungeon_enum, re.M)))
     dungeon_names = set(re.findall(r"^\s*(DI_\w+)\s*=", dungeon_enum, re.M))
     npc_names = set(re.findall(r"^\s*(NUI_\w+)\s*=", enum, re.M))

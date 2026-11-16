@@ -9,13 +9,14 @@ A scene's TEXT_PLAY picks PLAYER_TEXT<unit type - 1> for the player's character 
 falls back to TEXT, empty in most of them, when the index is missing: Add (UT_ADD = 9) needs PLAYER_TEXT8, which our
 2014-03 scenes lack. For each TEXT_PLAY of ours, keyed by scene ID, sequence and text play, the PLAYER_TEXT<n> lines up
 to --max-index that ours lacks are taken from the first --source that has them; our lines are never changed. The STR_IDs
-they bring are defined in strings/StringID_def.lua and their strings copied from --strings into --ess where ours
+they bring are defined in StringID_def.lua and their strings copied from --strings into --ess where ours
 lacks them.
 """
 import argparse
 import re
 from pathlib import Path
 
+from client_data import ClientData
 from merge_quests import ess_line, read_ess
 
 SCENE = re.compile(r'^\s*EVENT_SCENE_ID = "([^"]+)"')
@@ -51,7 +52,8 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    path = Path(args.client_data) / "data" / "EventScene.lua"
+    cd = ClientData(args.client_data)
+    path = cd.find("EventScene.lua")
     raw = path.read_bytes()
     nl = "\r\n" if b"\r\n" in raw else "\n"
     lines = raw.decode("utf-8-sig").split(nl)
@@ -69,7 +71,7 @@ def main():
             inserts.setdefault(last[key], []).append(f"{indent}PLAYER_TEXT{i} = {src},")
             used.add(int(src[7:]))
 
-    defs_path = Path(args.client_data) / "strings" / "StringID_def.lua"
+    defs_path = cd.find("StringID_def.lua")
     defs_raw = defs_path.read_bytes()
     defined = set(map(int, re.findall(r"^STR_ID_(\d+) = ", defs_raw.decode("utf-8-sig"), re.M)))
     new_defs = sorted(used - defined)

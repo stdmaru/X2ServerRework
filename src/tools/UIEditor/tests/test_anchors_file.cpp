@@ -4,6 +4,8 @@
 
 #include <doctest/doctest.h>
 
+#include <filesystem>
+#include <fstream>
 #include <string>
 
 using x2::ui_editor::AnchorEntry;
@@ -199,4 +201,22 @@ TEST_CASE("ui editor: a missing UIAnchors.lua is written with its header")
     CHECK(file.Text().compare(0, 3, "\xEF\xBB\xBF") == 0);
     CHECK(file.Text().find("UI_ANCHORS =\n{\n") != std::string::npos);
     CHECK(AnchorsFile::Parse(file.Text()).Get("dlg_a.lua") == e);
+}
+
+TEST_CASE("ui editor: UIAnchors.lua is found by name, and a new one goes with the dialog scripts")
+{
+    namespace fs = std::filesystem;
+    const fs::path game = fs::temp_directory_path() / "x2_ui_editor_find";
+    fs::remove_all(game);
+    fs::create_directories(game / "data" / ".kom");
+    fs::create_directories(game / "data" / "screens" / "town");
+    std::ofstream(game / "data" / "screens" / "town" / "DLG_Shop.lua") << "";
+    CHECK(AnchorsFile::Find(game) == game / "data" / "screens" / "town" / "UIAnchors.lua");
+    fs::create_directories(game / "data" / "misc");
+    std::ofstream(game / "data" / "misc" / "uianchors.LUA") << "";
+    CHECK(AnchorsFile::Find(game) == game / "data" / "misc" / "uianchors.LUA");
+    fs::remove_all(game / "data" / "misc");
+    fs::remove_all(game / "data" / "screens");
+    CHECK(AnchorsFile::Find(game) == game / "data" / "UIAnchors.lua");
+    fs::remove_all(game);
 }
