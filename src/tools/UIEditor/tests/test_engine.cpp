@@ -859,6 +859,35 @@ TEST_CASE("ui editor: a picture moved to a static of its own is drawn where it w
 
 // The user's game folder, when X2_UI_EDITOR_GAME names it (not in CI): every position its dialog scripts set through
 // a call the engine notes can be moved in the script's text.
+TEST_CASE("ui editor: the client_data's tutorial pointer follows the quick slots" *
+          doctest::skip(std::getenv("X2_UI_EDITOR_GAME") == nullptr))
+{
+    const std::filesystem::path folder = std::getenv("X2_UI_EDITOR_GAME");
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = folder;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE_MESSAGE(engine->OpenDialog("DLG_UI_Quick_Slot.lua", error) == 0, error);
+    REQUIRE_MESSAGE(engine->OpenDialog("DLG_Mouse_Click.lua", error) == 1, error);
+    const auto opened = engine->Inspect();
+    REQUIRE(opened[1].placements.size() == 11);
+    for (const auto& placement : opened[1].placements) {
+        CHECK_MESSAGE(placement.source.Known(), placement.name);
+    }
+    REQUIRE(engine->ApplyPlacement(1, "SUMMON_CARD_SLOT"));
+    REQUIRE(engine->Render(1024, 768, 0.016f, error));
+    CHECK(engine->Inspect()[1].canvasPos[0] == doctest::Approx(107.0));     // where the original put it
+    CHECK(engine->Inspect()[1].canvasPos[1] == doctest::Approx(763.0));
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    const auto dialogs = engine->Inspect();
+    // The quick slots are LEFT: the pointer goes to the screen's left edge with them.
+    CHECK(dialogs[1].canvasPos[0] == doctest::Approx(dialogs[0].canvasPos[0] + 107.0));
+    CHECK(dialogs[0].canvasPos[0] < -100.0);
+}
+
 TEST_CASE("ui editor: the positions the client_data's scripts set can be moved" *
           doctest::skip(std::getenv("X2_UI_EDITOR_GAME") == nullptr))
 {

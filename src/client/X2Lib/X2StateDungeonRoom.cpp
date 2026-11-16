@@ -1186,7 +1186,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_NOT( HWND /*hWnd
 			CX2QuestManager::QuestInst* pQuestInst = g_pData->GetQuestManager()->GetUnitQuest( MAGIC_QUEST_ID );
 			if( NULL != pQuestInst && false == pQuestInst->IsComplete() )
 			{
-				CreateMouseClickUI( (CKTDXStage*) this, D3DXVECTOR2( 805, 215 ) );
+				CreateMouseClickUI( (CKTDXStage*) this, L"DUNGEON_ROOM" );
 			}
 		}
 		else
@@ -2267,7 +2267,7 @@ void CX2StateDungeonRoom::UISetting()
 		CX2QuestManager::QuestInst* pQuestInst = g_pData->GetQuestManager()->GetUnitQuest( MAGIC_QUEST_ID );
 		if( NULL != pQuestInst && false == pQuestInst->IsComplete() )
 		{
-			CreateMouseClickUI( (CKTDXStage*) this, D3DXVECTOR2( 805, 215 ) );
+			CreateMouseClickUI( (CKTDXStage*) this, L"DUNGEON_ROOM" );
 		}
 	}
 }

@@ -649,7 +649,8 @@ g_pUIDialog:AddPlacement({ NAME = "QUEST_MENU", TARGET = "DLG_UI_Menu.lua", CONT
 - **Following:** `OnFrameMove` resolves the placement in effect each step (`FollowPlacementTarget`) and moves the
   dialog by what the target moved, with its `Move` goal and queued moves, so the code's animations on top of it (the
   tutorial pointer's bounce) stay relative to the target. While the target is not shown the dialog stays where it is;
-  if it was not shown when the placement was applied, the dialog jumps to it when it shows.
+  if it was not shown when the placement was applied, the dialog is neither drawn nor takes input
+  (`IsWaitingForPlacementTarget`) until the target shows, and then goes to it.
 - `ApplyPlacement` is from the script, not the code: the anchor recorder does not count it as placed by code. The live
   snapshot (`UILive.tsv`) writes the placement in effect (`placement` line), and while a tool tracks, the
   `AddPlacement` call is noted (`ScriptCallKind::Placement`) so the editor moves its `POS`.

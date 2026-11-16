@@ -373,6 +373,8 @@ HRESULT	CKTDGUIDialog::OnFrameMove( double fTime, float fElapsedTime )
 HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 {
 	KTDXPROFILE();
+	if ( IsWaitingForPlacementTarget() )
+		return S_OK;	// not where it belongs yet: its target was not shown since the placement was applied
 
 	// Between simulation steps (T41): draw at the position between the last two steps, then give m_Pos back. A jump of
 	// over 200 points in one step (a dialog placed somewhere else) is drawn where it is.
@@ -631,6 +633,8 @@ HRESULT	CKTDGUIDialog::OnLostDevice()
 bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	KTDXPROFILE();
+	if ( IsWaitingForPlacementTarget() )
+		return false;
 	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor, &m_kStretch, m_Pos.x );
 
 	//m_bIsOverControl = false;
@@ -2009,6 +2013,12 @@ void CKTDGUIDialog::AddPlacement( const Placement& kPlacement )
 		}
 	}
 	m_vecPlacements.push_back( kPlacement );
+}
+
+bool CKTDGUIDialog::IsWaitingForPlacementTarget() const
+{
+	const Placement* pPlacement = GetPlacementInEffect();
+	return pPlacement != nullptr && pPlacement->wstrTarget.empty() == false && m_bPlacementResolved == false;
 }
 
 const CKTDGUIDialog::Placement* CKTDGUIDialog::GetPlacementInEffect() const

@@ -2701,8 +2701,7 @@ bool CX2DungeonGame::Send_EGS_BAD_ATTITUDE_USER_CHECK_INFO_NOT ( const int iStag
 			if( pStateMenu != NULL )
 			{
 				CX2State::MouseClickUI::MOUSE_CLICK_STYLE arrowStyle = CX2State::MouseClickUI::MCS_FROM_RIGHT_TOP_NORMAL;
-				D3DXVECTOR2 vPos = D3DXVECTOR2(107, 763);
-				pStateMenu->CreateMouseClickUI( (CKTDXStage*) pStateMenu, vPos, 0.5f, 1000, arrowStyle );
+				pStateMenu->CreateMouseClickUI( (CKTDXStage*) pStateMenu, L"SUMMON_CARD_SLOT", 0.5f, 1000, arrowStyle );
 			}
 		}
 	}
