@@ -424,7 +424,9 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       switching (done 2026-11-14, PR #74), with zoom, scenes (the recorder notes each dialog's game
       state, so a screen opens whole) and "Watch game" mirroring a running client (statics in full, scripts code loads); (b) anchor/STRETCH editing saved to `UIAnchors.lua` (done 2026-11-14, PR #75, with undo); (c) positions, textures
       and UV saved to the scripts and `.tet` (`tools/ui-editor-layout`, started 2026-11-14; positions of dialogs, controls,
-      pictures and texts done 2026-11-14, textures/keys and UV next); then the C++ layout positions migrated into the scripts, screen by screen.
+      pictures and texts done 2026-11-14, textures/keys and UV next); (d) creating and deleting: a picture moved to a static
+      of its own (so it gets its own anchor/STRETCH), new statics and pictures, duplicate and delete
+      (`tools/ui-editor-create`, started 2026-11-16); then the C++ layout positions migrated into the scripts, screen by screen.
 - [x] `client/linux-icon` (user, 2026-11-14; done 2026-11-14, PR #79): the game's icon on Linux, in the taskbar while
       it runs. The window sets its Wayland `app_id` / X11 class `x2` and its own icon (from `src/client/X2/Elsword.ico`),
       and `tools/client/install.sh` installs `x2.desktop` and the icon. On the user's Hyprland + quickshell bar the
