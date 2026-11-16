@@ -357,6 +357,14 @@ bool CKTDGUIStatic::CanHaveFocus()
 		return false;
 }
 
+void CKTDGUIStatic::AddPicture_LUA( CKTDGUIControl::CPictureData* pPicture )
+{
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::AddPicture, 2 );
+#endif
+	AddPicture( pPicture );
+}
+
 void CKTDGUIStatic::AddString_LUA()
 {
 #ifdef X2_DEV_TOOLS

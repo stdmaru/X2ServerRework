@@ -15,6 +15,7 @@ class CKTDGUIStatic : public CKTDGUIControl
 		bool CanHaveFocus();
 
 		void AddPicture( CKTDGUIControl::CPictureData* pPicture ){ m_PictureDataList.push_back(pPicture); }
+		void AddPicture_LUA( CKTDGUIControl::CPictureData* pPicture );	// scripts' AddPicture: noted for the UI editor
 		void AddString( CKTDGUIControl::UIStringData* pString ){ m_StringDataList.push_back(pString); }
 
 		void AddPictureAt( int iIdx, CKTDGUIControl::CPictureData* pPicture );

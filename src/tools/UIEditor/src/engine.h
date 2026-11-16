@@ -41,6 +41,7 @@ struct PictureInfo {
     float pixelMin[2] = {}, pixelMax[2] = {};   // its corners' box in render target pixels (anchors and stretch applied)
     SourceRef point;            // its SetPoint
     SourceRef texSource;        // its SetTex(file, key)
+    SourceRef add;              // the AddPicture that put it into its static
 };
 
 struct StringInfo {
@@ -71,6 +72,7 @@ struct ControlInfo {
     std::vector<PictureInfo> pictures;
     std::vector<StringInfo> strings;
     std::vector<SourceRef> points;  // the point tables set on the control itself (a button's normal, over, down, ...)
+    SourceRef add;                  // the AddControl that put it into the dialog
 };
 
 struct DialogInfo {

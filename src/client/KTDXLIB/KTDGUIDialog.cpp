@@ -968,6 +968,14 @@ void CKTDGUIDialog::AddControl( CKTDGUIControl* pControl )
 	m_ControlsList.push_back( pControl );
 }//CKTDGUIDialog::AddControl()
 
+void CKTDGUIDialog::AddControl_LUA( CKTDGUIControl* pControl )
+{
+#ifdef X2_DEV_TOOLS
+	NoteScriptCall( ScriptCallKind::AddControl, 2 );
+#endif
+	AddControl( pControl );
+}
+
 #ifdef DLL_BUILD
 void CKTDGUIDialog::AddControl_Front( CKTDGUIControl* pControl )
 {
@@ -2137,7 +2145,7 @@ void CKTDGUIDialog::SetPos_LUA( float x, float y )
 }
 
 #ifdef X2_DEV_TOOLS
-void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind )
+void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind, int iObject )
 {
 	CKTDGUIDialog* pDialog = s_pLoadingDialog;
 	if ( pDialog == nullptr || pDialog->m_bLoadingScript == false || CKTDGUIAnchorRecorder::IsToolTracking() == false
@@ -2158,9 +2166,9 @@ void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind )
 	}
 	else
 	{
-		if ( lua_type( L, 1 ) != LUA_TUSERDATA )
+		if ( lua_type( L, iObject ) != LUA_TUSERDATA )
 			return;
-		const auto* pUser = static_cast<const lua_tinker::user*>( lua_touserdata( L, 1 ) );
+		const auto* pUser = static_cast<const lua_tinker::user*>( lua_touserdata( L, iObject ) );
 		if ( pUser == nullptr || pUser->m_p == nullptr )
 			return;
 		kCall.pObject = pUser->m_p;
