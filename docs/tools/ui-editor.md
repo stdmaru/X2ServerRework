@@ -91,7 +91,9 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   difference between what the scripts placed when first loaded and now).
 - **After watching the game** (2026-11-16, user's report): a dialog keeps the game's state it last mirrored, also with
   "Watch game" unchecked, and a reload puts it back with each picture's corners moved by what the edits moved, each
-  corner by its own change. Until then only the left top was followed, so a size edit snapped back to the game's size.
+  corner by its own change, and with the texture, key and UV rectangle the edited script and `.tet` give when an edit
+  changed them. Until then only the left top was followed and the game's texture and key came back, so a size or key
+  edit snapped back to the game's (the key list too, which shows the picture's key).
 - **Undo and redo** take back moves as they do anchor edits (one drag is one step); "Save" writes the changed scripts,
   each one as a whole with its BOM (the files are UTF-8 with BOM, T42), and closing asks first.
 - **Dialogs placed by code** (T46 (3)): moving one changes its script's `SetPos` only, which the code overrides; the
@@ -123,15 +125,16 @@ undo, saved with the others:
 
 - **To its own static** (a picture's "To its own static..."): its `S:AddPicture(P)` names a new static instead, created
   (`CreateStatic`, `SetName`) and added (`AddControl`) just before the old static's `AddControl` (drawn under it, the
-  default for any but the last picture) or just after (drawn over it). The picture keeps its lines, so it stays where it
-  was; the new static is selected, to give it an anchor. Refused, with the reason in the tooltip, when the editor did
+  default for any but the last picture) or just after (drawn over it). The picture keeps its lines and the new static
+  gets the old one's `SetOffsetPos` lines, so it stays where it was (what code moves is not followed); it gets the old static's anchor from `UIAnchors.lua` (a step of undo of its own), so it is also drawn where it
+  was, and is selected, to give it another (STRETCH). Refused, with the reason in the tooltip, when the editor did
   not see the picture's `AddPicture` or the static's `AddControl` (code, or a control's own script), when either runs in
   a loop or a function, or when they are in different scripts.
 - **New static** (the dialog's "Controls" section): a named static with one picture (texture and key, `SetTex2` for a
   texture without a `.tet`) at a left top, its size the key's, at the end of the dialog's script: drawn over the rest.
   **New picture** (a static's): the same picture added after the static's last picture and its lines.
 - **Duplicate**: a picture is copied with its lines into its static, moved by 10, 10; a static (named, with a "moved
-  by") with its lines, its pictures and their lines, and its texts, after its last line.
+  by") with its lines, its pictures and their lines, and its texts, after its last line, and with its anchor.
 - **Delete**: a picture's `AddPicture`, a control's `AddControl`, with the object's creation and lines (and, for a
   control, its pictures'), each only when no other line uses its variable; otherwise only the call that adds it goes, so
   the script still runs and the object is not drawn. The game's code may look a control up by name, or a static's
@@ -167,8 +170,10 @@ Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture 
   dialogs (it can be turned off). Apply gives the key the rectangle as one step of undo, asking first, over the select,
   when others use the key; Cancel puts back what the edits held.
 - **A key others use** (user's choice, 2026-11-14): before the first UV change of a key, the editor searches every
-  `.lua` under `data/` for lines that name the texture and the key in quotes (`FindKeyUses`; the game's code is not
-  searched). When lines other than the picture's own `SetTex` name it, or that line sets several pictures, it asks:
+  `.lua` under `data/` for lines that name the texture and the key in quotes (the game's code is not searched). The
+  client_data's are 177 MB in 4,565 files among 105,000 (2026-11-16): read for every key on the UI thread, the editor
+  froze for about 10 s at each Apply, so an index of the lines that name files in quotes (`KeyUseIndex`) is built in
+  the background when the editor starts and again after saving, and each key is looked up in it. When lines other than the picture's own `SetTex` name it, or that line sets several pictures, it asks:
   change it in place (for every picture that names it, remembered for that key until the editor closes), or make a
   new key, a copy of the rectangle under a name the user may edit (suggested: the key and the dialog's name, as
   `BG_LEFT_TOP_UI_LOCAL_MAP_NEW`), which the picture's `SetTex` then names, as one step of undo.
@@ -279,8 +284,9 @@ With `X2_UI_EDITOR_GAME=<game folder>` (not in CI; `X2_UI_EDITOR_FILTER=<prefix>
 that client_data is opened in turn and every call the engine noted is moved in its text. On the user's (2026-11-14):
 29,571 calls, all movable, 2,465 of them on lines that set several things. Also (2026-11-16) every picture is moved to a static of its own
 in the text and the first shown one of each dialog is drawn after the reload: of 14,342 pictures, 1,485 are not added
-by a call the engine saw and 928 in loops or functions; none of the rest was refused, and 811 of 837 were drawn at the
-same pixels.
+by a call the engine saw and 928 in loops or functions; none of the rest was refused, and all 837 were drawn at the
+same pixels once the new static got the old one's anchor and `SetOffsetPos` (without them, 26 were not: anchored
+statics such as the Speech shade and the menu's EXP bar, and statics the script offsets, such as the message boxes).
 
 Closing a dialog clears the Lua globals its scripts set to objects (2026-11-14): `DLG_Event_Clock_Talk_Box.lua` names
 its static through `g_pStaticEVENT_CLOCK`, a global of `DLG_Event_Clock.lua`, and opening the two in turn crashed the

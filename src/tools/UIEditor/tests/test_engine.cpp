@@ -817,7 +817,7 @@ TEST_CASE("ui editor: the client_data's pictures can be moved to statics of thei
                 if (moved == movedBefore && drawn - moved <= 30) {
                     MESSAGE(script << ": " << control.name << " picture " << p << " (" << picture.key
                                    << ") is not drawn where it was; anchor " << control.anchor
-                                   << (control.anchorDeclared ? " declared" : "") << ", backdrop " << control.backdropFade);
+                                   << std::string(control.anchorDeclared ? " declared" : "") << ", backdrop " << control.backdropFade);
                 }
                 engine->SetScriptText(picture.add.script, nullptr);
             }

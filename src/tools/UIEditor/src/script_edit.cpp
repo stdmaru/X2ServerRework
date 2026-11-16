@@ -1136,7 +1136,13 @@ bool PictureToNewStatic(std::string& text, int addPicture, int addControl, const
     }
     const std::string var = NewGlobal(text, "g_pStatic_" + name);
     const std::string& dialog = control.receiver;
-    const std::vector<std::string> create = {var + " = " + dialog + ":CreateStatic()", var + ":SetName(\"" + name + "\")"};
+    std::vector<std::string> create = {var + " = " + dialog + ":CreateStatic()", var + ":SetName(\"" + name + "\")"};
+    // Where the old static is moved (its SetOffsetPos), the new one is too: the picture stays where it was drawn.
+    for (const Statement& st : LinesOf(text, code, control.argument, control.statement.begin).statements) {
+        if (st.method == "SetOffsetPos") {
+            AppendLines(create, Renamed(text, st, control.argument, var));
+        }
+    }
     const std::string add = dialog + ":AddControl(" + var + ")";
 
     std::string out = text;

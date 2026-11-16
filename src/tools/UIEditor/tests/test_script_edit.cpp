@@ -232,6 +232,15 @@ TEST_CASE("script edit: a picture moved to a static of its own")
                   "\tg_pStatic_P = g_pUIDialog:CreateStatic()\n\tg_pStatic_P:SetName(\"P\")\n\tg_pStatic_P:AddPicture(p)\n"
                   "g_pUIDialog:AddControl(g_pStatic_P)\ng_pUIDialog:AddControl(s)\n");
 
+    // The old static's offset goes with it.
+    std::string offset = "s = g_pUIDialog:CreateStatic()\ng_pUIDialog:AddControl(s)\ns:SetOffsetPos(-290, -227)\n"
+                         "p = g_pUIDialog:CreatePicture()\ns:AddPicture(p)\n";
+    REQUIRE_MESSAGE(x2::ui_editor::PictureToNewStatic(offset, 5, 2, "P", false, error), error);
+    CHECK(offset == "s = g_pUIDialog:CreateStatic()\n"
+                    "g_pStatic_P = g_pUIDialog:CreateStatic()\ng_pStatic_P:SetName(\"P\")\ng_pStatic_P:SetOffsetPos(-290, -227)\n"
+                    "g_pUIDialog:AddControl(s)\ng_pUIDialog:AddControl(g_pStatic_P)\ns:SetOffsetPos(-290, -227)\n"
+                    "p = g_pUIDialog:CreatePicture()\ng_pStatic_P:AddPicture(p)\n");
+
     // Refused: not the calls, another static, a quote in the name; a name the text has gets a number.
     std::string text = kSpeech;
     CHECK_FALSE(x2::ui_editor::PictureToNewStatic(text, 7, 3, "X", true, error));
