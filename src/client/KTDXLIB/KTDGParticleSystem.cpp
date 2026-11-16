@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "KTDGUIAnchor.h"
 #include "./KTDGParticleSystem.h"
 
 
@@ -3691,6 +3692,10 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 				D3DXVECTOR2 temp;
 				if( m_bResolutionConvert == true )
 				{
+					// Wide screens (T52): a sequence UIAnchors.lua anchors moves, or spans the canvas.
+					if ( m_iUIAnchor < 0 )
+						m_iUIAnchor = static_cast<std::int8_t>( CKTDGUIAnchors::ParticleAnchor( m_strName.c_str() ) );
+					ApplyUIParticleAnchor( static_cast<UIParticleAnchor>( m_iUIAnchor ), partPos.x, partSize.x );
 					temp = g_pKTDXApp->ConvertByResolution( partPos.x, partPos.y );
 					partPos.x = temp.x;
 					partPos.y = temp.y;

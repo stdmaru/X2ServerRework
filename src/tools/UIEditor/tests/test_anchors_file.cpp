@@ -191,6 +191,22 @@ TEST_CASE("ui editor: an edit to UIAnchors.lua changes only its own text")
     }
 }
 
+TEST_CASE("ui editor: UIAnchors.lua's particle anchors stay as they are when dialog entries change")
+{
+    const std::string particles = "\nUI_PARTICLE_ANCHORS =\n{\n\tNewComboDamage = \"LEFT\", OutLine = \"STRETCH\",\n}\n";
+    AnchorsFile file = AnchorsFile::Parse(kFile + particles);
+    CHECK(file.Problem().empty());
+    AnchorEntry e;
+    e.dialog = "RIGHT";
+    file.Set("DLG_New.lua", e);
+    file.Set("DLG_ChatBox_New.lua", AnchorEntry{});
+    const std::string& text = file.Text();
+    CHECK(text.find("DLG_New.lua") < text.find("UI_PARTICLE_ANCHORS"));
+    CHECK(text.find("DLG_ChatBox_New.lua") == std::string::npos);
+    CHECK(text.size() >= particles.size());
+    CHECK(text.compare(text.size() - particles.size(), particles.size(), particles) == 0);
+}
+
 TEST_CASE("ui editor: a missing UIAnchors.lua is written with its header")
 {
     AnchorsFile file = AnchorsFile::Parse({});

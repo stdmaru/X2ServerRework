@@ -1343,6 +1343,7 @@ class CKTDGParticleSystem
 
 
 				bool							m_bResolutionConvert;
+				std::int8_t						m_iUIAnchor = -1;	// UIParticleAnchor from UIAnchors.lua; -1: not looked up yet
 				D3DXVECTOR3						m_Position;
 				D3DXVECTOR3						m_OldPosition;
 				D3DXVECTOR3						m_BlackHolePosition;

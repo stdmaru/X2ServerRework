@@ -20,6 +20,16 @@ bool ParseUIAnchor( const char* pszName, UIAnchor& eAnchor );
 // A dialog script's name as UIAnchors.lua and placement targets match it: without its folder, in lower case.
 std::wstring UIScriptKey( const wchar_t* pwszName );
 
+// Where a 2D particle sequence drawn in layout units (RESOLUTIONCONVERT) sits on a screen wider than 4:3, declared by
+// sequence name in UIAnchors.lua's UI_PARTICLE_ANCHORS (T52, kind E). Center (undeclared) keeps the 1024 column, as
+// the original; Left and Right move it with that edge; Stretch maps x across the canvas and widens the particles by
+// the same factor (a full-screen frame); Span maps x across the canvas and keeps their size (a banner that flies in
+// from one edge and out at the other, centered on the screen in between).
+enum class UIParticleAnchor : std::uint8_t { Center, Left, Right, Stretch, Span };
+
+// Moves a particle's layout x and width by its sequence's anchor, before they are converted to pixels.
+void ApplyUIParticleAnchor( UIParticleAnchor eAnchor, float& fX, float& fWidth );
+
 // How a STRETCH piece of a dialog spans the canvas (T44): x in the 1024 layout maps onto the canvas, from its left
 // edge to its right. Its zones are the parts that grow (the plain middles between end pieces), in layout units
 // relative to the dialog; they share the extra width by length and are linear inside, so a gauge sized by ratio over a
@@ -57,6 +67,7 @@ struct UIStretchState
 //         ["DLG_Menu_Button_NEW.lua"] = { STRETCH_ZONES = { { 49, 494 }, { 569, 1011 } }, CONTROLS = { ... } },
 //         ["DLG_Login_Back.lua"] = { BACKDROPS = { Login = 64 } },
 //     }
+//     UI_PARTICLE_ANCHORS = { NewComboDamage = "LEFT", OutLine = "STRETCH", BOSS_DANGER = "SPAN" }
 //
 // BACKDROPS: controls whose pictures are a full-screen image (control name -> fade width in layout units; see
 // CKTDGUIControl::SetBackdropFade). Read once, at the first dialog script. A script's own SetAnchor calls take
@@ -66,6 +77,8 @@ class CKTDGUIAnchors
 public:
 	// Applies the anchors declared for the script just loaded into the dialog.
 	static void Apply( CKTDGUIDialog& kDialog, const wchar_t* pwszScriptName );
+	// The anchor UI_PARTICLE_ANCHORS declares for a particle sequence (Center when none).
+	static UIParticleAnchor ParticleAnchor( const wchar_t* pwszSequence );
 
 	struct Entry
 	{
@@ -79,6 +92,7 @@ public:
 private:
 	static const std::unordered_map<std::wstring, Entry>& Get();
 	static std::unordered_map<std::wstring, Entry> Load();
+	static inline std::unordered_map<std::wstring, UIParticleAnchor> s_mapParticles;	// filled by Load
 };
 
 #ifdef X2_DEV_TOOLS
