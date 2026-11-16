@@ -390,19 +390,17 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           ([D3D9 device](../porting/client-d3d9.md#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49)).
     - [ ] `client/ui-scale`: a "UI scale" option (automatic, 100–200%) and a pixel-perfect mode (integer scale,
           nearest texels: 1× at 1080p, 2× at 4K), since a fractional scale (1.41 at 1080p) blurs the UI a little.
-    - [ ] `client/ui-hd-assets`, later: 2× and 4× UI textures, same formats and names in a separate package (T42);
-          sizes stay in canvas units, the engine divides the `.tet` UV keys by the loaded texture's scale; the
-          original as fallback. Found 2026-11-15 (user, login screen with the 2560×1440 background): the login
-          buttons and fields (`DLG_Login3.TGA`, a 256×256 atlas with `BTN_LOGIN`, `BTN_JOIN`, `BTN_REGISTER`) are
-          the original textures magnified about 1.9× at 1440p and look soft. A 4× texture cannot just replace them:
-          a `.tet` key holds its UVs and `rectSize` in pixels, `rectSize` becomes the picture's `texSize`
-          (`KTDGUIControl.cpp`, `pTexData->texSize = pTexUV->rectSize`), and a
-          control with only a left-top point or `USE_TEXTURE_SIZE` takes its size from it (`size =
-          pTexture->texSize`), so the controls would grow 4×. The scale (loaded size ÷ the size the `.tet` was made
-          for) must divide both. The UI editor shows the same sizes, so it needs the same rule. The art side is
-          ready ([Upscaling](../tools/upscaling.md), 2026-11-15): `texconv.py` turns the client's DDS/TGA into PNG
-          and back in each file's own format, and the `ui` chain (4x-AnimeSharp, alpha through the model; `--scale
-          2` for a 2× set) is built; nothing has been run on the UI yet.
+    - [x] `client/ui-hd-assets` (2026-11-16, user: "get it out of the way"): upscaled UI textures replace the
+          originals in the client_data, same names and formats, and draw at the original size
+          ([D3D9](../porting/client-d3d9.md#upscaled-textures-2026-11-16-clientui-hd-assets)). The user proposed
+          (2026-11-16) a manifest of the original sizes instead of a separate package per scale: `x2_assets
+          texture-sizes` writes `data/OriginalTextureSizes.txt` from the original archives
+          ([client_data](../tools/client-data.md#original-texture-sizes)), and a texture whose file is larger reports
+          the listed size, so `.tet` UVs (in texels of the original), texture-sized controls and the code's sizes stay;
+          upscaled atlases get mip levels down to the original size. Found 2026-11-15: the login buttons and fields
+          (`DLG_Login3.TGA`, a 256×256 atlas) look soft magnified ~1.9× at 1440p; its 4× copy checked in game by the
+          user (2026-11-16). The rest of the UI is upscaled a texture at a time through the `ui` chain
+          ([Upscaling](../tools/upscaling.md)).
     - [x] `client/texture-mips` (2026-11-15, PR #85): textures load the mip chain their file has, atlases with a `.tet`
           one level, so 4× model and world textures do not shimmer at a distance
           ([D3D9](../porting/client-d3d9.md)); `texconv.py from-png --mips` gives upscaled DDS files a full chain
