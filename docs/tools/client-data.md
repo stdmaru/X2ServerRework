@@ -165,6 +165,12 @@ tools/assets/merge_items.py <client_data>/items --enum <client_data>/data/Enum.l
   source's text that is real and not Korean; everything else of ours is kept. String IDs are stable between our
   table and BR 2017's (2026-11-16: 25,823 of the 26,389 IDs both have text for are equal, the rest revised wording or
   Korean in ours).
+- `merge_player_text.py <client_data> --source <EventScene.lua> [--source ...] --ess <our general.ess> --strings
+  <their General.ess>`: a scene's line picks `PLAYER_TEXT<unit type - 1>` for the player's character and falls back
+  to `TEXT` (empty in most) when that index is missing, so Add (`UT_ADD` = 9) needs `PLAYER_TEXT8`. The lines up to
+  `--max-index` (8) a text play of ours lacks are taken, by scene ID, sequence and text play, from the first
+  `--source` that has them; ours are never changed. Their STR_IDs are defined and their strings copied as
+  `merge_quests.py` does.
 
 ## Content changes (T42)
 
@@ -202,3 +208,4 @@ is listed here with the step that changed it and why.
 | `items/Item.lua`, `items/ManufactureItem.lua` | `server/add-character` (2026-11-15) | 47 recipes of Add's items (materials and cost; 55 result rows, 52 village rows: BR 2014-08 first, V5's for the villages, which BR 2014-08 lacks) by `tools/runtime/merge_server_tables.py --client-manufacture`, and 3 of their materials (61538, 133536, 133537; BR 2014-08) by `merge_items.py --ids` |
 | `DungeonData.lua` | `server/add-character` (2026-11-15) | Add's tutorial (39608, `Dungeon_Battle_Field_Tutorial_Add.lua`, already in the client_data) after Elesis's, from V5: without it the GameServer had no such dungeon and Add's tutorial stayed black |
 | `general.ess` (client folder) | `server/add-character` (2026-11-16) | 2,510 placeholders (`STR_ID_<n>` shown as text: Add's dungeon lines 29599–29602 and DP/Dynamo messages 29419–29421, 29939, among others) and 299 Korean strings replaced by BR 2017's `General.ess`, by `tools/assets/fill_strings.py`; 3,235 placeholders are in no source (2026-11-16) |
+| `data/EventScene.lua` | `server/add-character` (2026-11-16) | Add's lines (`PLAYER_TEXT8`) in 104 text plays (Lowe's after the tutorial, among others) from BR 2014-08 (BR 2017 as fallback), by `tools/assets/merge_player_text.py`; their strings were already in `general.ess`. 22 text plays stop at `PLAYER_TEXT5` in every source (Ara, Elesis and Add see `TEXT`) |
