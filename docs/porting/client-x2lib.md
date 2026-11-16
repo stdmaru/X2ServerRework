@@ -389,7 +389,7 @@ and restore (`restore_unit`) buttons, each enabled from the date the server send
   without clearing it (the older path did), so a deleted character selected again stood still. The new viewer clears it.
 
 The dates themselves come from the database ([`20261116_unit_wait_delete_dates.sql`](../tools/database-patches.md#game01)):
-permanent deletion after 24 hours, restore at once.
+permanent deletion after 24 hours (at once on admin accounts, to test characters), restore at once.
 
 ## Status
 
