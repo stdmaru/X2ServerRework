@@ -371,15 +371,17 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           (user checked, 2026-11-13), the NPC talk shade spans the screen, and dragged dialogs follow the pointer.
           **Paused 2026-11-13** (user): merged as it stands; the migration resumes with the UI editor
           (`tools/ui-editor`, below), with the user reviewing screens and the agent taking what needs code.
-          **Resumed 2026-11-16** (part 3, `client/widescreen-migration` again), with the UI editor done (PR #89).
-          Counted 2026-11-16: 220 dialog `SetPos` calls in 76 X2Lib files; the record holds 125 of 1,031 dialog
-          scripts (16 anchored, 43 placed by code, 10 by `centered.txt`, 30 to review). Order:
-          (a) the floating windows `CX2UIManager` opens (inventory, shop, quests, character, skills, community, post
-          box, pets, trade), their layout positions moved into their scripts (T46 (3)) and derived ones kept in code;
-          (b) the review list; (c) PvP room, game and result, dungeon room and result, boss bars; (d) cash shop and
-          the full-screen shades below; (e) maps (world, local, dungeon). Screens the record lacks are recorded as
-          they are reached. PvP's view width waits on [D10](decisions.md#pending).
-          Left: PvP rooms, cash shop, boss bars, the character select background fix and the review list.
+          **Resumed 2026-11-16** (part 3, `client/widescreen-migration` again), with the UI editor done (PR #89),
+          **as tooling, not screens** (user, 2026-11-16): the user migrates every screen in the UI editor; this step
+          takes the game's code out of the layout so the editor can do it all, and where a position must stay
+          computed, fixes the code to compute it for any resolution. Example: `DLG_Mouse_Click.lua` (the tutorial's
+          pointer) is placed by code at fixed points of other dialogs (`X2PlayGuide`, `X2UIQuickSlot`,
+          `X2DungeonGame`, `X2StateDungeonRoom`), so no anchor of its own is right everywhere. Counted 2026-11-16 in
+          X2Lib: 220 dialog `SetPos` (30 literal), 89 dialog `Move`, 181 `SetOffsetPos`, 42 control `SetPos`, 288
+          picture point/size calls, 146 UI particles, 7 code anchors, 9 dialogs and 23 controls built without a
+          script. Plan on PR #90. PvP's view width waits on [D10](decisions.md#pending).
+          Left for the user (screens): PvP rooms, cash shop, boss bars, the character select background and the
+          30 dialogs `propose.py` lists for review.
           Full-screen black shades found by a scan (2026-11-13), to stretch with their screens: cash shop popups,
           minimap item choice, event scenes and slideshow, world map, login keyboard, bingo.
           This includes the content fixes for full-screen images whose texture does not match its rectangle (the
