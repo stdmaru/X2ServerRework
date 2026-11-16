@@ -30,6 +30,9 @@ finally, the client.
 - **Client asset formats must not change** (`_client/`, `.kom`, `.dds`, `.x`, `.fx`, ...): adapt the code to them. Since
   2026-11-12 the client's *content* may change (UI layouts, scripts, options; decision T42), edited in the client_data and
   recorded on [client_data](docs/tools/client-data.md); never edit `_client/`.
+- **Tools never hardcode client_data paths** (user, 2026-11-16). The client_data's organization belongs to its manifest
+  (`.kom/manifest.tsv`) and may change at any time through `x2_assets`: a tool finds a file by asking the manifest
+  where it is, or, as a fallback, works on a single folder it is given. See [client_data](docs/tools/client-data.md).
 - **Keep the protocol compatible with the original client** (`x2.exe`): do not change packet formats, sizes, or cryptography
   without a recorded decision. Types sent over the network must have fixed sizes (`int32_t`, `char16_t`, ...). See
   [Protocol](docs/original/protocol.md).
