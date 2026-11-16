@@ -89,7 +89,7 @@ public:
 
     // Writes the manifest: untracked files become new records (in ArchiveOf, with the archive's most common
     // algorithm), deleted files' records are dropped, archive edits are applied. Modified files stay modified (the
-    // manifest keeps their original). Then rescans.
+    // manifest keeps their original). The previous manifest is kept as manifest.tsv.bak. Then rescans.
     bool Sync(unsigned jobs, SyncStats& stats, std::string& error);
 
     // On disk, at once (no sync needed to see them, a sync to record them). Folders are relative, '/'.
@@ -106,6 +106,7 @@ private:
     std::vector<ClientDataFile> files_;
     std::unordered_map<std::string, std::size_t> byName_;  // AsciiLower(name) -> files_
     std::map<std::string, std::string> edits_;             // AsciiLower(record or file name) -> archive
+    std::unordered_map<std::string, std::vector<std::uint32_t>> folderCounts_;  // folder -> tracked files by archive
 };
 
 // Where a client_data's manager keeps file hashes between runs.

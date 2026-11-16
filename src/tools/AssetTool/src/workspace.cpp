@@ -227,6 +227,31 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
     for (std::size_t i = 0; i < files_.size(); ++i)
         byName_.emplace(kom::AsciiLower(files_[i].name), i);
 
+    // Tracked files by archive under every folder (its own and its subfolders'), for DefaultArchive.
+    folderCounts_.clear();
+    std::unordered_map<std::string, std::size_t> order;
+    for (std::size_t a = 0; a < manifest_.archives.size(); ++a)
+        order.emplace(manifest_.archives[a].name, a);
+    for (const ClientDataFile& f : files_)
+    {
+        if (f.record < 0 || f.state == FileState::Deleted)
+            continue;
+        const auto a = order.find(manifest_.files[static_cast<std::size_t>(f.record)].archive);
+        if (a == order.end())
+            continue;
+        std::string at = f.folder;
+        for (;;)
+        {
+            auto& counts = folderCounts_[at];
+            counts.resize(manifest_.archives.size(), 0);
+            ++counts[a->second];
+            if (at.empty())
+                break;
+            const auto slash = at.rfind('/');
+            at = slash == std::string::npos ? std::string() : at.substr(0, slash);
+        }
+    }
+
     // Edits of files that are gone or deleted go.
     std::set<std::string> keys;
     for (const ClientDataFile& f : files_)
@@ -262,26 +287,13 @@ std::string ClientData::FolderForNew(std::string_view name, std::span<const std:
 
 std::string ClientData::DefaultArchive(std::string_view folder) const
 {
-    std::unordered_map<std::string, std::size_t> order;
-    for (std::size_t a = 0; a < manifest_.archives.size(); ++a)
-        order.emplace(manifest_.archives[a].name, a);
     std::string at(folder);
     for (;;)
     {
-        std::vector<std::size_t> counts(manifest_.archives.size(), 0);
-        bool any = false;
-        for (const ClientDataFile& f : files_)
-            if (f.record >= 0 && f.state != FileState::Deleted && UnderFolder(f.folder, at))
-                if (const auto it = order.find(manifest_.files[static_cast<std::size_t>(f.record)].archive);
-                    it != order.end())
-                {
-                    ++counts[it->second];
-                    any = true;
-                }
-        if (any)
+        if (const auto it = folderCounts_.find(at); it != folderCounts_.end())
         {
-            const auto best = std::max_element(counts.begin(), counts.end());  // first of the largest
-            return manifest_.archives[static_cast<std::size_t>(best - counts.begin())].name;
+            const auto best = std::max_element(it->second.begin(), it->second.end());  // first of the largest
+            return manifest_.archives[static_cast<std::size_t>(best - it->second.begin())].name;
         }
         if (at.empty())
             return {};
@@ -454,6 +466,9 @@ bool ClientData::Sync(unsigned jobs, SyncStats& stats, std::string& error)
         a.count = static_cast<std::uint32_t>(std::count_if(manifest.files.begin(), manifest.files.end(),
                                                            [&](const FileRecord& r) { return r.archive == a.name; }));
 
+    std::error_code ec;  // the manifest before this sync, in case it was not what the user meant
+    std::filesystem::copy_file(ManifestPath(root_), ManifestPath(root_).string() + ".bak",
+                               std::filesystem::copy_options::overwrite_existing, ec);
     if (!manifest.Write(ManifestPath(root_), error))
         return false;
     manifest_ = std::move(manifest);
