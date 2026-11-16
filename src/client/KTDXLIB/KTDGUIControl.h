@@ -397,10 +397,11 @@ class CKTDGUIControl : private x2::NonCopyable
 				void SetSizeY( float y, bool isInverse );
 
 				void SetPos( D3DXVECTOR2 _pos );
+				void SetPos_LUA( D3DXVECTOR2 _pos );	// SetPos, noted for the UI editor (X2_DEV_TOOLS)
 				D3DXVECTOR2 GetPos() { return pos; }
 
 				void SetShow(bool _bShow) { bShow = _bShow; }
-				bool GetShow() { return bShow; }
+				bool GetShow() const { return bShow; }
 
 				void SetMaximizeType( bool bPos, bool bSize );
 

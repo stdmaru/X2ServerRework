@@ -1697,6 +1697,14 @@ void CKTDGUIControl::CPictureData::SetPos( D3DXVECTOR2 _pos )
 	}
 }
 
+void CKTDGUIControl::CPictureData::SetPos_LUA( D3DXVECTOR2 _pos )
+{
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::PicturePos );
+#endif
+	SetPos( _pos );
+}
+
 void CKTDGUIControl::CPictureData::SetMaximizeType( bool bPos, bool bSize )
 {
 	KTDXPROFILE();

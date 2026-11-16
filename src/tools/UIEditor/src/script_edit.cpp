@@ -287,6 +287,8 @@ bool KindMatches(CallKind kind, const std::string& full)
         return name == "AddPicture";
     case CallKind::AddControl:
         return name == "AddControl";
+    case CallKind::PicturePos:
+        return name == "SetPos";
     }
     return false;
 }
@@ -306,6 +308,8 @@ const char* KindName(CallKind kind)
         return "AddPicture";
     case CallKind::AddControl:
         return "AddControl";
+    case CallKind::PicturePos:
+        return "picture SetPos";
     }
     return "?";
 }
@@ -546,6 +550,14 @@ bool MoveCall(std::string& text, int line, CallKind kind, float dx, float dy, st
         }
         edits.push_back({args[0].begin, args[0].end, ShiftExpression(text.substr(args[0].begin, args[0].end - args[0].begin), dx)});
         edits.push_back({args[1].begin, args[1].end, ShiftExpression(text.substr(args[1].begin, args[1].end - args[1].begin), dy)});
+    } else if (kind == CallKind::PicturePos) {
+        Range x, y;
+        if (text[open] != '(' || !VectorArgs(text, code, {open + 1, close}, x, y)) {
+            error = "SetPos" + where + " does not take a D3DXVECTOR2(x, y)";
+            return false;
+        }
+        edits.push_back({x.begin, x.end, ShiftExpression(text.substr(x.begin, x.end - x.begin), dx)});
+        edits.push_back({y.begin, y.end, ShiftExpression(text.substr(y.begin, y.end - y.begin), dy)});
     } else {
         Range table{open, close};
         if (text[open] == '(') {

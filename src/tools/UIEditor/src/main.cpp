@@ -153,7 +153,7 @@ struct EditorState {
     // and the change applied so far (whole layout units).
     struct EdgeDrag {
         bool active = false;
-        SourceRef ref;
+        SourceRef ref, pos;     // the picture's SetPoint, and its SetPos after it (PictureInfo::pos)
         int edges = 0;
         float rest[2] = {};
     } edgeDrag;
@@ -453,14 +453,28 @@ bool MoveSources(x2::ui_editor::Engine& engine, EditorState& state, const std::v
     return EditCalls(engine, state, edits, merge);
 }
 
-// Grows what a point table places by moving its edges (left, top, right, bottom) in layout units (EditCalls).
+// Grows what a point table places by moving its edges (left, top, right, bottom) in layout units (EditCalls). With
+// `pos`, a picture's SetPos after it that places it instead, the table only changes the size and the SetPos moves.
 bool ResizeSource(x2::ui_editor::Engine& engine, EditorState& state, const SourceRef& ref, float left, float top,
-                  float right, float bottom, unsigned merge)
+                  float right, float bottom, unsigned merge, const SourceRef& pos = {})
 {
     if (left == 0.0f && top == 0.0f && right == 0.0f && bottom == 0.0f) {
         return false;
     }
+    if (pos.Known()) {
+        std::vector<CallEdit> edits{{ref, true, {0.0f, 0.0f, right - left, bottom - top}}};
+        if (left != 0.0f || top != 0.0f) {
+            edits.push_back({pos, false, {left, top, 0.0f, 0.0f}});
+        }
+        return EditCalls(engine, state, edits, merge);
+    }
     return EditCalls(engine, state, {{ref, true, {left, top, right, bottom}}}, merge);
+}
+
+// The script line a move of a picture edits: its SetPos when one comes after its SetPoint, else the SetPoint.
+const SourceRef& PicturePlace(const PictureInfo& picture)
+{
+    return picture.pos.Known() ? picture.pos : picture.point;
 }
 
 // The texts of an edit (scripts, .tet files) made so, as one step of undo; merge: an id that joins the steps of one
@@ -970,7 +984,7 @@ std::vector<SourceRef> ControlSources(const ControlInfo& control)
 {
     std::vector<SourceRef> refs = control.points;
     for (const auto& picture : control.pictures) {
-        refs.push_back(picture.point);
+        refs.push_back(PicturePlace(picture));
     }
     for (const auto& string : control.strings) {
         refs.push_back(string.source);
@@ -1602,6 +1616,55 @@ void SizeField(x2::ui_editor::Engine& engine, EditorState& state, const PictureI
 }
 
 // addZone: makes a picture's width a stretch zone of its dialog.
+// What the game's code sets (docs/tools/ui-editor.md#what-the-game-sets) -------------------------------------------
+
+const ImVec4 kGameColor(1.0f, 0.62f, 0.25f, 1.0f);
+constexpr const char* kGameTag = "  [game]";
+
+// The lines that say what the game's code set over the scripts, in its color, each with why an edit may not reach the
+// game. `what`: the object ("picture", "control", "text").
+void GameSetsLines(const x2::ui_editor::GameSets& game, const char* what)
+{
+    if (game.added) {
+        ImGui::TextColored(kGameColor, "made by the game's code: not in the script");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("The game's code creates this %s at run time, so the editor only mirrors it from the game.\n"
+                              "A picture's key rectangle (Edit, the .tet) still applies in the game.", what);
+        }
+        return;
+    }
+    if (game.shown) {
+        ImGui::TextColored(kGameColor, "the game's code %s it (the script leaves it %s)",
+                           game.scriptShown ? "hides" : "shows", game.scriptShown ? "shown" : "hidden");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Whether it shows depends on the game's state (a mode, a tab, a class): the code decides.");
+        }
+    }
+    if (game.texture) {
+        ImGui::TextColored(kGameColor, "the game's code sets this texture and key");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("The script's SetTex says %s / %s. Changing the texture or key below edits that line,\n"
+                              "but the game's code sets its own again. The key's rectangle (Edit, the .tet) is what\n"
+                              "the game draws for that key, so editing it applies in the game.",
+                              game.scriptTexture.c_str(), game.scriptKey.empty() ? "(whole texture)" : game.scriptKey.c_str());
+        }
+    }
+    if (game.text) {
+        ImGui::TextColored(kGameColor, "the game's code fills this text");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("The string comes from the game (a name, a count); its position and font are the script's.");
+        }
+    }
+}
+
+bool PicturesSetByGame(const ControlInfo& control)
+{
+    return std::any_of(control.pictures.begin(), control.pictures.end(),
+                       [](const PictureInfo& picture) { return picture.game.Any(); }) ||
+           std::any_of(control.strings.begin(), control.strings.end(),
+                       [](const auto& string) { return string.game.Any(); });
+}
+
 // Creating and deleting (docs/tools/ui-editor.md#creating-and-deleting) --------------------------------------------
 
 // A structural edit of a script's text (x2::ui_editor::PictureToNewStatic, ...), as one step of undo; `select`: the
@@ -1931,14 +1994,19 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
         const auto& picture = control.pictures[p];
         ImGui::PushID(static_cast<int>(p));
         const std::string label = std::to_string(p + 1) + ": " + (picture.texture.empty() ? "(no texture)" : picture.texture) +
-                                  (picture.key.empty() ? "" : " / " + picture.key);
+                                  (picture.key.empty() ? "" : " / " + picture.key) + (picture.game.Any() ? kGameTag : "");
         if (ImGui::TreeNode(label.c_str())) {
             state.expandedPictures.push_back(static_cast<int>(p));
+            GameSetsLines(picture.game, "picture");
             PictureStructureEditor(engine, state, dialog, control, p);
             ImGui::Text("shown: %s", picture.shown ? "yes" : "no");
             ImGui::TextDisabled("SetPoint: %s", SourceLabel(picture.point).c_str());
+            if (picture.pos.Known()) {
+                ImGui::TextDisabled("SetPos: %s (places it over the SetPoint)", SourceLabel(picture.pos).c_str());
+            }
+            const SourceRef& place = PicturePlace(picture);
             MoveField(state, "left top", picture.points[0],
-                      picture.point.Known() ? std::vector<SourceRef>{picture.point} : std::vector<SourceRef>{}, move);
+                      place.Known() ? std::vector<SourceRef>{place} : std::vector<SourceRef>{}, move);
             SizeField(engine, state, picture);
             float lo = picture.points[0][0], hi = lo;
             for (const auto& point : picture.points) {
@@ -2017,8 +2085,10 @@ void StringTable(EditorState& state, const ControlInfo& control, const MoveFunct
         const auto& string = control.strings[t];
         ImGui::PushID(static_cast<int>(t));
         const std::string label = std::to_string(t + 1) + ": " +
-                                  (string.text.empty() ? std::string("(empty: filled by the game's code)") : string.text);
+                                  (string.text.empty() ? std::string("(empty: filled by the game's code)") : string.text) +
+                                  (string.game.Any() ? kGameTag : "");
         if (ImGui::TreeNode(label.c_str())) {
+            GameSetsLines(string.game, "text");
             if (string.stringId >= 0) {
                 ImGui::Text("string table: STR_ID_%d", string.stringId);
             } else {
@@ -2222,8 +2292,9 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
         for (int c = 0; c < static_cast<int>(dialog.controls.size()); ++c) {
             const ControlInfo& control = dialog.controls[static_cast<std::size_t>(c)];
             char label[256];
-            std::snprintf(label, sizeof(label), "%s  [%s]%s%s", control.name.c_str(), control.typeName.c_str(),
-                          control.anchorDeclared ? "  " : "", control.anchorDeclared ? control.anchor.c_str() : "");
+            std::snprintf(label, sizeof(label), "%s  [%s]%s%s%s", control.name.c_str(), control.typeName.c_str(),
+                          control.anchorDeclared ? "  " : "", control.anchorDeclared ? control.anchor.c_str() : "",
+                          control.game.Any() || PicturesSetByGame(control) ? kGameTag : "");
             ImGui::PushID(c);
             if (!control.drawn) {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
@@ -2246,6 +2317,10 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     ImGui::SeparatorText("Control");
     ImGui::Text("name: %s%s", control.name.c_str(), control.named ? "" : " (unnamed)");
     ImGui::Text("type: %s", control.typeName.c_str());
+    GameSetsLines(control.game, "control");
+    if (!control.game.Any() && PicturesSetByGame(control)) {
+        ImGui::TextColored(kGameColor, "the game's code sets some of its pictures or texts (marked [game] below)");
+    }
     ControlStructureEditor(engine, state, dialog, control);
     ImGui::Text("anchor: %s%s", control.anchor.c_str(),
                 AnchorSource(control.anchorDeclared, control.anchorFromScript, " (the dialog's)"));
@@ -2622,7 +2697,7 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
                                           : horizontal ? ImGuiMouseCursor_ResizeEW
                                                        : ImGuiMouseCursor_ResizeNS);
                     if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-                        state.edgeDrag = {true, picture.point, edges, {0.0f, 0.0f}};
+                        state.edgeDrag = {true, picture.point, picture.pos, edges, {0.0f, 0.0f}};
                     }
                 }
             }
@@ -2729,7 +2804,7 @@ void ScreenPanel(x2::ui_editor::Engine& engine, const x2::app::ImGuiLayer& gui, 
                 const float l = (edge.edges & 1) ? dx : 0.0f, t = (edge.edges & 2) ? dy : 0.0f;
                 const float r = (edge.edges & 4) ? dx : 0.0f, b = (edge.edges & 8) ? dy : 0.0f;
                 if (l != 0.0f || t != 0.0f || r != 0.0f || b != 0.0f) {
-                    if (ResizeSource(engine, state, edge.ref, l, t, r, b, kEdgeMerge)) {
+                    if (ResizeSource(engine, state, edge.ref, l, t, r, b, kEdgeMerge, edge.pos)) {
                         edge.rest[0] = tx;
                         edge.rest[1] = ty;
                     } else {

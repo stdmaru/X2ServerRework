@@ -66,6 +66,7 @@ struct PictureLayout {
     Corners corners{};
     std::wstring texture, key;
     Corners uv{};
+    bool shown = true;
 
     bool SameTexture(const PictureLayout& other) const { return texture == other.texture && key == other.key; }
 };
@@ -73,6 +74,9 @@ struct ScriptLayout {
     D3DXVECTOR2 pos{0, 0};
     std::vector<std::vector<PictureLayout>> pictures;   // [control][picture]
     std::vector<std::vector<D3DXVECTOR2>> strings;      // [control][string]
+    // What the game's code may change over them (GameSets): each control's shown flag, each text's string.
+    std::vector<bool> controlShown;                     // [control]
+    std::vector<std::vector<std::wstring>> texts;       // [control][string]
 };
 
 ScriptLayout CaptureLayout(CKTDGUIDialog& dialog)
@@ -82,7 +86,12 @@ ScriptLayout CaptureLayout(CKTDGUIDialog& dialog)
     const std::vector<CKTDGUIControl*>& controls = dialog.GetControlList();
     layout.pictures.resize(controls.size());
     layout.strings.resize(controls.size());
+    layout.texts.resize(controls.size());
+    layout.controlShown.resize(controls.size(), true);
     for (std::size_t c = 0; c < controls.size(); ++c) {
+        if (controls[c] != NULL) {
+            layout.controlShown[c] = controls[c]->GetShow();
+        }
         if (controls[c] == NULL || controls[c]->GetType() != CKTDGUIControl::UCT_STATIC) {
             continue;
         }
@@ -90,6 +99,7 @@ ScriptLayout CaptureLayout(CKTDGUIDialog& dialog)
         for (int p = 0; p < control->GetPictureNum(); ++p) {
             const CKTDGUIControl::CPictureData* picture = control->GetPicture(p);
             PictureLayout pl;
+            pl.shown = picture == NULL || picture->GetShow();
             if (picture != NULL && picture->pPoint != NULL) {
                 pl.corners = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint,
                               picture->pPoint->leftBottomPoint, picture->pPoint->rightBottomPoint};
@@ -106,6 +116,7 @@ ScriptLayout CaptureLayout(CKTDGUIDialog& dialog)
         for (int t = 0; t < control->GetStringNum(); ++t) {
             const CKTDGUIControl::UIStringData* string = control->GetString(t);
             layout.strings[c].push_back(string != NULL ? string->pos : D3DXVECTOR2(0, 0));
+            layout.texts[c].push_back(string != NULL ? string->msg : std::wstring());
         }
     }
     return layout;
@@ -1070,6 +1081,7 @@ std::vector<DialogInfo> Engine::Inspect() const
                      : call.eKind == Kind::Texture    ? CallKind::Texture
                      : call.eKind == Kind::AddPicture ? CallKind::AddPicture
                      : call.eKind == Kind::AddControl ? CallKind::AddControl
+                     : call.eKind == Kind::PicturePos ? CallKind::PicturePos
                                                       : CallKind::Point;
             r.shared = uses[{call.uScript, call.iLine, call.eKind}];
             return r;
@@ -1124,6 +1136,13 @@ std::vector<DialogInfo> Engine::Inspect() const
             c.anchorFromScript = control->IsAnchorFromScript();
             c.backdropFade = control->GetBackdropFade();
             c.shown = control->GetShow();
+            // What the game's code set over the scripts (only a dialog holding the game's state differs).
+            const bool live = open.live.has_value();
+            if (live) {
+                c.game.added = i >= open.layout.controlShown.size();
+                c.game.scriptShown = c.game.added || open.layout.controlShown[i];
+                c.game.shown = !c.game.added && c.game.scriptShown != c.shown;
+            }
             const D3DXVECTOR2 offset = control->GetOffsetPos();
             c.offset[0] = offset.x;
             c.offset[1] = offset.y;
@@ -1151,6 +1170,18 @@ std::vector<DialogInfo> Engine::Inspect() const
                     }
                     PictureInfo pi;
                     pi.shown = picture->GetShow();
+                    if (live) {
+                        const PictureLayout* script = LayoutAt(open.layout.pictures, i, static_cast<std::size_t>(p));
+                        pi.game.added = c.game.added || script == nullptr;
+                        if (script != nullptr) {
+                            pi.game.scriptShown = script->shown;
+                            pi.game.shown = script->shown != pi.shown;
+                            pi.game.scriptTexture = Utf8(script->texture);
+                            pi.game.scriptKey = Utf8(script->key);
+                            pi.game.texture = picture->pTexture != NULL && (picture->pTexture->texName != script->texture ||
+                                                                            picture->pTexture->keyName != script->key);
+                        }
+                    }
                     if (picture->pTexture != NULL) {
                         pi.texture = Utf8(picture->pTexture->texName);
                         pi.key = Utf8(picture->pTexture->keyName);
@@ -1161,8 +1192,15 @@ std::vector<DialogInfo> Engine::Inspect() const
                             pi.uv[k][1] = picture->pTexture->uvTexture[k].y;
                         }
                     }
-                    if (const auto found = callsFor(picture, Kind::Point); !found.empty()) {
-                        pi.point = ref(*found.back());
+                    const auto points = callsFor(picture, Kind::Point);
+                    if (!points.empty()) {
+                        pi.point = ref(*points.back());
+                    }
+                    // A SetPos after the SetPoint sets the left top again (2026-11-16: moving the SetPoint of the
+                    // character selection's background did nothing, its SetPos put it back).
+                    if (const auto found = callsFor(picture, Kind::PicturePos);
+                        !found.empty() && (points.empty() || found.back() > points.back())) {
+                        pi.pos = ref(*found.back());
                     }
                     if (const auto found = callsFor(picture, Kind::Texture); !found.empty()) {
                         pi.texSource = ref(*found.back());
@@ -1209,6 +1247,12 @@ std::vector<DialogInfo> Engine::Inspect() const
                         si.source = ref(*added[static_cast<std::size_t>(t)]);
                     }
                     si.text = Utf8(string->msg);
+                    if (live) {
+                        const auto& texts = open.layout.texts;
+                        const auto ti = static_cast<std::size_t>(t);
+                        si.game.added = c.game.added || i >= texts.size() || ti >= texts[i].size();
+                        si.game.text = !si.game.added && texts[i][ti] != string->msg;
+                    }
                     si.stringId = string->stringTableID == STR_ID_EMPTY ? -1 : string->stringTableID;
                     si.pos[0] = string->pos.x;
                     si.pos[1] = string->pos.y;

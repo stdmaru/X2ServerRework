@@ -27,6 +27,20 @@ struct SourceRef {
     bool Known() const { return line > 0; }
 };
 
+// What the running game's code set over what the scripts give, in a dialog that holds the game's state (watch game,
+// also after unchecking it; docs/tools/ui-editor.md#what-the-game-sets): drawn so here, but editing the script does not
+// change it in the game, whose code sets it again. Positions are not marked: they move into the scripts (T46 (3)).
+struct GameSets {
+    bool added = false;     // made by the game's code: not in the scripts
+    bool shown = false;     // shown or hidden by the code (scriptShown: as the scripts leave it)
+    bool texture = false;   // another texture or key than the script's (scriptTexture, scriptKey)
+    bool text = false;      // a text the code filled or changed
+    bool scriptShown = true;
+    std::string scriptTexture, scriptKey;
+
+    bool Any() const { return added || shown || texture || text; }
+};
+
 struct PictureInfo {
     std::string texture;        // file name, empty when none
     std::string key;            // the .tet key, empty when the whole texture is drawn
@@ -40,8 +54,10 @@ struct PictureInfo {
     bool shown = true;
     float pixelMin[2] = {}, pixelMax[2] = {};   // its corners' box in render target pixels (anchors and stretch applied)
     SourceRef point;            // its SetPoint
+    SourceRef pos;              // its SetPos after that SetPoint, which places it instead (Known only then)
     SourceRef texSource;        // its SetTex(file, key)
     SourceRef add;              // the AddPicture that put it into its static
+    GameSets game;
 };
 
 struct StringInfo {
@@ -52,6 +68,7 @@ struct StringInfo {
     unsigned sortFlag = 0;      // DT_* alignment flags
     float color[4] = {};        // r, g, b, a
     SourceRef source;           // its AddString
+    GameSets game;
 };
 
 struct ControlInfo {
@@ -73,6 +90,7 @@ struct ControlInfo {
     std::vector<StringInfo> strings;
     std::vector<SourceRef> points;  // the point tables set on the control itself (a button's normal, over, down, ...)
     SourceRef add;                  // the AddControl that put it into the dialog
+    GameSets game;
 };
 
 struct DialogInfo {

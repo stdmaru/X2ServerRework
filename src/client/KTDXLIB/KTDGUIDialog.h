@@ -605,6 +605,7 @@ private:
 			Texture,		// a picture's SetTex(file, key); the object is the picture
 			AddPicture,		// a static's AddPicture(picture); the object is the picture
 			AddControl,		// g_pUIDialog:AddControl(control); the object is the control
+			PicturePos,		// a picture's SetPos(D3DXVECTOR2(x, y)); the object is the picture
 		};
 		struct ScriptCall
 		{
