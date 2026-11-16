@@ -135,16 +135,10 @@ Corners Moved(const std::vector<std::vector<PictureLayout>>& a, const std::vecto
     return moved;
 }
 
-// The picture as the scripts place it now, when an edit changed it from what they placed first; nullptr otherwise.
-const PictureLayout* Edited(const std::vector<std::vector<PictureLayout>>& first,
-                            const std::vector<std::vector<PictureLayout>>& now, std::size_t control, std::size_t item)
+// A picture's layout, or nullptr when the layout lacks it.
+const PictureLayout* LayoutAt(const std::vector<std::vector<PictureLayout>>& layout, std::size_t control, std::size_t item)
 {
-    if (control >= first.size() || control >= now.size() || item >= first[control].size() || item >= now[control].size()) {
-        return nullptr;
-    }
-    const PictureLayout& a = first[control][item];
-    const PictureLayout& b = now[control][item];
-    return a.SameTexture(b) && a.uv == b.uv ? nullptr : &b;
+    return control < layout.size() && item < layout[control].size() ? &layout[control][item] : nullptr;
 }
 
 const char* AnchorName(UIAnchor anchor)
@@ -260,8 +254,10 @@ struct Engine::State {
         std::wstring name;
         CKTDXDeviceTexture* device = nullptr;
         std::string bytes;
+        TetFile original, edited;   // the file's rectangles, which the running game drew, and the edits'
     };
     std::map<std::string, Tet> tets;
+    void FollowTet(CKTDGUIControl::CPictureData& picture, bool scale) const;
     // The textures LoadTextureImage loaded, by ScriptKey, held open.
     std::map<std::string, std::pair<std::wstring, CKTDXDeviceTexture*>> images;
 
@@ -570,6 +566,10 @@ bool Engine::SetTet(const std::string& texture, const std::string& bytes, std::s
     auto it = m_state->tets.find(key);
     if (it == m_state->tets.end()) {
         State::Tet tet;
+        std::string original, ignored;
+        if (TetBytes(texture, original, ignored)) {
+            TetFile::Parse(original, tet.original, ignored);
+        }
         tet.name = Wide(texture);
         tet.device = g_pKTDXApp->GetDeviceManager()->OpenTexture(tet.name);
         if (tet.device == NULL) {
@@ -583,6 +583,7 @@ bool Engine::SetTet(const std::string& texture, const std::string& bytes, std::s
         return false;
     }
     it->second.bytes = bytes;
+    it->second.edited = parsed;
     return true;
 }
 
@@ -777,6 +778,35 @@ void ApplyStatic(CKTDGUIStatic& control, const LiveSnapshot::Dialog& live, int i
 
 }  // namespace
 
+// A picture the game's code gave a key of a texture whose .tet the editor changed: the game drew it with the file's
+// rectangle, so it takes the edited one, with its size scaled from the game's by the rectangle's change (2026-11-16:
+// a key the code sets, Add's name_noclass in character creation, kept the game's crop and size).
+void Engine::State::FollowTet(CKTDGUIControl::CPictureData& picture, bool scale) const
+{
+    const auto it = tets.find(ScriptKey(Utf8(picture.pTexture->texName)));
+    if (it == tets.end()) {
+        return;
+    }
+    const std::string key = Utf8(picture.pTexture->keyName);
+    const TetRect* before = it->second.original.Find(key);
+    const TetRect* after = it->second.edited.Find(key);
+    if (before == nullptr || after == nullptr || *before == *after) {
+        return;
+    }
+    const std::wstring texture = picture.pTexture->texName, keyName = picture.pTexture->keyName;
+    picture.SetTex(texture.c_str(), keyName.c_str());   // the edited rectangle's texture coordinates
+    if (!scale || picture.pPoint == NULL || before->size[0] <= 0.0f || before->size[1] <= 0.0f) {
+        return;
+    }
+    const float sx = after->size[0] / before->size[0], sy = after->size[1] / before->size[1];
+    CKTDGUIControl::UIPointData& point = *picture.pPoint;
+    const D3DXVECTOR2 origin = point.leftTopPoint;
+    for (D3DXVECTOR2* corner : {&point.leftTopPoint, &point.rightTopPoint, &point.leftBottomPoint, &point.rightBottomPoint}) {
+        corner->x = origin.x + (corner->x - origin.x) * sx;
+        corner->y = origin.y + (corner->y - origin.y) * sy;
+    }
+}
+
 void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
 {
     if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
@@ -843,25 +873,22 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
                     picture->pPoint->leftBottomPoint += moved[2];
                     picture->pPoint->rightBottomPoint += moved[3];
                 }
-                // A texture, key or UV rectangle an edit changed: the script's and the .tet's, not the game's
-                // (2026-11-16: the game's key came back, so a key change did not show while watching).
-                const PictureLayout* edited =
-                    picture != NULL ? Edited(before.pictures, open.layout.pictures, ci, static_cast<std::size_t>(p.index))
-                                    : nullptr;
-                if (edited != nullptr) {
-                    if (picture->pTexture == NULL || picture->pTexture->texName != edited->texture ||
-                        picture->pTexture->keyName != edited->key) {
-                        if (edited->key.empty()) {
-                            picture->SetTex(edited->texture.c_str());
-                        } else {
-                            picture->SetTex(edited->texture.c_str(), edited->key.c_str());
-                        }
+                // A texture or key the script's edit changed: the script's, not the game's (2026-11-16: the game's
+                // key came back, so a key change did not show while watching). Otherwise a .tet the editor changed
+                // gives the drawn key its edited rectangle (FollowTet), also for a key the game's code set.
+                const PictureLayout* first = LayoutAt(before.pictures, ci, static_cast<std::size_t>(p.index));
+                const PictureLayout* now = LayoutAt(open.layout.pictures, ci, static_cast<std::size_t>(p.index));
+                if (picture != NULL && first != nullptr && now != nullptr && !first->SameTexture(*now)) {
+                    if (now->key.empty()) {
+                        picture->SetTex(now->texture.c_str());
+                    } else {
+                        picture->SetTex(now->texture.c_str(), now->key.c_str());
                     }
-                    if (picture->pTexture != NULL) {
-                        for (std::size_t k = 0; k < edited->uv.size(); ++k) {
-                            picture->pTexture->uvTexture[k] = edited->uv[k];
-                        }
-                    }
+                } else if (picture != NULL && picture->pTexture != NULL) {
+                    // The size follows the rectangle unless the script's corners already did (USE_TEXTURE_SIZE).
+                    const bool sized = first != nullptr && now != nullptr &&
+                                       (first->corners[3] - first->corners[0]) != (now->corners[3] - now->corners[0]);
+                    m_state->FollowTet(*picture, !sized);
                 }
             }
             for (const LiveSnapshot::Text& t : live.texts) {

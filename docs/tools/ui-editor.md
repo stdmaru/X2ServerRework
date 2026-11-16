@@ -93,7 +93,9 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   "Watch game" unchecked, and a reload puts it back with each picture's corners moved by what the edits moved, each
   corner by its own change, and with the texture, key and UV rectangle the edited script and `.tet` give when an edit
   changed them. Until then only the left top was followed and the game's texture and key came back, so a size or key
-  edit snapped back to the game's (the key list too, which shows the picture's key).
+  edit snapped back to the game's (the key list too, which shows the picture's key). A key the game's code set (Add's
+  `name_noclass` in character creation), whose `.tet` rectangle the editor changed, is drawn with the edited rectangle
+  and its size scaled from the game's by the rectangle's change (`FollowTet`; the game drew it with the file's).
 - **Undo and redo** take back moves as they do anchor edits (one drag is one step); "Save" writes the changed scripts,
   each one as a whole with its BOM (the files are UTF-8 with BOM, T42), and closing asks first.
 - **Dialogs placed by code** (T46 (3)): moving one changes its script's `SetPos` only, which the code overrides; the
@@ -261,7 +263,8 @@ file's text again (2026-11-14); a picture's key read from its texture's `.tet`, 
 growing it after a reload, and the texture loaded for Interactive Select at its size in texels (2026-11-14); a dialog
 grown at a line (a crossed picture grows, one past the line moves, one before stays) and its extent after (2026-11-15);
 the `AddPicture` and `AddControl` lines, a picture moved to a static of its own drawn at the same pixels and the static
-removed, a picture resized after the game's state went in (2026-11-16).
+removed, a picture resized after the game's state went in, a key the script changed to and a key the game's code set
+drawn with their edited rectangles after it (2026-11-16).
 
 Position edits (`test_script_edit.cpp`): numbers written as a script would; expressions keep their constants (the
 number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a
