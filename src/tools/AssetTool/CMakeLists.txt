@@ -4,7 +4,8 @@
 add_library(x2_assets_core STATIC
     src/client_data.cpp
     src/layout.cpp
-    src/manifest.cpp)
+    src/manifest.cpp
+    src/texture_sizes.cpp)
 add_library(x2::assets ALIAS x2_assets_core)
 target_include_directories(x2_assets_core PUBLIC include)
 target_link_libraries(x2_assets_core PUBLIC x2::kom_write PRIVATE x2::kncsdk x2::lua)
