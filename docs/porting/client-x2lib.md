@@ -326,7 +326,8 @@ The targets were deduced from the code and the scripts (2026-11-16; the recordin
 step asks the player to click, and the dialog that has it. Offsets are the original literal less the target's
 position when the step runs, so at 4:3 the pointer is where the original put it. **Behavior change:** the quest
 windows are placed by `CX2UIManager` (top left, or beside another window open there), and the pointer now follows
-them; the original's points were right only when the quest window was the first. Not checked in the game yet.
+them; the original's points were right only when the quest window was the first. Checked by the user in the game
+(2026-11-16): works as expected.
 
 ## Status
 
