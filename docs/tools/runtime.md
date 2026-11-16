@@ -109,6 +109,12 @@ Point `X2_CLIENT_DATA` at it. Checked 2026-11-15: from the client_data, 4,565 sc
 the `.kom` except the 17 edited there, `UIAnchors.lua` (new) and the client's three `Config_*.lua` (renamed; no server
 reads them). The client_data must be reachable from the build environment: the build image and the `x2-dev` container mount only the
 repository, so set `X2_CLIENT_DATA_MOUNT` ([Build environment](build-environment.md#dev-container)).
+When `X2_CLIENT_DATA` is not a folder, `x2_run_*` only prints that `ClientScript` is not generated and leaves the old
+`dist/ClientScript` in place, which the servers keep reading. On 2026-11-16 the running `x2-dev` had been created before
+its client_data mount, so the servers read a `ClientScript` without Add's items, skills and tutorial dungeon: a new Add
+got no equipment and an endless tutorial load (GameServer log: `Failed to retrieve the item template`, 112991; Center:
+`Failed to find dungeon data`, 39608). After changing mounts, rebuild the container; on the host,
+`python3 -I tools/runtime/gen_clientscript.py <client_data> dist/ClientScript` regenerates it.
 
 **Comparison with original server's `ClientScript`** (2026-10-30, behavioral comparison using `tools/runtime/lua_trace.lua`, which
 records calls, arguments, and defined globals): 2,198 scripts behave equivalently (2 are byte-identical), 1,800 differ, and 68 are
