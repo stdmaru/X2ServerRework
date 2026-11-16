@@ -19,12 +19,20 @@ struct AnchorEntry {
     std::vector<std::pair<float, float>> zones;
     std::vector<std::pair<std::string, float>> backdrops;       // name -> fade width, in the file's order
     std::vector<std::pair<std::string, std::string>> controls;   // name -> anchor, in the file's order
+    // "static/picture" (as the game's UIPictureId names it) -> anchor, in the file's order
+    std::vector<std::pair<std::string, std::string>> pictures;
 
-    bool Empty() const { return dialog.empty() && zones.empty() && backdrops.empty() && controls.empty(); }
+    bool Empty() const
+    {
+        return dialog.empty() && zones.empty() && backdrops.empty() && controls.empty() && pictures.empty();
+    }
     // The anchor declared for a control, empty when none.
     std::string Control(const std::string& name) const;
     // Declares a control's anchor; an empty anchor removes it.
     void SetControl(const std::string& name, const std::string& anchor);
+    // The same for a picture of a static, named "static/picture".
+    std::string Picture(const std::string& name) const;
+    void SetPicture(const std::string& name, const std::string& anchor);
     // The fade width of a control declared a backdrop, negative when it is not one.
     float Backdrop(const std::string& name) const;
     // Declares a control a backdrop with that fade width; a negative one removes it.
@@ -44,6 +52,12 @@ public:
     bool Has(const std::string& script) const;
     // Makes the script's entry say `entry`: an empty one removes it, a new one is added at the end of UI_ANCHORS.
     void Set(const std::string& script, const AnchorEntry& entry);
+
+    // UI_PARTICLE_ANCHORS: a particle sequence's anchor ("LEFT", "RIGHT", "STRETCH", "SPAN", "CENTER"), empty when
+    // none; setting an empty one removes it. In the file's order.
+    const std::vector<std::pair<std::string, std::string>>& Particles() const { return m_particles; }
+    std::string Particle(const std::string& sequence) const;
+    void SetParticle(const std::string& sequence, const std::string& anchor);
 
     const std::string& Text() const { return m_text; }
     bool Changed() const { return m_changed; }
@@ -86,6 +100,8 @@ private:
     bool m_changed = false;
     std::string m_problem;
     std::size_t m_listEnd = std::string::npos;      // UI_ANCHORS's closing brace
+    std::size_t m_particleTable = std::string::npos;   // UI_PARTICLE_ANCHORS's index in m_tables
+    std::vector<std::pair<std::string, std::string>> m_particles;
     std::vector<Script> m_scripts;
     std::vector<Table> m_tables;
 

@@ -582,6 +582,73 @@ bool Engine::TetBytes(const std::string& texture, std::string& bytes, std::strin
     return true;
 }
 
+const std::vector<Engine::ParticleSequence>& Engine::UIParticleSequences()
+{
+    if (m_particles.has_value()) {
+        return *m_particles;
+    }
+    m_particles.emplace();
+    // The particle files the client's code loads (CX2Game, CX2Main), by name.
+    std::vector<std::string> files = {"UIMajorParticle.txt", "UIMinorParticle.txt", "GameMajorParticle.txt",
+                                      "GameMinorParticle.txt"};
+    for (int n = 2; n <= 23; ++n) {
+        files.push_back("GameMajorParticle" + std::to_string(n) + ".txt");
+    }
+    const auto lower = [](std::string text) {
+        for (char& c : text) {
+            c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        }
+        return text;
+    };
+    for (const std::string& file : files) {
+        const auto info = g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile(Wide(file));
+        if (info == NULL || info->pRealData == NULL || info->size <= 0) {
+            continue;
+        }
+        const std::string text(info->pRealData, static_cast<std::size_t>(info->size));
+        const std::string low = lower(text);
+        for (std::size_t at = low.find("eventsequence"); at != std::string::npos;) {
+            const std::size_t next = low.find("eventsequence", at + 13);
+            const std::size_t open = text.find('"', at);
+            const std::size_t close = open == std::string::npos ? open : text.find('"', open + 1);
+            if (close != std::string::npos && (next == std::string::npos || close < next)) {
+                const std::string body = low.substr(close, (next == std::string::npos ? low.size() : next) - close);
+                const std::size_t convert = body.find("resolutionconvert");
+                const std::size_t eq = convert == std::string::npos ? convert : body.find('=', convert);
+                if (eq != std::string::npos && body.compare(body.find_first_not_of(" \t", eq + 1), 4, "true") == 0) {
+                    ParticleSequence sequence;
+                    sequence.name = text.substr(open + 1, close - open - 1);
+                    sequence.file = file;
+                    // initial position = XYZ(x, ...)
+                    if (const std::size_t pos = body.find("position"); pos != std::string::npos) {
+                        if (const std::size_t xyz = body.find("xyz(", pos); xyz != std::string::npos && xyz < pos + 40) {
+                            sequence.x = std::strtof(body.c_str() + xyz + 4, nullptr);
+                        }
+                    }
+                    m_particles->push_back(std::move(sequence));
+                }
+            }
+            at = next;
+        }
+    }
+    std::sort(m_particles->begin(), m_particles->end(),
+              [&](const ParticleSequence& a, const ParticleSequence& b) { return lower(a.name) < lower(b.name); });
+    return *m_particles;
+}
+
+void Engine::ParticlePixels(int anchor, const float box[4], float pixels[4]) const
+{
+    float x = (box[0] + box[2]) * 0.5f, width = box[2] - box[0];
+    if (anchor >= 0 && anchor <= static_cast<int>(UIParticleAnchor::Span)) {
+        ApplyUIParticleAnchor(static_cast<UIParticleAnchor>(anchor), x, width);
+    }
+    const float scale = UIScale();
+    pixels[0] = UIOriginX() + (x - width * 0.5f) * scale;
+    pixels[2] = UIOriginX() + (x + width * 0.5f) * scale;
+    pixels[1] = UIOriginY() + box[1] * scale;
+    pixels[3] = UIOriginY() + box[3] * scale;
+}
+
 bool Engine::SetTet(const std::string& texture, const std::string& bytes, std::string& error)
 {
     TetFile parsed;
@@ -986,6 +1053,25 @@ void Engine::ApplyAnchors(int index, const AnchorEntry& entry, const AnchorEntry
     for (const auto& [name, value] : entry.controls) {
         apply(name, value);
     }
+    const auto applyPicture = [&](const std::string& name, const std::string& value) {
+        CKTDGUIControl::CPictureData* picture = FindUIPicture(*dialog, Wide(name));
+        if (picture == nullptr) {
+            return;
+        }
+        if (ParseUIAnchor(value.c_str(), anchor)) {
+            picture->SetAnchor(anchor);
+        } else {
+            picture->ClearAnchor();
+        }
+    };
+    for (const auto& [name, value] : previous.pictures) {
+        if (entry.Picture(name).empty()) {
+            applyPicture(name, {});
+        }
+    }
+    for (const auto& [name, value] : entry.pictures) {
+        applyPicture(name, value);
+    }
     const auto setBackdrop = [&](const std::string& name, float fade) {
         if (CKTDGUIControl* control = dialog->GetControl(Wide(name).c_str()); control != nullptr) {
             control->SetBackdropFade(fade);
@@ -1224,6 +1310,9 @@ std::vector<DialogInfo> Engine::Inspect() const
                     }
                     PictureInfo pi;
                     pi.shown = picture->GetShow();
+                    pi.id = Utf8(UIPictureId(*picturesOf, p));
+                    pi.anchorDeclared = picture->HasAnchor();
+                    pi.anchor = pi.anchorDeclared ? AnchorName(picture->GetAnchor()) : std::string();
                     if (live) {
                         const PictureLayout* script = LayoutAt(open.layout.pictures, i, static_cast<std::size_t>(p));
                         pi.game.added = c.game.added || script == nullptr;
@@ -1283,8 +1372,8 @@ std::vector<DialogInfo> Engine::Inspect() const
                         // As the control's drawn box: the corners plus its offset, then its anchor or stretch.
                         lo += offset;
                         hi += offset;
-                        pi.pixelMin[0] = origin.x + (canvas.x + dialog->ControlXToDialogX(control, lo.x)) * scale;
-                        pi.pixelMax[0] = origin.x + (canvas.x + dialog->ControlXToDialogX(control, hi.x)) * scale;
+                        pi.pixelMin[0] = origin.x + (canvas.x + dialog->PictureXToDialogX(control, picture, lo.x)) * scale;
+                        pi.pixelMax[0] = origin.x + (canvas.x + dialog->PictureXToDialogX(control, picture, hi.x)) * scale;
                         pi.pixelMin[1] = origin.y + (canvas.y + lo.y) * scale;
                         pi.pixelMax[1] = origin.y + (canvas.y + hi.y) * scale;
                     }

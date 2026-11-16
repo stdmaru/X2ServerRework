@@ -1212,10 +1212,46 @@ bool AddStatic(std::string& text, const std::string& name, const std::string& te
     return true;
 }
 
+namespace {
+
+// The lines that create, add and place a new picture `pic` in `target`.
+std::vector<std::string> PictureLines(const std::string& dialog, const std::string& target, const std::string& pic,
+                                      const NewPicture& p)
+{
+    std::string point = "USE_TEXTURE_SIZE = true";
+    if (p.addSize[0] != 0.0f) {
+        point += ", ADD_SIZE_X = " + FormatNumber(p.addSize[0]);
+    }
+    if (p.addSize[1] != 0.0f) {
+        point += ", ADD_SIZE_Y = " + FormatNumber(p.addSize[1]);
+    }
+    point += ", LEFT_TOP = D3DXVECTOR2(" + FormatNumber(p.x) + ", " + FormatNumber(p.y) + ")";
+    if (p.color[0] != 1.0f || p.color[1] != 1.0f || p.color[2] != 1.0f || p.color[3] != 1.0f) {
+        point += ", COLOR = D3DXCOLOR(" + FormatNumber(p.color[0]) + ", " + FormatNumber(p.color[1]) + ", " +
+                 FormatNumber(p.color[2]) + ", " + FormatNumber(p.color[3]) + ")";
+    }
+    const std::string tex = p.key.empty() ? pic + ":SetTex2(\"" + p.texture + "\")"
+                                          : pic + ":SetTex(\"" + p.texture + "\", \"" + p.key + "\")";
+    return {pic + " = " + dialog + ":CreatePicture()", target + ":AddPicture(" + pic + ")", tex,
+            pic + ":SetPoint({ " + point + " })"};
+}
+
+}  // namespace
+
 bool AddPictureAfter(std::string& text, int line, CallKind kind, const std::string& texture, const std::string& key,
                      float x, float y, std::string& error)
 {
-    if (!CheckTexture(texture, key, error)) {
+    NewPicture picture;
+    picture.texture = texture;
+    picture.key = key;
+    picture.x = x;
+    picture.y = y;
+    return AddPictureAfter(text, line, kind, picture, error);
+}
+
+bool AddPictureAfter(std::string& text, int line, CallKind kind, const NewPicture& picture, std::string& error)
+{
+    if (!CheckTexture(picture.texture, picture.key, error)) {
         return false;
     }
     if (kind != CallKind::AddPicture && kind != CallKind::AddControl) {
@@ -1230,8 +1266,6 @@ bool AddPictureAfter(std::string& text, int line, CallKind kind, const std::stri
     const std::string& target = kind == CallKind::AddPicture ? call.receiver : call.argument;
     const std::string dialog = kind == CallKind::AddControl ? call.receiver : "g_pUIDialog";
     const std::string pic = NewGlobal(text, "g_pPicture_" + target);
-    const std::string tex = key.empty() ? pic + ":SetTex2(\"" + texture + "\")"
-                                        : pic + ":SetTex(\"" + texture + "\", \"" + key + "\")";
     // After the last line of what that call adds (the picture's SetTex and SetPoint after its AddPicture).
     std::size_t last = call.statement.end;
     const Range targetRange = ObjectRange(text, code, target, call.statement.begin);
@@ -1241,11 +1275,239 @@ bool AddPictureAfter(std::string& text, int line, CallKind kind, const std::stri
         }
     }
     const std::size_t at = NextLine(text, last);
-    InsertLines(text, at,
-                {pic + " = " + dialog + ":CreatePicture()", target + ":AddPicture(" + pic + ")", tex,
-                 pic + ":SetPoint({ USE_TEXTURE_SIZE = true, LEFT_TOP = D3DXVECTOR2(" + FormatNumber(x) + ", " +
-                     FormatNumber(y) + ") })"},
-                Indent(text, LineBegin(text, call.statement.begin)));
+    InsertLines(text, at, PictureLines(dialog, target, pic, picture), Indent(text, LineBegin(text, call.statement.begin)));
+    return true;
+}
+
+bool AddPictureBefore(std::string& text, int addPicture, const NewPicture& picture, std::string& error)
+{
+    if (!CheckTexture(picture.texture, picture.key, error)) {
+        return false;
+    }
+    const std::vector<char> code = CodeMask(text);
+    CallOnLine call;
+    if (!FindAddCall(text, code, addPicture, CallKind::AddPicture, call, error)) {
+        return false;
+    }
+    const ObjectLines first = LinesOf(text, code, call.argument, call.statement.begin);
+    std::size_t at = LineBegin(text, call.statement.begin);
+    if (first.creation && first.creation->begin < call.statement.begin) {
+        at = LineBegin(text, first.creation->begin);
+    }
+    // The static's name must name it there too.
+    const Range staticRange = ObjectRange(text, code, call.receiver, call.statement.begin);
+    if (at < staticRange.begin) {
+        error = call.receiver + " is created after its first picture";
+        return false;
+    }
+    const std::string dialog = first.creation && !first.creation->receiver.empty() ? first.creation->receiver : "g_pUIDialog";
+    const std::string pic = NewGlobal(text, "g_pPicture_" + call.receiver);
+    InsertLines(text, at, PictureLines(dialog, call.receiver, pic, picture), Indent(text, at));
+    return true;
+}
+
+std::string LuaString(const std::string& text)
+{
+    std::string out = "\"";
+    for (const char c : text) {
+        if (c == '"' || c == '\\') {
+            out += '\\';
+        }
+        out += c;
+    }
+    return out + "\"";
+}
+
+namespace {
+
+// The table a call on `line` takes, as `obj:Name({ ... })` or `obj:Name{ ... }` ('{' to '}').
+bool CallTable(const std::string& text, const std::vector<char>& code, int line, CallKind kind, Range& table,
+               std::string& error)
+{
+    std::size_t open = 0, close = 0;
+    if (!FindCall(text, code, line, kind, open, close, error)) {
+        return false;
+    }
+    table = {open, close};
+    if (text[open] == '(') {
+        const std::size_t brace = SkipSpaces(text, open + 1, close);
+        const std::size_t braceClose = brace < close && text[brace] == '{' ? FindClose(text, code, brace) : npos;
+        if (braceClose == npos || braceClose > close) {
+            error = std::string("the ") + KindName(kind) + " call on line " + std::to_string(line) + " does not take a table";
+            return false;
+        }
+        table = {brace, braceClose};
+    }
+    return true;
+}
+
+// The line `line` (from 1) starts at, or npos.
+std::size_t LineStart(const std::string& text, int line)
+{
+    std::size_t at = 0;
+    for (int l = 1; l < line; ++l) {
+        at = text.find('\n', at);
+        if (at == npos) {
+            return npos;
+        }
+        ++at;
+    }
+    return at;
+}
+
+}  // namespace
+
+bool AddPlacementCall(std::string& text, const NewPlacement& placement, std::string& error)
+{
+    if (placement.name.empty() || placement.name.find_first_of("\"'\\\r\n") != npos) {
+        error = "a placement's name is a plain name";
+        return false;
+    }
+    std::string fields = "NAME = " + LuaString(placement.name) + ", POS = D3DXVECTOR2(" + FormatNumber(placement.x) +
+                         ", " + FormatNumber(placement.y) + ")";
+    if (!placement.anchor.empty()) {
+        fields += ", ANCHOR = " + LuaString(placement.anchor);
+    }
+    if (!placement.target.empty()) {
+        fields += ", TARGET = " + LuaString(placement.target);
+        if (!placement.control.empty()) {
+            fields += ", CONTROL = " + LuaString(placement.control);
+        }
+    }
+    const std::string line = "g_pUIDialog:AddPlacement({ " + fields + " })";
+
+    // After the last AddPlacement; else after the first run of g_pUIDialog: lines; else at the top (after a BOM).
+    const std::vector<char> code = CodeMask(text);
+    std::size_t at = text.compare(0, 3, "\xEF\xBB\xBF") == 0 ? 3 : 0;
+    std::size_t lastPlacement = npos, run = npos;
+    bool inRun = true;
+    for (std::size_t begin = 0; begin < text.size();) {
+        std::size_t end = text.find('\n', begin);
+        end = end == npos ? text.size() : end + 1;
+        std::size_t first = begin == 0 && at == 3 ? 3 : begin;
+        while (first < end && (text[first] == ' ' || text[first] == '\t')) {
+            ++first;
+        }
+        const bool blank = first >= end || text[first] == '\n' || text[first] == '\r' || !code[first];
+        const bool onDialog = !blank && text.compare(first, 12, "g_pUIDialog:") == 0;
+        if (onDialog && text.compare(first, 25, "g_pUIDialog:AddPlacement(") == 0) {
+            lastPlacement = end;
+        }
+        if (inRun && onDialog) {
+            run = end;
+        } else if (!blank) {
+            inRun = false;
+        }
+        begin = end;
+    }
+    if (lastPlacement != npos) {
+        at = lastPlacement;
+    } else if (run != npos) {
+        at = run;
+    }
+    InsertLines(text, at, {line}, "");
+    return true;
+}
+
+bool SetCallField(std::string& text, int line, CallKind kind, const std::string& field, const std::string& value,
+                  std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    Range table;
+    if (!CallTable(text, code, line, kind, table, error)) {
+        return false;
+    }
+    // The table's items with the name each starts with.
+    struct Item {
+        std::string name;
+        std::size_t nameBegin = 0;
+        Range all, value;
+    };
+    std::vector<Item> items;
+    for (const Range& r : Split(text, code, {table.begin + 1, table.end}, ",;")) {
+        Item item;
+        item.all = r;
+        std::size_t i = SkipSpaces(text, r.begin, r.end);
+        item.nameBegin = i;
+        while (i < r.end && IsIdent(text[i])) {
+            ++i;
+        }
+        item.name = text.substr(item.nameBegin, i - item.nameBegin);
+        i = SkipSpaces(text, i, r.end);
+        if (i < r.end && text[i] == '=') {
+            item.value = {i + 1, r.end};
+        }
+        if (item.nameBegin < r.end) {
+            items.push_back(item);
+        }
+    }
+    std::size_t k = 0;
+    while (k < items.size() && items[k].name != field) {
+        ++k;
+    }
+    if (value.empty()) {
+        if (k == items.size()) {
+            return true;
+        }
+        if (k + 1 < items.size()) {
+            text.erase(items[k].nameBegin, items[k + 1].nameBegin - items[k].nameBegin);
+        } else if (k > 0) {
+            std::size_t from = items[k - 1].all.end;
+            std::size_t to = items[k].all.end;
+            while (to > from && IsSpace(text[to - 1])) {
+                --to;
+            }
+            text.erase(from, to - from);
+        } else {
+            text.replace(table.begin + 1, table.end - table.begin - 1, " ");
+        }
+        return true;
+    }
+    if (k < items.size()) {
+        Range v = items[k].value;
+        v.begin = SkipSpaces(text, v.begin, v.end);
+        while (v.end > v.begin && IsSpace(text[v.end - 1])) {
+            --v.end;
+        }
+        text.replace(v.begin, v.end - v.begin, value);
+        return true;
+    }
+    // A new field after the last one (before the '}').
+    if (items.empty()) {
+        text.replace(table.begin + 1, table.end - table.begin - 1, " " + field + " = " + value + " ");
+        return true;
+    }
+    std::size_t end = items.back().all.end;
+    while (end > items.back().nameBegin && IsSpace(text[end - 1])) {
+        --end;
+    }
+    text.insert(end, ", " + field + " = " + value);
+    return true;
+}
+
+bool RemoveCallLine(std::string& text, int line, CallKind kind, std::string& error)
+{
+    const std::vector<char> code = CodeMask(text);
+    std::size_t open = 0, close = 0;
+    if (!FindCall(text, code, line, kind, open, close, error)) {
+        return false;
+    }
+    const std::size_t begin = LineStart(text, line);
+    std::size_t end = text.find('\n', begin);
+    end = end == npos ? text.size() : end + 1;
+    if (close >= end) {
+        error = std::string(KindName(kind)) + " on line " + std::to_string(line) + " goes on past its line";
+        return false;
+    }
+    std::size_t after = close + 1;
+    while (after < end && (IsSpace(text[after]) || !code[after])) {
+        ++after;
+    }
+    if (after < end) {
+        error = "line " + std::to_string(line) + " has more than its " + KindName(kind) + " call";
+        return false;
+    }
+    text.erase(begin, end - begin);
     return true;
 }
 

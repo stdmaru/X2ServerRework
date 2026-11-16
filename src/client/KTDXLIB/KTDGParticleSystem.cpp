@@ -3695,6 +3695,15 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 					// Wide screens (T52): a sequence UIAnchors.lua anchors moves, or spans the canvas.
 					if ( m_iUIAnchor < 0 )
 						m_iUIAnchor = static_cast<std::int8_t>( CKTDGUIAnchors::ParticleAnchor( m_strName.c_str() ) );
+#ifdef X2_DEV_TOOLS
+					// The UI editor's watch game: where the sequence draws, in layout units before its anchor.
+					if ( CKTDGUIAnchorRecorder::LiveIsOn() )
+					{
+						const D3DXVECTOR3 vUnit = GetVec3ScaleByUnit();
+						CKTDGUIAnchorRecorder::NoteLiveParticle( this, m_strName, m_iUIAnchor, partPos.x, partPos.y,
+							0.5f * partSize.x * m_ScaleFactor.x * vUnit.x, 0.5f * partSize.y * m_ScaleFactor.y * vUnit.y );
+					}
+#endif
 					ApplyUIParticleAnchor( static_cast<UIParticleAnchor>( m_iUIAnchor ), partPos.x, partSize.x );
 					temp = g_pKTDXApp->ConvertByResolution( partPos.x, partPos.y );
 					partPos.x = temp.x;

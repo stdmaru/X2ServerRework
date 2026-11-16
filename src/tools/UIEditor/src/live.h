@@ -54,9 +54,17 @@ struct LiveSnapshot {
         std::string Key() const;
     };
 
+    // A particle sequence drawn in layout units (RESOLUTIONCONVERT), one per live instance.
+    struct Particle {
+        std::string name;
+        int anchor = 0;             // UIParticleAnchor the game drew it under
+        float box[4] = {};          // left, top, right, bottom its particles covered, layout units before the anchor
+    };
+
     std::string scene;              // XS_*, empty before the first state
     unsigned screen[2] = {};        // the game's resolution, 0 when not written
     std::vector<Dialog> dialogs;
+    std::vector<Particle> particles;
 
     // An empty snapshot (no dialogs) when the file cannot be read.
     static LiveSnapshot Load(const std::filesystem::path& file);

@@ -484,6 +484,19 @@ centered column; undeclared ones stay centered (`KTDGUIAnchor.h`).
   `IsAnchorFromScript` tells a script's own `SetAnchor` apart, and `ClearAnchor` / `CKTDGUIStretch::Clear` undo a
   declaration, for the [UI editor](../tools/ui-editor.md#editing-anchors) (2026-11-14).
 - `STRETCH` spans the screen; see [Stretched pieces](#stretched-pieces-2026-11-13-clientwidescreen-stretch-t44).
+- **Picture anchors** (2026-11-16, `client/widescreen-migration`, user's request): a picture can have an anchor of its
+  own, so a static whose code shows and hides it by name (`PromotionMovie` in `DLG_Unit_Select_Back_New.lua`) can keep
+  a full-screen shade with its other pictures. An entry's `PICTURES` names a picture as `"<static>/<key>"` when the key
+  is unique in the static (without case), else `"<static>/#<n>"` (1-based):
+
+  ```lua
+  ["DLG_Unit_Select_Back_New.lua"] = { PICTURES = { ["PromotionMovie/BG_ALPHA_01"] = "STRETCH" } },
+  ```
+
+  `CKTDGUIStatic::OnFrameRender` draws such a picture under its own `UIAnchorScope` (with the dialog's stretch zones
+  for `STRETCH`); the rest of the static keeps the control's anchor. Only drawing follows it: the static's hit tests
+  and drawn bounds stay the control's. `UIPictureId` / `FindUIPicture` (`KTDGUIStatic.h`) make and resolve the names,
+  and `CKTDGUIDialog::PictureXToDialogX` maps a picture's x for tools. A name not in the dialog is reported on stderr.
 
 Checked at 1920×1080 (2026-11-13) with the example above: the login buttons and fields drawn 240 pixels to the right,
 the background centered, the moved ID field taking clicks and text and the moved LOG-IN button its press.
@@ -678,6 +691,10 @@ The client_data's table (2026-11-16): the combo counter (`NewComboDamage`, `Comb
 (`CutIn_Talk_Right`/`_Left` and their `_for_BOT` copies, at x 830 / 190) RIGHT / LEFT; the boss and
 sub-boss warning (`BOSS_DANGER`, `BOSS_DANGER_ADD`, `SUB_BOSS_DANGER`, `SUB_BOSS_DANGER_ADD`, `BOSS_NAME`) SPAN.
 `FocusLine` (the speed lines around the centre) stays centered.
+
+With `X2_UI_LIVE=1` (dev tools) each such sequence instance notes the box its particles cover, before its anchor
+(`CKTDGUIAnchorRecorder::NoteLiveParticle`), and the live snapshot writes those drawn in the last few frames as
+`particle` lines, for the UI editor's [watch game](../tools/ui-editor.md#watch-game).
 
 ## Status
 

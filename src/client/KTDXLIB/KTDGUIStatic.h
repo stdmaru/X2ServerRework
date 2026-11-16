@@ -132,3 +132,11 @@ class CKTDGUIStatic : public CKTDGUIControl
 		int										m_CustomMsgMouseDblClk;
 		int										m_CustomMsgMouseUp;
 };
+
+// A static's picture as UIAnchors.lua's PICTURES names it (T52, KTDGUIAnchor.cpp): "<static>/<key>", its .tet key
+// when no other picture of the static has it (in any case), else "<static>/#<n>", its place among the static's
+// pictures from 1.
+std::wstring UIPictureId( CKTDGUIStatic& kStatic, int iIndex );
+class CKTDGUIDialog;
+CKTDGUIControl::CPictureData* FindUIPicture( CKTDGUIDialog& kDialog, const std::wstring& wstrPicture );
+

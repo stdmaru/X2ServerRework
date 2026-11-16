@@ -177,6 +177,10 @@ class CKTDGUIDialog
 		// A layout x of a control (with its anchor or stretch) as a layout x under the dialog's anchor, for what the
 		// dialog draws next to it (its guide description).
 		float			ControlXToDialogX( const CKTDGUIControl* pControl, float fX ) const;
+		// The same for a picture of a static: under its own anchor when it has one (T52), else its static's.
+		float			PictureXToDialogX( const CKTDGUIControl* pControl, const CKTDGUIControl::CPictureData* pPicture, float fX ) const;
+		// The same under any anchor (bDeclared false: the dialog's own, fX unchanged).
+		float			AnchorXToDialogX( bool bDeclared, UIAnchor eAnchor, float fX ) const;
 		// Where STRETCH controls grow (UIAnchors.lua STRETCH_ZONES); none: they are scaled whole.
 		CKTDGUIStretch&	GetStretch()					{ return m_kStretch; }
 

@@ -88,3 +88,18 @@ TEST_CASE("ui editor: live snapshot, scripts code loaded and statics in full")
     CHECK(d.texts[1].full);
     CHECK(d.texts[1].text.empty());
 }
+
+TEST_CASE("ui editor: live snapshot, the UI particles before the dialogs")
+{
+    std::istringstream in("scene\tXS_DUNGEON_GAME\nparticle\tNewComboDamage\t1\t700\t80\t900\t140.5\n"
+                          "particle\tCutIn\\tOdd\t0\t1\t2\t3\t4\nparticle\tShort\t1\n"
+                          "dialog\tdlg_a.lua\t0\t0\t0\t0\t0\n");
+    const auto snapshot = x2::ui_editor::LiveSnapshot::Parse(in);
+    REQUIRE(snapshot.particles.size() == 2);
+    CHECK(snapshot.particles[0].name == "NewComboDamage");
+    CHECK(snapshot.particles[0].anchor == 1);
+    CHECK(snapshot.particles[0].box[0] == 700.0f);
+    CHECK(snapshot.particles[0].box[3] == 140.5f);
+    CHECK(snapshot.particles[1].name == "CutIn\tOdd");
+    CHECK(snapshot.dialogs.size() == 1);
+}

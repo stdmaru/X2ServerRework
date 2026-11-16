@@ -2318,10 +2318,24 @@ POINT CKTDGUIDialog::ToControlPoint( POINT ptDialog, CKTDGUIControl* pControl ) 
 
 float CKTDGUIDialog::ControlXToDialogX( const CKTDGUIControl* pControl, float fX ) const
 {
-	if ( pControl == NULL || pControl->HasAnchor() == false )
+	if ( pControl == NULL )
 		return fX;
-	if ( pControl->GetAnchor() != UIAnchor::Stretch )
-		return fX + GetControlAnchorShift( pControl );
+	return AnchorXToDialogX( pControl->HasAnchor(), pControl->GetAnchor(), fX );
+}
+
+float CKTDGUIDialog::PictureXToDialogX( const CKTDGUIControl* pControl, const CKTDGUIControl::CPictureData* pPicture, float fX ) const
+{
+	if ( pPicture != NULL && pPicture->HasAnchor() )
+		return AnchorXToDialogX( true, pPicture->GetAnchor(), fX );
+	return ControlXToDialogX( pControl, fX );
+}
+
+float CKTDGUIDialog::AnchorXToDialogX( bool bDeclared, UIAnchor eAnchor, float fX ) const
+{
+	if ( bDeclared == false )
+		return fX;
+	if ( eAnchor != UIAnchor::Stretch )
+		return fX + g_pKTDXApp->GetUIAnchorShift( eAnchor ) - GetAnchorShift();
 	const float fLeft = g_pKTDXApp->GetUIAnchorShift( UIAnchor::Left );
 	const float fExtra = g_pKTDXApp->GetUIAnchorShift( UIAnchor::Right ) - fLeft;
 	return m_kStretch.Map( fX, m_Pos.x, fLeft, fExtra ) - GetAnchorShift();

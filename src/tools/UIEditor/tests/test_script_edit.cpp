@@ -376,3 +376,75 @@ TEST_CASE("script edit: pictures and controls removed")
     CHECK(reused == "p = g_pUIDialog:CreatePicture()\ns:AddPicture(p)\np:SetTex(\"B.tga\", \"K\")\n");
     CHECK_FALSE(x2::ui_editor::RemoveControl(reused, 1, error));
 }
+
+TEST_CASE("script edit: a new picture with its size and color, after or behind the static's pictures")
+{
+    std::string error;
+    x2::ui_editor::NewPicture picture;
+    picture.texture = "T.tga";
+    picture.key = "K";
+    picture.x = 3;
+    picture.y = 4;
+    picture.addSize[0] = 10;
+    picture.color[3] = 0.5f;
+    const std::string base = "s = g_pUIDialog:CreateStatic()\ng_pUIDialog:AddControl(s)\n"
+                             "p = g_pUIDialog:CreatePicture()\ns:AddPicture(p)\np:SetTex(\"A.tga\", \"A\")\n";
+    std::string after = base;
+    REQUIRE_MESSAGE(x2::ui_editor::AddPictureAfter(after, 4, CallKind::AddPicture, picture, error), error);
+    CHECK(after.compare(0, base.size(), base) == 0);
+    const std::string added = after.substr(base.size());
+    CHECK(added.find("g_pPicture_s:SetTex(\"T.tga\", \"K\")\n") != std::string::npos);
+    CHECK(added.find("ADD_SIZE_X = 10") != std::string::npos);
+    CHECK(added.find("ADD_SIZE_Y") == std::string::npos);
+    CHECK(added.find("LEFT_TOP = D3DXVECTOR2(3, 4)") != std::string::npos);
+    CHECK(added.find("D3DXCOLOR(1, 1, 1, 0.5)") != std::string::npos);
+
+    // Behind: before the first picture's creation, so the static adds it first.
+    std::string behind = base;
+    REQUIRE_MESSAGE(x2::ui_editor::AddPictureBefore(behind, 4, picture, error), error);
+    CHECK(behind.find("g_pPicture_s = g_pUIDialog:CreatePicture()") < behind.find("p = g_pUIDialog:CreatePicture()"));
+    CHECK(behind.find("s:AddPicture(g_pPicture_s)") < behind.find("s:AddPicture(p)"));
+    CHECK(behind.find("g_pUIDialog:AddControl(s)") < behind.find("g_pPicture_s = "));
+    CHECK_FALSE(x2::ui_editor::AddPictureBefore(behind, 1, picture, error));
+}
+
+TEST_CASE("script edit: placements added, a field set or removed, a call removed")
+{
+    std::string error;
+    std::string text = "\xEF\xBB\xBFg_pUIDialog:SetName(\"A\")\ng_pUIDialog:SetLayer(1)\n\ns = 1\n";
+    x2::ui_editor::NewPlacement placement;
+    placement.name = "Top";
+    placement.x = 5;
+    placement.y = -2;
+    REQUIRE_MESSAGE(x2::ui_editor::AddPlacementCall(text, placement, error), error);
+    CHECK(text == "\xEF\xBB\xBFg_pUIDialog:SetName(\"A\")\ng_pUIDialog:SetLayer(1)\n"
+                  "g_pUIDialog:AddPlacement({ NAME = \"Top\", POS = D3DXVECTOR2(5, -2) })\n\ns = 1\n");
+    placement.name = "Slot";
+    placement.anchor = "RIGHT";
+    placement.target = "DLG_B.lua";
+    placement.control = "Slot1";
+    REQUIRE_MESSAGE(x2::ui_editor::AddPlacementCall(text, placement, error), error);
+    CHECK(text.find("NAME = \"Top\", POS = D3DXVECTOR2(5, -2) })\ng_pUIDialog:AddPlacement({ NAME = \"Slot\", POS = "
+                    "D3DXVECTOR2(5, -2), ANCHOR = \"RIGHT\", TARGET = \"DLG_B.lua\", CONTROL = \"Slot1\" })\n") !=
+          std::string::npos);
+    placement.name = "a\"b";
+    CHECK_FALSE(x2::ui_editor::AddPlacementCall(text, placement, error));
+
+    // Line 3 is Top's: an anchor added, then changed, then removed.
+    REQUIRE_MESSAGE(x2::ui_editor::SetCallField(text, 3, CallKind::Placement, "ANCHOR", "\"LEFT\"", error), error);
+    CHECK(text.find("{ NAME = \"Top\", POS = D3DXVECTOR2(5, -2), ANCHOR = \"LEFT\" }") != std::string::npos);
+    REQUIRE_MESSAGE(x2::ui_editor::SetCallField(text, 3, CallKind::Placement, "ANCHOR", "\"STRETCH\"", error), error);
+    CHECK(text.find("ANCHOR = \"STRETCH\" }") != std::string::npos);
+    REQUIRE_MESSAGE(x2::ui_editor::SetCallField(text, 4, CallKind::Placement, "CONTROL", "", error), error);
+    CHECK(text.find("TARGET = \"DLG_B.lua\" })") != std::string::npos);
+    CHECK(text.find("CONTROL") == std::string::npos);
+    REQUIRE_MESSAGE(x2::ui_editor::SetCallField(text, 3, CallKind::Placement, "ANCHOR", "", error), error);
+    CHECK(text.find("{ NAME = \"Top\", POS = D3DXVECTOR2(5, -2) }") != std::string::npos);
+    CHECK_FALSE(x2::ui_editor::SetCallField(text, 1, CallKind::Placement, "ANCHOR", "\"LEFT\"", error));
+
+    REQUIRE_MESSAGE(x2::ui_editor::RemoveCallLine(text, 3, CallKind::Placement, error), error);
+    CHECK(text.find("\"Top\"") == std::string::npos);
+    CHECK(text.find("g_pUIDialog:SetLayer(1)\ng_pUIDialog:AddPlacement({ NAME = \"Slot\"") != std::string::npos);
+    CHECK_FALSE(x2::ui_editor::RemoveCallLine(text, 1, CallKind::Placement, error));
+    CHECK(x2::ui_editor::LuaString("a\"b\\c") == "\"a\\\"b\\\\c\"");
+}

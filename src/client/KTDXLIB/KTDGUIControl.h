@@ -403,6 +403,13 @@ class CKTDGUIControl : private x2::NonCopyable
 				void SetShow(bool _bShow) { bShow = _bShow; }
 				bool GetShow() const { return bShow; }
 
+				// Its own horizontal anchor inside its static (PICTURES in UIAnchors.lua, T52): drawn under it instead
+				// of the static's.
+				void SetAnchor( UIAnchor eAnchor ) { m_eAnchor = eAnchor; m_bAnchorDeclared = true; }
+				void ClearAnchor() { m_eAnchor = UIAnchor::Center; m_bAnchorDeclared = false; }
+				bool HasAnchor() const { return m_bAnchorDeclared; }
+				UIAnchor GetAnchor() const { return m_eAnchor; }
+
 				void SetMaximizeType( bool bPos, bool bSize );
 
 				void RotatePoint( D3DXVECTOR2 vCenter, float fDegree )
@@ -526,6 +533,8 @@ class CKTDGUIControl : private x2::NonCopyable
 				float							m_fFadeTime;
 				float							m_fRemainFadeTime;
 
+				UIAnchor						m_eAnchor = UIAnchor::Center;
+				bool							m_bAnchorDeclared = false;
 		};
 
 // #ifdef MOVIE_TEST	 	// 13-11-11, 진입 구조 개편, kimjh, MOVIE_TEST 중 사용에 필요한 Define 을 MOVIE_TEST_BASE 로 변경

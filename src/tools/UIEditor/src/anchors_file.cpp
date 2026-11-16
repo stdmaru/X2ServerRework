@@ -109,29 +109,40 @@ std::size_t Width(const std::string& line)
 
 }  // namespace
 
-std::string AnchorEntry::Control(const std::string& name) const
+namespace {
+
+using AnchorList = std::vector<std::pair<std::string, std::string>>;
+
+std::string ListGet(const AnchorList& list, const std::string& name)
 {
-    for (const auto& [control, anchor] : controls) {
-        if (control == name) {
+    for (const auto& [key, anchor] : list) {
+        if (key == name) {
             return anchor;
         }
     }
     return {};
 }
 
-void AnchorEntry::SetControl(const std::string& name, const std::string& anchor)
+void ListSet(AnchorList& list, const std::string& name, const std::string& anchor)
 {
-    const auto it = std::find_if(controls.begin(), controls.end(), [&](const auto& c) { return c.first == name; });
+    const auto it = std::find_if(list.begin(), list.end(), [&](const auto& c) { return c.first == name; });
     if (anchor.empty()) {
-        if (it != controls.end()) {
-            controls.erase(it);
+        if (it != list.end()) {
+            list.erase(it);
         }
-    } else if (it != controls.end()) {
+    } else if (it != list.end()) {
         it->second = anchor;
     } else {
-        controls.emplace_back(name, anchor);
+        list.emplace_back(name, anchor);
     }
 }
+
+}  // namespace
+
+std::string AnchorEntry::Control(const std::string& name) const { return ListGet(controls, name); }
+void AnchorEntry::SetControl(const std::string& name, const std::string& anchor) { ListSet(controls, name, anchor); }
+std::string AnchorEntry::Picture(const std::string& name) const { return ListGet(pictures, name); }
+void AnchorEntry::SetPicture(const std::string& name, const std::string& anchor) { ListSet(pictures, name, anchor); }
 
 float AnchorEntry::Backdrop(const std::string& name) const
 {
@@ -369,6 +380,8 @@ void AnchorsFile::Reparse()
     m_tables.clear();
     m_problem.clear();
     m_listEnd = std::string::npos;
+    m_particleTable = std::string::npos;
+    m_particles.clear();
 
     Parser parser(m_text, m_tables);
     if (m_text.compare(0, 3, "\xEF\xBB\xBF") == 0) {
@@ -387,15 +400,17 @@ void AnchorsFile::Reparse()
                 break;
             }
         } else if (IsNameStart(c)) {
-            if (parser.Name() == "UI_ANCHORS") {
+            const std::string name = parser.Name();
+            if (name == "UI_ANCHORS" || name == "UI_PARTICLE_ANCHORS") {
+                std::size_t& table = name == "UI_ANCHORS" ? list : m_particleTable;
                 parser.Skip();
                 if (parser.pos < m_text.size() && m_text[parser.pos] == '=') {
                     ++parser.pos;
                     parser.Skip();
-                    if (parser.pos < m_text.size() && m_text[parser.pos] == '{' && parser.Table(list)) {
-                        break;
+                    if (parser.pos < m_text.size() && m_text[parser.pos] == '{' && parser.Table(table)) {
+                        continue;
                     }
-                    list = std::string::npos;
+                    table = std::string::npos;
                     break;
                 }
             }
@@ -404,6 +419,15 @@ void AnchorsFile::Reparse()
         }
     }
     m_problem = parser.problem;
+    if (m_particleTable != std::string::npos) {
+        for (const Field& field : m_tables[m_particleTable].fields) {
+            if (!field.key.empty() && field.kind == Field::Kind::String) {
+                m_particles.emplace_back(field.key, field.string);
+            } else if (m_problem.empty()) {
+                m_problem = "bad particle anchor in UI_PARTICLE_ANCHORS";
+            }
+        }
+    }
     if (list == std::string::npos) {
         if (m_problem.empty() && !m_text.empty() && m_text.find("UI_ANCHORS") != std::string::npos) {
             m_problem = "UI_ANCHORS is not a table";
@@ -447,6 +471,14 @@ void AnchorsFile::Reparse()
                         script.entry.SetBackdrop(backdrop.key, static_cast<float>(backdrop.number));
                     } else {
                         problem("bad backdrop in " + item.key);
+                    }
+                }
+            } else if (field.key == "PICTURES" && field.kind == Field::Kind::Table) {
+                for (const Field& picture : m_tables[field.table].fields) {
+                    if (!picture.key.empty() && picture.kind == Field::Kind::String) {
+                        script.entry.SetPicture(picture.key, picture.string);
+                    } else {
+                        problem("bad picture anchor in " + item.key);
                     }
                 }
             } else if (field.key == "CONTROLS" && field.kind == Field::Kind::Table) {
@@ -622,6 +654,13 @@ void AnchorsFile::Set(const std::string& script, const AnchorEntry& entry)
         if (!entry.backdrops.empty()) {
             head.push_back("BACKDROPS = " + Backdrops(entry.backdrops));
         }
+        if (!entry.pictures.empty()) {
+            std::string pictures;
+            for (const auto& [name, anchor] : entry.pictures) {
+                pictures += (pictures.empty() ? "" : ", ") + Key(name) + " = " + Quote(anchor);
+            }
+            head.push_back("PICTURES = { " + pictures + " }");
+        }
         std::vector<std::string> controls;
         for (const auto& [name, anchor] : entry.controls) {
             controls.push_back(Key(name) + " = " + Quote(anchor));
@@ -750,26 +789,30 @@ void AnchorsFile::Set(const std::string& script, const AnchorEntry& entry)
         const std::size_t controls = fieldIndex(table(), "CONTROLS");
         setField("BACKDROPS", entry.backdrops.empty() ? std::string() : Backdrops(entry.backdrops), controls);
     }
-    if (old.controls != entry.controls) {
-        if (entry.controls.empty()) {
-            setField("CONTROLS", {}, std::string::npos);
+    // A table of name -> anchor (CONTROLS, PICTURES), changed entry by entry. PICTURES goes before CONTROLS.
+    const auto setList = [&](const std::string& fieldName, const AnchorList& was, const AnchorList& now) {
+        if (was == now) {
             return;
         }
-        if (fieldIndex(table(), "CONTROLS") == std::string::npos) {
-            setField("CONTROLS", "{}", std::string::npos);
+        if (now.empty()) {
+            setField(fieldName, {}, std::string::npos);
+            return;
         }
-        const auto controlsTable = [&]() { return m_tables[table()].fields[fieldIndex(table(), "CONTROLS")].table; };
-        for (const auto& [name, anchor] : old.controls) {
-            if (entry.Control(name).empty()) {
-                const std::size_t t = controlsTable();
+        if (fieldIndex(table(), fieldName) == std::string::npos) {
+            setField(fieldName, "{}", fieldName == "CONTROLS" ? std::string::npos : fieldIndex(table(), "CONTROLS"));
+        }
+        const auto listTable = [&]() { return m_tables[table()].fields[fieldIndex(table(), fieldName)].table; };
+        for (const auto& [name, anchor] : was) {
+            if (ListGet(now, name).empty()) {
+                const std::size_t t = listTable();
                 const std::size_t i = fieldIndex(t, name);
                 if (i != std::string::npos) {
                     eraseField(t, i);
                 }
             }
         }
-        for (const auto& [name, anchor] : entry.controls) {
-            const std::size_t t = controlsTable();
+        for (const auto& [name, anchor] : now) {
+            const std::size_t t = listTable();
             const std::size_t i = fieldIndex(t, name);
             if (i == std::string::npos) {
                 insertField(t, Key(name) + " = " + Quote(anchor), std::string::npos);
@@ -777,7 +820,76 @@ void AnchorsFile::Set(const std::string& script, const AnchorEntry& entry)
                 Replace(m_tables[t].fields[i].valueBegin, m_tables[t].fields[i].valueEnd, Quote(anchor));
             }
         }
+    };
+    setList("PICTURES", old.pictures, entry.pictures);
+    setList("CONTROLS", old.controls, entry.controls);
+}
+
+std::string AnchorsFile::Particle(const std::string& sequence) const
+{
+    return ListGet(m_particles, sequence);
+}
+
+void AnchorsFile::SetParticle(const std::string& sequence, const std::string& anchor)
+{
+    if (Particle(sequence) == anchor) {
+        return;
     }
+    const std::string nl = Newline();
+    if (m_particleTable == std::string::npos) {
+        if (anchor.empty()) {
+            return;
+        }
+        if (m_text.empty()) {
+            m_text = kHeader;
+        } else if (m_text.back() != '\n') {
+            m_text += nl;
+        }
+        m_text += nl + "UI_PARTICLE_ANCHORS =" + nl + "{" + nl + "}" + nl;
+        Reparse();
+        if (m_particleTable == std::string::npos) {
+            return;
+        }
+    }
+    const auto& fields = m_tables[m_particleTable].fields;
+    std::size_t i = 0;
+    while (i < fields.size() && fields[i].key != sequence) {
+        ++i;
+    }
+    if (i < fields.size()) {
+        const Field& field = fields[i];
+        if (!anchor.empty()) {
+            Replace(field.valueBegin, field.valueEnd, Quote(anchor));
+        } else if (i + 1 < fields.size() && m_text.find('\n', field.sepEnd) > fields[i + 1].begin) {
+            Erase(field.begin, fields[i + 1].begin);
+        } else {
+            Erase(field.begin, field.sepEnd);
+        }
+        return;
+    }
+    if (anchor.empty()) {
+        return;
+    }
+    // A line of its own before the closing brace.
+    const std::size_t close = m_tables[m_particleTable].close;
+    std::size_t lineBegin = m_text.rfind('\n', close == 0 ? 0 : close - 1);
+    lineBegin = lineBegin == std::string::npos ? 0 : lineBegin + 1;
+    const bool ownLine = std::all_of(m_text.begin() + static_cast<std::ptrdiff_t>(lineBegin),
+                                     m_text.begin() + static_cast<std::ptrdiff_t>(close),
+                                     [](char c) { return c == ' ' || c == '\t'; });
+    std::string text = "\t" + Key(sequence) + " = " + Quote(anchor) + ",";
+    if (!fields.empty() && fields.back().sepEnd == fields.back().valueEnd) {
+        Replace(fields.back().valueEnd, fields.back().valueEnd, ",");    // the last field had no separator
+        SetParticle(sequence, anchor);
+        return;
+    }
+    if (ownLine) {
+        m_text.insert(lineBegin, text + nl);
+    } else {
+        m_text.insert(close, nl + text + nl);
+    }
+    m_changed = true;
+    Reparse();
 }
 
 }  // namespace x2::ui_editor
