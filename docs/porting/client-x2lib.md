@@ -298,7 +298,8 @@ where the balloon goes. Fix: Elesis uses her own balloons (`Elesis`, `Saber_Knig
 bleed off the screen. `CX2GUUser::ActiveSkillShow` slid the portrait in to the 4:3 edges, 0 and 1024; on the wide
 canvas, which extends past both, the edge showed as a cut through the portrait (clear on Add and Elesis, whose art is wide
 there). The slide-in is now anchored to `GetUICanvasLeft`/`GetUICanvasRight`, the same at 4:3. The balloons
-(`CutIn_Talk_*`, placed by `GameMinorParticle.txt`) stay in the 1024 column.
+(`CutIn_Talk_*`, placed by `GameMinorParticle.txt`) stay in the 1024 column. The portrait facing left was also cut in
+half by depth clipping of the mirrored quad, a renderer bug ([D3D9](client-d3d9.md#how-a-draw-is-translated)).
 
 ## Status
 

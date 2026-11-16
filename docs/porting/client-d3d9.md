@@ -57,6 +57,10 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
   +0.5 pixel before going back to clip space; transformed ones move by (1/width, −1/height) × w in clip space. The GPU test
   checks that a D3D9-style quad at −0.5 maps texels to pixels exactly.
 - **Culling**: D3D9's front faces are clockwise; `D3DCULL_CCW` (the default) culls back faces.
+- **Depth of pre-transformed vertices** (2026-11-16, `client/cutin-talk-elesis-add`): D3D9 did not clip `XYZRHW`
+  vertices by depth; their pipelines turn depth clipping off (depth clamp), so a z slightly outside 0–1 draws instead of
+  vanishing. The 2D particles mirrored with `rotate = XYZ(0,180,0)` (the special skill cut-in portraits) get z ≈ ±1e-5
+  from the float sine of 180°, and half of each quad was lost.
 - **Triangle fans** (SDL_GPU has none) are drawn as indexed lists from a shared index buffer (0, i, i+1), up to 16,384
   triangles per draw.
 - **Indexed draws** (2026-11-07): `SetIndices` and `DrawIndexedPrimitive` bind the index buffer as 16- or 32-bit and
