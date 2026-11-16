@@ -371,6 +371,14 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           (user checked, 2026-11-13), the NPC talk shade spans the screen, and dragged dialogs follow the pointer.
           **Paused 2026-11-13** (user): merged as it stands; the migration resumes with the UI editor
           (`tools/ui-editor`, below), with the user reviewing screens and the agent taking what needs code.
+          **Resumed 2026-11-16** (part 3, `client/widescreen-migration` again), with the UI editor done (PR #89).
+          Counted 2026-11-16: 220 dialog `SetPos` calls in 76 X2Lib files; the record holds 125 of 1,031 dialog
+          scripts (16 anchored, 43 placed by code, 10 by `centered.txt`, 30 to review). Order:
+          (a) the floating windows `CX2UIManager` opens (inventory, shop, quests, character, skills, community, post
+          box, pets, trade), their layout positions moved into their scripts (T46 (3)) and derived ones kept in code;
+          (b) the review list; (c) PvP room, game and result, dungeon room and result, boss bars; (d) cash shop and
+          the full-screen shades below; (e) maps (world, local, dungeon). Screens the record lacks are recorded as
+          they are reached. PvP's view width waits on [D10](decisions.md#pending).
           Left: PvP rooms, cash shop, boss bars, the character select background fix and the review list.
           Full-screen black shades found by a scan (2026-11-13), to stretch with their screens: cash shop popups,
           minimap item choice, event scenes and slideshow, world map, login keyboard, bingo.
