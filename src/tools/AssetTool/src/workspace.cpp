@@ -96,6 +96,7 @@ std::string_view ToString(FileState state)
     case FileState::Deleted: return "deleted";
     case FileState::Untracked: return "untracked";
     case FileState::Added: return "added";
+    case FileState::Ignored: return "ignored";
     }
     return "?";
 }
@@ -122,7 +123,7 @@ bool ClientData::Rescan(unsigned jobs, std::string& error, const Progress& progr
 bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progress)
 {
     std::vector<std::filesystem::path> paths;
-    if (!IndexFiles(root_, paths, error))
+    if (!IndexFiles(root_, paths, error) || !ignore_.Load(root_, error))
         return false;
 
     // Hash what changed since the last run.
@@ -214,7 +215,8 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
     }
     for (ClientDataFile& f : disk)
         if (f.record < 0)
-            f.state = FileState::Untracked;
+            f.state = ignore_.Matches(f.folder.empty() ? f.name : f.folder + "/" + f.name) ? FileState::Ignored
+                                                                                         : FileState::Untracked;
 
     std::sort(disk.begin(), disk.end(), [](const ClientDataFile& a, const ClientDataFile& b) {
         const std::string fa = kom::AsciiLower(a.folder), fb = kom::AsciiLower(b.folder);
@@ -255,7 +257,7 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
     // Edits of files that are gone or deleted go.
     std::set<std::string> keys;
     for (const ClientDataFile& f : files_)
-        if (f.state != FileState::Deleted)
+        if (f.state != FileState::Deleted && f.state != FileState::Ignored)
             keys.insert(RecordKey(f));
     std::erase_if(edits_, [&](const auto& edit) { return !keys.contains(edit.first); });
     return true;
@@ -329,26 +331,27 @@ bool ClientData::SetArchive(std::string_view name, std::string_view archive, std
         error = "\"" + std::string(name) + "\" is not in client_data";
         return false;
     }
-    if (f->state == FileState::Deleted)
+    if (f->state == FileState::Deleted || f->state == FileState::Ignored)
     {
-        error = "\"" + f->name + "\" is deleted: a sync drops it";
+        error = "\"" + f->name + "\" is " + std::string(ToString(f->state)) + ": it goes to no archive";
         return false;
     }
-    const auto known = std::find_if(manifest_.archives.begin(), manifest_.archives.end(), [&](const ArchiveRecord& a) {
-        return kom::AsciiLower(a.name) == kom::AsciiLower(archive);
+    const std::vector<std::string> archives = Archives();
+    const auto known = std::find_if(archives.begin(), archives.end(), [&](const std::string& a) {
+        return kom::AsciiLower(a) == kom::AsciiLower(archive);
     });
-    if (known == manifest_.archives.end())
+    if (known == archives.end())
     {
-        error = "\"" + std::string(archive) + "\" is not an archive of the manifest";
+        error = "\"" + std::string(archive) + "\" is not an archive of the manifest (create it first)";
         return false;
     }
     const std::string key = RecordKey(*f);
     const std::string base =
         f->record >= 0 ? manifest_.files[static_cast<std::size_t>(f->record)].archive : DefaultArchive(f->folder);
-    if (base == known->name)
+    if (base == *known)
         edits_.erase(key);
     else
-        edits_[key] = known->name;
+        edits_[key] = *known;
     return true;
 }
 
@@ -362,7 +365,7 @@ bool ClientData::SetFolderArchive(std::string_view folder, std::string_view arch
     // Names first: SetArchive may change what DefaultArchive gives for the rest, but not which files are listed.
     std::vector<std::string> names;
     for (const ClientDataFile& f : files_)
-        if (f.state != FileState::Deleted && UnderFolder(f.folder, clean))
+        if (f.state != FileState::Deleted && f.state != FileState::Ignored && UnderFolder(f.folder, clean))
             names.push_back(f.name);
     for (const std::string& name : names)
     {
@@ -419,7 +422,7 @@ bool ClientData::Sync(unsigned jobs, SyncStats& stats, std::string& error)
     std::vector<FileRecord> added;
     for (const ClientDataFile& f : files_)
     {
-        if (f.record >= 0)
+        if (f.record >= 0 || f.state == FileState::Ignored)
             continue;
         const std::string archive = ArchiveOf(f);
         if (archive.empty())
@@ -440,6 +443,14 @@ bool ClientData::Sync(unsigned jobs, SyncStats& stats, std::string& error)
 
     Manifest manifest;
     manifest.archives = manifest_.archives;
+    for (const std::string& name : newArchives_)  // in the client's load order: names sorted (ArchivesInLoadOrder)
+    {
+        const auto at = std::find_if(manifest.archives.begin(), manifest.archives.end(), [&](const ArchiveRecord& a) {
+            return kom::AsciiLower(a.name) > kom::AsciiLower(name);
+        });
+        manifest.archives.insert(at, ArchiveRecord{name, 0});
+        ++stats.archives;
+    }
     for (std::size_t k = 0; k < records.size(); ++k)
     {
         if (drop[k])
@@ -472,8 +483,88 @@ bool ClientData::Sync(unsigned jobs, SyncStats& stats, std::string& error)
     if (!manifest.Write(ManifestPath(root_), error))
         return false;
     manifest_ = std::move(manifest);
-    edits_.clear();
+    DiscardEdits();
     return Rescan(jobs, error);
+}
+
+std::vector<std::string> ClientData::Archives() const
+{
+    std::vector<std::string> names;
+    for (const ArchiveRecord& a : manifest_.archives)
+        names.push_back(a.name);
+    names.insert(names.end(), newArchives_.begin(), newArchives_.end());
+    return names;
+}
+
+bool ClientData::CreateArchive(std::string_view name, std::string& error)
+{
+    const std::string lower = kom::AsciiLower(name);
+    if (lower.size() <= 4 || !lower.ends_with(".kom") || lower.find_first_of("/\\:*?\"<>|\t") != std::string::npos)
+    {
+        error = "\"" + std::string(name) + "\" is not an archive name (a file name ending in .kom)";
+        return false;
+    }
+    for (const std::string& a : Archives())
+        if (kom::AsciiLower(a) == lower)
+        {
+            error = a + " already exists";
+            return false;
+        }
+    newArchives_.emplace_back(name);
+    return true;
+}
+
+bool ClientData::Ignore(std::string_view name, std::string& error)
+{
+    const ClientDataFile* f = Find(name);
+    if (!f || f->state != FileState::Untracked)
+    {
+        error = "only files the manifest does not hold can be ignored";
+        return false;
+    }
+    ignore_.patterns.push_back(f->folder.empty() ? f->name : f->folder + "/" + f->name);
+    return ignore_.Save(root_, error);
+}
+
+bool ClientData::IgnoreFolder(std::string_view folder, std::string& error)
+{
+    std::string clean;
+    if (!CleanFolder(folder, clean, error))
+        return false;
+    if (clean.empty())
+    {
+        error = "client_data's root cannot be ignored";
+        return false;
+    }
+    ignore_.patterns.push_back(clean + "/");
+    return ignore_.Save(root_, error);
+}
+
+bool ClientData::Unignore(std::string_view name, std::string& error)
+{
+    const ClientDataFile* f = Find(name);
+    if (!f || f->state != FileState::Ignored)
+    {
+        error = "\"" + std::string(name) + "\" is not ignored";
+        return false;
+    }
+    const std::string path = f->folder.empty() ? f->name : f->folder + "/" + f->name;
+    std::vector<std::string> kept;
+    for (const std::string& p : ignore_.patterns)
+    {
+        IgnoreList one;
+        one.patterns = {p};
+        if (!one.Matches(path))
+            kept.push_back(p);
+        else if (kom::AsciiLower(p) != kom::AsciiLower(path))
+        {
+            error = "ignored by the pattern \"" + p + "\" in " + PathToUtf8(IgnorePath(root_)) +
+                    ": change it there, or stop ignoring the folder";
+            return false;
+        }
+    }
+    ignore_.patterns = std::move(kept);
+    return ignore_.Save(root_, error);
 }
 
 bool ClientData::AddFile(const std::filesystem::path& source, std::string_view folder, std::string& error)

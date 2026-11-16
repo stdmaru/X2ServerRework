@@ -2,6 +2,8 @@
 
 #include "util.h"
 
+#include "x2/assets/workspace.h"
+
 #include "Crypto/Crypto.h"
 #include "x2/kom/mount.h"
 #include "x2/kom/writer.h"
@@ -18,6 +20,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <sstream>
 #include <span>
 #include <thread>
 #include <unordered_map>
@@ -336,6 +339,65 @@ bool Import(const ImportOptions& options, ImportStats& stats, std::string& error
     return true;
 }
 
+std::filesystem::path IgnorePath(const std::filesystem::path& clientData)
+{
+    return clientData / kMetaFolder / "ignore.txt";
+}
+
+bool IgnoreList::Load(const std::filesystem::path& clientData, std::string& error)
+{
+    patterns.clear();
+    std::error_code ec;
+    if (!std::filesystem::exists(IgnorePath(clientData), ec))
+        return true;
+    std::ifstream in(IgnorePath(clientData), std::ios::binary);
+    if (!in)
+    {
+        error = "cannot open " + PathToUtf8(IgnorePath(clientData));
+        return false;
+    }
+    std::string line;
+    while (std::getline(in, line))
+    {
+        while (!line.empty() && (line.back() == '\r' || line.back() == ' ' || line.back() == '\t'))
+            line.pop_back();
+        const auto start = line.find_first_not_of(" \t");
+        if (start == std::string::npos || line[start] == '#')
+            continue;
+        patterns.push_back(line.substr(start));
+    }
+    return true;
+}
+
+bool IgnoreList::Save(const std::filesystem::path& clientData, std::string& error) const
+{
+    std::string text = "# Files x2_assets keeps out of the manifest and the archives (docs/tools/client-data.md#ignored-files)\n";
+    for (const std::string& p : patterns)
+        text += p + "\n";
+    return WriteWholeFile(IgnorePath(clientData), ToBytes(text), error);
+}
+
+bool IgnoreList::Matches(std::string_view relative) const
+{
+    const std::string path = kom::AsciiLower(relative);
+    const auto slash = path.rfind('/');
+    const std::string_view name = slash == std::string::npos ? std::string_view(path) : std::string_view(path).substr(slash + 1);
+    for (const std::string& pattern : patterns)
+    {
+        const std::string p = kom::AsciiLower(pattern);
+        if (p.ends_with('/'))
+        {
+            if (path.starts_with(p))
+                return true;
+        }
+        else if (p.find('/') != std::string::npos ? GlobMatch(p, path) : GlobMatch(p, name))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool IndexFiles(const std::filesystem::path& clientData, std::vector<std::filesystem::path>& files,
                 std::string& error)
 {
@@ -384,10 +446,13 @@ struct Workspace
     std::vector<std::filesystem::path> files;
     std::unordered_map<std::string, std::size_t> byName;  // AsciiLower(file name) -> files
     std::vector<bool> known;                              // files[i] is in the manifest
+    std::vector<bool> ignored;                            // files[i] is untracked and in .kom/ignore.txt
 
     bool Load(const std::filesystem::path& clientData, std::string& error)
     {
-        if (!manifest.Read(ManifestPath(clientData), error) || !IndexFiles(clientData, files, error))
+        IgnoreList ignore;
+        if (!manifest.Read(ManifestPath(clientData), error) || !IndexFiles(clientData, files, error) ||
+            !ignore.Load(clientData, error))
             return false;
         for (std::size_t i = 0; i < files.size(); ++i)
             byName.emplace(kom::AsciiLower(PathToUtf8(files[i].filename())), i);
@@ -396,6 +461,10 @@ struct Workspace
             for (const std::string& name : ContentFiles(r))
                 if (const auto it = byName.find(kom::AsciiLower(name)); it != byName.end())
                     known[it->second] = true;
+        ignored.assign(files.size(), false);
+        for (std::size_t i = 0; i < files.size(); ++i)
+            if (!known[i])
+                ignored[i] = ignore.Matches(PathToUtf8(files[i].lexically_relative(clientData).generic_u8string()));
         return true;
     }
 
@@ -461,7 +530,7 @@ bool GetStatus(const std::filesystem::path& clientData, unsigned jobs, Status& s
             status.added.push_back(records[i].name);
     for (std::size_t i = 0; i < ws.files.size(); ++i)
         if (!ws.known[i])
-            status.untracked.push_back(ws.files[i]);
+            (ws.ignored[i] ? status.ignored : status.untracked).push_back(ws.files[i]);
     return true;
 }
 
@@ -493,11 +562,86 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
         std::stable_sort(list.begin(), list.end(),
                          [](const FileRecord* a, const FileRecord* b) { return a->index < b->index; });
 
-    std::atomic<std::size_t> done{0}, identical{0}, files{0}, changed{0}, added{0}, missing{0}, notReproduced{0},
-        luaSource{0}, kimCompiled{0};
+    // Each archive's fingerprint: its records, the hashes of their files now (cached by ClientData) and its header.
+    // An archive whose fingerprint and destination file match the last pack's is left alone (onlyChanged).
     const auto& archives = ws.manifest.archives;
+    std::vector<std::string> fingerprints(archives.size());
+    {
+        ClientData current;
+        if (!current.Open(options.clientData, options.jobs, error))
+            return false;
+        for (std::size_t a = 0; a < archives.size(); ++a)
+        {
+            std::string text;
+            if (const auto list = byArchive.find(archives[a].name); list != byArchive.end())
+                for (const FileRecord* r : list->second)
+                {
+                    text += r->name + '\t' + std::to_string(r->index) + '\t' + std::to_string(r->algorithm) + '\t' +
+                            std::string(ToString(r->encoding)) + '\t' + std::string(ToString(r->form)) + '\t' +
+                            r->sha256;
+                    for (const std::string& name : ContentFiles(*r))
+                    {
+                        const ClientDataFile* f = current.Find(name);
+                        text += '\t' + (f && f->state != FileState::Deleted ? f->sha256 : std::string("-"));
+                    }
+                    text += '\n';
+                }
+            Bytes header;  // none for an archive created by a sync
+            if (std::filesystem::exists(HeaderPath(options.clientData, archives[a].name)) &&
+                !ReadWholeFile(HeaderPath(options.clientData, archives[a].name), header, error))
+                return false;
+            text += Sha256Hex(header);
+            fingerprints[a] = Sha256Hex(ToBytes(text));
+        }
+    }
+    struct Written
+    {
+        std::string fingerprint;
+        std::uint64_t size = 0;
+        std::int64_t time = 0;
+    };
+    std::map<std::string, Written> previous;
+    {
+        std::ifstream in(PackStatePath(options.destination), std::ios::binary);
+        std::string line;
+        if (std::getline(in, line) && line == "x2-assets-pack\t1")
+            while (std::getline(in, line))
+            {
+                std::istringstream fields(line);
+                std::string name;
+                Written w;
+                if (std::getline(fields, name, '\t') && std::getline(fields, w.fingerprint, '\t') && fields >> w.size >> w.time)
+                    previous.emplace(name, w);
+            }
+    }
+    const auto onDisk = [&](const std::string& archive) {
+        Written w;
+        std::error_code e2;
+        const auto path = options.destination / PathFromUtf8(archive);
+        w.size = std::filesystem::file_size(path, e2);
+        if (e2)
+            return std::optional<Written>();
+        w.time = std::filesystem::last_write_time(path, e2).time_since_epoch().count();
+        return std::optional<Written>(w);
+    };
+    std::vector<Written> written(archives.size());
+
+    std::atomic<std::size_t> done{0}, identical{0}, files{0}, changed{0}, added{0}, missing{0}, notReproduced{0},
+        luaSource{0}, kimCompiled{0}, skipped{0};
     const bool ok = ParallelFor(archives.size(), options.jobs, [&](std::size_t a, std::string& e) {
         const std::string& archiveName = archives[a].name;
+        if (options.onlyChanged)
+            if (const auto last = previous.find(archiveName); last != previous.end() &&
+                                                              last->second.fingerprint == fingerprints[a])
+                if (const auto now = onDisk(archiveName); now && now->size == last->second.size &&
+                                                          now->time == last->second.time)
+                {
+                    written[a] = last->second;
+                    ++skipped;
+                    if (options.progress)
+                        options.progress(++done, archives.size());
+                    return true;
+                }
         const auto list = byArchive.find(archiveName);
         kom::ArchiveBuilder builder;
         builder.SetLevel(kom::kKogLevel);
@@ -629,24 +773,47 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
                 ++files;
             }
 
-        Bytes header;
-        if (!ReadWholeFile(HeaderPath(options.clientData, archiveName), header, e))
+        Bytes header;  // an archive created by a sync has none: the builder generates it
+        std::error_code exists;
+        const bool hasHeader = std::filesystem::exists(HeaderPath(options.clientData, archiveName), exists);
+        if (hasHeader && !ReadWholeFile(HeaderPath(options.clientData, archiveName), header, e))
             return false;
-        const bool keepsHeader = builder.Describes(header);
-        builder.SetHeader(std::move(header));
+        const bool keepsHeader = hasHeader && builder.Describes(header);
+        if (hasHeader)
+            builder.SetHeader(std::move(header));
         if (keepsHeader)
             ++identical;
         if (!builder.Write(options.destination / PathFromUtf8(archiveName), e))
             return false;
+        if (const auto now = onDisk(archiveName))
+        {
+            written[a] = *now;
+            written[a].fingerprint = fingerprints[a];
+        }
+        if (options.progress)
+            options.progress(done + 1, archives.size());
         log("[" + std::to_string(++done) + "/" + std::to_string(archives.size()) + "] " + archiveName +
             (archiveChanged ? " (changed)" : ""));
         return true;
     }, error);
+    {
+        // What was written, for the next onlyChanged pack (also after a failure: the archives that made it).
+        std::string text = "x2-assets-pack\t1\n";
+        for (std::size_t a = 0; a < archives.size(); ++a)
+            if (!written[a].fingerprint.empty())
+                text += archives[a].name + '\t' + written[a].fingerprint + '\t' + std::to_string(written[a].size) +
+                        '\t' + std::to_string(written[a].time) + '\n';
+        std::string ignored;
+        if (!WriteWholeFile(PackStatePath(options.destination), ToBytes(text), ignored) && ok)
+            log("cannot write " + PathToUtf8(PackStatePath(options.destination)) + ": the next pack writes everything");
+    }
     if (!ok)
         return false;
 
     for (std::size_t i = 0; i < ws.files.size(); ++i)
-        if (!ws.known[i])
+        if (!ws.known[i] && ws.ignored[i])
+            ++stats.ignored;
+        else if (!ws.known[i])
         {
             ++stats.untracked;
             log("not packed (not in the manifest; x2_assets sync adds it): " + PathToUtf8(ws.files[i]));
@@ -660,7 +827,13 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
     stats.kimCompiled = kimCompiled;
     stats.missing = missing;
     stats.notReproduced = notReproduced;
+    stats.skipped = skipped;
     return true;
+}
+
+std::filesystem::path PackStatePath(const std::filesystem::path& destination)
+{
+    return destination / "x2_assets_pack.tsv";
 }
 
 } // namespace x2::assets

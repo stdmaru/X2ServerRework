@@ -227,3 +227,109 @@ TEST_CASE("assets: the manager adds, moves and removes files on disk")
     CHECK(StateOf(data, "Hit.ogg") == FileState::Unchanged);
     CHECK(data.Find("Extra.dds") == nullptr);
 }
+
+TEST_CASE("assets: ignored files stay out of the manifest and the archives")
+{
+    Fixture f;
+    WriteFile(f.clientData / "layout.txt", ToBytes("notes"));
+    WriteFile(f.clientData / "tools" / "x2_assets", ToBytes("binary"));
+    WriteFile(f.clientData / "sound" / "Jump.ogg", Pattern(100, 13));
+
+    IgnoreList list;
+    list.patterns = {"layout.txt", "tools/", "sound/*.wav", "*.TMP"};
+    CHECK(list.Matches("layout.txt"));
+    CHECK(list.Matches("deep/LAYOUT.txt"));  // a name pattern, in any folder
+    CHECK(list.Matches("tools/x2_assets"));
+    CHECK(list.Matches("tools/sub/a.bin"));
+    CHECK(list.Matches("sound/a.wav"));
+    CHECK_FALSE(list.Matches("other/sound/a.wav"));
+    CHECK(list.Matches("x/y.tmp"));
+    CHECK_FALSE(list.Matches("toolsx/a"));
+
+    ClientData data = f.Open();
+    std::string error;
+    REQUIRE_MESSAGE(data.Ignore("layout.txt", error), error);
+    REQUIRE_MESSAGE(data.IgnoreFolder("tools", error), error);
+    CHECK_FALSE(data.Ignore("Wall.dds", error));  // in the manifest
+    REQUIRE_MESSAGE(data.Rescan(2, error), error);
+    CHECK(StateOf(data, "layout.txt") == FileState::Ignored);
+    CHECK(StateOf(data, "x2_assets") == FileState::Ignored);
+    CHECK(StateOf(data, "Jump.ogg") == FileState::Untracked);
+    CHECK_FALSE(data.SetArchive("layout.txt", "a.kom", error));
+    CHECK_FALSE(data.Unignore("x2_assets", error));  // its folder's pattern
+    CHECK(error.find("tools/") != std::string::npos);
+
+    Status status;
+    REQUIRE_MESSAGE(GetStatus(f.clientData, 2, status, error), error);
+    CHECK(status.ignored.size() == 2);
+    REQUIRE(status.untracked.size() == 1);
+
+    SyncStats stats;
+    REQUIRE_MESSAGE(data.Sync(2, stats, error), error);
+    CHECK(stats.added == 1);  // Jump.ogg only
+    CHECK(StateOf(data, "layout.txt") == FileState::Ignored);
+    const PackStats packed = f.DoPack();
+    CHECK(packed.ignored == 2);
+    CHECK(packed.untracked == 0);
+
+    REQUIRE_MESSAGE(data.Unignore("layout.txt", error), error);
+    REQUIRE_MESSAGE(data.Rescan(2, error), error);
+    CHECK(StateOf(data, "layout.txt") == FileState::Untracked);
+}
+
+TEST_CASE("assets: a sync creates new archives, and pack writes them")
+{
+    Fixture f;
+    WriteFile(f.clientData / "mods" / "Mod.dds", Pattern(300, 14));
+    ClientData data = f.Open();
+    std::string error;
+    CHECK_FALSE(data.CreateArchive("a.KOM", error));
+    CHECK_FALSE(data.CreateArchive("bad/name.kom", error));
+    CHECK_FALSE(data.CreateArchive("data.txt", error));
+    CHECK_FALSE(data.SetArchive("Mod.dds", "aa.kom", error));
+    REQUIRE_MESSAGE(data.CreateArchive("aa.kom", error), error);
+    CHECK(data.Archives() == std::vector<std::string>{"a.kom", "b.kom", "aa.kom"});
+    CHECK(data.EditCount() == 1);
+    REQUIRE_MESSAGE(data.SetArchive("Mod.dds", "aa.kom", error), error);
+    REQUIRE_MESSAGE(data.SetArchive("Hit.ogg", "aa.kom", error), error);
+
+    SyncStats stats;
+    REQUIRE_MESSAGE(data.Sync(2, stats, error), error);
+    CHECK(stats.archives == 1);
+    CHECK(data.Archives() == std::vector<std::string>{"a.kom", "aa.kom", "b.kom"});  // load order: by name
+    CHECK(data.GetManifest().archives[1].count == 2);
+
+    f.DoPack();
+    CHECK(EntryNames(f.out / "aa.kom") == std::vector<std::string>{"Hit.ogg", "Mod.dds"});
+    CHECK(EntryNames(f.out / "b.kom") == std::vector<std::string>{"Miss.ogg"});
+}
+
+TEST_CASE("assets: pack can rewrite only the archives that changed")
+{
+    Fixture f;
+    PackStats stats = f.DoPack();  // writes the state of what it wrote
+    CHECK(stats.skipped == 0);
+    REQUIRE(fs::exists(PackStatePath(f.out)));
+
+    PackOptions options;
+    options.clientData = f.clientData;
+    options.destination = f.out;
+    options.jobs = 2;
+    options.onlyChanged = true;
+    std::string error;
+    REQUIRE_MESSAGE(Pack(options, stats, error), error);
+    CHECK(stats.skipped == 2);
+
+    const auto bTime = fs::last_write_time(f.out / "b.kom");
+    WriteFile(f.clientData / "ui" / "textures" / "Wall.dds", Pattern(77, 15));
+    REQUIRE_MESSAGE(Pack(options, stats, error), error);
+    CHECK(stats.skipped == 1);  // b.kom
+    CHECK(stats.changed == 1);
+    CHECK(fs::last_write_time(f.out / "b.kom") == bTime);
+
+    // An archive changed or removed in the destination is written again.
+    fs::remove(f.out / "b.kom");
+    REQUIRE_MESSAGE(Pack(options, stats, error), error);
+    CHECK(stats.skipped == 1);  // a.kom now
+    CHECK(fs::exists(f.out / "b.kom"));
+}

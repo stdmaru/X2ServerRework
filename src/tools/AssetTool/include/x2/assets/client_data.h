@@ -45,6 +45,20 @@ struct ImportStats
 // be converted stays as it was, logged.
 bool Import(const ImportOptions& options, ImportStats& stats, std::string& error);
 
+// Files of client_data kept out of the manifest and the archives (a tool, notes kept there for convenience):
+// <client_data>/.kom/ignore.txt, UTF-8, one pattern per line, `#` comments. A pattern ending in '/' is a folder (with
+// everything under it); one with a '/' is a glob on the path relative to client_data; any other a glob on the file
+// name, in any folder. ASCII case-insensitive. Only files the manifest does not hold are ignored.
+struct IgnoreList
+{
+    std::vector<std::string> patterns;
+
+    bool Load(const std::filesystem::path& clientData, std::string& error);  // no file: empty
+    bool Save(const std::filesystem::path& clientData, std::string& error) const;
+    bool Matches(std::string_view relative) const;  // '/'-separated, relative to client_data
+};
+std::filesystem::path IgnorePath(const std::filesystem::path& clientData);
+
 // The files of client_data by name (ASCII case-insensitive), skipping .kom/. Fails if a name is in two folders.
 bool IndexFiles(const std::filesystem::path& clientData, std::vector<std::filesystem::path>& files,
                 std::string& error);
@@ -55,6 +69,7 @@ struct Status
     std::vector<std::string> missing;  // in the manifest, not in client_data
     std::vector<std::string> added;    // in the manifest as new files (Encoding::New), in no original archive
     std::vector<std::filesystem::path> untracked;  // in client_data, not in the manifest (until a sync adds them)
+    std::vector<std::filesystem::path> ignored;    // untracked, but matched by .kom/ignore.txt
 };
 
 bool GetStatus(const std::filesystem::path& clientData, unsigned jobs, Status& status, std::string& error);
@@ -64,7 +79,12 @@ struct PackOptions
     std::filesystem::path clientData;
     std::filesystem::path destination;  // folder for the .kom (created if needed)
     unsigned jobs = 0;
+    // Rewrite only the archives whose content changed since the last pack into `destination` (its
+    // PackStatePath), so packing after a small edit does not rewrite gigabytes. Archives missing there, or changed
+    // there since, are written.
+    bool onlyChanged = false;
     LogSink log;
+    std::function<void(std::size_t done, std::size_t total)> progress;  // archives; from worker threads
 };
 
 struct PackStats
@@ -78,6 +98,8 @@ struct PackStats
     std::size_t missing = 0;           // dropped from their archive
     std::size_t added = 0;             // new files of the manifest (Encoding::New), packed into their archive
     std::size_t untracked = 0;         // not packed: not in the manifest (a sync adds them)
+    std::size_t ignored = 0;           // not packed: untracked and in .kom/ignore.txt
+    std::size_t skipped = 0;           // onlyChanged: archives left as they were in the destination
     std::size_t notReproduced = 0;     // unchanged content whose re-encoding differs (another zlib)
 };
 
@@ -88,5 +110,9 @@ struct PackStats
 // into their archive. Edited decompiled scripts are packed as Lua source (UTF-8 with BOM, what
 // the ported client loads, T21) after LuaJIT checks their syntax; edited item scripts are compiled into Item.kim.
 bool Pack(const PackOptions& options, PackStats& stats, std::string& error);
+
+// What the last pack into `destination` wrote: per archive, a fingerprint of its content and the file's size and
+// time (x2_assets_pack.tsv).
+std::filesystem::path PackStatePath(const std::filesystem::path& destination);
 
 } // namespace x2::assets
