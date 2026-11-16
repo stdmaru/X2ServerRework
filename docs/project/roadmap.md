@@ -313,7 +313,7 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [ ] `client/font-rendering`, after widescreen (user, 2026-11-13): UI text looks too bold at 1080p, as it does in
         the original. FreeType hinting and weight (the `fontWeight` parameter is ignored) and the outline styles, which
         redraw the text at ±1 layout unit, so 1 or 2 pixels at 1080p (`CUKFont::DrawFontStyle`).
-  - [ ] `server/add-character`, soon (user, 2026-11-13): enable Add (`UT_ADD` = 9; Nasod Ruler 9, Psychic Tracer 32,
+  - [x] `server/add-character` (2026-11-16, PR #82; user, 2026-11-13): enable Add (`UT_ADD` = 9; Nasod Ruler 9, Psychic Tracer 32,
         Lunatic Psyker 122). Investigated 2026-11-13. The code is in place: `CX2GUAdd`, the classes on both sides, and the
         creation slot. One limit gates it on both sides, `_CONST_LIMIT_UNIT_::iLimitType = 8` (Elesis) in
         `ServerDefine_Global.h`. Our client has the models, motions, effects, sounds, UI and `UnitTemplet.lua` entries.
@@ -329,9 +329,13 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         `ClientScript`, `ServerResource` and database backups (2026-09-08), edited by a third party (its
         `SERV_LIMIT_UNIT` is commented out "2026-08-08 Add disabled fix"): a source to compare against, not a
         reference. What is migrated from it keeps the current version working through switches in `src/define.h`
-        (user, 2026-11-15). Comes after `server/character-switches`, which gives Add its switch.
+        (user, 2026-11-15). Planned after `server/character-switches` (PR 81); done first instead (user, 2026-11-16):
+        `iLimitType` is 9 here, and PR 81 moves it to `define.h` with the job class switches, Add's included.
         Surveyed 2026-11-15 ([Add character](add-character.md)): the code is all in `_reference` and imported; the data
         comes from the Brazilian scripts, and only the server data from V5.
+        Done 2026-11-16: skills, items, quests, drops, crafting, server data and `Game01` patches
+        ([Add character](add-character.md)); user checked in game: creation, the tutorial, items, skills, quests.
+        Not yet checked in game: Add's two job changes, Elesis's and Ara's 2nd path job changes.
   - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
         ratio, ultrawide included, and 16:9 by default. Today the UI's 1024×768 layout is scaled by separate X and Y
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it

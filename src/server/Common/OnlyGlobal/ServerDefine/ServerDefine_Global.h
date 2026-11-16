@@ -1006,7 +1006,7 @@
 
 namespace _CONST_LIMIT_UNIT_
 {
-	const int iLimitType = 8;	// 엘리시스
+	const int iLimitType = 9;	// Add (UT_ADD); PR 81 moves this to define.h as CHARACTER_MAX_UNIT
 }
 
 
