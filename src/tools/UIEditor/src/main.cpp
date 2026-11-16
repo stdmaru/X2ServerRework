@@ -1900,8 +1900,8 @@ void PictureStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, c
             ImGui::TextDisabled("pictures drawn before and after it stay in the old static: the order changes for one side");
         }
         if (control.offset[0] != 0.0f || control.offset[1] != 0.0f) {
-            ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "the static is moved by %.0f, %.0f, the new one is not",
-                               static_cast<double>(control.offset[0]), static_cast<double>(control.offset[1]));
+            ImGui::TextDisabled("the static is moved by %.0f, %.0f: the new one gets its SetOffsetPos (not what code moves)",
+                                static_cast<double>(control.offset[0]), static_cast<double>(control.offset[1]));
         }
         ImGui::BeginDisabled(!named);
         if (ImGui::Button("Move")) {

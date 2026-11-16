@@ -43,8 +43,8 @@ bool SetTexCall(std::string& text, int line, const std::string& texture, const s
 
 // Takes the picture `S:AddPicture(P)` on `addPicture` adds out of its static and adds it to a new static named
 // `name`, created where the static's `D:AddControl(S)` on `addControl` is: just before it (`before`: the new static is
-// drawn first, under the old) or just after (drawn over it). The picture keeps its lines and so its place: a static
-// adds nothing to its pictures' points unless code moves it.
+// drawn first, under the old) or just after (drawn over it). The picture keeps its lines, and the new static gets the
+// old one's SetOffsetPos, so it stays where it was (unless code moves the old static).
 bool PictureToNewStatic(std::string& text, int addPicture, int addControl, const std::string& name, bool before,
                         std::string& error);
 
