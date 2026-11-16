@@ -425,6 +425,101 @@ TEST_CASE("ui editor: the engine knows the script line that set each position")
     CHECK(dialogs[1].controls[0].strings[0].source.kind == x2::ui_editor::CallKind::String);
 }
 
+TEST_CASE("ui editor: named placements put a dialog at a spot or follow a control of another dialog")
+{
+    TempGame game;
+    const auto scripts = game.root / "data" / "ui" / "scripts";
+    // The target: a centered dialog with a centered control and one at the right edge (offset 30, 40).
+    std::ofstream(scripts / "DLG_Target.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pUIDialog:SetPos(100, 50)
+g_pMiddle = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pMiddle)
+g_pMiddle:SetName("Middle")
+g_pRight = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pRight)
+g_pRight:SetName("Right")
+g_pRight:SetAnchor("RIGHT")
+g_pRight:SetOffsetPos(30, 40)
+)lua";
+    std::ofstream(scripts / "DLG_Pointer.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pUIDialog:SetPos(0, 0)
+g_pUIDialog:AddPlacement({ NAME = "MIDDLE", POS = D3DXVECTOR2(250, 300) })
+g_pUIDialog:AddPlacement({ NAME = "AT_MIDDLE", TARGET = "dlg_target.LUA", CONTROL = "Middle", POS = D3DXVECTOR2(10, 20) })
+g_pUIDialog:AddPlacement({ NAME = "AT_RIGHT", TARGET = "DLG_Target.lua", CONTROL = "Right", POS = D3DXVECTOR2(5, 5) })
+g_pUIDialog:AddPlacement({ NAME = "LEFT_EDGE", POS = D3DXVECTOR2(0, 600), ANCHOR = "LEFT" })
+g_pUIDialog:AddPlacement({ NAME = "NOWHERE", TARGET = "DLG_Missing.lua", POS = D3DXVECTOR2(1, 1) })
+)lua";
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Target.lua", error) == 0);
+    REQUIRE(engine->OpenDialog("DLG_Pointer.lua", error) == 1);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));     // 16:9: the right edge is 170.67 units right of 4:3's
+
+    auto dialogs = engine->Inspect();
+    REQUIRE(dialogs[1].placements.size() == 5);
+    const auto& placements = dialogs[1].placements;
+    CHECK(placements[0].name == "MIDDLE");
+    CHECK(placements[0].target.empty());
+    CHECK(placements[0].source.line == 3);
+    CHECK(placements[0].source.kind == x2::ui_editor::CallKind::Placement);
+    CHECK(placements[1].target == "dlg_target.lua");
+    CHECK(placements[1].control == "Middle");
+    CHECK(placements[3].anchor == "LEFT");
+    CHECK(placements[4].source.line == 7);
+    CHECK_FALSE(placements[4].resolved);
+    CHECK(dialogs[1].placement.empty());
+
+    CHECK_FALSE(engine->ApplyPlacement(1, "MISSING"));
+    REQUIRE(engine->ApplyPlacement(1, "MIDDLE"));
+    dialogs = engine->Inspect();
+    CHECK(dialogs[1].placement == "MIDDLE");
+    CHECK(dialogs[1].pos[0] == 250.0f);
+    CHECK(dialogs[1].pos[1] == 300.0f);
+
+    // A centered control: where the 4:3 layout puts it, at any width.
+    REQUIRE(engine->ApplyPlacement(1, "AT_MIDDLE"));
+    CHECK(engine->Inspect()[1].pos[0] == doctest::Approx(110.0));
+    CHECK(engine->Inspect()[1].pos[1] == doctest::Approx(70.0));
+    // The target moves: the dialog follows at the next step.
+    engine->SetDialogPos(0, 200.0f, 60.0f);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    CHECK(engine->Inspect()[1].pos[0] == doctest::Approx(210.0));
+    CHECK(engine->Inspect()[1].pos[1] == doctest::Approx(80.0));
+
+    // A control at the right edge: its anchor's shift comes along.
+    REQUIRE(engine->ApplyPlacement(1, "AT_RIGHT"));
+    dialogs = engine->Inspect();
+    CHECK(dialogs[1].pos[0] == doctest::Approx(200.0 + 30.0 + 5.0 + 1920.0 / 1080.0 * 768.0 / 2.0 - 512.0).epsilon(0.001));
+    CHECK(dialogs[1].pos[1] == doctest::Approx(60.0 + 40.0 + 5.0));
+    CHECK(dialogs[1].anchor == "CENTER");
+
+    // A placement's own anchor, given back when another placement takes over.
+    REQUIRE(engine->ApplyPlacement(1, "LEFT_EDGE"));
+    dialogs = engine->Inspect();
+    CHECK(dialogs[1].anchor == "LEFT");
+    CHECK(dialogs[1].canvasPos[0] == doctest::Approx(512.0 - 1920.0 / 1080.0 * 768.0 / 2.0).epsilon(0.001));
+    REQUIRE(engine->ApplyPlacement(1, "MIDDLE"));
+    CHECK(engine->Inspect()[1].anchor == "CENTER");
+    CHECK_FALSE(engine->Inspect()[1].anchorDeclared);
+
+    // A target not shown: the dialog stays where it is until it is.
+    REQUIRE(engine->ApplyPlacement(1, "AT_MIDDLE"));
+    engine->SetDialogShown(0, false);
+    engine->SetDialogPos(0, 300.0f, 60.0f);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    CHECK(engine->Inspect()[1].pos[0] == doctest::Approx(210.0));
+    engine->SetDialogShown(0, true);
+    REQUIRE(engine->Render(1920, 1080, 0.016f, error));
+    CHECK(engine->Inspect()[1].pos[0] == doctest::Approx(310.0));
+    REQUIRE(engine->ApplyPlacement(1, ""));
+    CHECK(engine->Inspect()[1].placement.empty());
+}
+
 namespace {
 
 std::string EmptyTet()

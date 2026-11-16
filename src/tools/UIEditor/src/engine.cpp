@@ -478,6 +478,22 @@ void Engine::SetDialogPos(int index, float x, float y)
     }
 }
 
+bool Engine::ApplyPlacement(int index, const std::string& name)
+{
+    if (index < 0 || index >= static_cast<int>(m_state->dialogs.size())) {
+        return false;
+    }
+    CKTDGUIDialogType& dialog = m_state->dialogs[static_cast<std::size_t>(index)].dialog;
+    if (dialog == NULL) {
+        return false;
+    }
+    if (name.empty()) {
+        dialog->ClearPlacement();
+        return true;
+    }
+    return dialog->ApplyPlacement(Wide(name).c_str());
+}
+
 void Engine::SetDialogShown(int index, bool shown)
 {
     if (index >= 0 && index < static_cast<int>(m_state->dialogs.size())) {
@@ -1087,6 +1103,7 @@ std::vector<DialogInfo> Engine::Inspect() const
                      : call.eKind == Kind::AddPicture ? CallKind::AddPicture
                      : call.eKind == Kind::AddControl ? CallKind::AddControl
                      : call.eKind == Kind::PicturePos ? CallKind::PicturePos
+                     : call.eKind == Kind::Placement  ? CallKind::Placement
                                                       : CallKind::Point;
             r.shared = uses[{call.uScript, call.iLine, call.eKind}];
             return r;
@@ -1109,6 +1126,28 @@ std::vector<DialogInfo> Engine::Inspect() const
         };
         if (const auto found = callsFor(dialog, Kind::DialogPos); !found.empty()) {
             info.posSource = ref(*found.back());
+        }
+        for (const CKTDGUIDialog::Placement& placement : dialog->GetPlacements()) {
+            PlacementInfo p;
+            p.name = Utf8(placement.wstrName);
+            p.pos[0] = placement.vPos.x;
+            p.pos[1] = placement.vPos.y;
+            p.anchor = placement.bHasAnchor ? AnchorName(placement.eAnchor) : std::string();
+            p.target = Utf8(placement.wstrTarget);
+            p.control = Utf8(placement.wstrTargetControl);
+            D3DXVECTOR2 resolved;
+            p.resolved = dialog->ResolvePlacement(placement, resolved);
+            if (p.resolved) {
+                p.resolvedPos[0] = resolved.x;
+                p.resolvedPos[1] = resolved.y;
+            }
+            if (placement.iScriptCall >= 0 && placement.iScriptCall < static_cast<int>(calls.size())) {
+                p.source = ref(calls[static_cast<std::size_t>(placement.iScriptCall)]);
+            }
+            info.placements.push_back(std::move(p));
+        }
+        if (const CKTDGUIDialog::Placement* inEffect = dialog->GetPlacementInEffect()) {
+            info.placement = Utf8(inEffect->wstrName);
         }
 
         const std::vector<CKTDGUIControl*>& controls = dialog->GetControlList();

@@ -17,6 +17,9 @@ enum class UIAnchor : std::uint8_t { Center, Left, Right, Stretch };
 // "CENTER", "LEFT", "RIGHT" or "STRETCH", in any case.
 bool ParseUIAnchor( const char* pszName, UIAnchor& eAnchor );
 
+// A dialog script's name as UIAnchors.lua and placement targets match it: without its folder, in lower case.
+std::wstring UIScriptKey( const wchar_t* pwszName );
+
 // How a STRETCH piece of a dialog spans the canvas (T44): x in the 1024 layout maps onto the canvas, from its left
 // edge to its right. Its zones are the parts that grow (the plain middles between end pieces), in layout units
 // relative to the dialog; they share the extra width by length and are linear inside, so a gauge sized by ratio over a

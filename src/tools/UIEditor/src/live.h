@@ -45,6 +45,7 @@ struct LiveSnapshot {
         int layer = 0;
         bool front = false;
         int anchor = -1;            // UIAnchor in effect in the game (code sets some, T44), -1 when not written
+        std::string placement;      // the named placement the code put it at (ApplyPlacement, T52); empty: none
         std::vector<Control> controls;
         std::vector<Picture> pictures;
         std::vector<Text> texts;

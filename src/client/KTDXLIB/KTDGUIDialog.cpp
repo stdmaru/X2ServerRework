@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "./KTDGUIDialog.h"
 
+#include <algorithm>
 #include <cmath>
+#include <cstdio>
+#include <queue>
 
 CKTDGUIControl* CKTDGUIDialog::s_pControlFocus = NULL;	// The control which has focus
 
@@ -186,6 +189,7 @@ CKTDGUIDialog::~CKTDGUIDialog(void)
 HRESULT	CKTDGUIDialog::OnFrameMove( double fTime, float fElapsedTime )
 {
 	KTDXPROFILE();
+	FollowPlacementTarget();
 	const CKTDXApp::UIAnchorScope kAnchor( *g_pKTDXApp, m_eAnchor, &m_kStretch, m_Pos.x );
 
 	if ( m_pStaticGuideDesc != NULL )
@@ -1959,6 +1963,190 @@ bool CKTDGUIDialog::SetAnchor_LUA( const char* pszAnchor )
 	return true;
 }
 
+void CKTDGUIDialog::AddPlacement_LUA()
+{
+	Placement kPlacement;
+#ifdef X2_DEV_TOOLS
+	// Noted into the dialog whose script is loading, which is this one when the call is the script's own.
+	const size_t uCalls = m_vecScriptCalls.size();
+	NoteScriptCall( ScriptCallKind::Placement );
+	if ( m_vecScriptCalls.size() > uCalls )
+		kPlacement.iScriptCall = static_cast<int>( uCalls );
+#endif
+	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
+	std::wstring wstrAnchor, wstrTarget;
+	LUA_GET_VALUE( luaManager, "NAME", kPlacement.wstrName, L"" );
+	LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "POS", kPlacement.vPos, D3DXVECTOR2( 0, 0 ) );
+	LUA_GET_VALUE( luaManager, "ANCHOR", wstrAnchor, L"" );
+	LUA_GET_VALUE( luaManager, "TARGET", wstrTarget, L"" );
+	LUA_GET_VALUE( luaManager, "CONTROL", kPlacement.wstrTargetControl, L"" );
+	if ( kPlacement.wstrName.empty() )
+	{
+		std::fprintf( stderr, "AddPlacement: a placement without NAME, ignored\n" );
+		return;
+	}
+	if ( wstrAnchor.empty() == false )
+	{
+		std::string strAnchor;
+		ConvertWCHARToChar( strAnchor, wstrAnchor );
+		kPlacement.bHasAnchor = ParseUIAnchor( strAnchor.c_str(), kPlacement.eAnchor );
+		if ( kPlacement.bHasAnchor == false )
+			std::fprintf( stderr, "AddPlacement: unknown ANCHOR \"%s\", ignored\n", strAnchor.c_str() );
+	}
+	if ( wstrTarget.empty() == false )
+		kPlacement.wstrTarget = UIScriptKey( wstrTarget.c_str() );
+	AddPlacement( kPlacement );
+}
+
+void CKTDGUIDialog::AddPlacement( const Placement& kPlacement )
+{
+	for ( Placement& kOld : m_vecPlacements )
+	{
+		if ( kOld.wstrName == kPlacement.wstrName )
+		{
+			kOld = kPlacement;
+			return;
+		}
+	}
+	m_vecPlacements.push_back( kPlacement );
+}
+
+const CKTDGUIDialog::Placement* CKTDGUIDialog::GetPlacementInEffect() const
+{
+	if ( m_iPlacement < 0 || m_iPlacement >= static_cast<int>( m_vecPlacements.size() ) )
+		return nullptr;
+	return &m_vecPlacements[m_iPlacement];
+}
+
+bool CKTDGUIDialog::HasScript( const std::wstring& wstrKey ) const
+{
+	return std::find( m_vecScriptKeys.begin(), m_vecScriptKeys.end(), wstrKey ) != m_vecScriptKeys.end();
+}
+
+CKTDGUIDialog* CKTDGUIDialog::FindShownDialog( const std::wstring& wstrKey )
+{
+	if ( g_pKTDXApp == NULL || g_pKTDXApp->GetDGManager() == NULL || g_pKTDXApp->GetDGManager()->GetDialogManager() == NULL )
+		return nullptr;
+	const CKTDGUIDialogList& listDialogs = g_pKTDXApp->GetDGManager()->GetDialogManager()->GetDialogsInOrder();
+	for ( auto it = listDialogs.rbegin(); it != listDialogs.rend(); ++it )	// drawing order: the last is on top
+	{
+		CKTDGUIDialogType hDialog = *it;
+		CKTDGUIDialog* pDialog = hDialog.IsValid() ? hDialog.operator->() : nullptr;
+		if ( pDialog != nullptr && pDialog->GetShow() && pDialog->HasScript( wstrKey ) )
+			return pDialog;
+	}
+	return nullptr;
+}
+
+bool CKTDGUIDialog::ResolvePlacement( const Placement& kPlacement, D3DXVECTOR2& vPos ) const
+{
+	if ( kPlacement.wstrTarget.empty() )
+	{
+		vPos = kPlacement.vPos;
+		return true;
+	}
+	const CKTDGUIDialog* pTarget = FindShownDialog( kPlacement.wstrTarget );
+	if ( pTarget == nullptr || pTarget == this )
+		return false;
+	CKTDGUIControl* pControl = nullptr;
+	if ( kPlacement.wstrTargetControl.empty() == false )
+	{
+		pControl = const_cast<CKTDGUIDialog*>( pTarget )->GetControl( kPlacement.wstrTargetControl.c_str() );
+		if ( pControl == nullptr )
+			return false;
+	}
+	// In the target's layout (its dialog's position, the control's offset), then through the control's anchor or
+	// stretch onto the canvas, then under this dialog's anchor.
+	D3DXVECTOR2 vLayout = pTarget->GetPos() + kPlacement.vPos;
+	if ( pControl != nullptr )
+		vLayout += pControl->GetOffsetPos();
+	const float fCanvasX = pTarget->ControlXToDialogX( pControl, vLayout.x ) + pTarget->GetAnchorShift();
+	vPos = D3DXVECTOR2( fCanvasX - GetAnchorShift(), vLayout.y );
+	return true;
+}
+
+bool CKTDGUIDialog::ApplyPlacement( const wchar_t* pwszName )
+{
+	int iFound = -1;
+	for ( int i = 0; i < static_cast<int>( m_vecPlacements.size() ); ++i )
+		if ( pwszName != NULL && m_vecPlacements[i].wstrName == pwszName )
+			iFound = i;
+	if ( iFound < 0 )
+	{
+		std::string strName;
+		ConvertWCHARToChar( strName, std::wstring( pwszName != NULL ? pwszName : L"" ) );
+		std::string strScript;
+		ConvertWCHARToChar( strScript, m_vecScriptKeys.empty() ? std::wstring() : m_vecScriptKeys.front() );
+		std::fprintf( stderr, "ApplyPlacement: %s declares no placement \"%s\"\n", strScript.c_str(), strName.c_str() );
+		return false;
+	}
+	ClearPlacement();
+	const Placement& kPlacement = m_vecPlacements[iFound];
+	if ( kPlacement.bHasAnchor )
+	{
+		m_eOwnAnchor = m_eAnchor;
+		m_bOwnAnchorDeclared = m_bAnchorDeclared;
+		m_bPlacementAnchor = true;
+		m_eAnchor = kPlacement.eAnchor;
+		m_bAnchorDeclared = true;
+	}
+	m_iPlacement = iFound;
+	D3DXVECTOR2 vPos;
+	m_bPlacementResolved = ResolvePlacement( kPlacement, vPos );
+	if ( m_bPlacementResolved )
+	{
+		// From the script, not the code: the anchor recorder does not count it as placed by code.
+		m_Pos = vPos;
+		if ( m_fAnimateTime < m_fChangeTime )
+			m_GoalPos = vPos;
+		m_vPlacementLast = vPos;
+	}
+	return true;
+}
+
+void CKTDGUIDialog::ClearPlacement()
+{
+	if ( m_bPlacementAnchor )
+	{
+		m_eAnchor = m_eOwnAnchor;
+		m_bAnchorDeclared = m_bOwnAnchorDeclared;
+		m_bPlacementAnchor = false;
+	}
+	m_iPlacement = -1;
+	m_bPlacementResolved = false;
+}
+
+void CKTDGUIDialog::ShiftPlaced( const D3DXVECTOR2& vDelta )
+{
+	m_Pos += vDelta;
+	m_GoalPos += vDelta;
+	std::queue<DialogMoveItem> queShifted;
+	while ( m_queMoveItems.empty() == false )
+	{
+		DialogMoveItem kItem = m_queMoveItems.front();
+		m_queMoveItems.pop();
+		kItem.pos += vDelta;
+		queShifted.push( kItem );
+	}
+	m_queMoveItems.swap( queShifted );
+}
+
+void CKTDGUIDialog::FollowPlacementTarget()
+{
+	const Placement* pPlacement = GetPlacementInEffect();
+	if ( pPlacement == nullptr || pPlacement->wstrTarget.empty() )
+		return;
+	D3DXVECTOR2 vPos;
+	if ( ResolvePlacement( *pPlacement, vPos ) == false )
+		return;		// the target is not shown: stay
+	// Until the target was first found, the code's moves were made from wherever the dialog was.
+	const D3DXVECTOR2 vDelta = vPos - ( m_bPlacementResolved ? m_vPlacementLast : m_Pos );
+	m_bPlacementResolved = true;
+	m_vPlacementLast = vPos;
+	if ( vDelta.x != 0.f || vDelta.y != 0.f )
+		ShiftPlaced( vDelta );
+}
+
 void CKTDGUIDialog::KeepInDraggingRange()
 {
 	if( m_bEnableMoveByDrag == false || m_bEnableDraggingRange == false )
@@ -2160,7 +2348,7 @@ void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind, int iObject )
 	kCall.eKind = eKind;
 	kCall.uScript = pDialog->m_uLoadingScript;
 	kCall.iLine = ar.currentline;
-	if ( eKind == ScriptCallKind::DialogPos )
+	if ( eKind == ScriptCallKind::DialogPos || eKind == ScriptCallKind::Placement )
 	{
 		kCall.pObject = pDialog;
 	}
@@ -2436,6 +2624,7 @@ bool CKTDGUIDialog::OpenScriptFile( const WCHAR* pFilename )
 	m_iLoadingDepth = CKTDXApp::s_iScriptDepth + 1;	// LoadLuaTinker below runs it one level in
 	m_vecOpenedScripts.emplace_back( pFilename );
 #endif
+	m_vecScriptKeys.push_back( UIScriptKey( pFilename ) );
 	bool bResult = g_pKTDXApp->LoadLuaTinker( pFilename );
 #ifdef X2_DEV_TOOLS
 	m_bLoadingScript = bWasLoading;

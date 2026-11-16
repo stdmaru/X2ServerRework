@@ -1173,6 +1173,7 @@ void CKTDXApp::RegisterLuabind( KLuabinder* pKLuabinder )
 	lua_tinker::class_def<CKTDGUIDialog>( L, "AddControl",						&CKTDGUIDialog::AddControl_LUA );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "SetFront",						&CKTDGUIDialog::SetFront );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "Move",							&CKTDGUIDialog::Move_LUA );
+	lua_tinker::class_def<CKTDGUIDialog>( L, "AddPlacement",					&CKTDGUIDialog::AddPlacement_LUA );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "SetEnableMoveByDrag",				&CKTDGUIDialog::SetEnableMoveByDrag_LUA );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "AddDummyPos",						&CKTDGUIDialog::AddDummyPos );
 	lua_tinker::class_def<CKTDGUIDialog>( L, "GetDummyPos",						&CKTDGUIDialog::GetDummyPos );

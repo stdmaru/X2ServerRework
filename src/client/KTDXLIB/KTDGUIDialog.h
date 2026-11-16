@@ -180,6 +180,44 @@ class CKTDGUIDialog
 		// Where STRETCH controls grow (UIAnchors.lua STRETCH_ZONES); none: they are scaled whole.
 		CKTDGUIStretch&	GetStretch()					{ return m_kStretch; }
 
+		// Named placements (T52): the spots the code shows the dialog at, declared in its own script so the UI editor
+		// edits them, instead of positions in the game code:
+		//
+		//     g_pUIDialog:AddPlacement({ NAME = "MIDDLE", POS = D3DXVECTOR2(250, 300) })
+		//     g_pUIDialog:AddPlacement({ NAME = "QUEST_MENU", TARGET = "DLG_UI_Menu.lua", CONTROL = "Button_Quest",
+		//                                POS = D3DXVECTOR2(10, 20) })
+		//
+		// A fixed placement puts the dialog at POS, under ANCHOR when it has one (else the dialog's own anchor). A
+		// placement with a TARGET follows a shown dialog loaded from that script (the topmost), and the CONTROL of it
+		// when given: POS is then in the target's layout units, from its dialog's position plus the control's offset,
+		// so at 4:3 the dialog lands where POS plus those would put it, and on wider screens it takes the target's
+		// anchor and stretch. It is resolved each step; while the target is not shown the dialog stays where it is.
+		// Moves the code makes on top (Move animations, SetPos) follow the target too.
+		struct Placement
+		{
+			std::wstring	wstrName;
+			D3DXVECTOR2		vPos = D3DXVECTOR2( 0.f, 0.f );
+			bool			bHasAnchor = false;
+			UIAnchor		eAnchor = UIAnchor::Center;
+			std::wstring	wstrTarget;			// script key (UIScriptKey); empty: a fixed placement
+			std::wstring	wstrTargetControl;	// empty: the target dialog itself
+			int				iScriptCall = -1;	// its AddPlacement in GetScriptCalls() (X2_DEV_TOOLS, while a tool tracks)
+		};
+		void			AddPlacement_LUA();
+		void			AddPlacement( const Placement& kPlacement );	// replaces one of the same name
+		// Puts the dialog at the named placement; false (and nothing changes) when the script declares none by that name.
+		bool			ApplyPlacement( const wchar_t* pwszName );
+		// Stops following a target and gives the dialog back its own anchor; it stays where it is.
+		void			ClearPlacement();
+		const std::vector<Placement>& GetPlacements() const	{ return m_vecPlacements; }
+		const Placement*	GetPlacementInEffect() const;
+		// Where a placement puts the dialog now (its GetPos), false when its target is not shown.
+		bool			ResolvePlacement( const Placement& kPlacement, D3DXVECTOR2& vPos ) const;
+		// Whether a script by this key (UIScriptKey) was loaded into the dialog.
+		bool			HasScript( const std::wstring& wstrKey ) const;
+		// The topmost shown dialog the dialog manager has with that script, or null.
+		static CKTDGUIDialog*	FindShownDialog( const std::wstring& wstrKey );
+
 		// Drawing between simulation steps (T41): the dialog manager notes the position when a step begins and ends;
 		// OnFrameRender draws at the position between the two, when nothing moved the dialog since (dragging does).
 		void		NoteTickBegin( int iTick )  { m_vTickPosBegin = m_Pos; m_iTickPos = iTick; }
@@ -569,6 +607,18 @@ private:
 		bool		m_bAnchorFromScript = false;
 		CKTDGUIStretch	m_kStretch;
 
+		// Named placements (AddPlacement); the one in effect, by index (-1: none).
+		void			FollowPlacementTarget();
+		void			ShiftPlaced( const D3DXVECTOR2& vDelta );
+		std::vector<Placement>	m_vecPlacements;
+		std::vector<std::wstring>	m_vecScriptKeys;	// every script loaded into the dialog (UIScriptKey)
+		int				m_iPlacement = -1;
+		bool			m_bPlacementResolved = false;
+		D3DXVECTOR2		m_vPlacementLast = D3DXVECTOR2( 0.f, 0.f );
+		bool			m_bPlacementAnchor = false;			// a placement's ANCHOR is in effect over the dialog's own
+		UIAnchor		m_eOwnAnchor = UIAnchor::Center;
+		bool			m_bOwnAnchorDeclared = false;
+
 #ifdef X2_DEBUG
 		wstring		m_strScriptFileName;
 		wstring		m_strMouseOverStaticName;
@@ -606,6 +656,7 @@ private:
 			AddPicture,		// a static's AddPicture(picture); the object is the picture
 			AddControl,		// g_pUIDialog:AddControl(control); the object is the control
 			PicturePos,		// a picture's SetPos(D3DXVECTOR2(x, y)); the object is the picture
+			Placement,		// g_pUIDialog:AddPlacement({ ... }); the object is the dialog
 		};
 		struct ScriptCall
 		{
