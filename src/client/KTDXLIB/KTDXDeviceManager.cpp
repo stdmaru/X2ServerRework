@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "./KTDXDeviceManager.h"
+#include "x2/platform/unicode.h"
+#include <algorithm>
+#include <charconv>
 #include <filesystem>
+#include <string_view>
 #include <system_error>
 #include <vector>
 
@@ -242,6 +246,63 @@ void CKTDXDeviceManager::SetTextureDetailLevel( CKTDXDeviceTexture::DETAIL_LEVEL
     g_pKTDXApp->SkipFrame();
 
     EndFullSync();
+}
+
+namespace
+{
+    // File names are looked up ignoring ASCII case, as the archives do.
+    std::string AsciiLowerName( std::string_view name )
+    {
+        std::string out( name );
+        for ( char& c : out )
+            if ( c >= 'A' && c <= 'Z' )
+                c = static_cast<char>( c - 'A' + 'a' );
+        return out;
+    }
+}
+
+bool CKTDXDeviceManager::GetOriginalTextureSize( const std::wstring& name, UINT& uWidth, UINT& uHeight )
+{
+    std::call_once( m_onceOriginalTextureSizes, [this] {
+        const std::wstring list = L"OriginalTextureSizes.txt";
+        if ( !m_MassFileManager.IsValidFile( list ) )
+            return;
+        const auto info = m_MassFileManager.LoadDataFile( list );
+        if ( info == NULL || info->pRealData == NULL )
+            return;
+        // "<name>\t<width>\t<height>" lines; '#' starts a comment line.
+        std::string_view text( info->pRealData, static_cast<std::size_t>( info->size ) );
+        while ( !text.empty() )
+        {
+            const std::size_t end = std::min( text.find( '\n' ), text.size() );
+            std::string_view line = text.substr( 0, end );
+            text.remove_prefix( std::min( end + 1, text.size() ) );
+            if ( !line.empty() && line.back() == '\r' )
+                line.remove_suffix( 1 );
+            const std::size_t tab1 = line.find( '\t' );
+            const std::size_t tab2 = tab1 == std::string_view::npos ? tab1 : line.find( '\t', tab1 + 1 );
+            if ( line.empty() || line.front() == '#' || tab2 == std::string_view::npos )
+                continue;
+            UINT w = 0, h = 0;
+            const char* wEnd = line.data() + tab2;
+            const char* hEnd = line.data() + line.size();
+            if ( std::from_chars( line.data() + tab1 + 1, wEnd, w ).ptr != wEnd
+                || std::from_chars( wEnd + 1, hEnd, h ).ptr != hEnd || w == 0 || h == 0 )
+                continue;
+            m_mapOriginalTextureSize.emplace( AsciiLowerName( line.substr( 0, tab1 ) ), std::make_pair( w, h ) );
+        }
+    } );
+
+    std::wstring_view file( name );
+    const std::size_t slash = file.find_last_of( L"/\\" );
+    if ( slash != std::wstring_view::npos )
+        file.remove_prefix( slash + 1 );
+    const auto it = m_mapOriginalTextureSize.find( AsciiLowerName( x2::platform::WideToUtf8( file ) ) );
+    if ( it == m_mapOriginalTextureSize.end() )
+        return false;
+    uWidth = it->second.first;
+    uHeight = it->second.second;
+    return true;
 }
 
 void CKTDXDeviceManager::CloseDevice( const WCHAR* deviceID )

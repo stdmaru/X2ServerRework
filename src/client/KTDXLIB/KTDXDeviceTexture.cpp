@@ -36,6 +36,9 @@ CKTDXDeviceTexture::~CKTDXDeviceTexture()
     unsigned uWidth = 0;
     unsigned uHeight = 0;
 	unsigned uMipmap = 1;
+	UINT uOriginalWidth = 0;
+	UINT uOriginalHeight = 0;
+	UINT uLevels = 1;
 	D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
 	DWORD	dwFilter = D3DX_FILTER_NONE;
 
@@ -76,6 +79,13 @@ CKTDXDeviceTexture::~CKTDXDeviceTexture()
 
 		goto fail;
 	}
+
+	// An upscaled texture (docs/porting/client-d3d9.md#upscaled-textures-2026-11-16-clientui-hd-assets): a file
+	// larger than the size its .tet keys and the dialogs were made for (data/OriginalTextureSizes.txt) reports that
+	// size (GetWidth/GetHeight), so pixel UVs, texture-sized controls and the code's sizes stay as they were.
+	uOriginalWidth = imgInfo.Width;
+	uOriginalHeight = imgInfo.Height;
+	g_pKTDXApp->GetDeviceManager()->GetOriginalTextureSize( m_DeviceID, uOriginalWidth, uOriginalHeight );
 
 	uWidth = imgInfo.Width;
 	uHeight = imgInfo.Height;
@@ -134,13 +144,26 @@ CKTDXDeviceTexture::~CKTDXDeviceTexture()
 
 	// The original loaded only the top level. A texture now keeps the mip chain its file has, so the world and models
 	// do not shimmer when minified (textures upscaled 4x); atlases (a .tet beside the file: UI, name tags) keep one
-	// level, so a minified piece does not blend its atlas neighbours.
+	// level, so a minified piece does not blend its atlas neighbours. An upscaled atlas, or an upscaled file without a
+	// chain, gets the levels down to its original size: drawn near that size, it is minified, and its smallest level
+	// blends no more of its neighbours than the original did.
+	uLevels = Info2 != NULL ? 1 : D3DX_FROM_FILE;
+	if ( Info2 != NULL || imgInfo.MipLevels <= 1 )
+	{
+		UINT uExtra = 0;
+		while ( ( uWidth >> ( uExtra + 1 ) ) >= uOriginalWidth && ( uHeight >> ( uExtra + 1 ) ) >= uOriginalHeight )
+			++uExtra;
+		if ( uExtra > 0 )
+			uLevels = 1 + uExtra;
+	}
 	hr = D3DXCreateTextureFromFileInMemoryEx( g_pKTDXApp->GetDevice()
 		, (void*)Info->pRealData, Info->size
-		, uWidth, uHeight, Info2 != NULL ? 1 : D3DX_FROM_FILE, 0, d3dFormat, D3DPOOL_MANAGED, dwFilter
+		, uWidth, uHeight, uLevels, 0, d3dFormat, D3DPOOL_MANAGED, dwFilter
 		, D3DX_FILTER_BOX, 0, &imgInfo, NULL, &pTexture );
 	if ( hr != D3D_OK || pTexture == NULL )
 		goto fail;
+	imgInfo.Width = uOriginalWidth;
+	imgInfo.Height = uOriginalHeight;
 
 	{
         CKTDXDeviceTET_Preprocessing   proxy;

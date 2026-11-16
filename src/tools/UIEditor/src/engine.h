@@ -169,7 +169,8 @@ public:
     // its .tet. Held loaded until the engine goes. False with `error` when it does not load.
     struct TextureImage {
         render::Texture texture;
-        unsigned width = 0, height = 0;
+        unsigned width = 0, height = 0;   // in .tet units: the original size of an upscaled texture
+        float scale = 1.0f;               // the file's texels per unit (4 for a 4x upscale; 1 at most below)
     };
     bool LoadTextureImage(const std::string& texture, TextureImage& image, std::string& error);
 

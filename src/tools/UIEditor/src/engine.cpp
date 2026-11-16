@@ -644,6 +644,11 @@ bool Engine::LoadTextureImage(const std::string& texture, TextureImage& image, s
     image.texture = device->GetDeviceTexture()->RenderTexture();
     image.width = static_cast<unsigned>(device->GetWidth());
     image.height = static_cast<unsigned>(device->GetHeight());
+    // An upscaled texture (docs/porting/client-d3d9.md#upscaled-textures-2026-11-16-clientui-hd-assets) reports its
+    // original size; its rectangles can be placed on the file's finer texels.
+    image.scale = image.width > 0 ? std::max(1.0f, static_cast<float>(device->GetDeviceTexture()->Width()) /
+                                                        static_cast<float>(image.width))
+                                  : 1.0f;
     return true;
 }
 
