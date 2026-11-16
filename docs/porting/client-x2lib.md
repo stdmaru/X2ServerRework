@@ -375,6 +375,22 @@ image or a single picture, 4:3 (over the 1024 column) or, for the 16:9 redraws p
 then hidden (or absent, once the dialog's own background is one 16:9 picture). If a texture is missing the dialog is
 rebuilt with its own background, the first login's.
 
+## Characters waiting for deletion (2026-11-16, `client/unit-wait-delete`)
+
+A deleted character waits in character select (`SERV_UNIT_WAIT_DELETE`) with the permanent deletion (`final_delete_unit`)
+and restore (`restore_unit`) buttons, each enabled from the date the server sends (`m_trDelAbleDate`,
+`m_trRestoreAbleDate`, from `GUnitWaitDelete`). Fixed in `CX2StateServerSelect::CreateServerSelectUnitViewerUI`:
+
+- **The deletion date is shown.** The original commented out the code filling `StaticUnitSelectDeleteInfo` (in
+  `DLG_UI_Character_Selection_Back_New.lua`) with `STR_ID_16109` ("you can delete this character permanently on …"),
+  so the player saw two disabled buttons and no date. It is back, wrapped at 300 units. **Behavior change.**
+- **The sad motion plays every time.** `m_bDeletedMotionPlay` (the waiting motion, `UVUMT_WAIT_DELETE`, was started on
+  the current viewer) belongs to the unit and outlived the viewer: the `REFORM_ENTRY_POINT` path deletes the old viewer
+  without clearing it (the older path did), so a deleted character selected again stood still. The new viewer clears it.
+
+The dates themselves come from the database ([`20261116_unit_wait_delete_dates.sql`](../tools/database-patches.md#game01)):
+permanent deletion after 24 hours, restore at once.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them
