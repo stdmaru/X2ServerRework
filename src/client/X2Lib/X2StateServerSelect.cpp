@@ -6555,28 +6555,26 @@ void CX2StateServerSelect::CreateServerSelectUnitViewerUI ( CX2Unit * pUnit_ )
 			m_bPlayDownAnim = true;
 
 			CX2Unit::UnitData* pUnitData = &(pUnit_->AccessUnitData());
-			/* ???? ????? ??? ???
+			// The viewer is new, so the waiting-deletion motion has not played on it yet. Without this, a unit
+			// selected again kept the flag from its last viewer and stood still (the original reset it only
+			// on the pre-REFORM_ENTRY_POINT path).
+			pUnitData->m_bDeletedMotionPlay = false;
+
+			// When the unit waiting for deletion can be deleted permanently (commented out in the original,
+			// which left the player with two disabled buttons and no date)
 			CKTDGUIStatic* pStatic_UnitDeleteInfo = (CKTDGUIStatic*)(m_pDLGUnitSelectFront->GetControl( L"StaticUnitSelectDeleteInfo" ));
 			if( NULL != pStatic_UnitDeleteInfo )
 			{
 				if( pUnitData->m_bDeleted )
 				{
 					CTime tDeleAbleDate( pUnitData->m_trDelAbleDate );
+					std::wstring wstrYear = tDeleAbleDate.Format(_T("%Y")).GetString();
+					std::wstring wstrMonth = tDeleAbleDate.Format(_T("%m")).GetString();
+					std::wstring wstrDay = tDeleAbleDate.Format(_T("%d")).GetString();
+					std::wstring wstrHour = tDeleAbleDate.Format(_T("%H")).GetString();
+					std::wstring wstrMinute = tDeleAbleDate.Format(_T("%M")).GetString();
 
-					// ???? ???? ???? ?????
-					std::wstring wstrYear = (CStringW)( tDeleAbleDate.Format(_T("%Y")) );
-					std::wstring wstrMonth = (CStringW)( tDeleAbleDate.Format(_T("%m")) );
-					std::wstring wstrDay = (CStringW)( tDeleAbleDate.Format(_T("%d")) );
-					std::wstring wstrHour = (CStringW)( tDeleAbleDate.Format(_T("%H")) );
-					std::wstring wstrMinute = (CStringW)( tDeleAbleDate.Format(_T("%M")) );
-
-#if defined(CLIENT_GLOBAL_LINEBREAK)
-					pStatic_UnitDeleteInfo->GetString(0)->msg = CWordLineHandler::GetStrByLineBreakInX2Main(GET_REPLACED_STRING( ( STR_ID_16109, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str() ) ), 200, XUF_DODUM_15_BOLD );
-#elif defined(CLIENT_GLOBAL_LINEBREAK_FOR_CN)
-					pStatic_UnitDeleteInfo->GetString(0)->msg = g_pMain->GetStrByLienBreak(GET_REPLACED_STRING( ( STR_ID_16109, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str() ) ), 180, pStatic_UnitDeleteInfo->GetString(0)->fontIndex );
-#else
-					pStatic_UnitDeleteInfo->GetString(0)->msg = GET_REPLACED_STRING( ( STR_ID_16109, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str() ) );
-#endif //defined(CLIENT_GLOBAL_LINEBREAK)
+					pStatic_UnitDeleteInfo->GetString(0)->msg = g_pMain->GetStrByLienBreak( GET_REPLACED_STRING( ( STR_ID_16109, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str() ) ), 300, pStatic_UnitDeleteInfo->GetString(0)->fontIndex );
 					pStatic_UnitDeleteInfo->SetShow( true );
 				}
 				else
@@ -6584,7 +6582,6 @@ void CX2StateServerSelect::CreateServerSelectUnitViewerUI ( CX2Unit * pUnit_ )
 					pStatic_UnitDeleteInfo->SetShow( false );
 				}
 			}
-			*/
 			// ????? ???? ???? ???
 			CKTDGUIButton* pBtn_FinalDelete = (CKTDGUIButton*)(m_pDLGUnitSelectFront)->GetControl( L"final_delete_unit" );
 			if( NULL != pBtn_FinalDelete )
