@@ -81,6 +81,13 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
   returned earlier by `GetStdHandle(STD_OUTPUT_HANDLE)`. The terminal writes through a duplicate (`_dup(1)`); with the old handle, nothing
   appeared — neither logs nor prompt (found in the VM on 2026-10-31).
 - `IsWindow` always returns false and `HWND_DESKTOP` is null outside Windows (server has no window).
+- **Exit with threads still waiting** (`sync_posix.cpp`, 2026-11-16): the emulation's one mutex and condition variable are
+  allocated and never destroyed. As statics, `exit()` ran the condition variable's destructor, and glibc's
+  `pthread_cond_destroy` blocks while a thread waits on it. Windows' `ExitProcess` ends such threads instead. The client
+  hung after quitting: on the server's disconnect its session thread drops the last reference to `KUserProxy`, whose
+  destructor calls `KThread::End(INFINITE)` and waits on that same thread's handle, as in the original (the thread stays
+  blocked until the process ends; returning would run `KSession::Run` on a destroyed object). Test in `test_process.cpp`
+  (`exit-waiting` mode of `x2_process_helper`).
 
 ## Known limitations
 

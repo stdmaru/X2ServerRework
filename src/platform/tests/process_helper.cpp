@@ -4,17 +4,46 @@
 //   echo          for each stdin line, "out:<line>" on stdout and "err:<line>" on stderr; exit 3 at the end of stdin
 //   exit <n>      exit with n
 //   sleep         print "sleeping" and wait to be killed
+//   exit-waiting  print "waiting" once two threads block for good (one on an event, one on its own thread handle, as
+//                 the client's KUserProxy does when its session thread destroys it), then return 0 from main
 #include "x2/platform/console.h"
 #include "x2/platform/process.h"
+#include "x2/platform/sync.h"
 
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
+#include <atomic>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
+
+namespace {
+
+HANDLE g_never = nullptr;              // an event nobody sets
+std::atomic<HANDLE> g_self{nullptr};   // the self-waiting thread's own handle
+std::atomic<int> g_blocked{0};
+
+unsigned WINAPI WaitForever(void*)
+{
+    ++g_blocked;
+    WaitForSingleObject(g_never, INFINITE);
+    return 0;
+}
+
+unsigned WINAPI WaitForItself(void*)
+{
+    HANDLE self = nullptr;
+    while ((self = g_self.load()) == nullptr)
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    ++g_blocked;
+    WaitForSingleObject(self, INFINITE);
+    return 0;
+}
+
+}  // namespace
 
 int main(int argc, char* argv[])
 {
@@ -55,6 +84,22 @@ int main(int argc, char* argv[])
         std::fflush(stdout);
         for (;;)
             std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    if (mode == "exit-waiting") {
+        g_never = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        unsigned tid = 0;
+        if (!_beginthreadex(nullptr, 0, WaitForever, nullptr, 0, &tid))
+            return 4;
+        HANDLE self = reinterpret_cast<HANDLE>(_beginthreadex(nullptr, 0, WaitForItself, nullptr, 0, &tid));
+        if (!self)
+            return 4;
+        g_self = self;
+        while (g_blocked.load() < 2)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));   // both inside their waits
+        std::printf("waiting\n");
+        std::fflush(stdout);
+        return 0;
     }
     return 2;
 }
