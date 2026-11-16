@@ -160,6 +160,11 @@ tools/assets/merge_items.py <client_data>/items --enum <client_data>/data/Enum.l
   client_data) where ours lacks them. String IDs are the same in our table, BR 2017's and V5's (checked 2026-11-15,
   e.g. 1860, 8402, 30631; 2,375 of V5's scenes use the same IDs as BR 2014-08's). Items, dungeons and NPCs the
   quests name that we lack are reported (then brought with `merge_items.py --ids`).
+- `fill_strings.py --ess <our general.ess> --strings <their General.ess> [--strings ...]`: every string of ours that is
+  a placeholder (empty, or its own name `STR_ID_<n>`, which the client shows as is) or Korean takes, by ID, the first
+  source's text that is real and not Korean; everything else of ours is kept. String IDs are stable between our
+  table and BR 2017's (2026-11-16: 25,823 of the 26,389 IDs both have text for are equal, the rest revised wording or
+  Korean in ours).
 
 ## Content changes (T42)
 
@@ -196,3 +201,4 @@ is listed here with the step that changed it and why.
 | `items/Item.lua` | `server/add-character` (2026-11-15) | 44 skill memos of Ara's 2nd path and Elesis (607018–607035, 608001–608030; 608002–608005 are in no source) from BR 2014-08, text from BR 2017, by `merge_items.py --ids`, for the server's `ClassChangeItem/Memo.lua`; their icons were already in our client |
 | `items/Item.lua`, `items/ManufactureItem.lua` | `server/add-character` (2026-11-15) | 47 recipes of Add's items (materials and cost; 55 result rows, 52 village rows: BR 2014-08 first, V5's for the villages, which BR 2014-08 lacks) by `tools/runtime/merge_server_tables.py --client-manufacture`, and 3 of their materials (61538, 133536, 133537; BR 2014-08) by `merge_items.py --ids` |
 | `DungeonData.lua` | `server/add-character` (2026-11-15) | Add's tutorial (39608, `Dungeon_Battle_Field_Tutorial_Add.lua`, already in the client_data) after Elesis's, from V5: without it the GameServer had no such dungeon and Add's tutorial stayed black |
+| `general.ess` (client folder) | `server/add-character` (2026-11-16) | 2,510 placeholders (`STR_ID_<n>` shown as text: Add's dungeon lines 29599–29602 and DP/Dynamo messages 29419–29421, 29939, among others) and 299 Korean strings replaced by BR 2017's `General.ess`, by `tools/assets/fill_strings.py`; 3,235 placeholders are in no source (2026-11-16) |
