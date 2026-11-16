@@ -9,6 +9,7 @@
 #include <atomic>
 #include <charconv>
 #include <fstream>
+#include <optional>
 #include <set>
 #include <sstream>
 
@@ -122,14 +123,19 @@ bool ClientData::Rescan(unsigned jobs, std::string& error, const Progress& progr
 
 bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progress)
 {
-    std::vector<std::filesystem::path> paths;
-    if (!IndexFiles(root_, paths, error) || !ignore_.Load(root_, error))
+    std::vector<std::filesystem::path> paths, dirs;
+    if (!IndexFiles(root_, paths, error, &dirs) || !ignore_.Load(root_, error))
         return false;
+    folders_.clear();
+    for (const auto& dir : dirs)
+        folders_.insert(Relative(root_, dir));
 
-    // Hash what changed since the last run.
-    const auto cache = ReadHashCache(HashCachePath(root_));
+    // Hash what changed: what this model knows first (moved files keep their hashes), then the cache file.
+    auto cache = ReadHashCache(HashCachePath(root_));
+    for (const ClientDataFile& f : files_)
+        if (f.state != FileState::Deleted)
+            cache[f.folder.empty() ? f.name : f.folder + "/" + f.name] = CachedHash{f.size, f.time, f.sha256};
     std::vector<ClientDataFile> disk(paths.size());
-    std::vector<std::int64_t> times(paths.size());
     std::atomic<std::size_t> done{0};
     if (!ParallelFor(paths.size(), jobs, [&](std::size_t i, std::string& e) {
             ClientDataFile& f = disk[i];
@@ -139,9 +145,9 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
             f.folder = slash == std::string::npos ? std::string() : relative.substr(0, slash);
             std::error_code ec;
             f.size = std::filesystem::file_size(paths[i], ec);
-            times[i] = std::filesystem::last_write_time(paths[i], ec).time_since_epoch().count();
+            f.time = std::filesystem::last_write_time(paths[i], ec).time_since_epoch().count();
             if (const auto it = cache.find(relative);
-                it != cache.end() && it->second.size == f.size && it->second.time == times[i])
+                it != cache.end() && it->second.size == f.size && it->second.time == f.time)
             {
                 f.sha256 = it->second.sha256;
             }
@@ -158,22 +164,58 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
         }, error))
         return false;
 
-    {
-        std::ostringstream out;
-        out << kHashMagic << '\n';
-        for (std::size_t i = 0; i < disk.size(); ++i)
-            out << Relative(root_, paths[i]) << '\t' << disk[i].size << '\t' << times[i] << '\t' << disk[i].sha256
-                << '\n';
-        const std::string text = out.str();
-        std::string ignored;  // only a cache: a read-only client_data hashes again next time
-        WriteWholeFile(HashCachePath(root_), std::span(reinterpret_cast<const std::uint8_t*>(text.data()), text.size()),
-                       ignored);
-    }
+    std::sort(disk.begin(), disk.end(), [](const ClientDataFile& a, const ClientDataFile& b) {
+        const std::string fa = kom::AsciiLower(a.folder), fb = kom::AsciiLower(b.folder);
+        return fa != fb ? fa < fb : kom::AsciiLower(a.name) < kom::AsciiLower(b.name);
+    });
+    Classify(std::move(disk));
+    SaveHashCache();
+    return true;
+}
 
-    // States against the manifest.
+void ClientData::SaveHashCache() const
+{
+    std::ostringstream out;
+    out << kHashMagic << '\n';
+    for (const ClientDataFile& f : files_)
+        if (f.state != FileState::Deleted)
+            out << (f.folder.empty() ? f.name : f.folder + "/" + f.name) << '\t' << f.size << '\t' << f.time << '\t'
+                << f.sha256 << '\n';
+    const std::string text = out.str();
+    std::string ignored;  // only a cache: a read-only client_data hashes again next time
+    WriteWholeFile(HashCachePath(root_), std::span(reinterpret_cast<const std::uint8_t*>(text.data()), text.size()),
+                   ignored);
+}
+
+std::vector<ClientDataFile> ClientData::OnDisk() const
+{
+    std::vector<ClientDataFile> disk;
+    disk.reserve(files_.size());
+    for (const ClientDataFile& f : files_)
+        if (f.state != FileState::Deleted)
+            disk.push_back(f);
+    return disk;
+}
+
+void ClientData::AddFolderChain(const std::string& path)
+{
+    std::string at = path;
+    while (!at.empty())
+    {
+        folders_.insert(at);
+        const auto slash = at.rfind('/');
+        at = slash == std::string::npos ? std::string() : at.substr(0, slash);
+    }
+}
+
+void ClientData::Classify(std::vector<ClientDataFile> disk)
+{
     std::unordered_map<std::string, std::size_t> onDisk;
     for (std::size_t i = 0; i < disk.size(); ++i)
+    {
+        disk[i].record = -1;
         onDisk.emplace(kom::AsciiLower(disk[i].name), i);
+    }
     std::vector<ClientDataFile> deleted;
     for (std::size_t k = 0; k < manifest_.files.size(); ++k)
     {
@@ -218,16 +260,15 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
             f.state = ignore_.Matches(f.folder.empty() ? f.name : f.folder + "/" + f.name) ? FileState::Ignored
                                                                                          : FileState::Untracked;
 
-    std::sort(disk.begin(), disk.end(), [](const ClientDataFile& a, const ClientDataFile& b) {
-        const std::string fa = kom::AsciiLower(a.folder), fb = kom::AsciiLower(b.folder);
-        return fa != fb ? fa < fb : kom::AsciiLower(a.name) < kom::AsciiLower(b.name);
-    });
     files_ = std::move(disk);
     for (ClientDataFile& f : deleted)
         files_.push_back(std::move(f));
     byName_.clear();
     for (std::size_t i = 0; i < files_.size(); ++i)
         byName_.emplace(kom::AsciiLower(files_[i].name), i);
+    for (const ClientDataFile& f : files_)
+        if (f.state != FileState::Deleted)
+            AddFolderChain(f.folder);
 
     // Tracked files by archive under every folder (its own and its subfolders'), for DefaultArchive.
     folderCounts_.clear();
@@ -254,13 +295,12 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
         }
     }
 
-    // Edits of files that are gone or deleted go.
+    // Edits of files that are gone, deleted or ignored go.
     std::set<std::string> keys;
     for (const ClientDataFile& f : files_)
         if (f.state != FileState::Deleted && f.state != FileState::Ignored)
             keys.insert(RecordKey(f));
     std::erase_if(edits_, [&](const auto& edit) { return !keys.contains(edit.first); });
-    return true;
 }
 
 const ClientDataFile* ClientData::Find(std::string_view name) const
@@ -378,7 +418,7 @@ bool ClientData::SetFolderArchive(std::string_view folder, std::string_view arch
     return true;
 }
 
-bool ClientData::Sync(unsigned jobs, SyncStats& stats, std::string& error)
+bool ClientData::Sync(SyncStats& stats, std::string& error)
 {
     stats = {};
     std::vector<FileRecord> records = manifest_.files;
@@ -484,7 +524,8 @@ bool ClientData::Sync(unsigned jobs, SyncStats& stats, std::string& error)
         return false;
     manifest_ = std::move(manifest);
     DiscardEdits();
-    return Rescan(jobs, error);
+    Classify(OnDisk());
+    return true;
 }
 
 std::vector<std::string> ClientData::Archives() const
@@ -523,7 +564,10 @@ bool ClientData::Ignore(std::string_view name, std::string& error)
         return false;
     }
     ignore_.patterns.push_back(f->folder.empty() ? f->name : f->folder + "/" + f->name);
-    return ignore_.Save(root_, error);
+    if (!ignore_.Save(root_, error))
+        return false;
+    Classify(OnDisk());
+    return true;
 }
 
 bool ClientData::IgnoreFolder(std::string_view folder, std::string& error)
@@ -537,7 +581,10 @@ bool ClientData::IgnoreFolder(std::string_view folder, std::string& error)
         return false;
     }
     ignore_.patterns.push_back(clean + "/");
-    return ignore_.Save(root_, error);
+    if (!ignore_.Save(root_, error))
+        return false;
+    Classify(OnDisk());
+    return true;
 }
 
 bool ClientData::Unignore(std::string_view name, std::string& error)
@@ -564,8 +611,39 @@ bool ClientData::Unignore(std::string_view name, std::string& error)
         }
     }
     ignore_.patterns = std::move(kept);
-    return ignore_.Save(root_, error);
+    if (!ignore_.Save(root_, error))
+        return false;
+    Classify(OnDisk());
+    return true;
 }
+
+bool ClientData::SetIgnores(IgnoreList list, std::string& error)
+{
+    ignore_ = std::move(list);
+    if (!ignore_.Save(root_, error))
+        return false;
+    Classify(OnDisk());
+    return true;
+}
+
+namespace {
+
+std::string Join(const std::string& folder, std::string_view name)
+{
+    return folder.empty() ? std::string(name) : folder + "/" + std::string(name);
+}
+
+bool GoodName(std::string_view name, std::string& error)
+{
+    if (name.empty() || name == "." || name == ".." || name.find_first_of("/\\:") != std::string_view::npos)
+    {
+        error = "\"" + std::string(name) + "\" is not a file or folder name";
+        return false;
+    }
+    return true;
+}
+
+} // namespace
 
 bool ClientData::AddFile(const std::filesystem::path& source, std::string_view folder, std::string& error)
 {
@@ -580,13 +658,26 @@ bool ClientData::AddFile(const std::filesystem::path& source, std::string_view f
         return false;
     }
     const std::filesystem::path dir = clean.empty() ? root_ : root_ / PathFromUtf8(clean);
+    const std::filesystem::path target = dir / source.filename();
     std::error_code ec;
     std::filesystem::create_directories(dir, ec);
-    if (!std::filesystem::copy_file(source, dir / source.filename(), ec))
+    if (!std::filesystem::copy_file(source, target, ec))
     {
         error = "cannot copy " + PathToUtf8(source) + " to " + PathToUtf8(dir) + ": " + ec.message();
         return false;
     }
+    ClientDataFile f;
+    f.name = name;
+    f.folder = clean;
+    Bytes data;
+    if (!ReadWholeFile(target, data, error))
+        return false;
+    f.size = data.size();
+    f.time = std::filesystem::last_write_time(target, ec).time_since_epoch().count();
+    f.sha256 = Sha256Hex(data);
+    auto disk = OnDisk();
+    disk.push_back(std::move(f));
+    Classify(std::move(disk));
     return true;
 }
 
@@ -599,35 +690,250 @@ bool ClientData::RemoveFile(std::string_view name, std::string& error)
         error = "cannot remove \"" + std::string(name) + "\"" + (ec ? ": " + ec.message() : ": not in client_data");
         return false;
     }
+    auto disk = OnDisk();
+    std::erase_if(disk, [&](const ClientDataFile& f) { return kom::AsciiLower(f.name) == kom::AsciiLower(name); });
+    Classify(std::move(disk));
     return true;
 }
 
-bool ClientData::MoveFile(std::string_view name, std::string_view folder, std::string& error)
+bool ClientData::MoveFile(std::string_view name, std::string_view folder, std::string& error, std::string_view newName)
 {
     std::string clean;
     if (!CleanFolder(folder, clean, error))
         return false;
-    const std::filesystem::path from = Locate(name);
-    if (from.empty())
+    const ClientDataFile* f = Find(name);
+    if (!f || f->state == FileState::Deleted)
     {
         error = "\"" + std::string(name) + "\" is not in client_data";
         return false;
     }
+    const std::string oldName = f->name, oldFolder = f->folder;
+    const std::string to = newName.empty() ? oldName : std::string(newName);
+    if (!GoodName(to, error))
+        return false;
+    if (kom::AsciiLower(to) != kom::AsciiLower(oldName))
+        if (const ClientDataFile* other = Find(to); other && other->state != FileState::Deleted)
+        {
+            error = "\"" + to + "\" is already in client_data, in " + (other->folder.empty() ? "its root" : other->folder);
+            return false;
+        }
+    if (clean == oldFolder && to == oldName)
+        return true;
     const std::filesystem::path dir = clean.empty() ? root_ : root_ / PathFromUtf8(clean);
-    const std::filesystem::path to = dir / from.filename();
+    const std::filesystem::path from = Locate(oldName), target = dir / PathFromUtf8(to);
     std::error_code ec;
-    if (std::filesystem::exists(to, ec))
+    if (std::filesystem::exists(target, ec) && !std::filesystem::equivalent(from, target, ec))
     {
-        error = PathToUtf8(to) + " already exists";
+        error = PathToUtf8(target) + " already exists";
         return false;
     }
     std::filesystem::create_directories(dir, ec);
-    std::filesystem::rename(from, to, ec);
+    std::filesystem::rename(from, target, ec);
     if (ec)
     {
         error = "cannot move " + PathToUtf8(from) + " to " + PathToUtf8(dir) + ": " + ec.message();
         return false;
     }
+    auto disk = OnDisk();
+    for (ClientDataFile& d : disk)
+        if (kom::AsciiLower(d.name) == kom::AsciiLower(oldName))
+        {
+            d.name = to;
+            d.folder = clean;
+        }
+    AddFolderChain(clean);
+    Classify(std::move(disk));
+    return true;
+}
+
+bool ClientData::MoveFolder(std::string_view path, std::string_view parent, std::string& error, std::string_view newName)
+{
+    std::string from, into;
+    if (!CleanFolder(path, from, error) || !CleanFolder(parent, into, error))
+        return false;
+    if (from.empty() || !folders_.contains(from))
+    {
+        error = "\"" + std::string(path) + "\" is not a folder of client_data";
+        return false;
+    }
+    const std::string last = from.substr(from.rfind('/') == std::string::npos ? 0 : from.rfind('/') + 1);
+    const std::string name = newName.empty() ? last : std::string(newName);
+    if (!GoodName(name, error))
+        return false;
+    const std::string to = Join(into, name);
+    if (to == from)
+        return true;
+    if (to.starts_with(from + "/"))
+    {
+        error = "a folder cannot go into itself";
+        return false;
+    }
+    std::error_code ec;
+    if (std::filesystem::exists(root_ / PathFromUtf8(to), ec))
+    {
+        error = to + " already exists";
+        return false;
+    }
+    if (!into.empty())
+        std::filesystem::create_directories(root_ / PathFromUtf8(into), ec);
+    std::filesystem::rename(root_ / PathFromUtf8(from), root_ / PathFromUtf8(to), ec);
+    if (ec)
+    {
+        error = "cannot move " + from + " to " + to + ": " + ec.message();
+        return false;
+    }
+    const auto moved = [&](const std::string& folder) -> std::optional<std::string> {
+        if (folder == from)
+            return to;
+        if (folder.starts_with(from + "/"))
+            return to + folder.substr(from.size());
+        return std::nullopt;
+    };
+    auto disk = OnDisk();
+    for (ClientDataFile& d : disk)
+        if (const auto m = moved(d.folder))
+            d.folder = *m;
+    std::set<std::string> folders;
+    for (const std::string& folder : folders_)
+        folders.insert(moved(folder).value_or(folder));
+    folders_ = std::move(folders);
+    AddFolderChain(to);
+    Classify(std::move(disk));
+    return true;
+}
+
+bool ClientData::CreateFolder(std::string_view path, std::string& error)
+{
+    std::string clean;
+    if (!CleanFolder(path, clean, error))
+        return false;
+    std::error_code ec;
+    if (clean.empty() || std::filesystem::exists(root_ / PathFromUtf8(clean), ec))
+    {
+        error = (clean.empty() ? std::string("the root") : clean) + " already exists";
+        return false;
+    }
+    if (!std::filesystem::create_directories(root_ / PathFromUtf8(clean), ec))
+    {
+        error = "cannot create " + clean + ": " + ec.message();
+        return false;
+    }
+    AddFolderChain(clean);
+    return true;
+}
+
+bool ClientData::RemoveEmptyFolder(std::string_view path, std::string& error)
+{
+    std::string clean;
+    if (!CleanFolder(path, clean, error))
+        return false;
+    std::error_code ec;
+    if (clean.empty() || !std::filesystem::remove(root_ / PathFromUtf8(clean), ec))
+    {
+        error = "cannot remove " + clean + (ec ? ": " + ec.message() : std::string());
+        return false;
+    }
+    folders_.erase(clean);
+    return true;
+}
+
+bool ClientData::Trash(std::string_view path, bool folder, const std::filesystem::path& trash, Trashed& out,
+                       std::string& error)
+{
+    out = {};
+    if (!CleanFolder(path, out.path, error))
+        return false;
+    out.folder = folder;
+    if (out.path.empty())
+    {
+        error = "client_data's root cannot be deleted";
+        return false;
+    }
+    const std::filesystem::path source = root_ / PathFromUtf8(out.path), target = trash / PathFromUtf8(out.path);
+    std::error_code ec;
+    std::filesystem::remove_all(target, ec);
+    std::filesystem::create_directories(target.parent_path(), ec);
+    std::filesystem::rename(source, target, ec);
+    if (ec)
+    {
+        error = "cannot delete " + out.path + ": " + ec.message();
+        return false;
+    }
+    const auto inside = [&](const ClientDataFile& f) {
+        return folder ? f.folder == out.path || f.folder.starts_with(out.path + "/") : Join(f.folder, f.name) == out.path;
+    };
+    auto disk = OnDisk();
+    for (const ClientDataFile& f : disk)
+        if (inside(f))
+            out.files.push_back(f);
+    std::erase_if(disk, inside);
+    if (folder)
+    {
+        for (auto it = folders_.begin(); it != folders_.end();)
+        {
+            if (*it == out.path || it->starts_with(out.path + "/"))
+            {
+                out.folders.push_back(*it);
+                it = folders_.erase(it);
+            }
+            else
+                ++it;
+        }
+    }
+    Classify(std::move(disk));
+    return true;
+}
+
+bool ClientData::Restore(const Trashed& item, const std::filesystem::path& trash, std::string& error)
+{
+    const std::filesystem::path source = trash / PathFromUtf8(item.path), target = root_ / PathFromUtf8(item.path);
+    std::error_code ec;
+    if (std::filesystem::exists(target, ec))
+    {
+        error = item.path + " is in client_data again: it cannot be restored over it";
+        return false;
+    }
+    for (const ClientDataFile& f : item.files)
+        if (const ClientDataFile* other = Find(f.name); other && other->state != FileState::Deleted)
+        {
+            error = f.name + " is in client_data again, in " + (other->folder.empty() ? "its root" : other->folder);
+            return false;
+        }
+    std::filesystem::create_directories(target.parent_path(), ec);
+    std::filesystem::rename(source, target, ec);
+    if (ec)
+    {
+        error = "cannot restore " + item.path + ": " + ec.message();
+        return false;
+    }
+    auto disk = OnDisk();
+    disk.insert(disk.end(), item.files.begin(), item.files.end());
+    for (const std::string& folder : item.folders)
+        folders_.insert(folder);
+    const auto slash = item.path.rfind('/');
+    if (slash != std::string::npos)
+        AddFolderChain(item.path.substr(0, slash));
+    Classify(std::move(disk));
+    return true;
+}
+
+bool ClientData::Commit(unsigned jobs, CommitStats& stats, std::string& error)
+{
+    stats = {};
+    if (!Sync(stats.sync, error))
+        return false;
+    PackOptions options;
+    options.clientData = root_;
+    options.jobs = jobs;
+    options.write = false;
+    options.commit = true;
+    PackStats packed;
+    if (!Pack(options, packed, error))
+        return false;
+    stats.committed = packed.committed;
+    if (!manifest_.Read(ManifestPath(root_), error))
+        return false;
+    Classify(OnDisk());
     return true;
 }
 

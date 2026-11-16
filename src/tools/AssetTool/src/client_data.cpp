@@ -399,9 +399,11 @@ bool IgnoreList::Matches(std::string_view relative) const
 }
 
 bool IndexFiles(const std::filesystem::path& clientData, std::vector<std::filesystem::path>& files,
-                std::string& error)
+                std::string& error, std::vector<std::filesystem::path>* folders)
 {
     files.clear();
+    if (folders)
+        folders->clear();
     std::unordered_map<std::string, std::size_t> seen;
     std::error_code ec;
     std::filesystem::recursive_directory_iterator it(clientData, ec), end;
@@ -422,6 +424,8 @@ bool IndexFiles(const std::filesystem::path& clientData, std::vector<std::filesy
             it.disable_recursion_pending();
             continue;
         }
+        if (folders && it->is_directory(ec))
+            folders->push_back(it->path());
         if (!it->is_regular_file(ec))
             continue;
         const std::string key = kom::AsciiLower(PathToUtf8(it->path().filename()));
@@ -543,12 +547,12 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
         return false;
 
     std::error_code ec;
-    if (!std::filesystem::create_directories(options.destination, ec) && ec)
+    if (options.write && !std::filesystem::create_directories(options.destination, ec) && ec)
     {
         error = "cannot create " + PathToUtf8(options.destination) + ": " + ec.message();
         return false;
     }
-    if (SameFile(options.destination, options.clientData))
+    if (options.write && SameFile(options.destination, options.clientData))
     {
         error = "pack into a folder other than client_data";
         return false;
@@ -566,10 +570,10 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
     // An archive whose fingerprint and destination file match the last pack's is left alone (onlyChanged).
     const auto& archives = ws.manifest.archives;
     std::vector<std::string> fingerprints(archives.size());
+    ClientData current;
+    if (!current.Open(options.clientData, options.jobs, error))
+        return false;
     {
-        ClientData current;
-        if (!current.Open(options.clientData, options.jobs, error))
-            return false;
         for (std::size_t a = 0; a < archives.size(); ++a)
         {
             std::string text;
@@ -641,7 +645,7 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
         luaSource{0}, kimCompiled{0}, skipped{0};
     const bool ok = ParallelFor(archives.size(), options.jobs, [&](std::size_t a, std::string& e) {
         const std::string& archiveName = archives[a].name;
-        if (options.onlyChanged)
+        if (options.write && options.onlyChanged)
             if (const auto last = previous.find(archiveName); last != previous.end() &&
                                                               last->second.fingerprint == fingerprints[a])
                 if (const auto now = onDisk(archiveName); now && now->size == last->second.size &&
@@ -661,6 +665,17 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
         if (list != byArchive.end())
             for (const FileRecord* r : list->second)
             {
+                if (!options.write && r->encoding != Encoding::New)
+                {
+                    // Only a commit: files whose cached hash matches their record have nothing to commit.
+                    std::vector<std::string> hashes;
+                    for (const std::string& name : ContentFiles(*r))
+                        if (const ClientDataFile* f = current.Find(name); f && f->state != FileState::Deleted)
+                            hashes.push_back(f->sha256);
+                    if (hashes.size() == ContentFiles(*r).size() &&
+                        (r->form == Form::Kim ? KimContentHash(hashes[0], hashes[1]) : hashes[0]) == r->sha256)
+                        continue;
+                }
                 std::vector<Bytes> contents;
                 std::string hash;
                 bool isMissing = false;
@@ -802,6 +817,12 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
                 ++files;
             }
 
+        if (!options.write)
+        {
+            if (options.progress)
+                options.progress(++done, archives.size());
+            return true;
+        }
         Bytes header;  // an archive created by a sync has none: the builder generates it
         std::error_code exists;
         const bool hasHeader = std::filesystem::exists(HeaderPath(options.clientData, archiveName), exists);
@@ -825,6 +846,7 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
             (archiveChanged ? " (changed)" : ""));
         return true;
     }, error);
+    if (options.write)
     {
         // What was written, for the next onlyChanged pack (also after a failure: the archives that made it).
         std::string text = "x2-assets-pack\t1\n";

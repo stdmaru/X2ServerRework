@@ -460,7 +460,7 @@ void Sync(State& s)
     StartJob(s, "Syncing the manifest", std::make_unique<ClientData>(*s.data),
              [](ClientData* data, Job& job, std::string& error) {
                  SyncStats stats;
-                 if (!data->Sync(0, stats, error))
+                 if (!data->Sync(stats, error))
                      return false;
                  char text[200];
                  std::snprintf(text, sizeof text,
