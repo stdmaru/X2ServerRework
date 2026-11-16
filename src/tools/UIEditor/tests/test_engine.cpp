@@ -5,6 +5,7 @@
 #include "layout_edit.h"
 #include "tet_file.h"
 
+#include <cmath>
 #include <doctest/doctest.h>
 
 #include <cstdlib>
@@ -585,6 +586,16 @@ TEST_CASE("ui editor: an edited script reloads into its dialog, moved where it w
     CHECK(dialogs[0].pos[0] == 50.0f);      // the game's 40 and the edit's 10
     CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == 7.0f);
 
+    // Resized after the game's state went in (still there with Watch game unchecked): it grows from the game's
+    // corners, each by what the edit changed (2026-11-16: the size stayed the game's).
+    REQUIRE_MESSAGE(x2::ui_editor::ResizeCall(text, 11, 0, 0, 30, 10, error), error);
+    engine->SetScriptText("DLG_Test.lua", &text);
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    dialogs = engine->Inspect();
+    CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == 7.0f);
+    CHECK(dialogs[0].controls[0].pictures[0].points[3][0] == 237.0f);   // the game's 200, the move's 7, the edit's 30
+    CHECK(dialogs[0].controls[0].pictures[0].points[3][1] == 110.0f);
+
     // Undone: the file's text again, reloaded in the game's state.
     engine->SetScriptText("DLG_Test.lua", nullptr);
     REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
@@ -694,6 +705,85 @@ TEST_CASE("ui editor: the positions the client_data's scripts set can be moved" 
     }
     MESSAGE(calls << " calls, " << shared << " of them on lines that set several things, " << failed << " not movable");
     CHECK(calls > 0);
+    engine.reset();
+    std::filesystem::current_path(previous);
+}
+
+// The user's game folder, when X2_UI_EDITOR_GAME names it (not in CI): every picture of a static its dialog scripts
+// add can be moved to a static of its own in the text, and the first of each dialog is drawn where it was after.
+TEST_CASE("ui editor: the client_data's pictures can be moved to statics of their own" *
+          doctest::skip(std::getenv("X2_UI_EDITOR_GAME") == nullptr))
+{
+    const std::filesystem::path folder = std::getenv("X2_UI_EDITOR_GAME");
+    const std::filesystem::path previous = std::filesystem::current_path();
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = folder;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    int pictures = 0, unknown = 0, shared = 0, failed = 0, drawn = 0, moved = 0;
+    const char* filter = std::getenv("X2_UI_EDITOR_FILTER");
+    for (const std::string& script : x2::ui_editor::FindDialogScripts(folder)) {
+        if (filter != nullptr && script.rfind(filter, 0) != 0) {
+            continue;
+        }
+        if (engine->OpenDialog(script, error) < 0 || !engine->Render(1280, 720, 0.0f, error)) {
+            engine->CloseAll();
+            continue;
+        }
+        const auto dialogs = engine->Inspect();
+        bool checked = false;
+        for (const auto& control : dialogs[0].controls) {
+            for (std::size_t p = 0; p < control.pictures.size(); ++p) {
+                const auto& picture = control.pictures[p];
+                ++pictures;
+                if (!picture.add.Known() || !control.add.Known() || picture.add.script != control.add.script) {
+                    ++unknown;
+                    continue;
+                }
+                if (picture.add.shared > 1 || control.add.shared > 1) {
+                    ++shared;
+                    continue;
+                }
+                std::string text;
+                REQUIRE(engine->ScriptText(picture.add.script, text, error));
+                if (!x2::ui_editor::PictureToNewStatic(text, picture.add.line, control.add.line, "Moved_By_Test", p == 0,
+                                                       error)) {
+                    if (++failed <= 40) {
+                        MESSAGE(script << ": " << error);
+                    }
+                    continue;
+                }
+                if (checked || !picture.shown || picture.pixelMax[0] <= picture.pixelMin[0]) {
+                    continue;
+                }
+                // Drawn where it was: the first shown picture of each dialog.
+                checked = true;
+                engine->SetScriptText(picture.add.script, &text);
+                ++drawn;
+                if (engine->ReloadDialog(0, error) && engine->Render(1280, 720, 0.0f, error)) {
+                    const auto reloaded = engine->Inspect();
+                    for (const auto& c : reloaded[0].controls) {
+                        if (c.name == "Moved_By_Test" && c.pictures.size() == 1 &&
+                            std::fabs(c.pictures[0].pixelMin[0] - picture.pixelMin[0]) < 0.01f &&
+                            std::fabs(c.pictures[0].pixelMin[1] - picture.pixelMin[1]) < 0.01f) {
+                            ++moved;
+                        }
+                    }
+                }
+                if (moved != drawn && drawn - moved <= 20) {
+                    MESSAGE(script << ": the moved picture is not drawn where it was");
+                }
+                engine->SetScriptText(picture.add.script, nullptr);
+            }
+        }
+        engine->CloseAll();
+    }
+    MESSAGE(pictures << " pictures: " << unknown << " not added by a script call seen, " << shared
+                     << " added in loops or functions, " << failed << " refused; " << moved << " of " << drawn
+                     << " moved and drawn where they were");
+    CHECK(pictures > 0);
     engine.reset();
     std::filesystem::current_path(previous);
 }

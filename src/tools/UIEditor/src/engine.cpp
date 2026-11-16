@@ -9,6 +9,7 @@
 #include <SDL3/SDL_timer.h>
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <map>
 #include <optional>
@@ -57,11 +58,12 @@ std::string ScriptKey(const std::string& script)
     return Lower(std::filesystem::path(script).filename().string());
 }
 
-// What a dialog's scripts placed, before any game state is put into it: its position, and per control the left top
-// corner of each picture and the position of each text. An edit's move is the difference of two of these.
+// What a dialog's scripts placed, before any game state is put into it: its position, and per control the corners
+// of each picture (so a resize shows too) and the position of each text. An edit's change is the difference of two.
+using Corners = std::array<D3DXVECTOR2, 4>;     // left top, right top, left bottom, right bottom
 struct ScriptLayout {
     D3DXVECTOR2 pos{0, 0};
-    std::vector<std::vector<D3DXVECTOR2>> pictures;     // [control][picture]
+    std::vector<std::vector<Corners>> pictures;         // [control][picture]
     std::vector<std::vector<D3DXVECTOR2>> strings;      // [control][string]
 };
 
@@ -79,8 +81,12 @@ ScriptLayout CaptureLayout(CKTDGUIDialog& dialog)
         auto* control = static_cast<CKTDGUIStatic*>(controls[c]);
         for (int p = 0; p < control->GetPictureNum(); ++p) {
             const CKTDGUIControl::CPictureData* picture = control->GetPicture(p);
-            layout.pictures[c].push_back(picture != NULL && picture->pPoint != NULL ? picture->pPoint->leftTopPoint
-                                                                                    : D3DXVECTOR2(0, 0));
+            Corners corners{};
+            if (picture != NULL && picture->pPoint != NULL) {
+                corners = {picture->pPoint->leftTopPoint, picture->pPoint->rightTopPoint, picture->pPoint->leftBottomPoint,
+                           picture->pPoint->rightBottomPoint};
+            }
+            layout.pictures[c].push_back(corners);
         }
         for (int t = 0; t < control->GetStringNum(); ++t) {
             const CKTDGUIControl::UIStringData* string = control->GetString(t);
@@ -98,6 +104,20 @@ D3DXVECTOR2 Moved(const std::vector<std::vector<D3DXVECTOR2>>& a, const std::vec
         return D3DXVECTOR2(0, 0);
     }
     return b[control][item] - a[control][item];
+}
+
+// The same for each corner of a picture.
+Corners Moved(const std::vector<std::vector<Corners>>& a, const std::vector<std::vector<Corners>>& b, std::size_t control,
+              std::size_t item)
+{
+    Corners moved{};
+    if (control >= a.size() || control >= b.size() || item >= a[control].size() || item >= b[control].size()) {
+        return moved;
+    }
+    for (std::size_t k = 0; k < moved.size(); ++k) {
+        moved[k] = b[control][item][k] - a[control][item][k];
+    }
+    return moved;
 }
 
 const char* AnchorName(UIAnchor anchor)
@@ -787,12 +807,14 @@ void Engine::ApplyLive(int index, const LiveSnapshot::Dialog& live)
             const auto ci = static_cast<std::size_t>(c.index);
             for (const LiveSnapshot::Picture& p : live.pictures) {
                 CKTDGUIControl::CPictureData* picture = p.control == c.index && p.full ? picturesOf->GetPicture(p.index) : NULL;
-                const D3DXVECTOR2 moved = Moved(before.pictures, open.layout.pictures, ci, static_cast<std::size_t>(p.index));
-                if (picture != NULL && picture->pPoint != NULL && (moved.x != 0 || moved.y != 0)) {
-                    picture->pPoint->leftTopPoint += moved;
-                    picture->pPoint->rightTopPoint += moved;
-                    picture->pPoint->leftBottomPoint += moved;
-                    picture->pPoint->rightBottomPoint += moved;
+                // Each corner by its own change: a move moves them all, a resize the edges it moved (2026-11-16: only
+                // the left top was followed, so a resized picture kept the game's size while watching).
+                const Corners moved = Moved(before.pictures, open.layout.pictures, ci, static_cast<std::size_t>(p.index));
+                if (picture != NULL && picture->pPoint != NULL) {
+                    picture->pPoint->leftTopPoint += moved[0];
+                    picture->pPoint->rightTopPoint += moved[1];
+                    picture->pPoint->leftBottomPoint += moved[2];
+                    picture->pPoint->rightBottomPoint += moved[3];
                 }
             }
             for (const LiveSnapshot::Text& t : live.texts) {
