@@ -94,7 +94,7 @@ TEST_CASE("assets: bad manifests")
     CHECK(rejects(""));
     CHECK(rejects(good));                                              // no version line
     CHECK(rejects("x2-assets-manifest\t1\n" + good));                  // older version
-    CHECK(rejects("x2-assets-manifest\t3\n"));                         // future version
+    CHECK(rejects("x2-assets-manifest\t4\n"));                         // future version
     CHECK(rejects("x2-assets-manifest\t2\nfolder\tx\n"));              // unknown record
     CHECK(rejects("x2-assets-manifest\t2\narchive\tdata001.kom\n"));   // missing count
     CHECK(rejects("x2-assets-manifest\t2\n" + std::string(good).replace(good.find("zlib"), 4, "lzma")));

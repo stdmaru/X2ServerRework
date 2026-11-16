@@ -53,7 +53,8 @@ struct Status
 {
     std::vector<std::string> changed;  // content differs from the manifest
     std::vector<std::string> missing;  // in the manifest, not in client_data
-    std::vector<std::filesystem::path> added;  // in client_data, not in the manifest
+    std::vector<std::string> added;    // in the manifest as new files (Encoding::New), in no original archive
+    std::vector<std::filesystem::path> untracked;  // in client_data, not in the manifest (until a sync adds them)
 };
 
 bool GetStatus(const std::filesystem::path& clientData, unsigned jobs, Status& status, std::string& error);
@@ -75,14 +76,16 @@ struct PackStats
     std::size_t luaSource = 0;         // of them, edited decompiled scripts, packed as Lua source
     std::size_t kimCompiled = 0;       // of them, Item.kim compiled from edited scripts
     std::size_t missing = 0;           // dropped from their archive
-    std::size_t added = 0;             // not packed: no archive is chosen for new files yet
+    std::size_t added = 0;             // new files of the manifest (Encoding::New), packed into their archive
+    std::size_t untracked = 0;         // not packed: not in the manifest (a sync adds them)
     std::size_t notReproduced = 0;     // unchanged content whose re-encoding differs (another zlib)
 };
 
 // Writes every archive of the manifest to `destination`. Unchanged content is encoded as it was imported, so an
 // unchanged client_data packs back into the original archives byte for byte (with zlib 1.3.1, the version the
 // project pins). Edited files are re-encoded with their entry's algorithm; missing files are dropped; files not in
-// the manifest are reported and left out. Edited decompiled scripts are packed as Lua source (UTF-8 with BOM, what
+// the manifest are reported and left out (a sync adds them, ClientData::Sync); new files of the manifest are encoded
+// into their archive. Edited decompiled scripts are packed as Lua source (UTF-8 with BOM, what
 // the ported client loads, T21) after LuaJIT checks their syntax; edited item scripts are compiled into Item.kim.
 bool Pack(const PackOptions& options, PackStats& stats, std::string& error);
 

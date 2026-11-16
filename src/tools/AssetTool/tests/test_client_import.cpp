@@ -53,7 +53,7 @@ TEST_CASE("assets: the client's .kom files import and pack back unchanged (X2_AS
     REQUIRE_MESSAGE(GetStatus(options.destination, 0, status, error), error);
     CHECK(status.changed.empty());
     CHECK(status.missing.empty());
-    CHECK(status.added.empty());
+    CHECK(status.untracked.empty());
 
     PackOptions pack;
     pack.clientData = options.destination;

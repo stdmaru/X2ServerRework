@@ -130,9 +130,9 @@ int RunPack(const Args& args)
     if (!Pack(options, stats, error))
         return Fail(error);
     std::printf("packed %zu archives (%zu with their original header), %zu files: %zu changed (%zu Lua as source, "
-                "%zu .kim compiled), %zu missing, %zu new not packed, %zu not reproduced, in %.0f s\n",
+                "%zu .kim compiled), %zu new, %zu missing, %zu untracked not packed, %zu not reproduced, in %.0f s\n",
                 stats.archives, stats.identicalHeaders, stats.files, stats.changed, stats.luaSource, stats.kimCompiled,
-                stats.missing, stats.added, stats.notReproduced, Seconds(start));
+                stats.added, stats.missing, stats.untracked, stats.notReproduced, Seconds(start));
     return 0;
 }
 
