@@ -576,9 +576,9 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
             if (const auto list = byArchive.find(archives[a].name); list != byArchive.end())
                 for (const FileRecord* r : list->second)
                 {
+                    // Not the encoding or the recorded hash: a pack commits them (they change, the bytes do not).
                     text += r->name + '\t' + std::to_string(r->index) + '\t' + std::to_string(r->algorithm) + '\t' +
-                            std::string(ToString(r->encoding)) + '\t' + std::string(ToString(r->form)) + '\t' +
-                            r->sha256;
+                            std::string(ToString(r->form));
                     for (const std::string& name : ContentFiles(*r))
                     {
                         const ClientDataFile* f = current.Find(name);
@@ -626,6 +626,17 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
     };
     std::vector<Written> written(archives.size());
 
+    // What each written archive now holds, for the manifest (Commit below).
+    struct Commit
+    {
+        const FileRecord* record = nullptr;
+        bool dropped = false;
+        std::uint32_t size = 0, storedSize = 0, checksum = 0, fileTime = 0;
+        std::string hash;
+        Bytes original;  // a converted form's packed bytes (.kom/originals)
+    };
+    std::vector<std::vector<Commit>> commits(archives.size());
+
     std::atomic<std::size_t> done{0}, identical{0}, files{0}, changed{0}, added{0}, missing{0}, notReproduced{0},
         luaSource{0}, kimCompiled{0}, skipped{0};
     const bool ok = ParallelFor(archives.size(), options.jobs, [&](std::size_t a, std::string& e) {
@@ -659,6 +670,10 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
                 {
                     ++missing;
                     archiveChanged = true;
+                    Commit c;
+                    c.record = r;
+                    c.dropped = true;
+                    commits[a].push_back(std::move(c));
                     log(archiveName + ": " + r->name + " is missing from client_data: dropped");
                     continue;
                 }
@@ -764,6 +779,20 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
                     r->encoding == Encoding::Stored ? r->size : static_cast<std::uint32_t>(data.size());
                 const std::optional<std::uint32_t> fileTime =
                     same ? std::optional<std::uint32_t>(r->fileTime) : std::nullopt;
+                const std::uint32_t checksum = kom::Adler32(blob);
+                if (!same || blob.size() != r->storedSize || checksum != r->checksum)
+                {
+                    Commit c;
+                    c.record = r;
+                    c.size = size;
+                    c.storedSize = static_cast<std::uint32_t>(blob.size());
+                    c.checksum = checksum;
+                    c.fileTime = fileTime.value_or(checksum);  // the builder's default, as KOG's packer
+                    c.hash = hash;
+                    if (!same && r->form != Form::Raw)
+                        c.original = data;
+                    commits[a].push_back(std::move(c));
+                }
                 if (!builder.AddStored(r->name, r->algorithm, size, std::move(blob), e, fileTime))
                 {
                     e = where() + e;
@@ -809,6 +838,61 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
     }
     if (!ok)
         return false;
+
+    // The archives written are the source of truth now: their records describe what was packed, so client_data is
+    // in sync with them (edited and new files become originals, files missing from client_data leave the manifest).
+    if (options.commit)
+    {
+        std::vector<bool> drop(ws.manifest.files.size(), false);
+        bool any = false;
+        for (const auto& list : commits)
+            for (const Commit& c : list)
+            {
+                any = true;
+                const auto k = static_cast<std::size_t>(c.record - ws.manifest.files.data());
+                if (c.dropped)
+                {
+                    drop[k] = true;
+                    ++stats.committed;
+                    continue;
+                }
+                FileRecord& r = ws.manifest.files[k];
+                if (r.encoding == Encoding::Blob)
+                {
+                    std::error_code removed;
+                    std::filesystem::remove(BlobPath(options.clientData, r.name), removed);
+                }
+                if (r.encoding != Encoding::Stored)
+                    r.encoding = Encoding::Zlib;  // the packed blob is the content encoded at KOG's level
+                r.size = c.size;
+                r.storedSize = c.storedSize;
+                r.checksum = c.checksum;
+                r.fileTime = c.fileTime;
+                r.sha256 = c.hash;
+                if (!c.original.empty())
+                {
+                    std::filesystem::create_directories(OriginalPath(options.clientData, r.name).parent_path(), ec);
+                    if (!WriteWholeFile(OriginalPath(options.clientData, r.name), c.original, error))
+                        return false;
+                }
+                ++stats.committed;
+            }
+        if (any)
+        {
+            Manifest committed;
+            committed.archives = ws.manifest.archives;
+            for (std::size_t k = 0; k < ws.manifest.files.size(); ++k)
+                if (!drop[k])
+                    committed.files.push_back(std::move(ws.manifest.files[k]));
+            for (ArchiveRecord& a : committed.archives)
+                a.count = static_cast<std::uint32_t>(std::count_if(committed.files.begin(), committed.files.end(),
+                                                                   [&](const FileRecord& r) { return r.archive == a.name; }));
+            std::filesystem::copy_file(ManifestPath(options.clientData), ManifestPath(options.clientData).string() + ".bak",
+                                       std::filesystem::copy_options::overwrite_existing, ec);
+            if (!committed.Write(ManifestPath(options.clientData), error))
+                return false;
+        }
+    }
 
     for (std::size_t i = 0; i < ws.files.size(); ++i)
         if (!ws.known[i] && ws.ignored[i])
