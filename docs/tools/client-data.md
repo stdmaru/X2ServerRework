@@ -9,19 +9,22 @@ unchanged client_data packs back into every original `.kom` **byte for byte**. T
 
 | Target | For |
 |---|---|
-| `x2::assets` (`x2/assets/client_data.h`, `manifest.h`, `layout.h`, `texture_sizes.h`) | import, pack, status and texture sizes; tested headless |
-| `x2_assets` | its command line |
+| `x2::assets` (`x2/assets/client_data.h`, `manifest.h`, `layout.h`, `texture_sizes.h`, `workspace.h`) | import, pack, status, texture sizes and the manager's model (`ClientData`); tested headless |
+| `x2_assets` | the client_data manager: a window, and `--cli` with every operation ([below](#managing-client_data)) |
 
 ```bash
-x2_assets import _client/data <client_data> --layout=tools/assets/layout.txt   # -j<N>: threads (default: all); --no-lua
-x2_assets status <client_data>                       # changed, missing and new files
-x2_assets pack <client_data> <output folder>         # every .kom of the manifest
-x2_assets layout _client/data --layout=tools/assets/layout.txt   # folder counts only, nothing written
-x2_assets texture-sizes _client/data <client_data>/data/OriginalTextureSizes.txt   # original image sizes (below)
+x2_assets [<client_data>]                                       # the window (the last client_data when none)
+x2_assets --cli help                                            # the commands; help <command> explains one
+x2_assets --cli import _client/data <client_data> --layout=tools/assets/layout.txt   # -j<N>: threads; --no-lua
+x2_assets --cli status <client_data>                            # modified, deleted, new and added files
+x2_assets --cli commit <client_data>                            # client_data's content becomes the original
+x2_assets --cli pack <client_data> <output folder>              # the .kom that changed since the last pack there
+x2_assets --cli layout _client/data --layout=tools/assets/layout.txt   # folder counts only, nothing written
+x2_assets --cli texture-sizes _client/data OriginalTextureSizes.txt    # original image sizes (below)
 ```
 
-In the build image: `build/linux-debug/src/tools/AssetTool/x2_assets`. Import refuses a destination that is not empty;
-pack refuses to write into client_data itself.
+In the build image: `build/linux-debug/src/tools/AssetTool/x2_assets` (`--cli` may be left out when a command name
+comes first). Import refuses a destination that is not empty; pack refuses to write into client_data itself.
 
 ## What client_data holds
 
@@ -31,6 +34,9 @@ client_data/
   .kom/headers/<x>.kom.hdr   each archive's original fixed + XML header (~13 MB in all)
   .kom/blobs/<name>          original stored blobs that re-encoding does not reproduce (11.5%, 763 MB)
   .kom/originals/<name>      the bytecode of decompiled scripts and the original Item.kim (below)
+  .kom/hashes.tsv            the manager's cache of file hashes, by path, size and time (rebuilt when missing)
+  .kom/ignore.txt            files kept out of the manifest and the .kom ([below](#ignored-files))
+  .kom/manifest.tsv.bak      the manifest before the last sync or commit
   ui/ characters/ items/ ... the files, decoded, named as in the archives
 ```
 
@@ -41,11 +47,14 @@ client_data/
 - The manifest (`x2/assets/manifest.h` has the exact format) is a tab-separated text file: one `archive` record per
   `.kom` in load order (name, entry count) and one `file` record per entry: name, archive, position, algorithm, decoded
   and stored sizes, original checksum, `FileTime`, **encoding**, **form** and the SHA-256 of the file's content
-  (manifest version 2; a client_data of version 1 must be imported again). Encodings:
+  (manifest version 3, which adds the `new` encoding; version 2 is still read, a client_data of version 1 must be
+  imported again). Encodings:
   - `zlib`: encoding the content with the entry's algorithm at **zlib level 6** gives the original blob;
   - `blob`: it does not (another compressor, [Writing](../porting/kom.md#writing)); the original is kept in
     `.kom/blobs/` and used while the content's SHA-256 still matches;
-  - `stored`: the file is the stored blob itself.
+  - `stored`: the file is the stored blob itself;
+  - `new`: a file added to client_data (a [sync](#managing-client_data) recorded it), in no original archive; pack
+    encodes it with its archive's most common algorithm, and a commit makes it `zlib` like the others.
 
   Forms: `raw` (the file is the entry), `lua` (the file is the decompiled source of a bytecode entry), `kim` (the entry
   is `Item.kim`, held as `Item.lua` + `SetItem.lua`; its SHA-256 is that of the two scripts' hex hashes concatenated).
@@ -76,13 +85,84 @@ blob is used) with its original `FileTime`; an edited file is re-encoded with it
 `FileTime` = checksum, as KOG's packer); a missing file is dropped. When the entries still match the archive's original
 header, that header is written (`ArchiveBuilder::SetHeader`), so both header layouts of the client
 ([XML header](../porting/kom.md#xml-header)) come back unchanged; otherwise KOG's layout is generated. Files not in the
-manifest are reported and **not packed**. Every archive is rewritten. [T50](../project/decisions.md) (2026-11-15): `x2_assets`
-gains a GUI and a `--cli` mode that add and remove manifest entries, so new files get an archive and are packed;
-rebuilding only the changed archives stays with x2 studio's export to `.kom` ([roadmap](../project/roadmap.md#later--x2-studio)).
+manifest are reported and **not packed** (a sync records them, [below](#managing-client_data)); ignored files are
+counted apart. A new archive (no original header) gets KOG's generated header.
+
+**Only the changed archives** are written by default (`x2_assets --cli pack`, the window's Pack; `--all` or
+"Pack every archive" for all, `PackOptions::onlyChanged`): `<destination>/x2_assets_pack.tsv` keeps, per archive, a
+fingerprint of what the last pack wrote there (names, positions, algorithms, forms, content hashes and its header) and
+the file's size and time. An archive whose fingerprint is the same and whose file was not changed or removed since is
+left as it is, so a small edit does not rewrite gigabytes. Pack never changes the manifest (that is
+[commit](#managing-client_data)).
 
 **Byte identity needs stock zlib 1.3.1**: the project's pinned FetchContent version (Windows) and the Ubuntu image's
 system zlib. Other deflate implementations write other, equally valid streams: Arch's zlib-ng gives different bytes for
 almost every entry (2026-11-05). Pack then still writes valid archives and reports each such entry as "not reproduced".
+
+## Managing client_data
+
+<a id="managing-client_data"></a>[T50](../project/decisions.md) (2026-11-16, `tools/assets-manager`): **the `.kom` are
+the source of truth and client_data is the workspace**. `x2_assets` shows every file of client_data with its state
+against the manifest (`x2::assets::ClientData`, `workspace.h`) and changes client_data and the manifest, from a window or
+from the command line. Both run the same model; nothing is rescanned after an operation.
+
+| State | Color | Meaning | What changes it |
+|---|---|---|---|
+| unchanged | white | as the manifest's original | |
+| modified | yellow | its content differs from the original | commit (it becomes the original) |
+| deleted | red | in the manifest, not in client_data | sync or commit (the record is dropped) |
+| untracked (new) | green | in client_data, not in the manifest | sync or commit (it gets a record, `new`) |
+| added | blue | in the manifest as `new`, in no original archive | commit |
+| ignored | grey | untracked and matched by `.kom/ignore.txt` | never synced, committed or packed |
+
+The three operations are separate:
+
+- **Sync data structure** (`sync`): the manifest's structure. Untracked files get a record in their archive, deleted
+  files' records are dropped, archive edits are applied and new archives created. Modified files stay modified: the
+  manifest keeps their original.
+- **Commit** (`commit`): a sync, then every modified and added file becomes the original of its record, encoded as
+  pack would (`zlib`, the bytecode of edited scripts in `.kom/originals`); afterwards nothing shows as changed. Nothing
+  is packed.
+- **Pack** (`pack`): writes the archives of the manifest into a destination folder (the window keeps it in a field
+  beside the button), only those that changed ([above](#packing)). The manifest does not change.
+
+Sync and commit keep the previous manifest as `.kom/manifest.tsv.bak`.
+
+**Archives.** A new file goes to its folder's **default archive**: the most common archive among the tracked files
+under that folder, else under its parent, up to the root (ties: the first in load order). A file's or a whole folder's
+target archive can be changed (the window's inspector, dragging onto an archive in the archives view, or
+`set-archive`); the edit is applied by the next sync or commit. A **new archive** can be created and assigned the
+same way (`set-archive --new`, "New archive..."); its place in the load order is its name's. The tool handles any
+archive, but the client loads only its fixed list (`data001`–`data150`, `datai001`–`datai023`,
+`KGCMassFileManager.cpp`), so files in other archives do not reach the game (user, 2026-11-16).
+
+<a id="ignored-files"></a>**Ignored files.** `.kom/ignore.txt` keeps files that live in client_data for convenience
+(notes, a layout, the tool itself) out of the manifest and the `.kom`: one pattern per line, `#` comments, ASCII
+case-insensitive. A pattern ending in `/` is a folder (everything under it), one with a `/` is a glob on the path
+relative to client_data, any other a glob on the file name in any folder. It applies only to files the manifest does
+not hold.
+
+**The window.** A toolbar (Open, Rescan, undo/redo, Sync data structure, Commit, Pack and its destination), an
+explorer by folder or by archive, filtered by name or to the changes, and an inspector on the right (metadata, target
+archive, ignore, move, rename, delete; for one file, a folder, an archive or several items). The explorer works as a
+file explorer: a click opens a folder; Ctrl, Shift, a box drag or Ctrl+A select many; dragging moves the selection into
+a folder or sets its target archive; Ctrl+X/Ctrl+V move, F2 renames, Del deletes (into `.kom/trash/`, emptied on exit,
+so undo can restore it), and Ctrl+Z/Ctrl+Y undo and redo every operation until a sync or commit; files dropped from
+outside are copied into the folder under the mouse. Work on many files (open, rescan, commit, pack) runs in the
+background behind a progress overlay. Closing with unsynced archive edits asks first. The last client_data and the
+pack destination are remembered (SDL's preference folder). Opening the full client_data hashes its 105,033 files
+once (about 20 s) and then takes about 5 s with the hash cache (2026-11-16, `linux-debug`).
+
+**The command line** (`x2_assets --cli help` lists the commands, `help <command>` explains one with examples):
+`status`, `info`, `where`, `archives`, `add`, `remove`, `move`, `rename`, `mkdir`, `set-archive`, `ignore`, `unignore`,
+`sync`, `commit` and `pack`, besides `import`, `layout` and `texture-sizes`. The command line keeps nothing between
+runs, so `add`, `remove` and `set-archive` sync at once (`--no-sync` to leave added or removed files for later).
+
+**Tools find files by name** (AGENTS.md, user, 2026-11-16): client_data's organization is x2_assets' and can change at
+any time, so no tool assumes where a file is. `x2_assets --cli where <client_data> <name>` prints a file's path, and
+`--new [<sibling>...]` where a new one goes (with its first sibling found, else the root: `ClientData::FolderForNew`);
+Python tools use `tools/assets/client_data.py` (`ClientData(root).find(name)`); the UI editor creates a missing
+`UIAnchors.lua` with the first dialog script it finds. A tool that works on a single folder takes it as an argument.
 
 ## Original texture sizes
 
@@ -136,7 +216,10 @@ manifests, import of both header layouts with every encoding (`zlib`, a blob com
 entry, a non-ASCII name), byte-identical pack, moved files, edited/missing/new files, and the refusals (non-empty
 destination, a name in two archives or two folders, an edited opaque entry). Lua: a bytecode script decompiled, a
 truncated one kept, an Item.kim converted with Enum.lua's names, an unchanged pack byte for byte, edited scripts packed
-as source and Item.kim compiled again, scripts that do not load refused, and `--no-lua`.
+as source and Item.kim compiled again, scripts that do not load refused, and `--no-lua`. The manager
+(`test_workspace.cpp`): file states and lookup by name, the default archive, sync with edits, new archives and the
+indices it gives, add/move/remove, the ignore list, incremental pack, commit against pack, and the in-place operations
+with the trash and restore.
 
 **Opt-in**: `X2_ASSETS_CLIENT_DATA=<client data folder> x2_assets_tests -tc="*client*"` imports with
 `tools/assets/layout.txt`, checks that every script decompiled and Item.kim was converted, that the status is clean, packs and compares every archive byte for byte. It needs about
