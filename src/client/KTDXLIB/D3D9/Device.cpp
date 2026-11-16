@@ -1346,6 +1346,12 @@ render::GraphicsPipeline Device::Pipeline(const PipelineKey& key, DWORD fvf, UIN
                              : w[kCull] == D3DCULL_CW  ? render::CullMode::Front
                                                        : render::CullMode::None;
     desc.rasterizer.fillMode = w[kFill] == D3DFILL_WIREFRAME ? render::FillMode::Line : render::FillMode::Fill;
+    // Pre-transformed (XYZRHW) vertices were not clipped by depth in D3D9; clamp their z instead. The 2D particles
+    // mirrored by a 180-degree rotation get z of about +-1e-5 (sin 180 in float), and with clipping the half with a
+    // negative z vanished (the special skill cut-in portraits showed cut in half).
+    if (!effect && layout.rhw) {
+        desc.rasterizer.enableDepthClip = false;
+    }
     const float depthBias = BitsFloat(w[kDepthBias]);
     const float slopeBias = BitsFloat(w[kSlopeScaleDepthBias]);
     if (depthBias != 0.0f || slopeBias != 0.0f) {
