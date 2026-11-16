@@ -657,6 +657,27 @@ g_pUIDialog:AddPlacement({ NAME = "QUEST_MENU", TARGET = "DLG_UI_Menu.lua", CONT
 - A placement without `NAME`, an unknown `ANCHOR`, and `ApplyPlacement` of a name the script lacks are reported on
   stderr; the last returns false and changes nothing.
 
+## Particle anchors (2026-11-16, `client/widescreen-migration`, [T52](../project/decisions.md))
+
+A particle sequence with `RESOLUTIONCONVERT` is drawn in layout units (`ConvertByResolution`), so on a wide screen it
+stays in the centered 1024 column. `UIAnchors.lua` names the ones that belong to an edge or to the whole screen:
+
+```lua
+UI_PARTICLE_ANCHORS = { NewComboDamage = "LEFT", OutLine = "STRETCH", BOSS_DANGER = "SPAN" }
+```
+
+- **LEFT / RIGHT:** the particle's x moves by the anchor shift (`ApplyUIParticleAnchor`, `KTDGUIAnchor.h`).
+- **STRETCH:** x maps from 0–1024 across the canvas and the width grows by the same factor (a full-screen frame).
+- **SPAN:** x maps across the canvas and the size stays (a banner that slides in from one edge and out the other;
+  512 still maps to the canvas's middle).
+- `CKTDGParticleSystem` looks the sequence's name up once (`CKTDGUIAnchors::ParticleAnchor`, cached in
+  `m_iUIAnchor`); clones keep the name. A sequence the table lacks stays centered, as before.
+
+The client_data's table (2026-11-16): the combo counter (`NewComboDamage`, `ComboPicChar`/`ComboPicCharBig` and the
+13 `NewCombo*` interjections) LEFT; the special-attack comic frame (`OutLine`, `OutLine_Left`) STRETCH; the boss and
+sub-boss warning (`BOSS_DANGER`, `BOSS_DANGER_ADD`, `SUB_BOSS_DANGER`, `SUB_BOSS_DANGER_ADD`, `BOSS_NAME`) SPAN.
+`FocusLine` (the speed lines around the centre) stays centered.
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

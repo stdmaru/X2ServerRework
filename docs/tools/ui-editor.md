@@ -280,7 +280,7 @@ move into the scripts with the widescreen migration ([T46](../project/decisions.
 `UIAnchors.lua` (`test_anchors_file.cpp`): entries read by script without folder or case; each kind of edit changes
 only its own text (a value, a control removed from the middle or the end of a line and with its line, added after a
 trailing comma or on one line, a name that needs quotes, the dialog's anchor, the zones and the backdrops added, changed and removed,
-an entry emptied and removed, a comment after it kept); new entries under one section, long ones wrapped; a missing
+an entry emptied and removed, a comment after it kept, `UI_PARTICLE_ANCHORS` left as it is); new entries under one section, long ones wrapped; a missing
 file written with its header; text that cannot be read reported. The client_data's own file (2026-11-14) reads
 without problems and is unchanged by setting its entries to what they are.
 The engine: an entry put into an open dialog and cleared, the script's own anchors kept, a backdrop declared and

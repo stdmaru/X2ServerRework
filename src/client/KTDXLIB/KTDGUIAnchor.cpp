@@ -109,6 +109,38 @@ float CKTDGUIStretch::Unmap( float fCanvasX, float fBase, float fLeft, float fEx
 	return fX - fGrown;
 }
 
+UIParticleAnchor CKTDGUIAnchors::ParticleAnchor( const wchar_t* pwszSequence )
+{
+	Get();	// loads UIAnchors.lua once
+	const auto it = s_mapParticles.find( pwszSequence != NULL ? pwszSequence : L"" );
+	return it != s_mapParticles.end() ? it->second : UIParticleAnchor::Center;
+}
+
+void ApplyUIParticleAnchor( UIParticleAnchor eAnchor, float& fX, float& fWidth )
+{
+	switch ( eAnchor )
+	{
+	case UIParticleAnchor::Left:
+		fX += g_pKTDXApp->GetUIAnchorShift( UIAnchor::Left );
+		break;
+	case UIParticleAnchor::Right:
+		fX += g_pKTDXApp->GetUIAnchorShift( UIAnchor::Right );
+		break;
+	case UIParticleAnchor::Stretch:
+	case UIParticleAnchor::Span:
+	{
+		const float fLeft = g_pKTDXApp->GetUIAnchorShift( UIAnchor::Left );
+		const float fScale = ( CKTDXApp::kUILayoutWidth + g_pKTDXApp->GetUIAnchorShift( UIAnchor::Right ) - fLeft ) / CKTDXApp::kUILayoutWidth;
+		fX = fLeft + fX * fScale;
+		if ( eAnchor == UIParticleAnchor::Stretch )
+			fWidth *= fScale;
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 const std::unordered_map<std::wstring, CKTDGUIAnchors::Entry>& CKTDGUIAnchors::Get()
 {
 	static const std::unordered_map<std::wstring, Entry> s_mapEntries = Load();
@@ -212,6 +244,41 @@ std::unordered_map<std::wstring, CKTDGUIAnchors::Entry> CKTDGUIAnchors::Load()
 
 	lua_pushnil( L );
 	lua_setglobal( L, "UI_ANCHORS" );
+
+	lua_getglobal( L, "UI_PARTICLE_ANCHORS" );	// sequence name -> "LEFT" | "RIGHT" | "STRETCH" | "SPAN" | "CENTER"
+	if ( lua_istable( L, -1 ) )
+	{
+		lua_pushnil( L );
+		while ( lua_next( L, -2 ) != 0 )
+		{
+			bool bGood = false;
+			if ( lua_type( L, -2 ) == LUA_TSTRING && lua_type( L, -1 ) == LUA_TSTRING )
+			{
+				std::string strValue = lua_tostring( L, -1 );
+				for ( char& c : strValue )
+					c = static_cast<char>( std::toupper( static_cast<unsigned char>( c ) ) );
+				UIParticleAnchor eAnchor = UIParticleAnchor::Center;
+				UIAnchor eDialogAnchor = UIAnchor::Center;
+				if ( strValue == "SPAN" )
+					bGood = true, eAnchor = UIParticleAnchor::Span;
+				else if ( ParseUIAnchor( strValue.c_str(), eDialogAnchor ) )
+				{
+					bGood = true;
+					eAnchor = eDialogAnchor == UIAnchor::Left ? UIParticleAnchor::Left
+						: eDialogAnchor == UIAnchor::Right ? UIParticleAnchor::Right
+						: eDialogAnchor == UIAnchor::Stretch ? UIParticleAnchor::Stretch : UIParticleAnchor::Center;
+				}
+				if ( bGood )
+					s_mapParticles[ToWide( lua_tostring( L, -2 ) )] = eAnchor;
+			}
+			if ( bGood == false )
+				std::fprintf( stderr, "UIAnchors.lua: bad particle anchor in UI_PARTICLE_ANCHORS\n" );
+			lua_pop( L, 1 );
+		}
+	}
+	lua_pop( L, 1 );
+	lua_pushnil( L );
+	lua_setglobal( L, "UI_PARTICLE_ANCHORS" );
 	return mapEntries;
 }
 
