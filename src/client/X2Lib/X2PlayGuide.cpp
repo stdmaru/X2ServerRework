@@ -569,7 +569,7 @@ void CX2PlayGuide::SetMouseClickIndex(int val)
 	{
 		CX2StateMenu* pStateMenu = static_cast<CX2StateMenu*>(g_pMain->GetNowState());
 
-		D3DXVECTOR2 vPos = D3DXVECTOR2(0.f, 0.f);
+		const wchar_t* pwszPlacement = L"";		// DLG_Mouse_Click.lua's placements (T52)
 		CX2State::MouseClickUI::MOUSE_CLICK_STYLE arrowStyle = CX2State::MouseClickUI::MCS_FROM_RIGHT_BOTTOM;
 
 
@@ -579,35 +579,35 @@ void CX2PlayGuide::SetMouseClickIndex(int val)
 			{
 			case NGS_STEP_0: // 퀘스트 메뉴
 				arrowStyle = CX2State::MouseClickUI::MCS_FROM_RIGHT_TOP;
-				vPos = D3DXVECTOR2(783, 233);
+				pwszPlacement = L"GUIDE_QUEST_MENU";
 				break;
 			case NGS_STEP_1: // 에픽퀘스트 탭
 				arrowStyle = CX2State::MouseClickUI::MCS_FROM_RIGHT_TOP;
-				vPos = D3DXVECTOR2(135, 150);
+				pwszPlacement = L"GUIDE_EPIC_QUEST_TAB";
 				break;
 			case NGS_STEP_2: // 에픽퀘스트 완료목록
-				vPos = D3DXVECTOR2(300, 135);
+				pwszPlacement = L"GUIDE_EPIC_QUEST_LIST";
 				break;
 			case NGS_STEP_3: // 퀘스트 완료
-				vPos = D3DXVECTOR2(230, 515);
+				pwszPlacement = L"GUIDE_QUEST_COMPLETE";
 				break;
 			case NGS_STEP_4: // 퀘스트 보상 완료
-				vPos = D3DXVECTOR2(220, 460);
+				pwszPlacement = L"GUIDE_QUEST_REWARD";
 				break;
 			case NGS_STEP_5: // 던전도구
-				vPos = D3DXVECTOR2(872, 125 );
+				pwszPlacement = L"GUIDE_DUNGEON_MENU";
 				break;
 			case NGS_STEP_6: // 엘의 나무
 				arrowStyle = CX2State::MouseClickUI::MCS_FROM_RIGHT_TOP;
-				vPos = D3DXVECTOR2(525, 435 );
+				pwszPlacement = L"GUIDE_EL_TREE";
 				break;
 			case NGS_STEP_7: // 던전신청
 				arrowStyle = CX2State::MouseClickUI::MCS_FROM_LEFT_BOTTOM;
-				vPos = D3DXVECTOR2(960, 474 );
+				pwszPlacement = L"GUIDE_DUNGEON_APPLY";
 				break;
 			case NGS_STEP_8: // 숲속의 폐허
 				arrowStyle = CX2State::MouseClickUI::MCS_FROM_RIGHT_TOP;
-				vPos = D3DXVECTOR2(390, 620 );
+				pwszPlacement = L"GUIDE_FOREST_RUIN";
 				break;
 			case NGS_STEP_END:
 			default:
@@ -615,7 +615,7 @@ void CX2PlayGuide::SetMouseClickIndex(int val)
 				return;
 			}
 
-			pStateMenu->CreateMouseClickUI( (CKTDXStage*) pStateMenu, vPos, 0.5f, 1000, arrowStyle );
+			pStateMenu->CreateMouseClickUI( (CKTDXStage*) pStateMenu, pwszPlacement, 0.5f, 1000, arrowStyle );
 			return;
 		}
 	}

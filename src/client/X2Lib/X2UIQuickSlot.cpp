@@ -1879,8 +1879,7 @@ void CX2UIQuickSlot::OnFrameMove_CoolTime( CX2Item* pItem_, CX2SlotItem* pSlotIt
 						if( pStateMenu != NULL )
 						{
 							CX2State::MouseClickUI::MOUSE_CLICK_STYLE arrowStyle = CX2State::MouseClickUI::MCS_FROM_RIGHT_TOP_NORMAL;
-							D3DXVECTOR2 vPos = D3DXVECTOR2(107, 763);
-							pStateMenu->CreateMouseClickUI( g_pMain->GetNowState(), vPos, 0.5f, 1000, arrowStyle );
+							pStateMenu->CreateMouseClickUI( g_pMain->GetNowState(), L"SUMMON_CARD_SLOT", 0.5f, 1000, arrowStyle );
 						}
 					}
 				}

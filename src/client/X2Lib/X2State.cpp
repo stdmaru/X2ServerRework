@@ -8459,7 +8459,7 @@ bool CX2State::Handler_EGS_UPDATE_NPC_UNIT_BUFF_INFO_BROAD_NOT( HWND /*hWnd*/, U
 
 //////////////////////////////////////////////////////////////////////////
 
-CX2State::MouseClickUI::MouseClickUI( CKTDXStage* pStage, D3DXVECTOR2 vPos, float fTime, int nCount, MOUSE_CLICK_STYLE eStyle )
+CX2State::MouseClickUI::MouseClickUI( CKTDXStage* pStage, const wchar_t* pwszPlacement, float fTime, int nCount, MOUSE_CLICK_STYLE eStyle )
 : m_pDLGMouseClick( NULL )
 {
 	m_pDLGMouseClick = new CKTDGUIDialog( pStage, L"DLG_Mouse_Click.lua" );
@@ -8467,7 +8467,9 @@ CX2State::MouseClickUI::MouseClickUI( CKTDXStage* pStage, D3DXVECTOR2 vPos, floa
 
 
 	m_pDLGMouseClick->SetShowEnable( true, true );
-	m_pDLGMouseClick->SetPos( vPos );
+	// The spot comes from the script (T52); one with a target follows it, the bounce below included.
+	m_pDLGMouseClick->ApplyPlacement( pwszPlacement );
+	D3DXVECTOR2 vPos = m_pDLGMouseClick->GetPos();
 	m_pDLGMouseClick->SetColor( D3DXCOLOR(1,1,1,1) );
 	m_pDLGMouseClick->MoveStop();
 	m_pDLGMouseClick->Move( vPos, D3DXCOLOR(1,1,1,1), fTime, true, false, false, 1 );

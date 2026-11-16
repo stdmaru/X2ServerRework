@@ -191,7 +191,8 @@ class CKTDGUIDialog
 		// placement with a TARGET follows a shown dialog loaded from that script (the topmost), and the CONTROL of it
 		// when given: POS is then in the target's layout units, from its dialog's position plus the control's offset,
 		// so at 4:3 the dialog lands where POS plus those would put it, and on wider screens it takes the target's
-		// anchor and stretch. It is resolved each step; while the target is not shown the dialog stays where it is.
+		// anchor and stretch. It is resolved each step; while the target is not shown the dialog stays where it is (and
+		// is not drawn until the target was first found).
 		// Moves the code makes on top (Move animations, SetPos) follow the target too.
 		struct Placement
 		{
@@ -211,6 +212,8 @@ class CKTDGUIDialog
 		void			ClearPlacement();
 		const std::vector<Placement>& GetPlacements() const	{ return m_vecPlacements; }
 		const Placement*	GetPlacementInEffect() const;
+		// A target placement whose target was not shown since it was applied: the dialog is neither drawn nor takes input.
+		bool			IsWaitingForPlacementTarget() const;
 		// Where a placement puts the dialog now (its GetPos), false when its target is not shown.
 		bool			ResolvePlacement( const Placement& kPlacement, D3DXVECTOR2& vPos ) const;
 		// Whether a script by this key (UIScriptKey) was loaded into the dialog.

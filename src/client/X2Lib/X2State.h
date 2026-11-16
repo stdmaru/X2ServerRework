@@ -79,7 +79,8 @@ class CX2State : public CKTDXStage
 			};
 
 		public:
-			MouseClickUI( CKTDXStage* pStage, D3DXVECTOR2 vPos, float fTime, int nCount, MOUSE_CLICK_STYLE eStyle );
+			// pwszPlacement: one of DLG_Mouse_Click.lua's named placements (T52), the spot the pointer shows.
+			MouseClickUI( CKTDXStage* pStage, const wchar_t* pwszPlacement, float fTime, int nCount, MOUSE_CLICK_STYLE eStyle );
 			~MouseClickUI()
 			{
 				SAFE_DELETE_DIALOG( m_pDLGMouseClick );
@@ -177,11 +178,11 @@ class CX2State : public CKTDXStage
 
 
 
-		void CreateMouseClickUI( CKTDXStage* pStage, D3DXVECTOR2 vPos, float fTime = 0.5f, int nCount = 1000,
+		void CreateMouseClickUI( CKTDXStage* pStage, const wchar_t* pwszPlacement, float fTime = 0.5f, int nCount = 1000,
 			MouseClickUI::MOUSE_CLICK_STYLE eStyle = MouseClickUI::MCS_FROM_RIGHT_BOTTOM )
 		{
 			DeleteMouseClickUI();
-			m_pMouseClickUI = new MouseClickUI( pStage, vPos, fTime, nCount, eStyle );
+			m_pMouseClickUI = new MouseClickUI( pStage, pwszPlacement, fTime, nCount, eStyle );
 		}
 		void DeleteMouseClickUI()
 		{

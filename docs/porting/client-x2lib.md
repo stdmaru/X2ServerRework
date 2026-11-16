@@ -301,6 +301,33 @@ there). The slide-in is now anchored to `GetUICanvasLeft`/`GetUICanvasRight`, th
 (`CutIn_Talk_*`, placed by `GameMinorParticle.txt`) stay in the 1024 column. The portrait facing left was also cut in
 half by depth clipping of the mirrored quad, a renderer bug ([D3D9](client-d3d9.md#how-a-draw-is-translated)).
 
+## Tutorial pointer placements (2026-11-16, `client/widescreen-migration`, [T52](../project/decisions.md))
+
+The tutorial's click pointer (`CX2State::MouseClickUI`, `DLG_Mouse_Click.lua`) was put at 13 literal layout points in
+four files. `CreateMouseClickUI` now takes the name of one of the script's placements
+([KTDXLIB](client-ktdxlib.md#named-placements-2026-11-16-clientwidescreen-migration-t52)); the arrow style and its
+±10 bounce stay in the code, moved with the placement.
+
+| Placement | Called from | Was | Placement in the script |
+|---|---|---|---|
+| `GUIDE_QUEST_MENU` | `CX2PlayGuide` step 0 | (783, 233) | fixed, `RIGHT` (by the quest tracker, `DLG_UI_NEW_Quest_Quick.lua`, of which there are several) |
+| `GUIDE_EPIC_QUEST_TAB` | step 1 | (135, 150) | `DLG_UI_NEW_Quest_List.lua` + (135, 150) |
+| `GUIDE_EPIC_QUEST_LIST` | step 2 | (300, 135) | `DLG_UI_NEW_Quest_List.lua` + (300, 135) |
+| `GUIDE_QUEST_COMPLETE` | step 3 | (230, 515) | `DLG_UI_NEW_Quest_Detail.lua` / `Button_Complete` + (230, 515) |
+| `GUIDE_QUEST_REWARD` | step 4 | (220, 460) | `DLG_UI_NEW_Quest_Clear.lua` (at 100, 100) + (120, 360) |
+| `GUIDE_DUNGEON_MENU` | step 5 | (872, 125) | `DLG_UI_PARTY_BOTTON_NEW.lua` (`RIGHT`) + (872, 125) |
+| `GUIDE_EL_TREE` | step 6 | (525, 435) | `DLG_UI_Local_Map_NEW.lua` (at 216, 132) + (309, 303) |
+| `GUIDE_DUNGEON_APPLY` | step 7 | (960, 474) | `DLG_UI_PARTY_LENGTH_NEW.lua` (`RIGHT`) + (960, 474) |
+| `GUIDE_FOREST_RUIN` | step 8 | (390, 620) | `DLG_UI_Local_Map_NEW.lua` + (174, 488) |
+| `SUMMON_CARD_SLOT` | `CX2UIQuickSlot`, `CX2DungeonGame` (defence dungeon) | (107, 763) | `DLG_UI_Quick_Slot.lua` (`LEFT`) + (107, 763) |
+| `DUNGEON_ROOM` | `CX2StateDungeonRoom` (×2, quest 11) | (805, 215) | fixed, no target found |
+
+The targets were deduced from the code and the scripts (2026-11-16; the recording has no tutorial screens): what each
+step asks the player to click, and the dialog that has it. Offsets are the original literal less the target's
+position when the step runs, so at 4:3 the pointer is where the original put it. **Behavior change:** the quest
+windows are placed by `CX2UIManager` (top left, or beside another window open there), and the pointer now follows
+them; the original's points were right only when the quest window was the first. Not checked in the game yet.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

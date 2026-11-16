@@ -288,6 +288,8 @@ drawn at 21:9 (2026-11-15).
 Named placements (2026-11-16): a fixed one and its anchor (given back by the next), one following a centered and a
 right-anchored control at 16:9, the target moved, hidden and shown again, and an edited `POS` after a reload;
 `MoveCall` moves an `AddPlacement`'s `POS` (`test_script_edit.cpp`).
+With `X2_UI_EDITOR_GAME`, the client_data's tutorial pointer (`DLG_Mouse_Click.lua`) has its 11 placements and
+follows the quick slots to the left edge at 16:9, at the original's point at 4:3.
 
 `x2_ui_editor_tests`, headless on the null render backend: the script list (sorted, `.kom/` skipped), the record file
 (positions by script without folder or case, each once, placed by code; scenes and their scripts, older records without
