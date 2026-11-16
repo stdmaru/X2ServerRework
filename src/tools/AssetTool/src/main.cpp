@@ -5,6 +5,9 @@
 //   x2_assets layout <client data folder> --layout=<rules> [--unsorted=<count>]
 //   x2_assets texture-sizes <client data folder> <output file> [-j<N>]
 #include "x2/assets/client_data.h"
+#ifdef X2_ASSETS_WINDOW
+#include "gui.h"
+#endif
 #include "x2/assets/texture_sizes.h"
 #include "x2/kom/mount.h"
 #include "x2/platform/console.h"
@@ -233,7 +236,14 @@ int RunTextureSizes(const Args& args)
 int main(int argc, char* argv[])
 {
     x2::platform::InitConsole();
-    const std::vector<std::string> argv8 = x2::platform::Utf8Arguments(argc, argv);
+    std::vector<std::string> argv8 = x2::platform::Utf8Arguments(argc, argv);
+    const bool cli = argv8.size() >= 2 && argv8[1] == "--cli";
+    if (cli)
+        argv8.erase(argv8.begin() + 1);
+#ifdef X2_ASSETS_WINDOW
+    if (!cli && argv8.size() <= 2 && (argv8.size() < 2 || argv8[1].empty() || argv8[1][0] != '-'))
+        return RunWindow(argv8.size() == 2 ? PathFromUtf8(argv8[1]) : std::filesystem::path());
+#endif
     if (argv8.size() < 2)
         return Usage();
     const Args args = Parse(argv8);
