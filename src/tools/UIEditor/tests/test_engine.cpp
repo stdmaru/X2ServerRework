@@ -230,6 +230,11 @@ TEST_CASE("ui editor: the game's live state goes into an open dialog of the same
     CHECK_FALSE(dialogs[0].controls[0].shown);
     REQUIRE(dialogs[0].controls[0].strings.size() == 1);
     CHECK(dialogs[0].controls[0].strings[0].text == "Lv. 12");
+    // Marked as the game's code's (2026-11-16): hidden by it, a text it filled.
+    CHECK(dialogs[0].controls[0].game.shown);
+    CHECK(dialogs[0].controls[0].game.scriptShown);
+    CHECK_FALSE(dialogs[0].controls[0].game.added);
+    CHECK(dialogs[0].controls[0].strings[0].game.text);
 }
 
 TEST_CASE("ui editor: statics as the game holds them, those code added and pictures it removed included")
@@ -289,6 +294,10 @@ TEST_CASE("ui editor: statics as the game holds them, those code added and pictu
     CHECK(code.strings[0].text == "Relax");
     CHECK(code.strings[0].font == 2);
     CHECK(code.strings[0].pos[0] == 5.0f);
+    CHECK(code.game.added);
+    CHECK(code.pictures[0].game.added);
+    CHECK(code.strings[0].game.added);
+    CHECK_FALSE(after[0].controls[1].game.Any());               // as the script left it
 }
 
 TEST_CASE("ui editor: UIAnchors.lua entries go into open dialogs, the script's own anchors kept")
@@ -400,6 +409,7 @@ TEST_CASE("ui editor: the engine knows the script line that set each position")
     CHECK(dialogs[0].posSource.kind == x2::ui_editor::CallKind::DialogPos);
     REQUIRE(dialogs[0].controls.size() == 2);
     REQUIRE(dialogs[0].controls[0].pictures.size() == 1);
+    CHECK_FALSE(dialogs[0].controls[0].pictures[0].game.Any());     // no game state in it
     CHECK(dialogs[0].controls[0].pictures[0].point.line == 11);
     CHECK(dialogs[0].controls[0].pictures[0].point.shared == 1);
     CHECK(dialogs[0].controls[1].pictures[0].point.line == 17);
@@ -578,6 +588,9 @@ g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(10, 10) })
     CHECK(picture.points[3][0] == doctest::Approx(13.0f));
     CHECK(picture.points[3][1] == doctest::Approx(11.0f));
     CHECK(picture.uv[3][0] == doctest::Approx(0.75f));      // 3 of the texture's 4 texels
+    CHECK(picture.game.texture);                            // the game's code set NAME; the script says SCRIPT
+    CHECK(picture.game.scriptKey == "SCRIPT");
+    CHECK_FALSE(picture.game.added);
 }
 
 TEST_CASE("ui editor: a dialog grows at a line: crossed pictures grow, those past it would move")
@@ -888,4 +901,50 @@ TEST_CASE("ui editor: the client_data's pictures can be moved to statics of thei
     CHECK(pictures > 0);
     engine.reset();
     std::filesystem::current_path(previous);
+}
+
+// TEMP: timing of a control move
+TEST_CASE("ui editor: a picture placed by a SetPos after its SetPoint moves and grows by it")
+{
+    TempGame game;
+    // As the character selection's background (DLG_UI_Character_Selection_Back_New.lua), whose SetPos puts it back
+    // wherever its SetPoint is moved to (2026-11-16).
+    std::ofstream(game.root / "data" / "ui" / "scripts" / "DLG_PicPos.lua") << "\xEF\xBB\xBF" << R"lua(
+FALSE = 0
+g_pStatic = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pStatic)
+g_pStatic:SetName("Back")
+g_pPicture = g_pUIDialog:CreatePicture()
+g_pStatic:AddPicture(g_pPicture)
+g_pPicture:SetTex("DLG_Test.tga")
+g_pPicture:SetPoint({ USE_TEXTURE_SIZE = FALSE, LEFT_TOP = D3DXVECTOR2(0, 0), RIGHT_BOTTOM = D3DXVECTOR2(200, 100) })
+g_pPicture:SetPos(D3DXVECTOR2(-245, 0))
+)lua";
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    std::string error;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_PicPos.lua", error) == 0);
+    auto dialogs = engine->Inspect();
+    const auto& picture = dialogs[0].controls[0].pictures[0];
+    CHECK(picture.point.line == 9);
+    REQUIRE(picture.pos.Known());
+    CHECK(picture.pos.line == 10);
+    CHECK(picture.pos.kind == x2::ui_editor::CallKind::PicturePos);
+    CHECK(picture.points[0][0] == -245.0f);
+
+    std::string text;
+    REQUIRE_MESSAGE(engine->ScriptText("DLG_PicPos.lua", text, error), error);
+    REQUIRE_MESSAGE(x2::ui_editor::MoveCall(text, picture.pos.line, picture.pos.kind, 45, 10, error), error);
+    CHECK(text.find("g_pPicture:SetPos(D3DXVECTOR2(-200, 10))") != std::string::npos);
+    engine->SetScriptText("DLG_PicPos.lua", &text);
+    REQUIRE_MESSAGE(engine->ReloadDialog(0, error), error);
+    dialogs = engine->Inspect();
+    CHECK(dialogs[0].controls[0].pictures[0].points[0][0] == -200.0f);
+    CHECK(dialogs[0].controls[0].pictures[0].points[0][1] == 10.0f);
+    CHECK(dialogs[0].controls[0].pictures[0].points[3][0] == 0.0f);    // still 200 wide
+    engine.reset();
 }

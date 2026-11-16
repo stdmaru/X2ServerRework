@@ -1269,7 +1269,7 @@ void CKTDXApp::RegisterLuabind( KLuabinder* pKLuabinder )
 	lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetTex",			&CKTDGUIControl::CPictureData::SetTex_LUA );
 	lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetPoint",			&CKTDGUIControl::CPictureData::SetPoint_LUA );
 	lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetShow",			&CKTDGUIControl::CPictureData::SetShow );
-	lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetPos",			&CKTDGUIControl::CPictureData::SetPos );
+	lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetPos",			&CKTDGUIControl::CPictureData::SetPos_LUA );
 	lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetMaximizeType",	&CKTDGUIControl::CPictureData::SetMaximizeType );
 	lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetEdge",			&CKTDGUIControl::CPictureData::SetEdge );
     lua_tinker::class_def<CKTDGUIControl::CPictureData>( L, "SetIndex",			&CKTDGUIControl::CPictureData::SetIndex );

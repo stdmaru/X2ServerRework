@@ -15,9 +15,10 @@ enum class CallKind {
     Texture,    // a picture's SetTex("file.tga", "KEY")
     AddPicture, // a static's AddPicture(picture)
     AddControl, // g_pUIDialog:AddControl(control)
+    PicturePos, // a picture's SetPos(D3DXVECTOR2(x, y)), which places it over its SetPoint's LEFT_TOP
 };
 
-// Moves what the call of `kind` on `line` (1-based) sets by (dx, dy) layout units: the two arguments of SetPos, every
+// Moves what the call of `kind` on `line` (1-based) sets by (dx, dy) layout units: the two arguments of SetPos or a picture's D3DXVECTOR2, every
 // corner a point table gives (LEFT_TOP, RIGHT_TOP, LEFT_BOTTOM, RIGHT_BOTTOM; a LEFT_TOP, which defaults to 0, 0, is
 // added when it has none), or an AddString's POS (added when missing). In each coordinate the number is changed and
 // the rest of the expression kept (ShiftExpression). False with `error`, the text unchanged, when the line has no

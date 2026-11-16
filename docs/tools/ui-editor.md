@@ -62,8 +62,11 @@ Slice (c), 2026-11-14 (`tools/ui-editor-layout`, [T46](../project/decisions.md) 
 script itself, the loose file in the client_data ([client_data](client-data.md)), with no overrides file.
 
 - **What moves:** the dialog (its `g_pUIDialog:SetPos`), a control (every point table set on it, such as a button's
-  normal, over and down points, and those of its pictures and texts), a picture (its `SetPoint`) or a text (its
-  `AddString`'s `POS`). In the inspector each has a field (drag or Ctrl + click to type, whole layout units) and shows
+  normal, over and down points, and those of its pictures and texts), a picture (its `SetPoint`, or its
+  `SetPos(D3DXVECTOR2(x, y))` when one comes after it and places it instead) or a text (its `AddString`'s `POS`).
+  2026-11-16: moving the character selection's background (`DLG_UI_Character_Selection_Back_New.lua`, the only picture
+  `SetPos` in the client_data) edited its `SetPoint`, and its `SetPos(-245, 0)` put it back. Growing such a picture by
+  its left or top edge changes the size in the `SetPoint` and moves the `SetPos`. In the inspector each has a field (drag or Ctrl + click to type, whole layout units) and shows
   the line that set it. On the screen, a click selects a control and dragging it moves it (Alt: its dialog); with the
   screen focused, the arrow keys move it by 1 (Shift: 10).
 - **A picture's size** (2026-11-15): the inspector shows it with where it comes from, as the script writes it
@@ -210,6 +213,26 @@ in use, fills texts and swaps textures. "Watch game" shows what a running client
 - Not mirrored: dialogs built in code without a script, controls of other types than statics that code adds (buttons,
   edit boxes), and what code changes in them besides being shown.
 
+## What the game sets
+
+2026-11-16 (user's request: it was not clear what the editor can change and what it only mirrors). Each value of a
+screen has one owner:
+
+| Owner | What it sets | In the editor |
+|---|---|---|
+| The dialog script (`DLG_*.lua`) | What the script places: positions, sizes, the textures and keys of its `SetTex`, the statics and pictures | Edited and saved; the game reads it when it opens the dialog |
+| `UIAnchors.lua` | Anchors, STRETCH, stretch zones, backdrops | Edited and saved |
+| A texture's `.tet` | Each key's rectangle | Edited and saved; the game draws it for every picture of that key, whether the script or the code chose the key |
+| The game's code (C++) | What changes at run time: which texture and key (Add's `name_noclass` in character creation, by class), shown or hidden, texts, gauge sizes, pictures and controls it makes, dialogs it places | Mirrored only; changing it needs code (layout positions move into the scripts, [T46](../project/decisions.md) (3)) |
+| `UILive.tsv`, `UIAnchorsRecord.tsv` | Copies of what the game showed (watch game) and where it placed its dialogs (the record) | Read to rebuild the screen; never saved |
+
+The inspector marks in orange, with `[game]` in the control list and on the pictures and texts, what the game's code
+set over the script in a dialog that holds the game's state (`GameSets`; also after unchecking "Watch game"): a control,
+picture or text it made, a control or picture it shows or hides, a texture and key it chose (the tooltip gives the
+script's `SetTex`), a text it filled. Editing the script line there changes the script, which the game's code then
+overrides; a key's rectangle still applies. Positions are not marked (user's choice, 2026-11-16): the layout positions
+move into the scripts with the widescreen migration ([T46](../project/decisions.md) (3)), while these stay the code's.
+
 ## How it works
 
 - **Engine** (`engine.h`, `x2_ui_editor_core`): the real `CKTDXApp` on a window-less `x2::d3d9::Device` over the
@@ -264,10 +287,11 @@ growing it after a reload, and the texture loaded for Interactive Select at its 
 grown at a line (a crossed picture grows, one past the line moves, one before stays) and its extent after (2026-11-15);
 the `AddPicture` and `AddControl` lines, a picture moved to a static of its own drawn at the same pixels and the static
 removed, a picture resized after the game's state went in, a key the script changed to and a key the game's code set
-drawn with their edited rectangles after it (2026-11-16).
+drawn with their edited rectangles after it, what the game's code set marked, and a picture moved by its `SetPos`
+after its `SetPoint` (2026-11-16).
 
 Position edits (`test_script_edit.cpp`): numbers written as a script would; expressions keep their constants (the
-number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a
+number term changed, removed at 0, a move appended to one without); `SetPos`, a picture's `SetPos(D3DXVECTOR2)`, point tables on one line or several (a
 commented-out corner and a string that looks like one left alone), the four corners, a `LEFT_TOP` added, `AddString`'s
 `POS`; lines with two calls, a corner that is not a `D3DXVECTOR2` and a commented-out call refused, unchanged; a
 point table grown by its edges (`ADD_SIZE` changed or added and `LEFT_TOP` moved, or the corners given, two or four;

@@ -47,6 +47,16 @@ TEST_CASE("script edit: a dialog's SetPos")
     CHECK_FALSE(MoveCall(text, 9, CallKind::DialogPos, 1, 1, error));
 }
 
+TEST_CASE("script edit: a picture's SetPos")
+{
+    std::string text = "P:SetPos(D3DXVECTOR2(-245, BASE_Y))\nP:SetPos(1, 2)\n";
+    std::string error;
+    REQUIRE_MESSAGE(MoveCall(text, 1, CallKind::PicturePos, 45, 3, error), error);
+    CHECK(text == "P:SetPos(D3DXVECTOR2(-200, BASE_Y + 3))\nP:SetPos(1, 2)\n");
+    CHECK_FALSE(MoveCall(text, 2, CallKind::PicturePos, 1, 1, error));
+    CHECK(error == "SetPos on line 2 does not take a D3DXVECTOR2(x, y)");
+}
+
 TEST_CASE("script edit: a point table, on one line and over several")
 {
     std::string error;

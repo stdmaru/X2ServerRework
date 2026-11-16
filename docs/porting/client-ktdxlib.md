@@ -561,7 +561,8 @@ table (`CKTDGUIControl::SetPointData_`, which every `Set*Point` of every control
 through), `AddString` and a picture's `SetTex(file, key)` (`CPictureData::SetTex_LUA`); since 2026-11-16 (`tools/ui-editor-create`)
 also the calls that put a picture into a static and a control into the dialog, with the object added (argument 2):
 `AddPicture` and `AddControl`, bound to `CKTDGUIStatic::AddPicture_LUA` and `CKTDGUIDialog::AddControl_LUA`, which only
-note and call the originals. `GetScriptCalls` returns them, with the index of the script in `GetOpenedScripts` (the one
+note and call the originals, and a picture's `SetPos` (`CPictureData::SetPos_LUA`), which places it over its
+`SetPoint`. `GetScriptCalls` returns them, with the index of the script in `GetOpenedScripts` (the one
 running: a script may load another into the dialog). Only calls at the level of the dialog's own script are noted
 (`CKTDXApp::s_iScriptDepth`, how many `LoadAndDoMemory` run one inside another): some controls run a script of their
 own while the dialog's loads, with lines of that other file (found on the client_data, 2026-11-14). Every script runs

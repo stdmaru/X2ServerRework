@@ -37,7 +37,8 @@ CutPlan PlanCut(const DialogInfo& dialog, bool vertical, float at, float grow)
                 } else if (!picture.point.Known()) {
                     plan.skipped.push_back(piece(name + " (no SetPoint)", picture.pixelMin, picture.pixelMax));
                 } else if (lo >= at) {
-                    plan.edits.push_back({picture.point, false, {vertical ? grow : 0.0f, vertical ? 0.0f : grow, 0, 0}});
+                    plan.edits.push_back({picture.pos.Known() ? picture.pos : picture.point, false,
+                                          {vertical ? grow : 0.0f, vertical ? 0.0f : grow, 0, 0}});
                     plan.moves.push_back(piece(name, picture.pixelMin, picture.pixelMax));
                 } else {
                     plan.edits.push_back({picture.point, true, {0, 0, vertical ? grow : 0.0f, vertical ? 0.0f : grow}});
