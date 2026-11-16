@@ -450,7 +450,6 @@ class CX2TFieldGame
 
 
 	private:
-		void LoadFieldImage(wstring &imgL, wstring &imgR);
 		void OpenSubAniSoundPlay();
 		float GetVillageCameraDistance();
 		float GetVillageCameraEyeHeight();
