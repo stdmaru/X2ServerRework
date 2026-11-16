@@ -186,6 +186,16 @@ struct EditorState {
         unsigned merge = 0;
     };
     std::vector<Step> undo, redo;
+    // Creating and deleting (docs/tools/ui-editor.md#creating-and-deleting): the fields of the open popup, and the
+    // control to select once the edited dialog is inspected again (its index changes).
+    struct Create {
+        char name[96] = {};
+        char texture[128] = {};
+        char key[96] = {};
+        float pos[2] = {};
+        int before = 1;     // a picture to its own static: 1 before the static, 0 after
+    } create;
+    std::string selectName;
     bool quitAsked = false;
     // Dragging the selected control on the screen: the move not applied yet (whole layout units are), and whether it
     // moves the dialog (Alt) instead.
@@ -1566,6 +1576,307 @@ void SizeField(x2::ui_editor::Engine& engine, EditorState& state, const PictureI
 }
 
 // addZone: makes a picture's width a stretch zone of its dialog.
+// Creating and deleting (docs/tools/ui-editor.md#creating-and-deleting) --------------------------------------------
+
+// A structural edit of a script's text (x2::ui_editor::PictureToNewStatic, ...), as one step of undo; `select`: the
+// control to select after.
+bool EditStructure(x2::ui_editor::Engine& engine, EditorState& state, const std::string& script,
+                   const std::function<bool(std::string&, std::string&)>& edit, const std::string& done,
+                   const std::string& select = {})
+{
+    std::string text, error;
+    if (!CurrentScript(engine, state, script, text)) {
+        return false;
+    }
+    const std::string before = text;
+    if (!edit(text, error)) {
+        state.message = script + ": " + error;
+        return false;
+    }
+    ApplyTexts(engine, state, {{script, before, text}}, 0);
+    state.message = done;
+    state.selectName = select;
+    return true;
+}
+
+// Why a script call cannot be edited structurally, or empty.
+std::string StructureProblem(const SourceRef& ref, const char* what)
+{
+    if (!ref.Known()) {
+        return std::string("no ") + what + " line the editor saw (code, or a control's own script)";
+    }
+    if (ref.shared > 1) {
+        return SourceLabel(ref) + " adds " + std::to_string(ref.shared) + " things (a loop or a function)";
+    }
+    return {};
+}
+
+bool NameTaken(const DialogInfo& dialog, const std::string& name)
+{
+    return std::any_of(dialog.controls.begin(), dialog.controls.end(),
+                       [&](const ControlInfo& control) { return control.name == name; });
+}
+
+// The name field of a popup: false (and why, shown) when the name is empty or the dialog has it.
+bool NameField(const DialogInfo& dialog, EditorState& state)
+{
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 18);
+    ImGui::InputText("name", state.create.name, sizeof(state.create.name));
+    const std::string name = state.create.name;
+    if (name.empty() || name.find_first_of("\"'\\") != std::string::npos) {
+        ImGui::TextDisabled("a name without quotes (UIAnchors.lua and the game's code find controls by it)");
+        return false;
+    }
+    if (NameTaken(dialog, name)) {
+        ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "the dialog has a control of that name");
+        return false;
+    }
+    return true;
+}
+
+// The texture, key and position fields of a new picture: false when there is no texture.
+bool PictureFields(x2::ui_editor::Engine& engine, EditorState& state)
+{
+    auto& create = state.create;
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 18);
+    ImGui::InputText("texture", create.texture, sizeof(create.texture));
+    TetFile tet;
+    const bool hasTet = PictureTet(engine, state, create.texture, tet);
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 18);
+    if (hasTet && ImGui::BeginCombo("key", create.key, ImGuiComboFlags_HeightLarge)) {
+        for (const auto& entry : tet.Entries()) {
+            if (ImGui::Selectable(entry.key.c_str(), LowerText(entry.key) == LowerText(create.key))) {
+                std::snprintf(create.key, sizeof(create.key), "%s", entry.key.c_str());
+            }
+        }
+        ImGui::EndCombo();
+    } else if (!hasTet) {
+        create.key[0] = '\0';
+        ImGui::TextDisabled(create.texture[0] != '\0' ? "no .tet: the whole texture (SetTex2)" : "a texture file the game loads");
+    }
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 12);
+    ImGui::DragFloat2("left top", create.pos, 1.0f, -8192.0f, 8192.0f, "%.0f");
+    return create.texture[0] != '\0' && (!hasTet || tet.Find(create.key) != nullptr);
+}
+
+void SetCreateName(EditorState& state, const std::string& name)
+{
+    std::snprintf(state.create.name, sizeof(state.create.name), "%s", name.c_str());
+}
+
+// A name not taken in the dialog: base, then base2, base3, ...
+std::string FreeName(const DialogInfo& dialog, const std::string& base)
+{
+    std::string name = base;
+    for (int n = 2; NameTaken(dialog, name); ++n) {
+        name = base + std::to_string(n);
+    }
+    return name;
+}
+
+void SetCreatePicture(EditorState& state, const PictureInfo* picture)
+{
+    std::snprintf(state.create.texture, sizeof(state.create.texture), "%s", picture != nullptr ? picture->texture.c_str() : "");
+    std::snprintf(state.create.key, sizeof(state.create.key), "%s", picture != nullptr ? picture->key.c_str() : "");
+}
+
+// "New static": a static with one picture, at the end of the dialog's script.
+void NewStaticEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog)
+{
+    if (ImGui::Button("New static...")) {
+        SetCreateName(state, FreeName(dialog, "Static_New"));
+        const PictureInfo* first = nullptr;
+        for (const ControlInfo& control : dialog.controls) {
+            if (first == nullptr && !control.pictures.empty()) {
+                first = &control.pictures.front();
+            }
+        }
+        SetCreatePicture(state, first);
+        state.create.pos[0] = state.create.pos[1] = 0.0f;
+        ImGui::OpenPopup("new static");
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("A static of its own, with a picture, at the end of %s: drawn over the rest", dialog.script.c_str());
+    }
+    if (ImGui::BeginPopup("new static")) {
+        const bool named = NameField(dialog, state);
+        const bool pictured = PictureFields(engine, state);
+        ImGui::BeginDisabled(!named || !pictured);
+        if (ImGui::Button("Create")) {
+            const auto& c = state.create;
+            const std::string name = c.name, texture = c.texture, key = c.key;
+            EditStructure(engine, state, dialog.script, [&](std::string& text, std::string& error) {
+                return x2::ui_editor::AddStatic(text, name, texture, key, c.pos[0], c.pos[1], error);
+            }, "new static " + name, name);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndDisabled();
+        ImGui::EndPopup();
+    }
+}
+
+// The selected control's structural edits: duplicate, delete, a new picture.
+void ControlStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog,
+                            const ControlInfo& control)
+{
+    const std::string problem = StructureProblem(control.add, "AddControl");
+    const bool isStatic = control.typeName == "static";
+    ImGui::BeginDisabled(!problem.empty());
+    if (isStatic && ImGui::SmallButton("Duplicate...")) {
+        SetCreateName(state, FreeName(dialog, control.name + "_Copy"));
+        state.create.pos[0] = state.create.pos[1] = 10.0f;
+        ImGui::OpenPopup("duplicate control");
+    }
+    if (isStatic && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("%s", problem.empty() ? "A copy of the static, its lines and its pictures', after its last line"
+                                                : problem.c_str());
+    }
+    if (isStatic) {
+        ImGui::SameLine();
+    }
+    if (isStatic && ImGui::SmallButton("New picture...")) {
+        SetCreatePicture(state, control.pictures.empty() ? nullptr : &control.pictures.back());
+        state.create.pos[0] = control.drawn ? std::round(control.drawnMin[0] - control.offset[0]) : 0.0f;
+        state.create.pos[1] = control.drawn ? std::round(control.drawnMin[1] - control.offset[1]) : 0.0f;
+        ImGui::OpenPopup("new picture");
+    }
+    if (isStatic) {
+        ImGui::SameLine();
+    }
+    if (ImGui::SmallButton("Delete")) {
+        const SourceRef add = control.add;
+        EditStructure(engine, state, add.script, [&](std::string& text, std::string& error) {
+            return x2::ui_editor::RemoveControl(text, add.line, error);
+        }, "deleted " + control.name + " (Undo puts it back)");
+        state.selected.control = -1;
+    }
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("%s", problem.empty() ? "Its AddControl, creation and lines go (only the AddControl when other "
+                                                  "lines use it).\nThe game's code may look it up by name or by index: "
+                                                  "check the code first."
+                                                : problem.c_str());
+    }
+    ImGui::EndDisabled();
+
+    if (ImGui::BeginPopup("duplicate control")) {
+        const bool named = NameField(dialog, state);
+        ImGui::SetNextItemWidth(ImGui::GetFontSize() * 12);
+        ImGui::DragFloat2("moved by", state.create.pos, 1.0f, -8192.0f, 8192.0f, "%.0f");
+        ImGui::BeginDisabled(!named);
+        if (ImGui::Button("Duplicate")) {
+            const SourceRef add = control.add;
+            const std::string name = state.create.name;
+            const float dx = state.create.pos[0], dy = state.create.pos[1];
+            EditStructure(engine, state, add.script, [&](std::string& text, std::string& error) {
+                return x2::ui_editor::DuplicateStatic(text, add.line, name, dx, dy, error);
+            }, control.name + " duplicated as " + name, name);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndDisabled();
+        ImGui::EndPopup();
+    }
+    if (ImGui::BeginPopup("new picture")) {
+        // After the static's last picture, or its AddControl when it has none the editor saw.
+        SourceRef after = control.add;
+        for (const PictureInfo& picture : control.pictures) {
+            if (picture.add.Known() && picture.add.shared == 1 && picture.add.script == control.add.script &&
+                picture.add.line > after.line) {
+                after = picture.add;
+            }
+        }
+        const bool pictured = PictureFields(engine, state);
+        ImGui::BeginDisabled(!pictured);
+        if (ImGui::Button("Add")) {
+            const auto& c = state.create;
+            const std::string texture = c.texture, key = c.key;
+            EditStructure(engine, state, after.script, [&](std::string& text, std::string& error) {
+                return x2::ui_editor::AddPictureAfter(text, after.line, after.kind, texture, key, c.pos[0], c.pos[1], error);
+            }, "new picture in " + control.name, control.name);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndDisabled();
+        ImGui::EndPopup();
+    }
+}
+
+// A picture's structural edits: to a static of its own, duplicate, delete.
+void PictureStructureEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog,
+                            const ControlInfo& control, std::size_t index)
+{
+    const PictureInfo& picture = control.pictures[index];
+    std::string problem = StructureProblem(picture.add, "AddPicture");
+    std::string moveProblem = problem.empty() ? StructureProblem(control.add, "AddControl") : problem;
+    if (moveProblem.empty() && picture.add.script != control.add.script) {
+        moveProblem = "the picture and its static are added by different scripts";
+    }
+    ImGui::BeginDisabled(!moveProblem.empty());
+    if (ImGui::SmallButton("To its own static...")) {
+        std::string base = control.name;
+        if (!picture.key.empty()) {
+            base += "_" + picture.key;
+        }
+        SetCreateName(state, FreeName(dialog, base));
+        state.create.before = index + 1 < control.pictures.size() || control.pictures.size() == 1 ? 1 : 0;
+        ImGui::OpenPopup("own static");
+    }
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("%s", moveProblem.empty()
+                                    ? "Into a new static at the same place, so it can get its own anchor or STRETCH"
+                                    : moveProblem.c_str());
+    }
+    ImGui::EndDisabled();
+    ImGui::SameLine();
+    ImGui::BeginDisabled(!problem.empty());
+    if (ImGui::SmallButton("Duplicate")) {
+        const SourceRef add = picture.add;
+        EditStructure(engine, state, add.script, [&](std::string& text, std::string& error) {
+            return x2::ui_editor::DuplicatePicture(text, add.line, 10.0f, 10.0f, error);
+        }, "picture duplicated, 10, 10 from it", control.name);
+    }
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("%s", problem.empty() ? "A copy with its lines, in the same static, moved by 10, 10"
+                                                : problem.c_str());
+    }
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Delete")) {
+        const SourceRef add = picture.add;
+        EditStructure(engine, state, add.script, [&](std::string& text, std::string& error) {
+            return x2::ui_editor::RemovePicture(text, add.line, error);
+        }, "picture deleted (Undo puts it back)", control.name);
+    }
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("%s", problem.empty() ? "Its AddPicture, creation and lines go.\nThe game's code may read the "
+                                                  "static's pictures by index (GetPicture): check the code first."
+                                                : problem.c_str());
+    }
+    ImGui::EndDisabled();
+
+    if (ImGui::BeginPopup("own static")) {
+        const bool named = NameField(dialog, state);
+        ImGui::RadioButton("before the static (drawn under it)", &state.create.before, 1);
+        ImGui::RadioButton("after it (drawn over it)", &state.create.before, 0);
+        if (index > 0 && index + 1 < control.pictures.size()) {
+            ImGui::TextDisabled("pictures drawn before and after it stay in the old static: the order changes for one side");
+        }
+        if (control.offset[0] != 0.0f || control.offset[1] != 0.0f) {
+            ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "the static is moved by %.0f, %.0f, the new one is not",
+                               static_cast<double>(control.offset[0]), static_cast<double>(control.offset[1]));
+        }
+        ImGui::BeginDisabled(!named);
+        if (ImGui::Button("Move")) {
+            const SourceRef pictureAdd = picture.add, controlAdd = control.add;
+            const std::string name = state.create.name;
+            const bool before = state.create.before != 0;
+            EditStructure(engine, state, pictureAdd.script, [&](std::string& text, std::string& error) {
+                return x2::ui_editor::PictureToNewStatic(text, pictureAdd.line, controlAdd.line, name, before, error);
+            }, "picture moved to " + name + ": give it an anchor below", name);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndDisabled();
+        ImGui::EndPopup();
+    }
+}
+
 void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const ControlInfo& control,
                   const std::function<void(float, float)>& addZone, const MoveFunction& move)
 {
@@ -1580,6 +1891,7 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
                                   (picture.key.empty() ? "" : " / " + picture.key);
         if (ImGui::TreeNode(label.c_str())) {
             state.expandedPictures.push_back(static_cast<int>(p));
+            PictureStructureEditor(engine, state, dialog, control, p);
             ImGui::Text("shown: %s", picture.shown ? "yes" : "no");
             ImGui::TextDisabled("SetPoint: %s", SourceLabel(picture.point).c_str());
             MoveField(state, "left top", picture.points[0],
@@ -1862,6 +2174,7 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     CutEditor(engine, state, dialog);
 
     ImGui::SeparatorText("Controls");
+    NewStaticEditor(engine, state, dialog);
     if (ImGui::BeginChild("controls", ImVec2(0, ImGui::GetContentRegionAvail().y * 0.4f), ImGuiChildFlags_Borders)) {
         for (int c = 0; c < static_cast<int>(dialog.controls.size()); ++c) {
             const ControlInfo& control = dialog.controls[static_cast<std::size_t>(c)];
@@ -1890,6 +2203,7 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
     ImGui::SeparatorText("Control");
     ImGui::Text("name: %s%s", control.name.c_str(), control.named ? "" : " (unnamed)");
     ImGui::Text("type: %s", control.typeName.c_str());
+    ControlStructureEditor(engine, state, dialog, control);
     ImGui::Text("anchor: %s%s", control.anchor.c_str(),
                 AnchorSource(control.anchorDeclared, control.anchorFromScript, " (the dialog's)"));
     ControlAnchorEditor(engine, state, dialog, control);
@@ -2524,6 +2838,15 @@ int main(int argc, char** argv)
         state.inspected = engine->Inspect();
         if (state.selected.dialog >= static_cast<int>(state.inspected.size())) {
             state.selected = {};
+        }
+        if (!state.selectName.empty() && state.selected.dialog >= 0) {
+            const auto& controls = state.inspected[static_cast<std::size_t>(state.selected.dialog)].controls;
+            for (std::size_t c = 0; c < controls.size(); ++c) {
+                if (controls[c].name == state.selectName) {
+                    state.selected.control = static_cast<int>(c);
+                }
+            }
+            state.selectName.clear();
         }
 
         gui->NewFrame();

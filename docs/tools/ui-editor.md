@@ -89,6 +89,9 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   that script is built again (`ReloadDialog`), where it was drawn and with the game's state last mirrored into it. The
   game, started before the edit, still draws the old numbers, so its state is moved by what the edit moved (the
   difference between what the scripts placed when first loaded and now).
+- **After watching the game** (2026-11-16, user's report): a dialog keeps the game's state it last mirrored, also with
+  "Watch game" unchecked, and a reload puts it back with each picture's corners moved by what the edits moved, each
+  corner by its own change. Until then only the left top was followed, so a size edit snapped back to the game's size.
 - **Undo and redo** take back moves as they do anchor edits (one drag is one step); "Save" writes the changed scripts,
   each one as a whole with its BOM (the files are UTF-8 with BOM, T42), and closing asks first.
 - **Dialogs placed by code** (T46 (3)): moving one changes its script's `SetPos` only, which the code overrides; the
@@ -109,6 +112,37 @@ in the inspector's dialog section, grows (or, negative, shrinks) the dialog at a
   pieces without a script line are not changed, and the inspector lists them.
 - **Apply** makes every edit as one step of undo (`EditCalls`); a line that sets several pieces is edited once, and
   refused when the pieces it sets would change differently (move them one by one).
+
+## Creating and deleting
+
+2026-11-16 (`tools/ui-editor-create`, user's request): anchors and STRETCH apply per control
+([KTDXLIB](../porting/client-ktdxlib.md#anchors-2026-11-13-clientwidescreen-anchors)), so a picture that must stretch
+while the rest of its static must not (a shade behind a speech balloon) needs a static of its own. The inspector adds,
+copies, splits and removes statics and pictures, each an edit of the dialog script's text (`script_edit.h`), one step of
+undo, saved with the others:
+
+- **To its own static** (a picture's "To its own static..."): its `S:AddPicture(P)` names a new static instead, created
+  (`CreateStatic`, `SetName`) and added (`AddControl`) just before the old static's `AddControl` (drawn under it, the
+  default for any but the last picture) or just after (drawn over it). The picture keeps its lines, so it stays where it
+  was; the new static is selected, to give it an anchor. Refused, with the reason in the tooltip, when the editor did
+  not see the picture's `AddPicture` or the static's `AddControl` (code, or a control's own script), when either runs in
+  a loop or a function, or when they are in different scripts.
+- **New static** (the dialog's "Controls" section): a named static with one picture (texture and key, `SetTex2` for a
+  texture without a `.tet`) at a left top, its size the key's, at the end of the dialog's script: drawn over the rest.
+  **New picture** (a static's): the same picture added after the static's last picture and its lines.
+- **Duplicate**: a picture is copied with its lines into its static, moved by 10, 10; a static (named, with a "moved
+  by") with its lines, its pictures and their lines, and its texts, after its last line.
+- **Delete**: a picture's `AddPicture`, a control's `AddControl`, with the object's creation and lines (and, for a
+  control, its pictures'), each only when no other line uses its variable; otherwise only the call that adds it goes, so
+  the script still runs and the object is not drawn. The game's code may look a control up by name, or a static's
+  pictures and texts by index (`GetPicture(n)`): check it first ([client_data](client-data.md) records every such edit).
+- **An object's lines** are the statements that start with its variable (at the start of a line or after a `;`) from
+  its creation (the last `V = ...` before the call) to the next assignment of the variable, so scripts that reuse one
+  `g_pPicture` for every picture work. New objects get globals of their own (`g_pStatic_<name>`, `<picture>_Copy`, with a
+  number when the script already has the name). The scripts' `AddPicture` and `AddControl` lines come from KTDXLIB, as
+  the setters' ([KTDXLIB](../porting/client-ktdxlib.md#script-calls-for-tools-2026-11-14-toolsui-editor-layout)).
+- **Watching the game:** the game mirrors controls by index, so after one of these edits its state goes into the wrong
+  controls until it restarts with the saved script.
 
 ## Editing textures and UV
 
@@ -220,7 +254,9 @@ added with its picture and text, a filler keeping the indexes); the line of each
 an edited script reloaded into its dialog, moved where it was, the game's state put into it moved by the edit, and the
 file's text again (2026-11-14); a picture's key read from its texture's `.tet`, its `SetTex` line, and a changed `.tet`
 growing it after a reload, and the texture loaded for Interactive Select at its size in texels (2026-11-14); a dialog
-grown at a line (a crossed picture grows, one past the line moves, one before stays) and its extent after (2026-11-15).
+grown at a line (a crossed picture grows, one past the line moves, one before stays) and its extent after (2026-11-15);
+the `AddPicture` and `AddControl` lines, a picture moved to a static of its own drawn at the same pixels and the static
+removed, a picture resized after the game's state went in (2026-11-16).
 
 Position edits (`test_script_edit.cpp`): numbers written as a script would; expressions keep their constants (the
 number term changed, removed at 0, a move appended to one without); `SetPos`, point tables on one line or several (a
@@ -229,7 +265,10 @@ commented-out corner and a string that looks like one left alone), the four corn
 point table grown by its edges (`ADD_SIZE` changed or added and `LEFT_TOP` moved, or the corners given, two or four;
 one without `RIGHT_BOTTOM` or an unknown `USE_TEXTURE_SIZE` refused); a
 `SetTex`'s texture and key changed (either quotes), one naming them through a variable, two on a line and a quote in
-the new name refused.
+the new name refused. Structural edits (2026-11-16): a picture moved to a new static before or after its old one (also when it is added
+before the static is), refused for other calls, another static or a quoted name, a taken global numbered; statics and
+pictures added (`SetTex2` without a key); a picture and a static duplicated and moved; a picture and a control removed,
+kept where another line uses them, and a reused variable's other picture left alone.
 
 `.tet` files (`test_tet_file.cpp`): read and written back as the client writes them; files cut short or not `.tet`
 refused; rectangles moved and grown, a rotated one not grown; keys added in order, a duplicate or invalid name
@@ -238,7 +277,10 @@ skipped). With `X2_UI_EDITOR_GAME`, every `.tet` of that client_data writes back
 
 With `X2_UI_EDITOR_GAME=<game folder>` (not in CI; `X2_UI_EDITOR_FILTER=<prefix>` narrows it), every dialog script of
 that client_data is opened in turn and every call the engine noted is moved in its text. On the user's (2026-11-14):
-29,571 calls, all movable, 2,465 of them on lines that set several things.
+29,571 calls, all movable, 2,465 of them on lines that set several things. Also (2026-11-16) every picture is moved to a static of its own
+in the text and the first shown one of each dialog is drawn after the reload: of 14,342 pictures, 1,485 are not added
+by a call the engine saw and 928 in loops or functions; none of the rest was refused, and 811 of 837 were drawn at the
+same pixels.
 
 Closing a dialog clears the Lua globals its scripts set to objects (2026-11-14): `DLG_Event_Clock_Talk_Box.lua` names
 its static through `g_pStaticEVENT_CLOCK`, a global of `DLG_Event_Clock.lua`, and opening the two in turn crashed the
@@ -263,5 +305,9 @@ the game's code hides but the one in use: "Watch game" shows them as the game do
 
 2026-11-14: slice (c) (`tools/ui-editor-layout`): positions, then textures, keys and UV
 ([above](#editing-positions)); to be tried on the desktop with the local map (`DLG_UI_Local_Map_NEW.lua`).
+
+2026-11-16: creating and deleting (`tools/ui-editor-create`, [above](#creating-and-deleting)); to be tried on the
+desktop. The first real case, the speech balloon's shade of `DLG_Dungeon_Ending_Event_Speech.lua`, was split by hand in
+the client_data the same day (`client/speech-shadow-stretch`).
 
 Next ([T46](../project/decisions.md)): the C++ layout positions moved into the scripts, screen by screen.
