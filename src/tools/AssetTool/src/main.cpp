@@ -538,6 +538,49 @@ int RunUnignore(const Args& args)
     return 0;
 }
 
+int RunExport(const Args& args)
+{
+    ClientData data;
+    if (!OpenData(args, data))
+        return 1;
+    std::vector<std::string> names;
+    if (args.positional.size() == 2)
+        names = data.FilesUnder("");
+    for (std::size_t i = 2; i < args.positional.size(); ++i)
+    {
+        const std::string& what = args.positional[i];
+        if (const ClientDataFile* f = data.Find(what); f && f->state != FileState::Deleted)
+            names.push_back(f->name);
+        else if (data.Folders().contains(what) || what == ".")
+        {
+            const std::vector<std::string> under = data.FilesUnder(what == "." ? "" : what);
+            names.insert(names.end(), under.begin(), under.end());
+        }
+        else
+            return Fail(what + ": neither a file name nor a folder of client_data");
+    }
+    if (args.Has("match"))
+    {
+        IgnoreList match;  // the same patterns as .kom/ignore.txt
+        match.patterns = {args.Get("match")};
+        std::erase_if(names, [&](const std::string& name) {
+            const ClientDataFile* f = data.Find(name);
+            return !match.Matches(f->folder.empty() ? f->name : f->folder + "/" + f->name);
+        });
+    }
+    if (names.empty())
+        return Fail("nothing to export");
+    const auto start = std::chrono::steady_clock::now();
+    std::size_t copied = 0;
+    std::string error;
+    if (!data.Export(names, PathFromUtf8(args.positional[1]), args.jobs, copied, error))
+        return Fail(error);
+    data.SaveHashCache();
+    std::printf("%zu files exported to %s, in client_data's folders, in %.0f s\n", copied, args.positional[1].c_str(),
+                Seconds(start));
+    return 0;
+}
+
 int RunSync(const Args& args)
 {
     ClientData data;
@@ -654,6 +697,16 @@ const std::vector<Command>& Commands()
          "Removes the patterns of .kom/ignore.txt that match each file; fails if one is a pattern of more files\n"
          "(edit .kom/ignore.txt then).\n\n  x2_assets --cli unignore client_data layout.txt\n",
          {}, RunUnignore},
+        {"export", "export <client_data> <destination> [<name or folder>...] [--match=<pattern>] [-j<N>]",
+         "copies files out of client_data, keeping its folders",
+         "Copies files (by name) or every file under folders (by path; \".\" or none for all) into the destination,\n"
+         "each at its path in client_data, so the copy has client_data's structure with only those files (e.g. to\n"
+         "upscale textures elsewhere and copy them back). --match keeps the files a pattern matches: a glob on the\n"
+         "file name, or on the path when it has a / (as in .kom/ignore.txt). Files already there are replaced;\n"
+         "client_data does not change.\n\n"
+         "  x2_assets --cli export client_data ~/upscale '--match=*.dds'   (quoted: the shell expands *)\n"
+         "  x2_assets --cli export client_data ~/ui ui/textures DLG_Shop.lua\n",
+         {"match"}, RunExport},
         {"sync", "sync <client_data> [-j<N>]", "writes the manifest's structure (new and deleted files)",
          "\"Sync data structure\": new files get a record (in their folder's default archive), deleted files' records\n"
          "are dropped. Modified files stay modified: the manifest keeps their original (commit changes that). The\n"
@@ -696,7 +749,7 @@ std::pair<std::size_t, std::size_t> Arity(const std::string& name)
         {"help", {0, 1}},     {"import", {2, 2}},      {"status", {1, 1}},  {"info", {2, 0}},
         {"where", {2, 0}},    {"archives", {1, 1}},    {"add", {2, 0}},     {"remove", {2, 0}},
         {"move", {3, 0}},     {"rename", {3, 3}},      {"mkdir", {2, 0}},   {"set-archive", {3, 0}},
-        {"ignore", {1, 0}},   {"unignore", {2, 0}},    {"sync", {1, 1}},    {"commit", {1, 1}},
+        {"export", {2, 0}},   {"ignore", {1, 0}},   {"unignore", {2, 0}},    {"sync", {1, 1}},    {"commit", {1, 1}},
         {"pack", {2, 2}},     {"layout", {1, 1}},      {"texture-sizes", {2, 2}},
     };
     return arity.at(name);

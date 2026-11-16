@@ -443,3 +443,36 @@ TEST_CASE("assets: moving, renaming and trashing update the model without a resc
         CHECK(g->state == file2.state);
     }
 }
+
+TEST_CASE("assets: export copies files out with client_data's structure")
+{
+    Fixture f;
+    ClientData data = f.Open();
+    TempDir out;
+    std::string error;
+    std::vector<std::string> names;
+    for (const ClientDataFile& file : data.Files())
+        if (x2::kom::AsciiLower(file.name).ends_with(".dds"))
+            names.push_back(file.name);
+    REQUIRE_FALSE(names.empty());
+    std::size_t copied = 0;
+    REQUIRE_MESSAGE(data.Export(names, out.Path(), 2, copied, error), error);
+    CHECK(copied == names.size());
+    for (const std::string& name : names)
+    {
+        const ClientDataFile* file = data.Find(name);
+        const fs::path copy = out.Path() / fs::path(file->folder) / name;
+        REQUIRE(fs::is_regular_file(copy));
+        CHECK(ReadFile(copy) == ReadFile(data.Locate(name)));
+    }
+    std::size_t files = 0;
+    for (const auto& e : fs::recursive_directory_iterator(out.Path()))
+        files += e.is_regular_file();
+    CHECK(files == names.size());  // only those
+
+    const std::vector<std::string> all = data.FilesUnder("");
+    CHECK(data.FilesUnder("ui").size() < all.size());
+    CHECK_FALSE(data.Export(all, f.clientData / "copy", 2, copied, error));  // into client_data
+    const std::vector<std::string> unknown = {"Nope.dds"};
+    CHECK_FALSE(data.Export(unknown, out.Path(), 2, copied, error));
+}

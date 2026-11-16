@@ -280,6 +280,7 @@ enum class Pick
 {
     ClientData,
     PackDestination,
+    Export,
 };
 
 struct State
@@ -336,6 +337,9 @@ struct State
     bool commitAsked = false;
     bool deleteAsked = false;
     std::vector<std::string> dropped;
+
+    SDL_Window* window = nullptr;
+    std::vector<std::string> exportNames;  // files to export once a destination is picked
 
     std::string pickFrom;  // the folder dialog's start, alive while it is open
     Pick picking = Pick::ClientData;
@@ -1124,6 +1128,8 @@ void StartRename(State& s)
     s.renameAsked = true;
 }
 
+void AskExport(State& s, const std::vector<std::string>& keys);  // after the folder dialog
+
 // --- Explorer ---------------------------------------------------------------------------------------------------------
 
 void CountsText(ImDrawList* draw, ImVec2& p, const std::array<std::size_t, kStates>& counts)
@@ -1164,6 +1170,10 @@ void ContextMenu(State& s, const Row& row)
         StartRename(s);
     if (ImGui::MenuItem("Delete", "Del", false, movable))
         s.deleteAsked = true;
+    if (ImGui::MenuItem("Export...", nullptr, false, folderRow || fileRow))
+        AskExport(s, keys);
+    ImGui::SetItemTooltip("Copies the selected files (folders: every file in them) to a folder you choose, in "
+                          "client_data's folders");
     if (ImGui::MenuItem("New folder", nullptr, false, folderRow || fileRow))
         NewFolder(s, here);
     ImGui::Separator();
@@ -1495,6 +1505,10 @@ void MoveBox(State& s)
     ImGui::SameLine();
     if (ImGui::Button("Delete... (Del)"))
         s.deleteAsked = true;
+    ImGui::SameLine();
+    if (ImGui::Button("Export..."))
+        AskExport(s, Selected(s));
+    ImGui::SetItemTooltip("Copies the selection to a folder you choose, in client_data's folders");
 }
 
 void FileInspector(State& s, const ClientDataFile& f)
@@ -1662,7 +1676,9 @@ void Inspector(State& s)
 void PickFolder(State& s, SDL_Window* window, Pick what)
 {
     s.picking = what;
-    s.pickFrom = what == Pick::ClientData ? PathToUtf8(s.root) : std::string(s.packTo);
+    s.pickFrom = what == Pick::ClientData        ? PathToUtf8(s.root)
+                 : what == Pick::PackDestination ? std::string(s.packTo)
+                                                 : ReadPref("export_destination.txt");
     SDL_ShowOpenFolderDialog(
         [](void* user, const char* const* list, int) {
             auto* state = static_cast<State*>(user);
@@ -1674,6 +1690,55 @@ void PickFolder(State& s, SDL_Window* window, Pick what)
             app::WakeEventLoop();
         },
         &s, window, s.pickFrom.empty() ? nullptr : s.pickFrom.c_str(), false);
+}
+
+// The files of the selected items (a folder: every file under it), to export.
+std::vector<std::string> ExportNames(const State& s, const std::vector<std::string>& keys)
+{
+    std::vector<std::string> names;
+    for (const std::string& k : keys)
+    {
+        if (k.starts_with("d:"))
+        {
+            const std::vector<std::string> under = s.data->FilesUnder(k.substr(2));
+            names.insert(names.end(), under.begin(), under.end());
+        }
+        else if (const ClientDataFile* f = k.starts_with("f:") ? s.data->Find(k.substr(2)) : nullptr;
+                 f && f->state != FileState::Deleted)
+            names.push_back(f->name);
+    }
+    return names;
+}
+
+void AskExport(State& s, const std::vector<std::string>& keys)
+{
+    s.exportNames = ExportNames(s, keys);
+    if (s.exportNames.empty())
+    {
+        s.Say("Nothing to export: the selection holds no file in client_data", true);
+        return;
+    }
+    PickFolder(s, s.window, Pick::Export);
+}
+
+void ExportTo(State& s, const std::filesystem::path& destination)
+{
+    if (s.Busy() || !s.data || s.exportNames.empty())
+        return;
+    WritePref("export_destination.txt", PathToUtf8(destination));
+    const ClientData* data = s.data.get();  // read only; the overlay keeps the window from changing it
+    Job& job = StartJob(s, "Exporting " + std::to_string(s.exportNames.size()) + " files", nullptr,
+                        [data, destination, names = std::move(s.exportNames)](ClientData*, Job& job,
+                                                                              std::string& error) {
+                            std::size_t copied = 0;
+                            if (!data->Export(names, destination, 0, copied, error, ProgressOf(job)))
+                                return false;
+                            job.message = std::to_string(copied) + " files exported to " + PathToUtf8(destination) +
+                                          ", in client_data's folders";
+                            return true;
+                        });
+    s.exportNames.clear();
+    (void)job;
 }
 
 void Toolbar(State& s, SDL_Window* window)
@@ -2022,6 +2087,7 @@ int RunWindow(const std::filesystem::path& clientData)
     }
 
     State s;
+    s.window = window->Handle();
     std::snprintf(s.packTo, sizeof s.packTo, "%s", ReadPref("pack_destination.txt").c_str());
     std::filesystem::path start = clientData;
     if (start.empty())
@@ -2061,6 +2127,8 @@ int RunWindow(const std::filesystem::path& clientData)
                     std::snprintf(s.packTo, sizeof s.packTo, "%s", s.picked->c_str());
                     WritePref("pack_destination.txt", s.packTo);
                 }
+                else if (s.picking == Pick::Export)
+                    ExportTo(s, PathFromUtf8(*s.picked));
                 else if (!s.data || s.data->EditCount() == 0)
                     OpenFolder(s, PathFromUtf8(*s.picked));
                 else

@@ -165,6 +165,15 @@ public:
                std::string& error);
     bool Restore(const Trashed& item, const std::filesystem::path& trash, std::string& error);
 
+    // Copies files (by name) out of client_data into `destination`, each at its own path relative to client_data, so
+    // the copy has client_data's structure with only those files (e.g. every .dds, to upscale them elsewhere).
+    // Existing files there are replaced; deleted files and unknown names are an error; client_data itself is not a
+    // destination. Nothing in client_data changes. `progress`: files copied so far.
+    bool Export(std::span<const std::string> names, const std::filesystem::path& destination, unsigned jobs,
+                std::size_t& copied, std::string& error, const Progress& progress = {}) const;
+    // The names of the files under `folder` (recursive, "" for all), deleted ones left out.
+    std::vector<std::string> FilesUnder(std::string_view folder) const;
+
     // Writes the hash cache from the files as this model has them (moved files keep their hashes).
     void SaveHashCache() const;
 
