@@ -17949,6 +17949,12 @@ void CX2GUUser::ActiveSkillShow( D3DXVECTOR3 /*bonePos*/, const WCHAR* pBackFace
 
 	if( bOnlyLight == false )
 	{
+		// The portraits bleed off the screen edge (their art touches the texture's left edge). The
+		// original used the 4:3 edges, 0 and 1024; on a wide canvas those are inside the screen and
+		// the portrait showed cut, so the slide-in is anchored to the canvas edges.
+		const float fCanvasLeft = g_pKTDXApp->GetUICanvasLeft();
+		const float fCanvasRight = g_pKTDXApp->GetUICanvasRight();
+
 		g_pX2Game->GetMinorParticle()->CreateSequence( NULL,  L"FocusLine", D3DXVECTOR3(0,0,0) );
 		if( GetIsRight() == true )
 		{
@@ -17970,15 +17976,15 @@ void CX2GUUser::ActiveSkillShow( D3DXVECTOR3 /*bonePos*/, const WCHAR* pBackFace
 
 				iter++; if ( iter == iterEnd ) goto out;
 				CKTDGParticleSystem::CParticleEvent_Position* pEPos = (CKTDGParticleSystem::CParticleEvent_Position*) (*iter);
-				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(pos.x-size.x, pos.y, 0),D3DXVECTOR3(pos.x-size.x, pos.y, 0) ) );
+				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(fCanvasLeft+pos.x-size.x, pos.y, 0),D3DXVECTOR3(fCanvasLeft+pos.x-size.x, pos.y, 0) ) );
 
 				iter++; if ( iter == iterEnd ) goto out;
 				pEPos = (CKTDGParticleSystem::CParticleEvent_Position*) (*iter);
-				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(pos.x, pos.y, 0),D3DXVECTOR3(pos.x, pos.y, 0) ) );
+				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(fCanvasLeft+pos.x, pos.y, 0),D3DXVECTOR3(fCanvasLeft+pos.x, pos.y, 0) ) );
 
 				iter++; if ( iter == iterEnd ) goto out;
 				pEPos = (CKTDGParticleSystem::CParticleEvent_Position*) (*iter);
-				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(1024+size.x, pos.y, 0),D3DXVECTOR3(1024+size.x, pos.y, 0) ) );
+				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(fCanvasRight+size.x, pos.y, 0),D3DXVECTOR3(fCanvasRight+size.x, pos.y, 0) ) );
 			}
 
 out:
@@ -18010,15 +18016,15 @@ out:
 
 				iter++; if ( iter == iterEnd ) goto out2;
 				CKTDGParticleSystem::CParticleEvent_Position* pEPos = (CKTDGParticleSystem::CParticleEvent_Position*) (*iter);
-				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(1024+size.x, pos.y, 0),D3DXVECTOR3(1024+size.x, pos.y, 0) ) );
+				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(fCanvasRight+size.x, pos.y, 0),D3DXVECTOR3(fCanvasRight+size.x, pos.y, 0) ) );
 
 				iter++; if ( iter == iterEnd ) goto out2;
 				pEPos = (CKTDGParticleSystem::CParticleEvent_Position*) (*iter);
-				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(1024-pos.x, pos.y, 0),D3DXVECTOR3(1024-pos.x, pos.y, 0) ) );
+				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(fCanvasRight-pos.x, pos.y, 0),D3DXVECTOR3(fCanvasRight-pos.x, pos.y, 0) ) );
 
 				iter++; if ( iter == iterEnd ) goto out2;
 				pEPos = (CKTDGParticleSystem::CParticleEvent_Position*) (*iter);
-				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(-size.x, pos.y, 0),D3DXVECTOR3(-size.x, pos.y, 0) ) );
+				pEPos->SetPosition( CMinMax<D3DXVECTOR3>( D3DXVECTOR3(fCanvasLeft-size.x, pos.y, 0),D3DXVECTOR3(fCanvasLeft-size.x, pos.y, 0) ) );
 			}
 
 out2:

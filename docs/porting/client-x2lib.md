@@ -294,6 +294,12 @@ where the balloon goes. Fix: Elesis uses her own balloons (`Elesis`, `Saber_Knig
 `Pyro_Knight` also for Blazing Heart); Add, who has none in the assets, and any class without a case get the generic
 `HQ_CutIn_Talk_<L|R>_<0..2>.dds` ("Toma essa!", ...).
 
+**Behavior change (widescreen):** every portrait (`HQ_CutIn_*.dds`) has art touching its texture's left edge, meant to
+bleed off the screen. `CX2GUUser::ActiveSkillShow` slid the portrait in to the 4:3 edges, 0 and 1024; on the wide
+canvas, which extends past both, the edge showed as a cut through the portrait (clear on Add and Elesis, whose art is wide
+there). The slide-in is now anchored to `GetUICanvasLeft`/`GetUICanvasRight`, the same at 4:3. The balloons
+(`CutIn_Talk_*`, placed by `GameMinorParticle.txt`) stay in the 1024 column.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them
