@@ -3,7 +3,9 @@
 //   x2_assets pack <client_data> <output folder> [-j<N>]
 //   x2_assets status <client_data> [-j<N>]
 //   x2_assets layout <client data folder> --layout=<rules> [--unsorted=<count>]
+//   x2_assets texture-sizes <client data folder> <output file> [-j<N>]
 #include "x2/assets/client_data.h"
+#include "x2/assets/texture_sizes.h"
 #include "x2/kom/mount.h"
 #include "x2/platform/console.h"
 
@@ -23,9 +25,11 @@ int Usage()
                "       x2_assets pack <client_data> <output folder> [-j<N>]\n"
                "       x2_assets status <client_data> [-j<N>]\n"
                "       x2_assets layout <client data folder> --layout=<rules> [--unsorted=<count>]\n"
+               "       x2_assets texture-sizes <client data folder> <output file> [-j<N>]\n"
                "import extracts the .kom of a client's data folder into client_data, organized by the layout rules\n"
                "(tools/assets/layout.txt), with a manifest; pack writes them back, byte for byte when nothing\n"
-               "changed; status lists what changed; layout shows where import would put the files. Import\n"
+               "changed; status lists what changed; layout shows where import would put the files;\n"
+               "texture-sizes lists the original size of every image (data/OriginalTextureSizes.txt). Import\n"
                "decompiles Lua bytecode and turns Item.kim into Item.lua + SetItem.lua unless --no-lua.\n",
                stderr);
     return 2;
@@ -209,6 +213,21 @@ int RunLayout(const Args& args)
     return 0;
 }
 
+int RunTextureSizes(const Args& args)
+{
+    if (args.positional.size() != 2)
+        return Usage();
+    const auto start = std::chrono::steady_clock::now();
+    TextureSizeStats stats;
+    std::string error;
+    if (!WriteTextureSizes(PathFromUtf8(args.positional[0]), PathFromUtf8(args.positional[1]), args.jobs, stats,
+                           error))
+        return Fail(error);
+    std::printf("%zu image sizes written, %zu entries named as images skipped (no image), in %.0f s\n", stats.images,
+                stats.skipped, Seconds(start));
+    return 0;
+}
+
 } // namespace
 
 int main(int argc, char* argv[])
@@ -229,5 +248,7 @@ int main(int argc, char* argv[])
         return RunStatus(args);
     if (command == "layout")
         return RunLayout(args);
+    if (command == "texture-sizes")
+        return RunTextureSizes(args);
     return Usage();
 }
