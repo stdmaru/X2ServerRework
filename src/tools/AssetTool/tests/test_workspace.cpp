@@ -251,17 +251,20 @@ TEST_CASE("assets: ignored files stay out of the manifest and the archives")
     REQUIRE_MESSAGE(data.Ignore("layout.txt", error), error);
     REQUIRE_MESSAGE(data.IgnoreFolder("tools", error), error);
     CHECK_FALSE(data.Ignore("Wall.dds", error));  // in the manifest
+    REQUIRE_MESSAGE(data.Ignore("notes.md", error), error);  // not there yet: by name
+    WriteFile(f.clientData / "deep" / "notes.md", Pattern(10, 3));
     REQUIRE_MESSAGE(data.Rescan(2, error), error);
     CHECK(StateOf(data, "layout.txt") == FileState::Ignored);
     CHECK(StateOf(data, "x2_assets") == FileState::Ignored);
     CHECK(StateOf(data, "Jump.ogg") == FileState::Untracked);
+    CHECK(StateOf(data, "notes.md") == FileState::Ignored);
     CHECK_FALSE(data.SetArchive("layout.txt", "a.kom", error));
     CHECK_FALSE(data.Unignore("x2_assets", error));  // its folder's pattern
     CHECK(error.find("tools/") != std::string::npos);
 
     Status status;
     REQUIRE_MESSAGE(GetStatus(f.clientData, 2, status, error), error);
-    CHECK(status.ignored.size() == 2);
+    CHECK(status.ignored.size() == 3);
     REQUIRE(status.untracked.size() == 1);
 
     SyncStats stats;
@@ -269,7 +272,7 @@ TEST_CASE("assets: ignored files stay out of the manifest and the archives")
     CHECK(stats.added == 1);  // Jump.ogg only
     CHECK(StateOf(data, "layout.txt") == FileState::Ignored);
     const PackStats packed = f.DoPack();
-    CHECK(packed.ignored == 2);
+    CHECK(packed.ignored == 3);
     CHECK(packed.untracked == 0);
 
     REQUIRE_MESSAGE(data.Unignore("layout.txt", error), error);

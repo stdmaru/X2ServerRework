@@ -164,11 +164,16 @@ bool ClientData::Hash(unsigned jobs, std::string& error, const Progress& progres
         }, error))
         return false;
 
-    std::sort(disk.begin(), disk.end(), [](const ClientDataFile& a, const ClientDataFile& b) {
-        const std::string fa = kom::AsciiLower(a.folder), fb = kom::AsciiLower(b.folder);
-        return fa != fb ? fa < fb : kom::AsciiLower(a.name) < kom::AsciiLower(b.name);
-    });
-    Classify(std::move(disk));
+    // By folder, then name, case-insensitive (keys made once: lower-casing in the comparison took seconds).
+    std::vector<std::pair<std::string, std::size_t>> order(disk.size());
+    for (std::size_t i = 0; i < disk.size(); ++i)
+        order[i] = {kom::AsciiLower(disk[i].folder) + '\0' + kom::AsciiLower(disk[i].name), i};
+    std::sort(order.begin(), order.end());
+    std::vector<ClientDataFile> sorted;
+    sorted.reserve(disk.size());
+    for (const auto& [key, i] : order)
+        sorted.push_back(std::move(disk[i]));
+    Classify(std::move(sorted));
     SaveHashCache();
     return true;
 }
@@ -558,12 +563,26 @@ bool ClientData::CreateArchive(std::string_view name, std::string& error)
 bool ClientData::Ignore(std::string_view name, std::string& error)
 {
     const ClientDataFile* f = Find(name);
-    if (!f || f->state != FileState::Untracked)
+    if (!f)
+        return IgnorePattern(name, error);  // not there yet: its name, wherever it appears
+    if (f->state != FileState::Untracked)
     {
-        error = "only files the manifest does not hold can be ignored";
+        error = f->name + (f->state == FileState::Ignored ? " is already ignored"
+                                                          : " is in the manifest: only files it does not hold can be "
+                                                            "ignored (remove it first)");
         return false;
     }
-    ignore_.patterns.push_back(f->folder.empty() ? f->name : f->folder + "/" + f->name);
+    return IgnorePattern(f->folder.empty() ? f->name : f->folder + "/" + f->name, error);
+}
+
+bool ClientData::IgnorePattern(std::string_view pattern, std::string& error)
+{
+    if (pattern.empty() || pattern == "/" || pattern.find_first_of("\t\n") != std::string_view::npos)
+    {
+        error = "\"" + std::string(pattern) + "\" is not an ignore pattern";
+        return false;
+    }
+    ignore_.patterns.emplace_back(pattern);
     if (!ignore_.Save(root_, error))
         return false;
     Classify(OnDisk());
