@@ -174,6 +174,10 @@ Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture 
   before ("Back to it") and the rectangle drawn at its size. While it is open the screen previews the rectangle in the
   dialogs (it can be turned off). Apply gives the key the rectangle as one step of undo, asking first, over the select,
   when others use the key; Cancel puts back what the edits held.
+  **Upscaled textures** (2026-11-16, `client/ui-hd-assets`): the rectangle stays in the `.tet`'s units, the original
+  texture's texels ([D3D9](../porting/client-d3d9.md#upscaled-textures-2026-11-16-clientui-hd-assets)), and the
+  texture is shown at that size in its own detail; drags, arrows, fields and the pixel grid follow the file's texels
+  (quarter units on a 4× file: `TextureImage::scale`), and the panel says "file 4x". The `.tet` keeps floats.
 - **A key others use** (user's choice, 2026-11-14): before the first UV change of a key, the editor searches every
   `.lua` under `data/` for lines that name the texture and the key in quotes (the game's code is not searched). The
   client_data's are 177 MB in 4,565 files among 105,000 (2026-11-16): read for every key on the UI thread, the editor

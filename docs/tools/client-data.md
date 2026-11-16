@@ -9,7 +9,7 @@ unchanged client_data packs back into every original `.kom` **byte for byte**. T
 
 | Target | For |
 |---|---|
-| `x2::assets` (`x2/assets/client_data.h`, `manifest.h`, `layout.h`) | import, pack and status; tested headless |
+| `x2::assets` (`x2/assets/client_data.h`, `manifest.h`, `layout.h`, `texture_sizes.h`) | import, pack, status and texture sizes; tested headless |
 | `x2_assets` | its command line |
 
 ```bash
@@ -17,6 +17,7 @@ x2_assets import _client/data <client_data> --layout=tools/assets/layout.txt   #
 x2_assets status <client_data>                       # changed, missing and new files
 x2_assets pack <client_data> <output folder>         # every .kom of the manifest
 x2_assets layout _client/data --layout=tools/assets/layout.txt   # folder counts only, nothing written
+x2_assets texture-sizes _client/data <client_data>/data/OriginalTextureSizes.txt   # original image sizes (below)
 ```
 
 In the build image: `build/linux-debug/src/tools/AssetTool/x2_assets`. Import refuses a destination that is not empty;
@@ -82,6 +83,22 @@ rebuilding only the changed archives stays with x2 studio's export to `.kom` ([r
 **Byte identity needs stock zlib 1.3.1**: the project's pinned FetchContent version (Windows) and the Ubuntu image's
 system zlib. Other deflate implementations write other, equally valid streams: Arch's zlib-ng gives different bytes for
 almost every entry (2026-11-05). Pack then still writes valid archives and reports each such entry as "not reproduced".
+
+## Original texture sizes
+
+<a id="original-texture-sizes"></a>`data/OriginalTextureSizes.txt` (2026-11-16, `client/ui-hd-assets`) holds the size of
+every image of the client's archives as shipped: `<name>\t<width>\t<height>` per line, sorted, `#` comment lines, the
+first entry of a name as the client mounts them. `x2_assets texture-sizes <client data folder> <output>` writes it from
+the **original** archives (`_client/data`), not from the client_data, whose textures may already be upscaled: an image
+is read whole and its size taken from its header as D3DX recognizes it (DDS, BMP, PNG, JPEG, then TGA). 2026-11-16,
+`_client/data`: 57,801 images (2.1 MB, 5 s), 2 image names that hold no image.
+
+The client draws a texture whose file is larger than its line at the listed size (upscaled textures,
+[D3D9](../porting/client-d3d9.md#upscaled-textures-2026-11-16-clientui-hd-assets)), so an upscaled file can replace the
+original in the client_data under the same name and format with nothing else changed. **Edit a line** when a texture is
+redrawn with new `.tet` rectangles or dialog sizes made for its new size (a texture redrawn at 16:9 with its own key, for
+instance), or remove it; a texture with no line (a new one) is drawn at its file's size. A new file: dev builds only
+until `pack` writes them ([Packing](#packing)).
 
 ## Layout
 
@@ -198,6 +215,8 @@ is listed here with the step that changed it and why.
 | `ui/scripts/DLG_UI_Community_Friend.lua` | `tools/ui-editor-layout` (2026-11-14) | Lines 33 and 37: the add-friend button's `SetDisableTex` and `SetDisablePoint` called on `g_pButtonFriend_add`, a typo of `g_pButtonfriend_add`. In the original it failed (the script stopped there) or, after `DLG_Search_Friend.lua` or `DLG_UI_Community_Whole.lua` had set that global, gave their button the disabled texture and point; found when the UI editor opened the dialog alone |
 | `ui/scripts/DLG_Unit_Create_Front_Menu_New.lua` | `tools/ui-editor-layout` (2026-11-15) | Line 132: `g_pPromotionMovie:SetLoop(true)` → `g_pIntroMovie:SetLoop(true)`, the movie the lines above create. `g_pPromotionMovie` is the character select screen's movie (`DLG_Unit_Select_Back_New.lua`, which sets it not to loop): the call reached another dialog's object, freed or not, and failed when that script had not run; the code loops the intro movie itself (`CX2StateCreateUnit`), so nothing shown changes. Found when the UI editor opened the creation screen's scene |
 | `ui/scripts/DLG_Dungeon_Ending_Event_Speech.lua` | `client/speech-shadow-stretch` (2026-11-16) | The shade picture `Shadow` moved out of `Static_Ending_Speech` into a new static `Static_Ending_Speech_Shadow`, added before it so it still draws behind the balloon; the code only reads `Static_Ending_Speech`'s texts |
+| `data/OriginalTextureSizes.txt` (new) | `client/ui-hd-assets` (2026-11-16) | The original size of every image of `_client/data` ([format](#original-texture-sizes)), written by `x2_assets texture-sizes`: an upscaled texture draws at its listed size. A new file: dev builds read it as a loose file until `pack` writes new files |
+| `ui/login/DLG_Login3.TGA` | `client/ui-hd-assets` (2026-11-16) | Upscaled 4× (256×256 → 1024×1024) through the `ui` chain ([Upscaling](upscaling.md)), same format; its `.tet` unchanged (UVs in texels of the original) |
 | `ui/scripts/UIAnchors.lua` | `client/speech-shadow-stretch` (2026-11-16) | `DLG_Dungeon_Ending_Event_Speech.lua`: `Static_Ending_Speech_Shadow` STRETCH (no zones: a plain fill); the balloon stays centered |
 | `data/NewSkillTempletVer2.lua` | `server/add-character` (2026-11-15) | Add's first path: 33 skills (9000–9014, 9200–9207, 9400–9408, 9600) from BR 2014-08, with their Portuguese text from BR 2017, and 72 tree entries of `UC_ADD_NASOD_RULER`/`PSYCHIC_TRACER`/`LUNATIC_PSYKER` from V5 (BR 2014-08 has none), by `tools/assets/merge_skills.py` |
 | `ui/textures/DLG_Add_SKILL_ScreenShot_01.{tga,TET}`, `_02` (new) | `server/add-character` (2026-11-15) | The skill tree's Add screenshots: the `.tga` from BR 2017 `data063`, the `.TET` from V5 `data063.kom`. New files: dev builds only until `pack` writes them ([Packing](#packing)) |

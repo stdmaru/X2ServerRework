@@ -32,6 +32,12 @@ commands; this page records what it is and what was learned.
    the client loads a file's chain, [D3D9](../porting/client-d3d9.md); atlases with a `.tet` load one level). A round trip of one file of every format kept the format
    (2026-11-15).
 
+Into the game: the converted files replace the originals in the client_data, same names. Any texture, the UI's
+atlases included (2026-11-16, `client/ui-hd-assets`): the client draws a file larger than its line in
+[`OriginalTextureSizes.txt`](client-data.md#original-texture-sizes) at the original size, so `.tet` keys, dialog sizes
+and the code stay as they are ([D3D9](../porting/client-d3d9.md#upscaled-textures-2026-11-16-clientui-hd-assets)). A
+texture redrawn with new rectangles (not just upscaled) needs its line edited.
+
 Formats in the client_data (2026-11-15): DXT1 29,673, DXT5 1,808, DXT3 1,292, RGB24 778, RGB32 with alpha 438, DXT1
 volumes 49, RGB32 15, RGB16 with alpha 12; about a third have mipmaps.
 

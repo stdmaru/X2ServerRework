@@ -167,6 +167,32 @@ past its z), so a linearly filtered sample never takes texels outside it; a rect
 middle, a solid color. The mapping inside is unchanged: only the samples of the outermost half texel move, to the edge
 texel's center. Who sets it: [UI pictures](client-ktdxlib.md#pictures-sample-only-their-key-2026-11-15-clientui-atlas-clamp-t49).
 
+## Upscaled textures (2026-11-16, `client/ui-hd-assets`)
+
+**Behavior change.** A texture file larger than the size the game was made for draws as the original did, only
+sharper, so upscaled textures (UI atlases included; [Upscaling](../tools/upscaling.md)) replace the originals in the
+client_data under the same names and formats and nothing else changes:
+
+- `.tet` keys hold UVs and `rectSize` in **texels of the original**; the code divides them by
+  `CKTDXDeviceTexture::GetWidth/GetHeight` (`KTDGUIControl`, `KTDGUISlot`, `Draw`), `rectSize` becomes a picture's
+  `texSize`, controls with only a left-top point or `USE_TEXTURE_SIZE` take their size from it, and the code sizes
+  pictures from `GetWidth()` (`X2UIRankingInfo`, `X2UIGuildBoard`, ...). Scaling the `.tet` and every size instead
+  would reach thousands of script values and miss the ones in the code.
+- So `GetWidth/GetHeight` report the **original size**, from
+  [`data/OriginalTextureSizes.txt`](../tools/client-data.md#original-texture-sizes)
+  (`CKTDXDeviceManager::GetOriginalTextureSize`, read once, thread-safe): `m_Info`, which already held the file's
+  size rather than the device texture's (Medium and Low load smaller textures and report the file's), holds the
+  listed size. A texture with no line, or whose file is the listed size, is unchanged. Any ratio works, per axis.
+- **Levels**: an upscaled atlas (with a `.tet`), or an upscaled file with no chain of its own (the UI's TGAs), gets the
+  levels down to its original size (4× → 3 levels; Medium's 2× → 2), so the UI drawn at about 1.4× of the original at
+  1080p is minified without aliasing, and the smallest level blends no more atlas neighbours than the original did
+  ([sprite rectangles](#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49) clamp to half a texel of the top
+  level). A file with its own chain keeps it.
+- The UI editor sizes a texture's image by `GetWidth/GetHeight`, so it shows and edits `.tet` rectangles in original
+  texels as before.
+
+Test: `ktdxlib: an upscaled texture reports its original size and keeps levels down to it` (loose files).
+
 ## Image files (2026-11-07, `client/d3dx-textures`)
 
 `CKTDXDeviceTexture` loads every texture through `D3DXGetImageInfoFromFileInMemory` and
