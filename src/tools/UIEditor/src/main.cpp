@@ -1287,9 +1287,15 @@ void PreviewSelect(x2::ui_editor::Engine& engine, EditorState& state, bool worki
     sel.previewed = working;
 }
 
+// A .tet value on the texture's own texels: whole units, or quarter units on a 4x upscaled texture.
+float SnapTexel(float value, float scale)
+{
+    return std::round(value * scale) / scale;
+}
+
 // The texture with the key's rectangle over it: zoom with the wheel around the pointer, pan with the right or middle
-// button, drag the rectangle with the left one (whole texels; the arrows move it by 1, Shift by 10, while hovered).
-// True when the rectangle changed.
+// button, drag the rectangle with the left one (whole file texels; the arrows move it by one, Shift by 10 units, while
+// hovered). True when the rectangle changed.
 bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
 {
     auto& sel = state.select;
@@ -1329,8 +1335,9 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
     float box[4];
     RectBox(sel.working, box);
     const ImVec2 pointer = toTexel(io.MousePos);
-    sel.pointer[0] = hovered ? std::floor(pointer.x) : -1.0f;
-    sel.pointer[1] = hovered ? std::floor(pointer.y) : -1.0f;
+    const float scale = sel.image.scale;
+    sel.pointer[0] = hovered ? std::floor(pointer.x * scale) / scale : -1.0f;
+    sel.pointer[1] = hovered ? std::floor(pointer.y * scale) / scale : -1.0f;
     const bool overBox = hovered && pointer.x >= box[0] && pointer.x < box[2] && pointer.y >= box[1] && pointer.y < box[3];
     bool changed = false;
     if (overBox && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
@@ -1344,7 +1351,7 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
             sel.dragging = false;
         } else {
             TetRect moved = sel.dragFrom;
-            moved.Move(std::round(pointer.x - sel.dragStart[0]), std::round(pointer.y - sel.dragStart[1]));
+            moved.Move(SnapTexel(pointer.x - sel.dragStart[0], scale), SnapTexel(pointer.y - sel.dragStart[1], scale));
             if (!(moved == sel.working)) {
                 sel.working = moved;
                 changed = true;
@@ -1352,7 +1359,7 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
         }
     }
     if (hovered && !sel.dragging) {
-        const float step = io.KeyShift ? 10.0f : 1.0f;
+        const float step = io.KeyShift ? 10.0f : 1.0f / scale;
         float dx = 0.0f, dy = 0.0f;
         dx -= ImGui::IsKeyPressed(ImGuiKey_LeftArrow) ? step : 0.0f;
         dx += ImGui::IsKeyPressed(ImGuiKey_RightArrow) ? step : 0.0f;
@@ -1392,12 +1399,13 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
     if (nearest) {
         draw->AddCallback(ImGui::GetPlatformIO().DrawCallback_SetSamplerLinear, nullptr);
     }
-    // The pixel grid when a texel is large.
-    if (sel.zoom >= 8.0f) {
-        for (float x = std::ceil((x0 - t0.x) / sel.zoom); toScreen(x, 0).x <= x1; x += 1.0f) {
+    // The pixel grid (the file's texels) when a texel is large.
+    if (sel.zoom / scale >= 8.0f) {
+        const float texel = 1.0f / scale;
+        for (float x = std::ceil((x0 - t0.x) / sel.zoom * scale) * texel; toScreen(x, 0).x <= x1; x += texel) {
             draw->AddLine(ImVec2(toScreen(x, 0).x, y0), ImVec2(toScreen(x, 0).x, y1), IM_COL32(0, 0, 0, 40));
         }
-        for (float y = std::ceil((y0 - t0.y) / sel.zoom); toScreen(0, y).y <= y1; y += 1.0f) {
+        for (float y = std::ceil((y0 - t0.y) / sel.zoom * scale) * texel; toScreen(0, y).y <= y1; y += texel) {
             draw->AddLine(ImVec2(x0, toScreen(0, y).y), ImVec2(x1, toScreen(0, y).y), IM_COL32(0, 0, 0, 40));
         }
     }
@@ -1473,42 +1481,51 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
     ImGui::SameLine();
     if (ImGui::BeginChild("fields", ImVec2(fields, avail.y - footer), ImGuiChildFlags_Borders)) {
         ImGui::TextWrapped("%s", sel.picture.texture.c_str());
-        ImGui::Text("%u x %u texels", sel.image.width, sel.image.height);
+        if (sel.image.scale > 1.0f) {
+            ImGui::Text("%u x %u units, file %gx", sel.image.width, sel.image.height,
+                        static_cast<double>(sel.image.scale));
+            ImGui::TextDisabled("upscaled: rectangles snap to 1/%g", static_cast<double>(sel.image.scale));
+        } else {
+            ImGui::Text("%u x %u texels", sel.image.width, sel.image.height);
+        }
         ImGui::Text("key: %s", sel.picture.key.c_str());
         ImGui::Separator();
         float box[4];
         RectBox(sel.working, box);
         const bool upright = sel.working.Upright();
-        int left = static_cast<int>(std::lround(box[0])), top = static_cast<int>(std::lround(box[1]));
-        int width = static_cast<int>(std::lround(box[2] - box[0])), height = static_cast<int>(std::lround(box[3] - box[1]));
+        // Whole units, or the file's texels (1/4 on a 4x upscale), typed or stepped.
+        const float scale = sel.image.scale, step = 1.0f / scale;
+        const char* format = scale > 1.0f ? "%.2f" : "%.0f";
+        float left = SnapTexel(box[0], scale), top = SnapTexel(box[1], scale);
+        float width = SnapTexel(box[2] - box[0], scale), height = SnapTexel(box[3] - box[1], scale);
         ImGui::SetNextItemWidth(140);
-        if (ImGui::InputInt("left", &left)) {
-            sel.working.Move(static_cast<float>(left) - box[0], 0.0f);
+        if (ImGui::InputFloat("left", &left, step, 10.0f, format)) {
+            sel.working.Move(SnapTexel(left, scale) - box[0], 0.0f);
             changed = true;
         }
         ImGui::SetNextItemWidth(140);
-        if (ImGui::InputInt("top", &top)) {
-            sel.working.Move(0.0f, static_cast<float>(top) - box[1]);
+        if (ImGui::InputFloat("top", &top, step, 10.0f, format)) {
+            sel.working.Move(0.0f, SnapTexel(top, scale) - box[1]);
             changed = true;
         }
         ImGui::BeginDisabled(!upright);
         ImGui::SetNextItemWidth(140);
-        if (ImGui::InputInt("width", &width) && width >= 1) {
-            changed = sel.working.Resize(static_cast<float>(width) - (box[2] - box[0]), 0.0f) || changed;
+        if (ImGui::InputFloat("width", &width, step, 10.0f, format) && SnapTexel(width, scale) >= step) {
+            changed = sel.working.Resize(SnapTexel(width, scale) - (box[2] - box[0]), 0.0f) || changed;
         }
         ImGui::SetNextItemWidth(140);
-        if (ImGui::InputInt("height", &height) && height >= 1) {
-            changed = sel.working.Resize(0.0f, static_cast<float>(height) - (box[3] - box[1])) || changed;
+        if (ImGui::InputFloat("height", &height, step, 10.0f, format) && SnapTexel(height, scale) >= step) {
+            changed = sel.working.Resize(0.0f, SnapTexel(height, scale) - (box[3] - box[1])) || changed;
         }
         ImGui::EndDisabled();
         if (!upright) {
             ImGui::TextDisabled("rotated in its .tet: it moves, its size stays");
         }
         RectBox(sel.working, box);
-        ImGui::Text("right: %.0f  bottom: %.0f", static_cast<double>(box[2]), static_cast<double>(box[3]));
+        ImGui::Text("right: %g  bottom: %g", static_cast<double>(box[2]), static_cast<double>(box[3]));
         float was[4];
         RectBox(sel.original, was);
-        ImGui::TextDisabled("was: %.0f, %.0f  %.0f x %.0f", static_cast<double>(was[0]), static_cast<double>(was[1]),
+        ImGui::TextDisabled("was: %g, %g  %g x %g", static_cast<double>(was[0]), static_cast<double>(was[1]),
                             static_cast<double>(was[2] - was[0]), static_cast<double>(was[3] - was[1]));
         ImGui::BeginDisabled(sel.working == sel.original);
         if (ImGui::SmallButton("Back to it")) {
@@ -1518,7 +1535,7 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
         ImGui::EndDisabled();
         ImGui::Separator();
         if (sel.pointer[0] >= 0.0f) {
-            ImGui::Text("pointer: %.0f, %.0f", static_cast<double>(sel.pointer[0]), static_cast<double>(sel.pointer[1]));
+            ImGui::Text("pointer: %g, %g", static_cast<double>(sel.pointer[0]), static_cast<double>(sel.pointer[1]));
         } else {
             ImGui::TextDisabled("pointer: -");
         }

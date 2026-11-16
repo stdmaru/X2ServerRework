@@ -1,5 +1,8 @@
 #pragma once
 
+#include <mutex>
+#include <unordered_map>
+
 
 struct CKTDXDeviceData
 {
@@ -105,6 +108,11 @@ class CKTDXDeviceManager :
         void    CloseDevice( const WCHAR* deviceID );
 
 		KGCMassFileManager* GetMassFileManager(){ return &m_MassFileManager; }
+
+        // The size the image `name` was made for, from data/OriginalTextureSizes.txt (docs/porting/client-d3d9.md,
+        // upscaled textures): a texture whose file is larger is drawn at this size. False if the image is not listed
+        // (or there is no list). Thread-safe; the list is read on first use.
+        bool    GetOriginalTextureSize( const std::wstring& name, UINT& uWidth, UINT& uHeight );
 		char*				GetPullPath( char* cFileName ){ return m_MassFileManager.GetPullPath( cFileName ); }
 		WCHAR*				GetPullPath( WCHAR* wcFileName ){ return m_MassFileManager.GetPullPath( wcFileName ); }
 
@@ -226,6 +234,8 @@ class CKTDXDeviceManager :
 		DeviceMap		                    m_DeviceMap;
 
 		KGCMassFileManager					m_MassFileManager;
+        std::once_flag                      m_onceOriginalTextureSizes;
+        std::unordered_map<std::string, std::pair<UINT, UINT>> m_mapOriginalTextureSize;  // ASCII-lowered name
 		CKTDXDeviceTexture::DETAIL_LEVEL	m_TexDetailLevel;
 		vector<wstring>						m_HighTexName;
 

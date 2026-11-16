@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <mutex>
 #include <set>
 #include <thread>
@@ -681,3 +682,54 @@ TEST_CASE("ktdxlib: textures keep their file's mip chain, atlases one level (X2_
     CHECK(levels(L"Imire_Mini_Star.dds") == 5);
     CHECK(levels(L"DLG_UI_Field_Map_Besma_Rest_01.dds") == 1);
 }
+
+#if defined(X2_DEBUG) || defined(X2_DEV_TOOLS)  // loose files
+TEST_CASE("ktdxlib: an upscaled texture reports its original size and keeps levels down to it")
+{
+    const std::filesystem::path dir = std::filesystem::temp_directory_path() / "x2_ktdxlib_upscaled";
+    std::filesystem::remove_all(dir);
+    std::filesystem::create_directories(dir);
+    // A 16x16 32-bit TGA, uncompressed, top-left origin.
+    const auto writeTga = [&](const char* name) {
+        std::vector<std::uint8_t> tga(18 + 16 * 16 * 4, 0x80);
+        std::fill(tga.begin(), tga.begin() + 18, 0);
+        tga[2] = 2;
+        tga[12] = 16;
+        tga[14] = 16;
+        tga[16] = 32;
+        tga[17] = 0x28;
+        std::ofstream(dir / name, std::ios::binary).write(reinterpret_cast<const char*>(tga.data()), tga.size());
+    };
+    writeTga("Upscaled.tga");
+    writeTga("Same.tga");
+    writeTga("Unlisted.tga");
+    std::ofstream(dir / "OriginalTextureSizes.txt", std::ios::binary)
+        << "# comment\nupscaled.TGA\t4\t4\nSame.tga\t16\t16\nBroken.tga\tx\t4\n";
+
+    Engine engine;
+    KGCMassFileManager* files = g_pKTDXApp->GetDeviceManager()->GetMassFileManager();
+    REQUIRE(files->SetLooseFileFolder(dir));
+    files->LockMassFileMap();
+    struct Loaded {
+        int width, height;
+        DWORD levels;
+    };
+    const auto load = [&](const wchar_t* name) {
+        auto texture = std::make_unique<Texture>(&engine.device, name);
+        REQUIRE(SUCCEEDED(texture->_Load(true)));
+        REQUIRE(texture->GetDeviceTexture() != nullptr);
+        return Loaded{texture->GetWidth(), texture->GetHeight(), texture->GetDeviceTexture()->GetLevelCount()};
+    };
+    const Loaded upscaled = load(L"UPSCALED.TGA");  // device IDs are upper case
+    CHECK(upscaled.width == 4);
+    CHECK(upscaled.height == 4);
+    CHECK(upscaled.levels == 3);  // 16, 8, 4
+    const Loaded same = load(L"Same.tga");
+    CHECK(same.width == 16);
+    CHECK(same.levels == 1);
+    const Loaded unlisted = load(L"Unlisted.tga");
+    CHECK(unlisted.width == 16);
+    CHECK(unlisted.levels == 1);
+    std::filesystem::remove_all(dir);
+}
+#endif
