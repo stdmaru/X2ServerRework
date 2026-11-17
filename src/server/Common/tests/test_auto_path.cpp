@@ -27,11 +27,12 @@ TEST_CASE( "KAutoPath finds scripts regardless of letter case" )
 
     std::string strExact = "Exact_Name.lua";
     CHECK( kAutoPath.GetPullPath( strExact ) );
-    CHECK( fs::path( strExact ) == root / "Exact_Name.lua" );
+    CHECK( fs::equivalent( strExact, root / "Exact_Name.lua" ) );
 
     std::string strOtherCase = "Dungeon_Training_LIRE_0.lua";
     CHECK( kAutoPath.GetPullPath( strOtherCase ) );
-    CHECK( fs::path( strOtherCase ) == root / "Sub" / "Dungeon_Training_lire_0.lua" );
+    // Windows finds the file under the requested case, so compare the files, not the spellings
+    CHECK( fs::equivalent( strOtherCase, root / "Sub" / "Dungeon_Training_lire_0.lua" ) );
 
     std::wstring wstrOtherCase = L"exact_name.LUA";
     CHECK( kAutoPath.GetPullPath( wstrOtherCase ) );
