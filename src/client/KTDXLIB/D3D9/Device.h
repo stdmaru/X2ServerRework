@@ -295,8 +295,8 @@ public:
     // its pixels. Combines with SetMultisample. Takes effect at the next frame.
     void SetSupersample(UINT factor);
     UINT Supersample() const { return m_supersample; }
-    // Anisotropic filtering for every mipmapped texture sampled with linear filtering, up to `level` (1: off, as the
-    // game asks; at most 16). Samplers the game sets anisotropic keep their own level if higher.
+    // Anisotropic filtering for every mipmapped texture sampled with linear filtering in the world (not the
+    // pre-transformed UI), up to `level` (1: off, as the game asks; at most 16). Samplers the game sets anisotropic keep their own level if higher.
     void SetAnisotropy(UINT level);
     UINT Anisotropy() const { return m_anisotropy; }
     // A sprite's rectangle (2026-11-15, not in D3D9's interface; client-d3d9.md#sprite-rectangles): until turned off,
@@ -375,7 +375,7 @@ private:
                      DWORD fvf, const IndexBuffer* indices, UINT startIndex) const;
     render::GraphicsPipeline Pipeline(const PipelineKey& key, DWORD fvf, UINT stride);
     // pointMagnify: magnify with nearest texels whatever the stage asks (pre-transformed draws when supersampling).
-    render::Sampler SamplerFor(DWORD stage, bool pointMagnify = false);
+    render::Sampler SamplerFor(DWORD stage, bool pointMagnify = false, bool screenSpace = false);
     void PushUniforms(DWORD fvf);
     void PushFixedFunctionVertexUniforms(float width, float height);
     bool ClearRects(DWORD count, const D3DRECT* rects, DWORD flags, D3DCOLOR color, float z, DWORD stencil);

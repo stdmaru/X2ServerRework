@@ -1403,7 +1403,7 @@ render::GraphicsPipeline Device::Pipeline(const PipelineKey& key, DWORD fvf, UIN
     return pipeline;
 }
 
-render::Sampler Device::SamplerFor(DWORD stage, bool pointMagnify)
+render::Sampler Device::SamplerFor(DWORD stage, bool pointMagnify, bool screenSpace)
 {
     const auto& ss = m_samplerStates[stage];
     std::uint64_t key = 0xCBF29CE484222325ULL;
@@ -1414,6 +1414,7 @@ render::Sampler Device::SamplerFor(DWORD stage, bool pointMagnify)
     }
     key = (key ^ m_anisotropy) * 0x100000001B3ULL;
     key = (key ^ (pointMagnify ? 1u : 0u)) * 0x100000001B3ULL;
+    key = (key ^ (screenSpace ? 1u : 0u)) * 0x100000001B3ULL;
     if (auto it = m_samplers.find(key); it != m_samplers.end()) {
         return it->second;
     }
@@ -1428,8 +1429,10 @@ render::Sampler Device::SamplerFor(DWORD stage, bool pointMagnify)
     if (ss[D3DSAMP_MINFILTER] == D3DTEXF_ANISOTROPIC || ss[D3DSAMP_MAGFILTER] == D3DTEXF_ANISOTROPIC) {
         desc.maxAnisotropy = static_cast<float>(std::max<DWORD>(1, ss[D3DSAMP_MAXANISOTROPY]));
     }
-    // The anisotropic filtering option: mipmapped textures filtered linearly (the world; the UI is not minified).
-    if (m_anisotropy > 1 && ss[D3DSAMP_MIPFILTER] != D3DTEXF_NONE && desc.minFilter == render::Filter::Linear &&
+    // The anisotropic filtering option: mipmapped textures filtered linearly, in the world only. The UI
+    // (pre-transformed vertices) is drawn facing the screen, where anisotropy gains nothing; with HD textures it is
+    // minified, and the anisotropic footprint shifted its texels slightly.
+    if (m_anisotropy > 1 && !screenSpace && ss[D3DSAMP_MIPFILTER] != D3DTEXF_NONE && desc.minFilter == render::Filter::Linear &&
         desc.magFilter == render::Filter::Linear) {
         desc.maxAnisotropy = std::max(desc.maxAnisotropy, static_cast<float>(m_anisotropy));
     }
@@ -1621,15 +1624,16 @@ bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buf
     // size, each drawn pixel would mix a quarter of the next texel and the scaled-down result would be blurred. With
     // nearest texels each one covers 2x2 drawn pixels and comes back as it was. Only near 1:1: a small texture
     // stretched over the screen (a village's light overlay, 128x128) keeps the game's filter, or its texels show.
+    const bool screenSpace = (fvf & D3DFVF_POSITION_MASK) == D3DFVF_XYZRHW;
     bool pointMagnify = false;
-    if (m_ssaa > 1 && !m_target && (fvf & D3DFVF_POSITION_MASK) == D3DFVF_XYZRHW) {
+    if (m_ssaa > 1 && !m_target && screenSpace) {
         const float scale = TexelScale(type, cpuVertices, stride, firstVertex, fvf, indices, startIndex);
         pointMagnify = scale > 0.0f && scale <= kPointMagnifyMaxScale;
     }
     std::array<render::TextureSamplerBinding, kTextureStages> samplers;
     for (DWORD stage = 0; stage < kTextureStages; ++stage) {
         samplers[stage] = {m_textures[stage] && m_textures[stage]->m_texture ? m_textures[stage]->m_texture : m_white,
-                           SamplerFor(stage, pointMagnify)};
+                           SamplerFor(stage, pointMagnify, screenSpace)};
         if (!samplers[stage].sampler) {
             return false;
         }
