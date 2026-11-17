@@ -67,6 +67,7 @@ Build effort: 50 Clang Debug errors (`-k 0`) after mechanical pass, almost all f
 | `ON_DBE_SERVER_ON_ACK` (`GlobalServer.cpp`) | When DB rejects server, response calls `SetAuthenticateResult( false )` and `Init` fails; when accepted, sets `true` | As in [GameServer](server-game.md#changes-from-the-original): original called `::exit( 0 )` on that thread |
 | `KGlobalAccountDBThread` | Remove `SendToNXGMToolTcpManager`/`SendToNXGMToolTcpServer` templates | Nexon publisher GM tool; never called, and its singletons do not exist in US build |
 | `KBlockListManager` (IP blocking) | `inet_addr` → `x2::platform::IpFromString` (`inet_pton`) | `inet_addr` is deprecated in Winsock. Only dotted-quad addresses; short forms accepted by `inet_addr` (`127.1`, hexadecimal) no longer match a block |
+| `runtime/ServerResource/WorldMissionConfig.lua` | Crystal defense (world mission) enabled: the basic schedule, every `SetDefenseOpenTime` commented out in production, is on (every day 14:00 and 21:00 for 60 min, normal Saturday), world buff 3600 s (the overseas team's value; production 0) | User, 2026-11-16: production had the event off (`SetTodayMissionTime` logged that no defense time is set) |
 | `Global*DBThread.h` | `ProcessEvent` is no longer `virtual inline` | Defined in `.cpp`: ODR-invalid (`-Wundefined-inline` from clang-cl), as in CenterServer and LoginServer |
 
 Portability (no behavior change): mechanical pass (`mechanical.py`); declaration skipped by `goto end_proc` in

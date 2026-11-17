@@ -38,25 +38,29 @@ in production. The server starts while ignoring invalid entries:
 
 - Items referenced by `ServerResource` but absent from `Item.lua`: 437 attraction items (`AddAttractionItemInfo`),
   27 sealed items and 10 result-notification items (`RandomItemData.lua`), and 1 drop notice (`DropData.lua`). All are in
-  V5's `Item.lua` (2015), none in our client_data (2026-11-16); the server skips them, and nothing gives those items.
+  V5's `Item.lua` (2015), 366 in BR 2014-08's. **Fixed** (2026-11-16): 427 of them are in our client_data
+  ([client_data](../tools/client-data.md)); the other 45 (e.g. 81200, 160230 "닌텐도 NDSi", 160317 "로얄 블러드 큐브") have
+  only Korean text in every client, Korea-only prizes, and stay out.
 - 167 entries of 60 random item groups (`AddRandomItemGroup`) whose probabilities pass 100% (`KLottery::AddCaseIntegerCast`
   refuses them). **No cube uses these 60 groups** (no `AddRandomItemTemplet` names them, nor the time mapping), checked
   2026-11-16; in a used group the refusal would matter more than it looks: the entry stays in the group's item list, and a
   `m_bGiveAll` cube finds no period for it and fails to open (`CXSLRandomItemManager::GetResultItem`). Several look like two
   groups under one ID (14978 has two items at 50% and six at 16–17%, and 14977 is free).
 - 1,081 crafting results (`AddManufactureResultTemplet`, "잘못된 제조ID") whose crafting ID is absent from the client's
-  `ManufactureItem.lua` (production, with its own `ClientScript` from a newer client, had 1,223); only 47 are in V5's,
-  and those 47 (Add's) are in our client_data since 2026-11-15.
-- 11 pets (IDs 100–102, 116–120, 138–140) and 1 mount (ID 11) that `PetData.lua` creates from items but that have no
-  template in the client (`PetTemplet.lua`, `RidingPetTemplet.lua`).
+  `ManufactureItem.lua` (production, with its own `ClientScript` from a newer client, had 1,223). 47 (Add's, V5) are in
+  our client_data since 2026-11-15, 87 more (BR 2014-08 and 2017; no village shows them, there either) since 2026-11-16.
+  The other 994 are in no client (2014-08 and 2017 BR, V5; checked 2026-11-16): Korea-only recipes the server skips.
+- **Fixed** (2026-11-16): 11 pets (IDs 100–102, 116–120, 138–140) and 1 mount (ID 11, `RPUI_OBERON_CUSTOM_650`) that
+  `PetData.lua` creates from items but that had no template in the client (`PetTemplet.lua`, `RidingPetTemplet.lua`);
+  their templates came from BR 2014-08 (their scripts were already in the client).
 - **Fixed** (2026-11-16, `server/script-load-errors`): 172 package components listed twice, line for line, in the client's
   `PackageItemData.lua` (30 packages; removed in the client_data, see [client_data](../tools/client-data.md)).
 - **Not missing** (2026-11-16): the 24 dungeon scripts (`ElTutorial_*`, `Training_*`, `Besma_MINE2_*`, `Elder_NewYear`) and
   2 line maps (`Field_Velder_Stage2/3_LineMap.lua`) that `DungeonData.lua` and the fields name are in the client with other
   letter case (`Dungeon_Training_lire_0.lua`, `Field_Velder_Stage2_Linemap.lua`); Windows found them, Linux did not until
-  `KAutoPath` ignored case ([Common](../porting/server-common.md)). Only `Dungeon_Event_KidDay.lua` (4 Children's Day
-  dungeons) is in neither the client nor its `DungeonData.lua`'s sources: the original server kept it in
-  `ClientScript/Dungeon/Not_Use/`.
+  `KAutoPath` ignored case ([Common](../porting/server-common.md)). `Dungeon_Event_KidDay.lua` (4 Children's Day
+  dungeons) was in neither the client nor its `DungeonData.lua`'s sources (the original server kept it in
+  `ClientScript/Dungeon/Not_Use/`); **fixed** (2026-11-16) from a 2020 BR client's scripts.
 - Procedure `dbo.P_GItem_Def_GET` (GM tool) is absent from the development database.
 - GlobalServer calls three groups of `Statistics` procedures that are missing or nonfunctional in the available backups (2026-10-31, `server/global-run`):
   `P_LEvent_GlobalMission_SEL/UPD` (global missions), `P_LEvent_RandomEnchant_SEL/UPD` (timed enchantment event), and
@@ -64,7 +68,8 @@ in production. The server starts while ignoring invalid entries:
   The 2026-09-08 schema snapshot contains empty-result or no-op definitions for parts of these groups, but lacks the backing tables and
   configuration data for timed enchant and limited exchange. A proposed additive patch for those two feature groups is documented in
   [Database patches](../tools/database-patches.md); it has not been applied. Crystal-defense time is also missing ("디펜스 던전 시간 셋팅 값이 존재 하지 않습니다", `SetTodayMissionTime`): every
-  `SetDefenseOpenTime` of production's `WorldMissionConfig.lua` is commented out, so the defense dungeon was off.
+  `SetDefenseOpenTime` of production's `WorldMissionConfig.lua` is commented out, so the defense dungeon was off (enabled
+  in ours since 2026-11-16, [GlobalServer](../porting/server-global.md#changes-from-the-original)).
 - `MapData.lua` does not register local maps Ruben (10000) and Elder (10001) through `AddLocalMapInfo` (entries start at Altera):
   when the client requests the automatic-party bonus in these towns (`EGS_REQUEST_GET_AUTO_PARTY_BONUS_INFO_NOT`), GameServer reports
   "등록되지 않은 맵ID입니다!" and sends an empty list (2026-10-31, `server/global-run`).
