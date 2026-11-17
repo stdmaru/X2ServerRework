@@ -169,6 +169,7 @@ That remains pending ([KNCSDK › Pending](kncsdk.md#pending)). They also cannot
 | File paths (2026-10-30) | `"Statistics\\..."`, `"Config\\US\\"`, and `%Y-%m-%d\\` backup path use `/`; statistics backup goes to `StatisticsBackup/<date>/` **next to server**; `KAutoPath::AddPath` changes `\\` to `/` outside Windows | On Linux `\\` became part of the name (folders like `C:\StatisticsBackup\` inside server directory). Original wrote to `C:\StatisticsBackup\`, unavailable outside Windows; `/` works on both |
 | `KStatisticsLocalLog` (`Statistics/SI_LOG_*.txt`) | Files are **UTF-8** (`x2::platform::Utf8FileLocale`), `Statistics/` path uses `/`, existence checked with `std::filesystem::exists` | Original used `std::locale("korean")` (CP949, MSVC only) and `_stat`. Old CP949 files with Korean header text are not read identically; numbers are ASCII |
 | `KAutoPath`, `KFolderTraverse`, statistics | `FindFirstFile`/`GetCurrentDirectory`/`CopyFile`... → `std::filesystem`. `KApplyAllFiles` passes `directory_entry` to functor and no longer changes current directory | Portable. Script search order remains the same (current folder, then subfolders depth-first, by name) |
+| `KAutoPath::GetPullPath` (2026-11-16, `server/script-load-errors`) | After the exact name fails in every searched folder, a second pass finds it **ignoring ASCII letter case** (`x2::platform::FindFileIgnoreCase`) | Windows finds names in any case and the data relies on it: `DungeonData.lua` names `Dungeon_Training_LIRE_0.lua`, `Dungeon_Besma_MINE2_Normal.lua`, `Field_Velder_Stage2_LineMap.lua`..., the client ships `..._lire_0.lua`, `..._Mine2_...`, `..._Linemap.lua`; on Linux 24 dungeon scripts and 2 line maps failed to load. Exact names are tried first so found files cost no directory scans; differs from Windows only if two folders hold names differing in case (none do) |
 | `KFolderTraverse` | Original skipped first `FindFirstFile` entry (usually `.`); now no entries are skipped | `std::filesystem` does not list `.`/`..` |
 | `BaseServer::LoadINIFile`, `KStringTable` | INI read through platform reader on **all** platforms, accepting UTF-16, UTF-8, and **CP949** | Production `config_*.ini` files are CP949; Windows API uses system code page, which is 949 only on Korean Windows |
 | `XSLCheckSumManager` | CMarkup → TinyXml (already in `Common`); remove `XML/Markup.*`. Duplicate-checksum `MessageBox` becomes error log | CMarkup license requires permission for commercial use; server has no window |
@@ -227,7 +228,7 @@ That remains pending ([KNCSDK › Pending](kncsdk.md#pending)). They also cannot
 ## Pending
 
 - ~~**Paths with `\\`**~~: resolved on 2026-10-30 (see Intentional changes).
-- **Case-sensitive file names**: Windows is case-insensitive; scripts may be referenced using different capitalization. Check when running server.
+- ~~**Case-sensitive file names**~~: resolved on 2026-11-16 (`KAutoPath::GetPullPath`, see Intentional changes).
 - `XSLCashItemManager::AddNotSellCashItemProductNo`: retained `!GetServerGroupID() != iServerGroupID`; likely should be `GetServerGroupID() != iServerGroupID`.
   Decide with user (changes which items appear in store).
 - `KLottery` uses fixed seed (42) and shared generator without lock (decide with user).

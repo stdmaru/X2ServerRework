@@ -1,5 +1,6 @@
 #include "./KAutoPath.h"
 
+#include "x2/platform/file.h"
 #include "x2/platform/unicode.h"
 
 #include <algorithm>
@@ -52,6 +53,20 @@ bool KAutoPath::GetPullPath( std::string& strFileName )
 		const fs::path path = fs::path( x2::platform::Utf8ToWide( strDir ) ) / x2::platform::Utf8ToWide( strFileName );
 		std::error_code ec;
 		if( fs::is_regular_file( path, ec ) )
+		{
+			strFileName = x2::platform::WideToUtf8( path.wstring() );
+			return true;
+		}
+	}
+
+	// Windows finds a name in any letter case, and the data relies on it (DungeonData.lua names
+	// "Dungeon_Training_LIRE_0.lua", the client ships "Dungeon_Training_lire_0.lua"). Only after the exact search
+	// has failed everywhere, so files found by their exact name cost no directory scans.
+	const fs::path name = x2::platform::Utf8ToWide( strFileName );
+	for( const std::string& strDir : m_vecDirectory )
+	{
+		const fs::path path = x2::platform::FindFileIgnoreCase( ( fs::path( x2::platform::Utf8ToWide( strDir ) ) / name ).parent_path(), name.filename() );
+		if( !path.empty() )
 		{
 			strFileName = x2::platform::WideToUtf8( path.wstring() );
 			return true;
