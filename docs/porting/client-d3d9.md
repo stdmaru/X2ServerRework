@@ -167,7 +167,10 @@ stage 0's texture, in texture coordinates; `nullptr` turns it off. The fixed-fun
 coordinates to the rectangle less half a texel of the bound texture (`stage0Rect` in its uniforms; off when its x is
 past its z), so a linearly filtered sample never takes texels outside it; a rectangle a texel wide or less keeps its
 middle, a solid color. The mapping inside is unchanged: only the samples of the outermost half texel move, to the edge
-texel's center. Who sets it: [UI pictures](client-ktdxlib.md#pictures-sample-only-their-key-2026-11-15-clientui-atlas-clamp-t49).
+texel's center. `SetTextureRect(rect, texelsU, texelsV)` may name the texel grid to inset by (2026-11-16): UI pictures
+pass their texture's original size, the coarsest mip level of an upscaled atlas ([below](#upscaled-textures-2026-11-16-clientui-hd-assets)),
+whose texels are wider than the top level's; half a top-level texel let that level blend the neighbour again and the
+windows' seams came back with the 2× UI textures. Who sets it: [UI pictures](client-ktdxlib.md#pictures-sample-only-their-key-2026-11-15-clientui-atlas-clamp-t49).
 
 ## Upscaled textures (2026-11-16, `client/ui-hd-assets`)
 
@@ -188,8 +191,8 @@ client_data under the same names and formats and nothing else changes:
 - **Levels**: an upscaled atlas (with a `.tet`), or an upscaled file with no chain of its own (the UI's TGAs), gets the
   levels down to its original size (4× → 3 levels; Medium's 2× → 2), so the UI drawn at about 1.4× of the original at
   1080p is minified without aliasing, and the smallest level blends no more atlas neighbours than the original did
-  ([sprite rectangles](#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49) clamp to half a texel of the top
-  level). A file with its own chain keeps it.
+  ([sprite rectangles](#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49) clamp to half a texel of the original size, the
+  smallest level). A file with its own chain keeps it.
 - The UI editor sizes a texture's image by `GetWidth/GetHeight`, so it shows and edits `.tet` rectangles in original
   texels as before.
 

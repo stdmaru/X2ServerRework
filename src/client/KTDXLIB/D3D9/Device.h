@@ -302,8 +302,9 @@ public:
     // A sprite's rectangle (2026-11-15, not in D3D9's interface; client-d3d9.md#sprite-rectangles): until turned off,
     // draws keep stage 0's texture coordinates inside rect (u1, v1, u2, v2, in texture coordinates, either order) less
     // half a texel of the stage's texture, so linear filtering reads no texel outside it when the sprite is scaled.
-    // nullptr turns it off.
-    void SetTextureRect(const float* rect);
+    // texelsU x texelsV (0: the texture's size) is the coarsest texel grid sampled: an upscaled atlas has mip levels
+    // down to its original size, whose texels are wider than the top level's. nullptr turns it off.
+    void SetTextureRect(const float* rect, UINT texelsU = 0, UINT texelsV = 0);
 
     // The back buffer's size this frame (0 x 0 while minimized or before the first scene).
     UINT BackBufferWidth() const { return m_backBuffer.width; }
@@ -448,6 +449,7 @@ private:
     UINT m_anisotropy = 1;
     bool m_textureRectOn = false;
     float m_textureRect[4] = {};
+    UINT m_textureRectTexels[2] = {};     // SetTextureRect's texel grid; 0: the texture's size
     // Supersampling: m_supersample asked; with m_ssaa > 1 the back buffer is drawn into m_ssaaColor (and m_msaaColor,
     // m_depth) m_ssaa times the window's size and blitted into the swapchain texture.
     UINT m_supersample = 1;
