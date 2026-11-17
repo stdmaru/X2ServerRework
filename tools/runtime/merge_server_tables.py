@@ -6,7 +6,7 @@ Usage:
       --items <client_data>/items/Item.lua --enum <client_data>/data/Enum.lua \\
       [--unit-types UT_ADD,UT_ELESIS,UT_ARA] [--cubes 90000130,90000131] \\
       [--client-manufacture <client_data>/items/ManufactureItem.lua --manufacture-source <ManufactureItem.lua> ...] \\
-      [--dry-run]
+      [--client-gaps] [--dry-run]
 
 Ours is kept as it is; entries are added by ID, only where ours has none (see docs/project/add-character.md):
 - RandomItemTable.lua (cubes): in a cube both files have, the class entries (m_cUnitClass -> m_iItemGroupID) ours
@@ -18,11 +18,14 @@ Ours is kept as it is; entries are added by ID, only where ours has none (see do
 - ManufactureResultTable.lua (crafting results): the recipes (AddManufactureResultTemplet) whose result group gives
   an item of --unit-types, and those groups. With --client-manufacture, the client's ManufactureItem.lua gets the same
   recipes (AddManufactureTemplet: materials and cost), their AddManufactureResultGroup lines and the
-  AddManufactureVillageData that shows them, each from the first --manufacture-source that has it.
+  AddManufactureVillageData that shows them, each from the first --manufacture-source that has it. --client-gaps
+  also gives the client the recipes our ManufactureResultTable.lua already has and its ManufactureItem.lua lacks (the
+  server refuses a result templet whose recipe the client does not define).
 Every item an added entry names must be in --items; an entry naming one that is not is left out and listed.
 """
 import argparse
 import collections
+import datetime
 import re
 import sys
 from pathlib import Path
@@ -232,7 +235,7 @@ def manufacture_ids(regex, text):
     return out
 
 
-def merge_manufacture(ours_dir, src_dir, items, unit_types, client, client_sources, report, dry):
+def merge_manufacture(ours_dir, src_dir, items, unit_types, client, client_sources, gaps, report, dry):
     path = ours_dir / "ManufactureResultTable.lua"
     text, bom, nl = read(path)
     src, _, _ = read(src_dir / "ManufactureResultTable.lua")
@@ -249,7 +252,7 @@ def merge_manufacture(ours_dir, src_dir, items, unit_types, client, client_sourc
         picked.append(mid)
     lines = []
     if picked:
-        lines.append("-- Recipes from V5 (merge_server_tables.py, 2026-11-15)")
+        lines.append(f"-- Recipes from V5 (merge_server_tables.py, {datetime.date.today()})")
         lines += [st[mid][1].replace("\r\n", "\n").replace("\n", nl) for mid in picked]
         groups = sorted({st[mid][0] for mid in picked if st[mid][0] not in og})
         for g in groups:
@@ -258,11 +261,15 @@ def merge_manufacture(ours_dir, src_dir, items, unit_types, client, client_sourc
     print(f"ManufactureResultTable: {len(picked)} recipes")
     if not dry:
         write(path, text, bom)
-    if not client or not picked:
+    if not client:
         return
 
     text, bom, nl = read(client)
     ct = manufacture_ids(CTEMPLET, text)
+    if gaps:
+        picked += sorted(mid for mid in ot if mid not in ct and mid not in picked)
+    if not picked:
+        return
     cg = item_groups(CGROUP, text)
     cv = {(int(a), int(b)) for a, b in CVILLAGE.findall(text)}
     sources = [(p, read(p)[0]) for p in client_sources]
@@ -287,6 +294,7 @@ def merge_manufacture(ours_dir, src_dir, items, unit_types, client, client_sourc
                 break
         else:
             report.append(f"manufacture: client recipe {mid} is in no --manufacture-source")
+            continue
         for p, t, g, v in parsed:
             rows = [body for a, b, body in v if a == mid and (a, b) not in cv]
             if rows:
@@ -295,7 +303,7 @@ def merge_manufacture(ours_dir, src_dir, items, unit_types, client, client_sourc
         else:
             if not any(a == mid for a, _ in cv):
                 report.append(f"manufacture: no village shows recipe {mid} in any source")
-    lines = ["-- Recipes from merge_server_tables.py (2026-11-15)"] + templets + groups + villages
+    lines = [f"-- Recipes from merge_server_tables.py ({datetime.date.today()})"] + templets + groups + villages
     text = append(text, nl, lines)
     print(f"client ManufactureItem: {len(templets)} recipes, {len(groups)} result rows, {len(villages)} village rows")
     if not dry:
@@ -312,6 +320,7 @@ def main():
     ap.add_argument("--cubes", default="")
     ap.add_argument("--client-manufacture", type=Path)
     ap.add_argument("--manufacture-source", type=Path, action="append", default=[])
+    ap.add_argument("--client-gaps", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     items = load_items(a.items)
@@ -321,8 +330,8 @@ def main():
     report = []
     merge_cubes(a.ours, a.source, items, classes, cubes, report, a.dry_run)
     merge_drops(a.ours, a.source, items, unit_types, report, a.dry_run)
-    merge_manufacture(a.ours, a.source, items, unit_types, a.client_manufacture, a.manufacture_source, report,
-                      a.dry_run)
+    merge_manufacture(a.ours, a.source, items, unit_types, a.client_manufacture, a.manufacture_source, a.client_gaps,
+                      report, a.dry_run)
     for line in report:
         print("note:", line)
 

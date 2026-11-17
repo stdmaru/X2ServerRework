@@ -77,44 +77,44 @@ end
 
 
 
---- 기본 셋팅
+--- Basic schedule (enabled 2026-11-16; production shipped it commented out)
 ------------------------------------------------------------------------------------------------
--- 월드 버프 지속 시간(초)
+-- World buff duration (seconds). The overseas team used 3600; 0 ends the buff at once.
 
-WorldMissionManager:SetWorldBuffDurationTime( 0 )
+WorldMissionManager:SetWorldBuffDurationTime( 3600 )
 
-----------월요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_MONDAY"],		 14,   0,  60  )
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_MONDAY"],		 21,   0,  60  )
+----------Monday
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_MONDAY"],		 14,   0,  60  )
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_MONDAY"],		 21,   0,  60  )
 
-----------화요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_TUESDAY"],		 14,   0,  60  )
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_TUESDAY"],		 21,   0,  60  )
+----------Tuesday
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_TUESDAY"],		 14,   0,  60  )
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_TUESDAY"],		 21,   0,  60  )
 
-----------수요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_WEDNESDDAY"],	 14,   0,  60  )
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_WEDNESDDAY"],	 21,   0,  60  )
+----------Wednesday
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_WEDNESDDAY"],	 14,   0,  60  )
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_WEDNESDDAY"],	 21,   0,  60  )
 
-----------목요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_THURSDAY"],		 14,   0,  60  )
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_THURSDAY"],		 21,   0,  60  )
+----------Thursday
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_THURSDAY"],		 14,   0,  60  )
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_THURSDAY"],		 21,   0,  60  )
 
-----------금요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_FRIDAY"],		 14,   0,  60  )
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_FRIDAY"],		 21,   0,  60  )
+----------Friday
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_FRIDAY"],		 14,   0,  60  )
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_FRIDAY"],		 21,   0,  60  )
 
-----------노는 토요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 11,  30,  60  )       
+----------Saturday off school (alternative to the normal Saturday; enable only one of them)
+--WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 11,  30,  60  )
 --WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 19,  30,  60  )
 --WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 22,   0,  60  )
 
-----------그냥 토요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 14,   0,  60  )       
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 21,   0,  60  )
+----------Normal Saturday
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 14,   0,  60  )
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SATERDAY"],		 21,   0,  60  )
 
-----------일요일
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SUNDAY"],		 14,   0,  60  )
---WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SUNDAY"],		 21,   0,  60  )
+----------Sunday
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SUNDAY"],		 14,   0,  60  )
+WorldMissionManager:SetDefenseOpenTime(  WEEK_OF_MONTH["WOM_SUNDAY"],		 21,   0,  60  )
 
 
 
