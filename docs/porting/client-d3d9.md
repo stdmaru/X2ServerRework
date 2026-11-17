@@ -147,8 +147,10 @@ New, not in D3D9's interface; the game's options set them ([Game options](client
   use alpha-to-coverage, and `FixedFunction.frag.hlsl` replaces the test by an edge about one pixel wide
   (`(alpha − ref) / fwidth(alpha) + 0.5`) instead of discarding, so cut-out leaves, grass and fences are smoothed like
   geometry edges. Other tests and blended draws keep the alpha test as it was.
-- `SetAnisotropy(1 to 16)`: samplers of mipmapped textures filtered linearly (the world; the UI is not minified) get at
-  least that anisotropy; a sampler the game sets anisotropic keeps its own level if higher.
+- `SetAnisotropy(1 to 16)`: samplers of mipmapped textures filtered linearly in the world get at least that
+  anisotropy; a sampler the game sets anisotropic keeps its own level if higher. Draws of pre-transformed (`XYZRHW`)
+  vertices, the UI, never get it (2026-11-16): facing the screen it gains nothing, and with HD textures the UI is
+  minified and the anisotropic footprint slightly distorted it.
 - `SetSupersample(1 or 2)` (SSAA): the back buffer is drawn at twice the window's size into a texture of its own (with
   MSAA, the multisampled texture is that size and resolves into it) and scaled down into the swapchain at `Present` by a
   linear blit, which at 2:1 is the average of each 2×2 block. The game still sees the window's size: only the pass's
