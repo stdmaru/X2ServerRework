@@ -17,8 +17,12 @@ applied by hand; this project does not run them when restoring a backup or start
 | [`20261115_unit_list_without_pvp.sql`](../../tools/database/patches/Game01/20261115_unit_list_without_pvp.sql) | `gup_get_unit_info_by_useruid`: units with no `GUnitPVP` row (10 in the backup) were missing from the character list |
 | [`20261115_skill_before_list.sql`](../../tools/database/patches/Game01/20261115_skill_before_list.sql) | `P_GSkill_BeforeList_INS` (was missing): copies a unit's learned skills, all pages, into `GSkill_BeforeList` (gets `PageNumber`) before its cash skill points expire; the GameServer stops the expiry unless it answers 0 |
 | [`20261116_unit_wait_delete_dates.sql`](../../tools/database/patches/Game01/20261116_unit_wait_delete_dates.sql) | `P_GUnitWaitDelete_INT`: a deleted unit waited 3 days for permanent deletion and 1 day to be restored, so character select showed both buttons disabled for a day; now 24 hours (as the client's `STR_ID_16103` says) and restore at once. Admin accounts (`Account.dbo.MUser.AuthLevel` ≥ 2, GM and above, read across databases) delete permanently at once, and `P_GUnitRestore_SET` lets them delete a restored unit again at once (others wait a day). Units already waiting get the same dates (2026-11-16, `client/unit-wait-delete`) |
+| [`20261116_events_pshop_pet.sql`](../../tools/database/patches/Game01/20261116_events_pshop_pet.sql) | Procedures the GameServer called and the database lacked (V5's are stubs), each with a new table: the global mission's daily participation (`P_GEvent_GlobalMission_INS`, `GEvent_GlobalMission`), the couple event (`P_GEvent_Couple_CHK`/`_INS`/`_DEL`/`_SEL`, `GEvent_Couple`), the cumulative Christmas reward (`gup_insert_xmas_event`, `GEvent_Xmas`) and opening or extending a personal-shop agency (`P_GPshopInfo_INT`). `P_GPet_Info_DEL` wrote released pets to another database (`GameDataMgmt`), so releasing a pet failed; they go to `GPet_Info_Deleted` (2026-11-16, `tools/db-missing-procedures`) |
+| [`20261116_item_socket5.sql`](../../tools/database/patches/Game01/20261116_item_socket5.sql) | The 2013 item revamp added a fifth socket (`Socket5`) and `ExpandedSocketNum` to items, and the servers read and write them through the mail, bank and agency procedures, which predate it: `P_GPost_INS` was called with two arguments too many, and `P_Gpost_SEL`, `P_GItem_GET_BankItem_New` and `P_GPShopItem_SEL` returned two columns too few. `GPost_Socket` and `GPShopItem` get both columns, and those procedures and the agency's `P_GPShopItem_INT_DEL_A/B/C_New` carry them (2026-11-16) |
 
-Checked by applying each twice and by running the procedures inside rolled-back transactions (2026-11-15).
+Checked by applying each twice and by running the procedures inside rolled-back transactions (2026-11-15; the
+2026-11-16 patches the same day). The databases run at compatibility level 100 (SQL Server 2008), so patches avoid
+newer functions such as `TRY_CONVERT`.
 
 ### The V5 source's databases as a reference (2026-11-15)
 
@@ -28,22 +32,25 @@ so they are read in a temporary `mcr.microsoft.com/mssql/server:2025-latest` con
 user, 2026-11-15): of the 40 that our servers call and our databases lack, 33 are stubs in V5. Read a V5 procedure
 before using it.
 
-### Still missing (2026-11-15)
+### Still missing (2026-11-16)
 
-Called by active server code (`exec dbo.<name>` in `src/server`), in none of our databases, and only a stub (or
-nothing) in V5. Each needs a table design and a procedure written from the server's call and result handling. They
-belong to features of their own (couples, global missions, the Elsword reward events, personal shops, titles):
+Called in `src/server` (`exec dbo.<name>`, comments stripped), in none of our databases, and only a stub (or nothing)
+in V5. Found by comparing every call with the databases' procedures, parameters and first result sets (2026-11-16):
 
-- Game01: `P_GPshopInfo_INT`, `P_GEvent_Couple_CHK`/`_DEL`/`_INS`, `P_GEvent_GlobalMission_INS`, `P_ESReward_SEL`,
-  `P_ESRewardList_SET`, `P_ESUnitInfo_SET`, `gup_insert_xmas_event`, `gup_insert_Title`, `gup_get_item_list_pet`
-  (ours is `gup_get_Item_list_pet`: check the collation).
-- Statistics: `lup_insert_pirate_EventInfo`, `P_LEvent_GlobalMission_SEL` (real in V5), `P_LEvent_GlobalMission_UPD`.
-- Account: `mup_create_user` (and the publishers' `mup_*_gash_user`, `mup_create_nx_user`, `mup_get_add`, likely unused).
-- Ours are stubs: `P_GItem_Def_INS`/`_UPD` (Game01).
+- Game01: `P_ESReward_SEL`, `P_ESRewardList_SET`, `P_ESUnitInfo_SET` (`GSRelayDBThread`, the Elsword reward relay;
+  skipped: it needs the relay's own design).
+- Ours are stubs: `P_GItem_Def_INS`/`_UPD` (Game01; the item-name translation dump, returns nothing).
+- Unused here: `mup_create_user` (LoginServer's account creation; accounts come from DEB login), and the publishers'
+  `mup_auth_gash_user`, `mup_create_gash_user`, `mup_create_nx_user` (other countries).
+- Never sent: `lup_insert_pirate_EventInfo` (Statistics). Its only sender, `KGlobalMissionManager::WriteGlobalMissionRewardInfo`,
+  is commented out.
 
-Not missing (2026-11-15): `P_GUnitLastPosition_SEL`, `P_GUnitPVP_Season2_SEL` and `P_GUser_MER` appear only in log
-messages (the servers call `P_GUnitLastPosition_GET`, ...). Done: `P_GSkill_BeforeList_INS` (above) and the logs
-([Statistics](#statistics)).
+Not missing (2026-11-16): `P_GUnitLastPosition_SEL`, `P_GUnitPVP_Season2_SEL` and `P_GUser_MER` appear only in log
+messages; `gup_insert_Title` and `gup_get_item_list_pet` exist with other letter case (the collation ignores it).
+Done: `P_GSkill_BeforeList_INS`, the logs ([Statistics](#statistics)), the events and agency
+([Game01](#game01)), the global mission's Statistics side, and the Account tables ([Account](#account)).
+Procedures that return nothing while the server reads a result (`P_LServerList_CCU_UPD`, `P_StatsStoneCnt_SET`,
+`gup_update_guild_maxno`) only make the server log that it read no result; they are left as they are.
 
 ## Statistics
 
@@ -54,6 +61,13 @@ procedures the GameServer and CenterServer call that our Statistics lacked (`lup
 each with a table named after it, so their calls stop failing. Production disabled several of its own logs (the
 `INSERT` of `P_LDungeonStageLog_INS` is commented out), so these were likely never kept there; here they are, which
 helps debugging. Checked like the Game01 patches (2026-11-15).
+
+[`20261116_global_mission_and_server_list.sql`](../../tools/database/patches/Statistics/20261116_global_mission_and_server_list.sql)
+adds GlobalServer's global mission (`LEvent_GlobalMission`, `P_LEvent_GlobalMission_SEL`/`_UPD`; V5's are stubs), a
+server-wide daily mission the GameServers count. No mission is seeded: the script's header shows the row to insert to run
+one. It also fixes procedures that answered the servers wrongly: `P_LServerList_SEL` returns `PublicIP` and `PrivateIP`
+(the servers read both since 2013), `P_LAccusationLog_INT` takes the CenterServer's arguments in its order,
+`P_StatCCUMinuteGuestUser_INS` gets its table, and `P_LTradeBank_INT` answers 0 (2026-11-16).
 
 [`20261104_globalserver_event_features.sql`](../../tools/database/patches/Statistics/20261104_globalserver_event_features.sql) adds
 the tables and procedures used by GlobalServer's timed enchant and limited exchange flows. It implements the server's result-set
@@ -67,3 +81,19 @@ rows are not seeded because the repository contains no authoritative event sched
 The exchange procedure reloads the remaining quota by subtracting outstanding consumption log rows. A rollback deletes its row,
 so the quota is restored both in memory and after a server restart. The script does not modify existing tables. Configure the new
 tables before enabling either feature.
+
+## Account
+
+[`20261116_block_lists_and_authority.sql`](../../tools/database/patches/Account/20261116_block_lists_and_authority.sql)
+(2026-11-16):
+
+- **Block lists.** The LoginServer reloads a block list when its row in `ReleaseTick` grows, and `ReleaseTick` was empty,
+  so no list loaded; the tables behind them (`RejectedUser`, `TradeBlock`) did not exist, and neither did the machine-ID
+  list's `mup_get_add`. The patch creates them (`MachineIDBlock` for machine IDs) and seeds the ticks of types 0
+  (connection), 1 (trade), 4 (GlobalServer's `MPenalty` list) and 5 (machine ID). After editing a list by hand, raise
+  its tick (the script's header shows how).
+- **Missing tables of existing procedures:** `SecondPWChangeLog` (changing the second password always failed) and
+  `MUserComeback.RewardLevel`/`RegDate` (returning-user rewards).
+- **Authority.** The user's level is `MUser.AuthLevel`; `mup_get_authority_list` and `mup_set_user_authority` (GameServer
+  admin commands), `mup_update_tool_authlevel` and `mup_get_user_info` read the original's `MUserAuthority`, which this
+  database does not have, and now use `MUser.AuthLevel`.
