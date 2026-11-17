@@ -714,7 +714,10 @@ HRESULT CKTDGUIControl::RenderVertex( VERTEX_UI* pVertex, const UIPointData& poi
 		rect[2] = std::max( rect[2], pVertex[i].u );
 		rect[3] = std::max( rect[3], pVertex[i].v );
 	}
-	g_pKTDXApp->GetDevice()->SetTextureRect( rect );
+	// In texels of the original size: an upscaled atlas is minified down to its smallest mip level, that size, and half
+	// a texel of its top level would let that level blend the neighbours again.
+	g_pKTDXApp->GetDevice()->SetTextureRect( rect, static_cast<UINT>( std::max( 0, pointData.pUITextureData->pTexture->GetWidth() ) ),
+		static_cast<UINT>( std::max( 0, pointData.pUITextureData->pTexture->GetHeight() ) ) );
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
 	static_assert( D3DFVF_VERTEX_UI == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");

@@ -771,9 +771,11 @@ void Device::SetAnisotropy(UINT level)
     m_anisotropy = std::clamp<UINT>(level, 1, 16);
 }
 
-void Device::SetTextureRect(const float* rect)
+void Device::SetTextureRect(const float* rect, UINT texelsU, UINT texelsV)
 {
     m_textureRectOn = rect != nullptr;
+    m_textureRectTexels[0] = texelsU;
+    m_textureRectTexels[1] = texelsV;
     if (rect != nullptr) {
         m_textureRect[0] = std::min(rect[0], rect[2]);
         m_textureRect[1] = std::min(rect[1], rect[3]);
@@ -1500,9 +1502,12 @@ void Device::PushUniforms(DWORD fvf)
     const Texture* texture0 = m_textures[0];
     if (m_textureRectOn && texture0 != nullptr && texture0->m_texture && texture0->Width() > 0 &&
         texture0->Height() > 0) {
-        // The centers of the rectangle's edge texels; a rectangle a texel wide or less keeps its middle.
-        const float halfU = 0.5f / static_cast<float>(texture0->Width());
-        const float halfV = 0.5f / static_cast<float>(texture0->Height());
+        // The centers of the rectangle's edge texels (of the coarsest level sampled); a rectangle a texel wide or less
+        // keeps its middle.
+        const UINT texelsU = m_textureRectTexels[0] > 0 ? m_textureRectTexels[0] : texture0->Width();
+        const UINT texelsV = m_textureRectTexels[1] > 0 ? m_textureRectTexels[1] : texture0->Height();
+        const float halfU = 0.5f / static_cast<float>(texelsU);
+        const float halfV = 0.5f / static_cast<float>(texelsV);
         const float* r = m_textureRect;
         const float u1 = r[0] + halfU, u2 = r[2] - halfU, v1 = r[1] + halfV, v2 = r[3] - halfV;
         f.stage0Rect[0] = u1 <= u2 ? u1 : (r[0] + r[2]) / 2;
