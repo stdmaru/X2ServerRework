@@ -14,7 +14,7 @@ namespace
 	const int	READY_FRAMES = 3;
 	// Closes anyway after this long (a load that never ends, an ACK lost), with a log line.
 	const float	MAX_WAIT_TIME = 30.f;
-	const float	FADE_OUT_TIME = 0.3f;
+	const float	FADE_OUT_TIME = 0.1f;
 	// Share of the bar for the background loads; the rest fills when the server confirmed the entry.
 	const float	LOADS_SHARE = 0.85f;
 
