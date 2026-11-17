@@ -91,7 +91,7 @@ CX2SceneLoading::~CX2SceneLoading()
 	SAFE_CLOSE( m_pTextureBlack );
 }
 
-void CX2SceneLoading::CreateDialog()
+void CX2SceneLoading::CreateLoadingDialog()
 {
 	if( m_pDialog != NULL )
 		SAFE_DELETE_DIALOG_HANDLE( m_pDialog );
@@ -107,7 +107,7 @@ void CX2SceneLoading::Begin()
 {
 	// a fresh dialog each time, so a background set for the last destination does not stay
 	Close();
-	CreateDialog();
+	CreateLoadingDialog();
 	if( m_pDialog == NULL )
 		return;
 	SetBackground();
@@ -177,7 +177,7 @@ void CX2SceneLoading::SetBackground()
 
 	// a missing picture: the first login's background whole, not half of each
 	if( bSet == false )
-		CreateDialog();
+		CreateLoadingDialog();
 }
 
 bool CX2SceneLoading::IsCoveredState() const

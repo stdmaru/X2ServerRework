@@ -30,7 +30,7 @@ private:
 		STEP_FADE_OUT,
 	};
 
-	void CreateDialog();
+	void CreateLoadingDialog();
 	void SetBackground();
 	bool IsStateReady() const;
 	bool IsCoveredState() const;
