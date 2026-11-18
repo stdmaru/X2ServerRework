@@ -2262,24 +2262,16 @@ void CKTDGUIDialog::DrawBackdropEdges( CKTDGUIControl& kControl ) const
 		g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1, D3DPT_TRIANGLESTRIP, 2, akVertex );
 	};
 
-	// A picture meant to fill the screen can fall a pixel or two short of an edge (a 1365.33-unit picture on a 16:9
-	// canvas, rounding, the +1 of the right edge above): that is not a side to fill, and a fade there would darken
-	// one edge of a picture that covers the screen.
-	constexpr float kCoverTolerance = 2.f;
-	const bool bLeft = fLeft > fScreenL + kCoverTolerance, bRight = fRight < fScreenR - kCoverTolerance;
-	if ( bLeft == false && bRight == false )
-		return;	// the pictures cover the screen's width: a narrower screen crops them
+	// Backdrops are centered, so a wider screen leaves a gap on both sides. A gap on one side only is rounding or a
+	// picture a unit off center (a 1365.33-unit picture on a 16:9 canvas), not a screen to fill: no bar, no fade.
+	const bool bLeft = fLeft > fScreenL, bRight = fRight < fScreenR;
+	if ( bLeft == false || bRight == false )
+		return;	// the pictures cover the screen's width on a side: a narrower screen crops them
 	g_pKTDXApp->GetDevice()->SetTexture( 0, NULL );	// no texture: the vertex color
-	if ( bLeft )
-	{
-		quad( fScreenL, fLeft, dwOpaque, dwOpaque );
-		quad( fLeft, fLeft + fFade, dwOpaque, dwClear );
-	}
-	if ( bRight )
-	{
-		quad( fRight - fFade, fRight, dwClear, dwOpaque );
-		quad( fRight, fScreenR, dwOpaque, dwOpaque );
-	}
+	quad( fScreenL, fLeft, dwOpaque, dwOpaque );
+	quad( fLeft, fLeft + fFade, dwOpaque, dwClear );
+	quad( fRight - fFade, fRight, dwClear, dwOpaque );
+	quad( fRight, fScreenR, dwOpaque, dwOpaque );
 }
 
 D3DXVECTOR2 CKTDGUIDialog::GetDraggingRange() const
