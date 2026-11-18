@@ -392,8 +392,8 @@ tutorial's loading screen (`HQ_Loading_RUBEN_PROLOG.tga` on picture 0 of `Static
 The screen between a dungeon's stages (`CX2StateDungeonGame::OnFrameRender`, `m_NextStageNum != -2`) is a dialog,
 `DLG_Dungeon_Stage_Loading.lua` (`Static_Stage_Loading`, both pictures `STRETCH` in `UIAnchors.lua`), with two layers:
 
-0. **Back**: the stage's last frame without the UI; until it is taken, or if it cannot be, a generic loading picture
-   (`Dungeon_Loading_Advertisement.lua`).
+0. **Back**: the stage's last frame without the UI; until it is taken, or if it cannot be, the picture the script gives
+   it (the code no longer picks one of `Dungeon_Loading_Advertisement.lua`, so the script owns its layout).
 1. **Frame**: `HQ_LoadingOutLine.tga`, the black bands with the logo (stretched to the screen's shape: the logo is wider
    at 16:9).
 
