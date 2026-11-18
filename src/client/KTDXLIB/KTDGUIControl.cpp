@@ -696,13 +696,19 @@ HRESULT CKTDGUIControl::RenderVertex( VERTEX_UI* pVertex, const UIPointData& poi
 		return E_FAIL;
 	}
 
-	if( pointData.pUITextureData->pTexture == NULL )
+	CKTDXDeviceRenderTargetTexture* pRenderTarget = pointData.pUITextureData->pRenderTarget;
+	if( pointData.pUITextureData->pTexture == NULL && pRenderTarget == NULL )
 	{
 		ErrorLogMsg( KEM_ERROR131, m_Name.c_str() );
 		return E_FAIL;
 	}
 
-	pointData.pUITextureData->pTexture->SetDeviceTexture();
+	if( pRenderTarget != NULL )
+		pRenderTarget->SetDeviceTexture();
+	else
+		pointData.pUITextureData->pTexture->SetDeviceTexture();
+	const int iTexWidth = pRenderTarget != NULL ? pRenderTarget->GetWidth() : pointData.pUITextureData->pTexture->GetWidth();
+	const int iTexHeight = pRenderTarget != NULL ? pRenderTarget->GetHeight() : pointData.pUITextureData->pTexture->GetHeight();
 
 	// The picture is a key of an atlas: scaled (any resolution but 1024 x 768) and filtered linearly, its edges would
 	// blend the texels next to the key, a seam between the slices of a window. The quad samples only its own UVs.
@@ -716,8 +722,8 @@ HRESULT CKTDGUIControl::RenderVertex( VERTEX_UI* pVertex, const UIPointData& poi
 	}
 	// In texels of the original size: an upscaled atlas is minified down to its smallest mip level, that size, and half
 	// a texel of its top level would let that level blend the neighbours again.
-	g_pKTDXApp->GetDevice()->SetTextureRect( rect, static_cast<UINT>( std::max( 0, pointData.pUITextureData->pTexture->GetWidth() ) ),
-		static_cast<UINT>( std::max( 0, pointData.pUITextureData->pTexture->GetHeight() ) ) );
+	g_pKTDXApp->GetDevice()->SetTextureRect( rect, static_cast<UINT>( std::max( 0, iTexWidth ) ),
+		static_cast<UINT>( std::max( 0, iTexHeight ) ) );
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
 	static_assert( D3DFVF_VERTEX_UI == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
@@ -1422,6 +1428,33 @@ bool CKTDGUIControl::CPictureData::SetTex( const WCHAR* pFileName, const WCHAR* 
 		return false;
 
 	return true;
+}
+
+void CKTDGUIControl::CPictureData::SetRenderTarget( CKTDXDeviceRenderTargetTexture* pRenderTarget )
+{
+	KTDXPROFILE();
+
+	if( pRenderTarget == NULL )
+		return;
+
+	UITextureData* pTexData = new UITextureData();
+	pTexData->pRenderTarget = pRenderTarget;
+	// the whole target, in UVs (a file's are in texels of the file)
+	pTexData->uvTexture[CKTDGUIControl::VP_LEFT_TOP]		= D3DXVECTOR2( 0.f, 0.f );
+	pTexData->uvTexture[CKTDGUIControl::VP_RIGHT_TOP]		= D3DXVECTOR2( 1.f, 0.f );
+	pTexData->uvTexture[CKTDGUIControl::VP_LEFT_BOTTOM]		= D3DXVECTOR2( 0.f, 1.f );
+	pTexData->uvTexture[CKTDGUIControl::VP_RIGHT_BOTTOM]	= D3DXVECTOR2( 1.f, 1.f );
+	pTexData->texSize = D3DXVECTOR2( static_cast<float>( pRenderTarget->GetWidth() ), static_cast<float>( pRenderTarget->GetHeight() ) );
+
+	SAFE_DELETE( pTexture );
+	pTexture = pTexData;
+	if( pPoint != NULL )
+	{
+		pPoint->pUITextureData = pTexture;
+		// a target's alpha is whatever the scene left in it: opaque
+		pPoint->m_eSrcBlend = D3DBLEND_ONE;
+		pPoint->m_eDestBlend = D3DBLEND_ZERO;
+	}
 }
 
 void CKTDGUIControl::CPictureData::SetSizeAsTextureSize()

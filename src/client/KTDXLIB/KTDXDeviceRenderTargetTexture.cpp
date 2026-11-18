@@ -68,7 +68,7 @@ HRESULT CKTDXDeviceRenderTargetTexture::OnLostDevice()
 	return S_OK;
 }
 
-void CKTDXDeviceRenderTargetTexture::BeginRender( bool bClear )
+void CKTDXDeviceRenderTargetTexture::BeginRender( bool bClear, bool bKeepUILayout )
 {
 	KTDXPROFILE();
 	if( m_pRenderTargetTexture == NULL )
@@ -82,8 +82,11 @@ void CKTDXDeviceRenderTargetTexture::BeginRender( bool bClear )
 	m_vBackupUIOrigin = g_pKTDXApp->GetUIOrigin();
 	m_fBackupUIAnchorShift = g_pKTDXApp->GetUIAnchorShiftInEffect();
 	m_kBackupUIStretch = g_pKTDXApp->GetUIStretch();
-	g_pKTDXApp->SetUIOrigin( D3DXVECTOR2( 0.f, 0.f ) );
-	g_pKTDXApp->SetUIStretch( CKTDXApp::UIStretchState() );
+	if( bKeepUILayout == false )
+	{
+		g_pKTDXApp->SetUIOrigin( D3DXVECTOR2( 0.f, 0.f ) );
+		g_pKTDXApp->SetUIStretch( CKTDXApp::UIStretchState() );
+	}
 
 	if( bClear == true )
 	{

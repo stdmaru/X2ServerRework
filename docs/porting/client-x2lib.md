@@ -375,6 +375,23 @@ image or a single picture, 4:3 (over the 1024 column) or, for the 16:9 redraws p
 then hidden (or absent, once the dialog's own background is one 16:9 picture). If a texture is missing the dialog is
 rebuilt with its own background, the first login's.
 
+## Dungeon stage loading screen (2026-11-18, `client/dungeon-stage-loading`)
+
+The screen between a dungeon's stages (`CX2StateDungeonGame::OnFrameRender`, `m_NextStageNum != -2`) is a dialog,
+`DLG_Dungeon_Stage_Loading.lua` (`Static_Stage_Loading`, both pictures `STRETCH` in `UIAnchors.lua`), with two layers:
+
+0. **Back**: the stage's last frame without the UI; until it is taken, or if it cannot be, a generic loading picture
+   (`Dungeon_Loading_Advertisement.lua`).
+1. **Frame**: `HQ_LoadingOutLine.tga`, the black bands with the logo (stretched to the screen's shape: the logo is wider
+   at 16:9).
+
+The shot had been lost: the original copied the back buffer with `StretchRect` into a 1024×768 target, and the device has
+no such copy ([render targets](client-ktdxlib.md#render-targets)), so it showed black. `CX2Game::TakeLastKillShot` now
+draws the scene (world and object chain, before the UI) **into the target** on the first render after the last kill's
+delay (`m_bLastKillShotDue`, set by `OnFrameMove`), the target sized as the back buffer (reopened when it changes), so the
+shot is at the screen's resolution. The picture shows the target through `CPictureData::SetRenderTarget`, opaque (blend
+one / zero). The first stage's screen (`DLG_PVP_Game_Loading_State.lua`) is unchanged.
+
 ## Characters waiting for deletion (2026-11-16, `client/unit-wait-delete`)
 
 A deleted character waits in character select (`SERV_UNIT_WAIT_DELETE`) with the permanent deletion (`final_delete_unit`)

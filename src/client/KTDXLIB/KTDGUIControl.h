@@ -21,6 +21,8 @@ class CKTDGUIDialog;
 
 #define D3DFVF_VERTEX_UI   ( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 )
 
+class CKTDXDeviceRenderTargetTexture;
+
 class CKTDGUIControl : private x2::NonCopyable
 {
 	public:
@@ -79,6 +81,8 @@ class CKTDGUIControl : private x2::NonCopyable
 			wstring					texName;
 			wstring					keyName;
 			CKTDXDeviceTexture*		pTexture;
+			// A render target the picture shows instead of a file (CPictureData::SetRenderTarget); not owned.
+			CKTDXDeviceRenderTargetTexture*	pRenderTarget;
 			D3DXVECTOR2				uvOrgTexture[4];
 			D3DXVECTOR2				uvTexture[4];
 
@@ -87,6 +91,7 @@ class CKTDGUIControl : private x2::NonCopyable
 			void Init()
 			{
 				pTexture = NULL;
+				pRenderTarget = NULL;
 				for( int i = 0; i < 4; i++ )
 				{
 					INIT_VECTOR2( uvTexture[i], 0.0f, 0.0f );
@@ -379,6 +384,8 @@ class CKTDGUIControl : private x2::NonCopyable
 
 				void SetTex_LUA2( const char* pFileName );
 				bool SetTex( const WCHAR* pFileName );
+				// The picture shows the whole render target (not owned: it must outlive the picture or be replaced first).
+				void SetRenderTarget( CKTDXDeviceRenderTargetTexture* pRenderTarget );
 				void SetTex_LUA( const char* pFileName, const char* key );
 				bool SetTex( const WCHAR* pFileName, const WCHAR* key );
 				void SetTex( CKTDGUIControl::UITextureData* pNewTexture );

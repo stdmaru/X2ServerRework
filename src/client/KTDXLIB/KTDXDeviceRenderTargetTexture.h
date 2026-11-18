@@ -34,7 +34,9 @@ class CKTDXDeviceRenderTargetTexture
 		void RenderQuadRHW( D3DCOLOR color = 0xffffffff, float fX = 0.f, float fY = 0.f, float fWidth = -1.f, float fHeight = -1.f );
 		void RenderQuad( D3DCOLOR color = 0xffffffff );
 
-		void BeginRender( bool bClear = true );
+		// bKeepUILayout: the layout units keep the screen's mapping (a scene drawn at the screen's size, not a UI piece
+		// drawn into the target from its top left).
+		void BeginRender( bool bClear = true, bool bKeepUILayout = false );
 		void EndRender();
 
 		void Clear( D3DCOLOR color = 0x00000000 );
