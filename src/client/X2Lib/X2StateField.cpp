@@ -979,6 +979,9 @@ bool CX2StateField::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND /*hWnd*/, UINT /*uM
 			if(bCanCreateWorld == true)
 			{
 
+				// a village to another one keeps the state: the screen is raised here, not by CX2Main::StateChange
+				g_pMain->BeginSceneLoading();
+
 				SAFE_DELETE(g_pTFieldGame);
 
 				g_pTFieldGame = new CX2TFieldGame(m_iWorldId);

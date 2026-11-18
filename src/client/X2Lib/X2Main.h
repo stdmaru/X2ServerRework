@@ -1186,6 +1186,7 @@ class CX2Main : public CKTDXStage
 		void			DeleteStateChangeDLG();
 		// The scene loading screen: shown until the village or field being entered is loaded and drawn.
 		void			BeginSceneLoading();
+		bool			IsSceneLoading() const { return m_pSceneLoading != NULL && m_pSceneLoading->IsActive(); }
 
 
 		void			SetShowUnitViewerUI( bool bShow ) { CX2UnitViewerUI::SetShowUnitViewerUI( bShow ); }

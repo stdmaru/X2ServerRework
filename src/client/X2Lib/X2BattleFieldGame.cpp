@@ -17,6 +17,7 @@ CX2BattleFieldGame::CX2BattleFieldGame()
 , m_hRaidPortalParticle( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_pDLGLoadingState( NULL )
 , m_fLoadUIReaminTime(0.f)
+, m_bBattleFieldNamePending( false )
 
 {
 	m_GameType = CX2Game::GT_BATTLE_FIELD;
@@ -168,6 +169,13 @@ CX2BattleFieldGame::CX2BattleFieldGame()
 
 	OnFrameMove_LoadingUI(fTime, fElapsedTime );
 
+	// the name is a 5 s fade: it starts when the player can see it
+	if( m_bBattleFieldNamePending == true && g_pMain->IsSceneLoading() == false )
+	{
+		m_bBattleFieldNamePending = false;
+		OpenBattleFieldName();
+	}
+
 	return S_OK;
 }
 
@@ -239,7 +247,7 @@ CX2BattleFieldGame::CX2BattleFieldGame()
 	m_pWorld = g_pData->GetWorldManager()->CreateWorld( static_cast<CX2World::WORLD_ID>( uiWorldId ), NULL, true );
 
 	CreatePotalParticle();
-	OpenBattleFieldName();
+	m_bBattleFieldNamePending = true;
 	CreateRaidPotal();
 
 }
@@ -339,7 +347,7 @@ void CX2BattleFieldGame::SwapWorld()
 		}
 		else
 		{
-			OpenBattleFieldName();
+			m_bBattleFieldNamePending = true;
 		}
 	}
 
