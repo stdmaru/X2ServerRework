@@ -144,6 +144,7 @@ protected:
 	CKTDGUIDialogType		m_pDLGLoadingState;		/// 워프로 이동 했을 때 생성 되는 로딩창
 
 	float					m_fLoadUIReaminTime;
+	bool					m_bBattleFieldNamePending;	// opened once the scene loading screen is gone
 
 //#ifdef SERV_COMMON_AUTO_OPEN_HARD_CODE
 	mutable bool						m_bOpenPotalParticle;

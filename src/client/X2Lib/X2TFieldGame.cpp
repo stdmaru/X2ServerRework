@@ -1160,10 +1160,13 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 	}
 
 
+	// The area's name and buffs wait for the scene loading screen: they would run out behind it.
+	const float fOverlayElapsedTime = g_pMain->IsSceneLoading() ? 0.f : fElapsedTime;
+
 	// 필드이름표시
 	if ( m_pDLGFieldName != NULL )
 	{
-		m_fFieldNameTime += fElapsedTime;
+		m_fFieldNameTime += fOverlayElapsedTime;
 		if(m_fFieldNameTime >= 4.f && m_fFieldNameTime <= 6.f)
 		{
 			CloseFieldName(m_fFieldNameTime);
@@ -1177,7 +1180,7 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 
 	if ( m_pDLGBuffName != NULL )
 	{
-		m_fBuffNameTime += fElapsedTime;
+		m_fBuffNameTime += fOverlayElapsedTime;
 		if( m_fBuffNameTime >= 7.f && m_fBuffNameTime < 8.f )
 		{
 			if ( NULL != m_pDLGBuffName )

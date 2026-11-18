@@ -361,6 +361,14 @@ of its length and the server's confirmation for the rest; it never goes back.
 The two timed screens give way to it: `LoadUI` keeps only the warp's 3 s delay of the field and buff names and spends
 the warp/channel flags; the raid field no longer calls `CreateLoadingUI` (removed). Input is not blocked meanwhile.
 
+**Village to village and the area's name** (2026-11-18): a village to another one (fast travel, warp ticket) keeps
+`XS_VILLAGE_MAP` and only rebuilds `g_pTFieldGame` in `CX2StateField::Handler_EGS_STATE_CHANGE_FIELD_ACK`, so
+`StateChange` never raised the screen; that handler now calls `BeginSceneLoading` before the rebuild. The area's name
+(village: `m_fFieldNameTime`, `m_fBuffNameTime` in `CX2TFieldGame::OnFrameMove`; field: `OpenBattleFieldName`) is a timed
+overlay that used to start with the game's construction and ran out behind a long load. The village's timers now stand
+still while `CX2Main::IsSceneLoading()`, and the field opens its name (`m_bBattleFieldNamePending`) on the first frame
+after the screen is gone.
+
 **Backgrounds** (user, 2026-11-16): every destination uses the same dialog; only the textures of `First_Loading_Back`
 change, chosen at `Begin` (the location and field managers already know the destination; the channel change flag is
 spent only while the village is built). The table in `X2SceneLoading.cpp` holds the art of the original's two timed
