@@ -493,6 +493,10 @@ class CX2Game : public CKTDXStage
 
 
 		CKTDXDeviceRenderTargetTexture* GetLastKillShot()		{ return m_pRenderTargetLastkillShot; }
+		// The stage's last frame without the UI, taken when the last kill's delay ends (TakeLastKillShot): false until then.
+		void						TakeLastKillShot();
+		bool						IsLastKillShotTaken() const	{ return m_bLastKillShotTaken; }
+		void						ClearLastKillShotTaken()	{ m_bLastKillShotTaken = false; }
 
 		bool 						GetEnableAllKeyProcess() const { return m_bEnableAllKeyProcess; }
 		void 						SetEnableAllKeyProcess(bool val) { m_bEnableAllKeyProcess = val; }
@@ -1192,6 +1196,8 @@ protected:
 
 		bool						m_bStopUnitChain;					/// true인 경우 NPC가 죽었다는 패킷의 즉시 전송, 모든 Unit과 Pet에 대한 FrameMove 처리를 하지 않음 (StageLoding 시 true고, subStage가 Start 할 때 false가 된다. 현재 사용하는 곳은 던전에서만 사용 함)
 
+		bool							m_bLastKillShotDue;				/// the delay ended: the next render draws the shot
+		bool							m_bLastKillShotTaken;
 		float							m_fLastkillShotTime;			/// 던전 스테이지 클리어 시에 스샷찍을때 사용 (지금은 던전에서만 사용하는 것처럼 보이는데...)
 		CKTDXDeviceRenderTargetTexture*	m_pRenderTargetLastkillShot;	/// 던전 스테이지 클리어 시에 스샷 찍기
 

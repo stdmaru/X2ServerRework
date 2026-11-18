@@ -703,6 +703,7 @@ protected:
 	bool OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	void SetLoadingGageBar( int iLoadingPercent );
+	void SetStageLoadingBack( CKTDXDeviceRenderTargetTexture* pShot );
 
 private:
 	CKTDGUIDialogType					m_pDLGExitMsgBox;
@@ -738,8 +739,11 @@ private:
 
 
 
-	CKTDXDeviceTexture*				m_pLoadingOutLineTex;
-	CKTDXDeviceTexture*				m_pLoadingBasicTex;
+	// The screen between stages (DLG_Dungeon_Stage_Loading.lua): the stage's last frame behind a frame. Before the shot
+	// is taken, or without one, a generic loading picture is behind it.
+	CKTDGUIDialogType				m_pDLGStageLoading;
+	std::wstring					m_wstrStageLoadingBasic;
+	bool							m_bStageLoadingShowsShot;
 
 
 	int								m_LoadingPercent;

@@ -169,7 +169,7 @@ once since the device is never lost or reset (T38). Its depth buffer is the devi
 original created a depth surface per target). `BeginRender` binds it and `EndRender` binds back the target that was in use
 (the original went back to the back buffer it saved at creation). The `StretchRect` copies (`CopySurface`,
 `CopySurfaceToBackBuffer`, `CopyBackBufferToSurface`) fail quietly: `x2::render` has no blit yet and the swapchain image
-cannot be read, as on the devices where the original set `m_bCannotStretchRect`.
+cannot be read, as on the devices where the original set `m_bCannotStretchRect`. Code that needed a copy draws into the target instead (the [dungeon stage loading](client-x2lib.md#dungeon-stage-loading-screen-2026-11-18-clientdungeon-stage-loading) shot).
 
 ### Sound
 
@@ -707,6 +707,14 @@ sub-boss warning (`BOSS_DANGER`, `BOSS_DANGER_ADD`, `SUB_BOSS_DANGER`, `SUB_BOSS
 With `X2_UI_LIVE=1` (dev tools) each such sequence instance notes the box its particles cover, before its anchor
 (`CKTDGUIAnchorRecorder::NoteLiveParticle`), and the live snapshot writes those drawn in the last few frames as
 `particle` lines, for the UI editor's [watch game](../tools/ui-editor.md#watch-game).
+
+## Render target pictures (2026-11-18, `client/dungeon-stage-loading`)
+
+`CKTDGUIControl::CPictureData::SetRenderTarget( target )` makes a picture show the whole of a render target
+(`UITextureData::pRenderTarget`, not owned; UVs 0..1, blend one / zero because the target's alpha is whatever the scene
+left). `RenderVertex` and the static's draw accept it in place of a file texture. `CKTDXDeviceRenderTargetTexture::BeginRender`
+takes `bKeepUILayout`: a scene drawn into a target the size of the screen keeps the screen's layout mapping instead of the
+top-left origin a UI piece gets (T44).
 
 ## Status
 

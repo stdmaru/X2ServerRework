@@ -48,8 +48,8 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 	, m_bResultStateReq( false )
 	, m_bGameEnd( false )
 	, m_fGameEndWaitTime( 5.f )
-	, m_pLoadingOutLineTex( NULL )
-	, m_pLoadingBasicTex( NULL )
+	, m_pDLGStageLoading( NULL )
+	, m_bStageLoadingShowsShot( false )
 	, m_LoadingPercent( 0 )
 	, m_LoadingRenderCount( 0 )
 	, m_ConnectType( CX2Game::CT_START_GAME )
@@ -307,8 +307,7 @@ CX2StateDungeonGame::~CX2StateDungeonGame(void)
 	SAFE_DELETE_DIALOG( m_pDLGFaultyPlayerWarning );
 
 
-	SAFE_CLOSE( m_pLoadingOutLineTex );
-	SAFE_CLOSE( m_pLoadingBasicTex );
+	SAFE_DELETE_DIALOG_HANDLE( m_pDLGStageLoading );
 	SAFE_DELETE_DIALOG( m_pDLGExitMsgBox );
 
     SAFE_DELETE_DIALOG_HANDLE( m_pDLGLoadingState );
@@ -422,8 +421,6 @@ void CX2StateDungeonGame::LoadUI()
 
 	}
 
-	m_pLoadingOutLineTex	= g_pKTDXApp->GetDeviceManager()->OpenTexture( L"HQ_LoadingOutLine.tga" );
-
 
 	// D:\ProjectX2_SVN\resource\KR\Trunk\dat\Texture\UI에 파일들이 있습니다
 	std::vector< std::wstring > vecLoadingTextureName;
@@ -449,7 +446,9 @@ void CX2StateDungeonGame::LoadUI()
 	}
 
 	int iRandomLoadingImageIndex = rand() % (int) vecLoadingTextureName.size();
-	m_pLoadingBasicTex = g_pKTDXApp->GetDeviceManager()->OpenTexture( vecLoadingTextureName[ iRandomLoadingImageIndex ] );
+	m_wstrStageLoadingBasic = vecLoadingTextureName[ iRandomLoadingImageIndex ];
+	m_pDLGStageLoading = new CKTDGUIDialog( this, L"DLG_Dungeon_Stage_Loading.lua", 0.0f );
+	SetStageLoadingBack( NULL );
 
 
 	m_pDLGLoadingState = new CKTDGUIDialog( this, L"DLG_PVP_Game_Loading_State.lua", 0.0f );
@@ -966,13 +965,16 @@ HRESULT CX2StateDungeonGame::OnFrameRender()
 			}
 			else
 			{
-				if( m_pDungeonGame->GetLastKillCheck() == true && g_pKTDXApp->GetCannotStretchRect() == false )
-					m_pDungeonGame->GetLastKillShot()->Draw( 0, 0, 1024, 768 );// CopySurfaceToBackBuffer();
-				else
-					m_pLoadingBasicTex->Draw( 0,0, 1024,768 );
-
-				if( m_pLoadingOutLineTex != NULL )
-					m_pLoadingOutLineTex->Draw( 0,0, 1024,768 );
+				if( m_pDLGStageLoading != NULL )
+				{
+					CKTDXDeviceRenderTargetTexture* pShot = NULL;
+					if( m_pDungeonGame->GetLastKillCheck() == true && m_pDungeonGame->IsLastKillShotTaken() == true )
+						pShot = m_pDungeonGame->GetLastKillShot();
+					// bound again each frame: the shot's target is replaced when the screen's size changes
+					if( pShot != NULL || m_bStageLoadingShowsShot == true )
+						SetStageLoadingBack( pShot );
+					m_pDLGStageLoading->OnFrameRender();
+				}
 			}
 		}
 
@@ -5812,6 +5814,32 @@ bool CX2StateDungeonGame::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPa
 	return true;
 }
 
+
+// The screen between stages' back layer: the shot of the stage's last frame, or the generic loading picture.
+void CX2StateDungeonGame::SetStageLoadingBack( CKTDXDeviceRenderTargetTexture* pShot )
+{
+	if( m_pDLGStageLoading == NULL )
+		return;
+	CKTDGUIStatic* pStatic = static_cast<CKTDGUIStatic*>( m_pDLGStageLoading->GetControl( L"Static_Stage_Loading" ) );
+	CKTDGUIControl::CPictureData* pBack = pStatic != NULL ? pStatic->GetPicture( 0 ) : NULL;
+	if( pBack == NULL )
+		return;
+	if( pShot != NULL && pShot->IsOk() )
+	{
+		pBack->SetRenderTarget( pShot );
+		m_bStageLoadingShowsShot = true;
+	}
+	else
+	{
+		pBack->SetTex( m_wstrStageLoadingBasic.c_str() );
+		if( pBack->pPoint != NULL )
+		{
+			pBack->pPoint->m_eSrcBlend = D3DBLEND_SRCALPHA;
+			pBack->pPoint->m_eDestBlend = D3DBLEND_INVSRCALPHA;
+		}
+		m_bStageLoadingShowsShot = false;
+	}
+}
 
 void CX2StateDungeonGame::SetLoadingGageBar( int iLoadingPercent )
 {

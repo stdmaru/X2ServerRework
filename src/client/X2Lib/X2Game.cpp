@@ -187,6 +187,8 @@ m_LoadingPercent( 0 ),
 m_pDropItemManager( NULL ),
 m_pFontForUnitName( NULL ),
 m_bStopUnitChain( false ),
+m_bLastKillShotDue( false ),
+m_bLastKillShotTaken( false ),
 m_fLastkillShotTime( 0.f ),
 m_pRenderTargetLastkillShot( NULL ),
 m_bOpenChatBox( false ),
@@ -2941,17 +2943,9 @@ HRESULT	CX2Game::OnFrameMove( double fTime, float fElapsedTime )
 			if( m_fLastkillShotTime < 0.0f )
 			{
 				m_fLastkillShotTime = 0.0f;
-				if( NULL != m_pRenderTargetLastkillShot &&
-					true == m_pRenderTargetLastkillShot->IsOk() )
-				{
-					g_pKTDXApp->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x32323232, 1.0f, 0);
-                    CKTDGParticleSystem::EnableParticleCulling( true );
-					g_pKTDXApp->GetDGManager()->ObjectChainSort();
-					g_pKTDXApp->GetDGManager()->ObjectChainNonAlphaRender();
-					g_pKTDXApp->GetDGManager()->ObjectChainAlphaRender();
-                    CKTDGParticleSystem::EnableParticleCulling( false );
-					m_pRenderTargetLastkillShot->CopyBackBufferToSurface();
-				}
+				// the back buffer cannot be copied (no StretchRect, docs/porting/client-ktdxlib.md#render-targets): the
+				// next render draws the scene into the target instead
+				m_bLastKillShotDue = true;
 			}
 		}
 
@@ -3003,6 +2997,36 @@ HRESULT	CX2Game::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
+// The stage's last frame for the loading screen between stages: the scene drawn once more, into a target the size of
+// the back buffer (the layout's 2D parts follow the screen's size, and the shot is shown stretched over it).
+void CX2Game::TakeLastKillShot()
+{
+	const int iWidth = g_pKTDXApp->GetDevice()->BackBufferWidth();
+	const int iHeight = g_pKTDXApp->GetDevice()->BackBufferHeight();
+	if( iWidth <= 0 || iHeight <= 0 )
+		return;
+
+	if( m_pRenderTargetLastkillShot == NULL
+		|| m_pRenderTargetLastkillShot->GetWidth() != iWidth || m_pRenderTargetLastkillShot->GetHeight() != iHeight )
+	{
+		SAFE_CLOSE( m_pRenderTargetLastkillShot );
+		m_pRenderTargetLastkillShot = g_pKTDXApp->GetDeviceManager()->OpenRenderTargetTexture( L"LastKillShot", iWidth, iHeight );
+	}
+	if( m_pRenderTargetLastkillShot == NULL || m_pRenderTargetLastkillShot->IsOk() == false )
+		return;
+
+	m_pRenderTargetLastkillShot->BeginRender( true, true );
+	CKTDGParticleSystem::EnableParticleCulling( true );
+	if( m_pWorld != NULL )
+		m_pWorld->OnFrameRender();
+	g_pKTDXApp->GetDGManager()->ObjectChainSort();
+	g_pKTDXApp->GetDGManager()->ObjectChainNonAlphaRender();
+	g_pKTDXApp->GetDGManager()->ObjectChainAlphaRender();
+	CKTDGParticleSystem::EnableParticleCulling( false );
+	m_pRenderTargetLastkillShot->EndRender();
+	m_bLastKillShotTaken = true;
+}
+
 HRESULT	CX2Game::OnFrameRender()
 {
 
@@ -3020,6 +3044,12 @@ HRESULT	CX2Game::OnFrameRender()
 		g_pKTDXApp->GetDGManager()->ObjectChainAlphaRender();
         CKTDGParticleSystem::EnableParticleCulling( false );
 
+		// right after the scene and before the UI: the shot has none
+		if( m_bLastKillShotDue == true )
+		{
+			m_bLastKillShotDue = false;
+			TakeLastKillShot();
+		}
 
 		switch( GetGameType() )
 		{
@@ -9549,6 +9579,8 @@ bool CX2Game::Handler_EGS_RESURRECT_TO_CONTINUE_DUNGEON_ACK( KEGS_RESURRECT_TO_C
 	}
 
 	m_bLastKillCheck				= false;
+	m_bLastKillShotDue				= false;
+	m_bLastKillShotTaken			= false;
 	m_fLastKillWaitTime				= 0.05f;	//FieldFix: 이 코드는 필요 없음
 	m_fLastKillWaitTimeAfterRebirth	= 1.f;
 

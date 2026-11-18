@@ -120,7 +120,7 @@ HRESULT CKTDGUIStatic::OnFrameRender()
 		if ( pPictureData->GetShow() == true
 			&& pPictureData->pPoint != NULL
 			&& pPictureData->pTexture != NULL
-			&& pPictureData->pTexture->pTexture != NULL )
+			&& ( pPictureData->pTexture->pTexture != NULL || pPictureData->pTexture->pRenderTarget != NULL ) )
 		{
 			// T52: a picture with its own anchor draws under it instead of its static's.
 			std::optional<CKTDXApp::UIAnchorScope> oAnchor;

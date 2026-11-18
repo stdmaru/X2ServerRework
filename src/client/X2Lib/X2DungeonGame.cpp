@@ -888,6 +888,8 @@ void CX2DungeonGame::SubStageStart()
 #endif
 	//장막을 열고 서브 스테이지를 시작한다
 	m_bLastKillCheck		= false;
+	m_bLastKillShotDue		= false;
+	m_bLastKillShotTaken	= false;
 	m_fLastKillWaitTime		= 0.05f;
 
 	m_bShowClear			= false;
