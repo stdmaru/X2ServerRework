@@ -641,9 +641,9 @@ the width of its fade in layout units:
   `CKTDGUIDialog::DrawBackdropEdges` draws black from the screen's edge to the pictures' box and a gradient over the
   box's outer `fade` units, opaque at the edge to clear inside (two quads per side, vertex color, no texture: the
   device draws the vertex color, [D3D9](client-d3d9.md)). Edges snap as the pictures' corners do (`floor - 0.5`); the
-  fade is at most half the box. A side is filled only when the box falls more than 2 pixels short of the screen's edge
-  (2026-11-18): a picture that covers the screen exactly, like the loading screens' 1365.33 units, must not get a
-  1 px bar and a fade on one edge from rounding. Its alpha is the dialog's times the control's, so it fades in and out with the screen.
+  fade is at most half the box. The edges are drawn only when the box
+  falls short of the screen on **both** sides (2026-11-18): backdrops are centered, so a gap on one side is rounding, and a
+  picture that covers the screen exactly, like the loading screens' 1365.33 units, must not get a bar and a fade on one edge. Its alpha is the dialog's times the control's, so it fades in and out with the screen.
   Controls drawn after it (the login fields and buttons) are on top.
 - `CKTDGUIControl::SetBackdropFade` (negative: none) holds the declaration; `CKTDGUIAnchors::Apply` sets it, and
   reports a name the dialog lacks on stderr, as for anchors. Only statics are measured (the union of their shown
