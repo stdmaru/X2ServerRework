@@ -740,9 +740,9 @@ private:
 
 
 	// The screen between stages (DLG_Dungeon_Stage_Loading.lua): the stage's last frame behind a frame. Before the shot
-	// is taken, or without one, a generic loading picture is behind it.
+	// is taken, or without one, the script's own Back picture shows.
 	CKTDGUIDialogType				m_pDLGStageLoading;
-	std::wstring					m_wstrStageLoadingBasic;
+	std::wstring					m_wstrStageLoadingBackTex;
 	bool							m_bStageLoadingShowsShot;
 
 
