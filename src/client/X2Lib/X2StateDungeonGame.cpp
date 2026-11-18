@@ -422,33 +422,15 @@ void CX2StateDungeonGame::LoadUI()
 	}
 
 
-	// D:\ProjectX2_SVN\resource\KR\Trunk\dat\Texture\UI에 파일들이 있습니다
-	std::vector< std::wstring > vecLoadingTextureName;
-	vecLoadingTextureName.reserve( 16 );
-	KLuaManager kLuamanager( g_pKTDXApp->GetLuaBinder()->GetLuaState(), 0, true );
-    if ( g_pKTDXApp->LoadAndDoMemory( &kLuamanager, L"Dungeon_Loading_Advertisement.lua" ) == true )
-	{
-		if ( true == kLuamanager.BeginTable( "TEXTURE_NAME" ) )
-		{
-			int tableIndex = 1;
-			wstring textureName;
-			while( kLuamanager.GetValue( tableIndex, textureName ) == true )
-			{
-				vecLoadingTextureName.push_back( textureName );
-				tableIndex++;
-			}
-			kLuamanager.EndTable();
-		}
-	}
-	if( true == vecLoadingTextureName.empty() )
-	{
-		vecLoadingTextureName.push_back( L"HQ_LoadingBasic_111.tga" );
-	}
-
-	int iRandomLoadingImageIndex = rand() % (int) vecLoadingTextureName.size();
-	m_wstrStageLoadingBasic = vecLoadingTextureName[ iRandomLoadingImageIndex ];
 	m_pDLGStageLoading = new CKTDGUIDialog( this, L"DLG_Dungeon_Stage_Loading.lua", 0.0f );
-	SetStageLoadingBack( NULL );
+	// the script's own Back picture is what shows when there is no shot
+	if( m_pDLGStageLoading != NULL )
+	{
+		CKTDGUIStatic* pStageStatic = static_cast<CKTDGUIStatic*>( m_pDLGStageLoading->GetControl( L"Static_Stage_Loading" ) );
+		CKTDGUIControl::CPictureData* pStageBack = pStageStatic != NULL ? pStageStatic->GetPicture( 0 ) : NULL;
+		if( pStageBack != NULL && pStageBack->pTexture != NULL )
+			m_wstrStageLoadingBackTex = pStageBack->pTexture->texName;
+	}
 
 
 	m_pDLGLoadingState = new CKTDGUIDialog( this, L"DLG_PVP_Game_Loading_State.lua", 0.0f );
@@ -5831,7 +5813,8 @@ void CX2StateDungeonGame::SetStageLoadingBack( CKTDXDeviceRenderTargetTexture* p
 	}
 	else
 	{
-		pBack->SetTex( m_wstrStageLoadingBasic.c_str() );
+		if( m_wstrStageLoadingBackTex.empty() == false )
+			pBack->SetTex( m_wstrStageLoadingBackTex.c_str() );
 		if( pBack->pPoint != NULL )
 		{
 			pBack->pPoint->m_eSrcBlend = D3DBLEND_SRCALPHA;
