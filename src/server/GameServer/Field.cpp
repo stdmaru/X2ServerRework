@@ -476,7 +476,7 @@ _IMPL_ON_FUNC( ERM_FIELD_UNIT_STATE_NOT, KEGS_FIELD_UNIT_STATE_NOT )
 	}
 	if( kResult.bCorrect )
 	{
-		START_LOG( cwarn, L"Village movement rejected." )
+		START_LOG( cerr, L"Village movement rejected." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_iMapID )
 			<< BUILD_LOGc( kResult.kCorrection.m_ucReason )
