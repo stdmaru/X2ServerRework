@@ -97,6 +97,9 @@ public:
 		SI_SA_COMMON_AURA_EL_DEFENCE_ACCEL,				///	��ȣ�� ����
 		SI_SA_COMMON_AURA_CRITICAL_ACCEL = 205,			/// �¸��� ����
 		SI_SA_COMMON_AURA_ADDATK_ACCEL,					/// ������ ����
+#ifdef X2_ADD_3RD_PATH
+		SI_SA_COMMON_CREST_OF_TIME                  = 207,
+#endif
 		//#pragma endregion ����
 
 		//#pragma region ���, ��ȥ
@@ -618,6 +621,17 @@ public:
 		SI_SA_ALD_HELL_OF_TORNADO,						/// ��ȯ����
 		SI_SA_ALD_PRISON_SPEAR = 7015,					/// ���� 3�� â�차��
 		SI_SA_AYR_ENERGY_VOID,							/// ��������
+#ifdef X2_ARA_3RD_PATH
+		SI_SA_AA_NECROMANCY                         = 7017,
+		SI_SA_AA_SPECTER_OF_THUNDER                 = 7018,
+		SI_SA_ALS_RESTRAINTS_SPECTER                = 7019,
+		SI_SA_ALS_SPECTER_OF_STORM                  = 7020,
+		SI_SA_ALS_SPECTER_OF_BLADE                  = 7021,
+		SI_SA_ALS_SEVER                             = 7022,
+		SI_SA_AA_GET_BLOOD                          = 7023,
+		SI_SA_AA_FIRE_FOX                           = 7024,
+		SI_SA_AA_SUPPRESSION_SPECTER                = 7025,
+#endif
 //#endif // SERV_ARA_CHANGE_CLASS_SECOND
 		//#pragma endregion Special Active
 
@@ -643,6 +657,13 @@ public:
 		SI_A_ALD_CONVERSION_MANA,						/// �̱��
 		SI_A_AYR_STEAL_SOUL,							/// ���� 4�� Żȥ
 		SI_A_ALD_REFLECTION,							/// ��ź��
+#ifdef X2_ARA_3RD_PATH
+		SI_A_ALS_VIEW_BETWEEN                       = 7220,
+		SI_A_ALS_SPECTER_WALK                       = 7221,
+		SI_A_ALS_SHAKE_CHAOS                        = 7222,
+		SI_A_AA_RAID                                = 7223,
+		SI_A_ALS_MANA_DRAIN                         = 7224,
+#endif
 //#endif // SERV_ARA_CHANGE_CLASS_SECOND
 		//#pragma endregion Active
 
@@ -661,6 +682,13 @@ public:
 		SI_P_AYR_RESURRECTION = 7410,					/// ȸ������
 		SI_P_ALD_ENERGY_REINFORCE,						/// ��� ��ȭ
 		SI_P_AYR_HELL_GATE_OPEN,						/// ���� �ʷ�
+#ifdef X2_ARA_3RD_PATH
+		SI_P_AA_SPECTER_POWER_RELEASE               = 7413,
+		SI_P_AA_ASSIMILATION                        = 7414,
+		SI_P_AA_SPIRITUAL_EYE                       = 7415,
+		SI_P_AA_REPOSE_OF_SOULS                     = 7416,
+		SI_P_AA_FOX_SMILE                           = 7417,
+#endif
 //#endif // SERV_ARA_CHANGE_CLASS_SECOND
 		//#pragma endregion Passive
 
@@ -668,6 +696,9 @@ public:
 		SI_HA_ASD_THOUSANDS_BLOSSOMS = 7600,			/// �б��õ - õ��ȭ
 //#ifdef SERV_ARA_CHANGE_CLASS_SECOND // ����ȯ
 		SI_HA_AYR_ENERGY_CANNON,						/// ���ȯ����
+#ifdef X2_ARA_3RD_PATH
+		SI_HA_AA_NINE_TAILED_FOX                    = 7602,
+#endif
 //#endif // SERV_ARA_CHANGE_CLASS_SECOND
 		//#pragma endregion Finality Skill
 
@@ -696,6 +727,16 @@ public:
 		SI_SA_SGM_WAR_PRELUDE						= 8018,		/// �� ��������
 		SI_SA_SBH_BLAZE_WING						= 8019,		/// �������� ��
 		SI_SA_SBH_BLAZING_DANCE						= 8020,		/// ������¡ ����
+#ifdef X2_ELESIS_3RD_PATH
+		SI_SA_SDK_BRUTAL_CUTTER                     = 8021,
+		SI_SA_SDK_EJECTION_BUSTER                   = 8022,
+		SI_SA_SDK_BRANDISH_BREAKER                  = 8023,
+		SI_SA_SDK_BURNING_PHANTOM                   = 8024,
+		SI_SA_SCA_CRIMSON_BREAK                     = 8025,
+		SI_SA_SCA_DREAD_WEAPON                      = 8026,
+		SI_SA_SCA_SHADE_THE_ILLUSION                = 8027,
+		SI_SA_SCA_BLOOD_CUTTER                      = 8028,
+#endif
 
 		SI_A_EL_DODGE_AND_SLASH						= 8200,		/// ����&������
 		SI_A_EL_LEAP_CRASH							= 8201,		/// ����
@@ -720,6 +761,13 @@ public:
 		SI_A_SBH_FLAME_SWORD						= 8217,		///	ȫ���� ��
 		SI_A_SBH_FIREWORKS							= 8218,		/// �ҳ���
 		SI_A_SBH_SCALET_ROSE						= 8219,		/// �Ҳ� ���
+#ifdef X2_ELESIS_3RD_PATH
+		SI_A_SDK_INJECTION_STIGMA                   = 8220,
+		SI_A_SDK_DARK_WAVE                          = 8221,
+		SI_A_SCA_SHADE_SCRATCH                      = 8222,
+		SI_A_SCA_SHADOW_EDGE                        = 8223,
+		SI_A_SCA_ASSAULT_STRIKE                     = 8224,
+#endif
 
 		SI_P_SSK_AGILITY_MASTERY					= 8400,		/// ���߷� ���
 		SI_P_SSK_CHIVALRY							= 8401,		/// ����� ����
@@ -731,9 +779,20 @@ public:
 		SI_P_SBH_FIRE_BLOSSOMS						= 8407,		/// �Ҳ� ��ȭ
 		SI_P_SBH_UNEXTINGUISHABLE_FIRE				= 8408,		/// ������ �ʴ� �Ҳ�
 		SI_P_SBH_STIGMA_OF_FIRE						= 8409,		/// �Ҳ��� ����
+#ifdef X2_ELESIS_3RD_PATH
+		SI_P_SDK_DARK_FORCE                         = 8410,
+		SI_P_SDK_BLOOD_RUNAWAY                      = 8411,
+		SI_P_SDK_MADNESS_RUNAWAY                    = 8412,
+		SI_P_SCA_BLOOD_REVENGE                      = 8413,
+		SI_P_SCA_JUDGMENT                           = 8414,
+		SI_P_SCA_PUNISH                             = 8415,
+#endif
 
 		SI_HA_SGM_SWORD_OF_RELICS					= 8600,		/// �ҵ� ���� ������
 		SI_HA_SBH_ANCIENT_FIRE						= 8601,		/// ���μ�Ʈ ���̾�
+#ifdef X2_ELESIS_3RD_PATH
+		SI_HA_SCA_FATE_SMASHER                      = 8602,
+#endif
 
 //#pragma endregion ��ų
 
@@ -758,6 +817,26 @@ public:
 		SI_SA_ALP_QUICKSILVER_FRENZY				= 9012,		/// ���ǹ� ������
 		SI_SA_ALP_DUST_ANATOMY						= 9013,		/// ����Ʈ �Ƴ����
 		SI_SA_ALP_PSYCHIC_STORM						= 9014,		/// ����ű ����
+#ifdef X2_ADD_2ND_PATH
+		SI_SA_AAT_INSTALLATION_DRONE_ACTIVATOR      = 9015,
+		SI_SA_AAT_PANZER_BUSTER                     = 9016,
+		SI_SA_AAT_PSIONIC_GENERATOR                 = 9017,
+		SI_SA_AAT_PHANTOM_SEEKER                    = 9018,
+		SI_SA_AMM_INSTALLATION_PULSE_GATLING        = 9019,
+		SI_SA_AMM_INSTALLATION_SHOOTING_CHASER      = 9020,
+		SI_SA_AMM_INSTALLATION_ULTIMATE_FURY        = 9021,
+		SI_SA_AMM_INSTALLATION_STAR_FALL            = 9022,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_SA_ATT_VOID_IMPACT                       = 9023,
+		SI_SA_ATT_VOID_FIELD                        = 9024,
+		SI_SA_ATT_MAXIMUM_STRIKE                    = 9025,
+		SI_SA_ATT_STARDUST_SHOWER                   = 9026,
+		SI_SA_ADE_REVERSE_CIRCLE                    = 9027,
+		SI_SA_ADE_REVERSE_STIGMA                    = 9028,
+		SI_SA_ADE_MOONLIGHT_RHAPSODY                = 9029,
+		SI_SA_ADE_GRAVITY_BURSTER                   = 9030,
+#endif
 
 
 		/// ��Ƽ��
@@ -771,6 +850,17 @@ public:
 
 		SI_A_ALP_PSIONIC_BEAT						= 9206,		/// ���̿��� ��Ʈ
 		SI_A_ALP_TWIRL_RUSH							= 9207,		/// Ʈ�� ����
+#ifdef X2_ADD_2ND_PATH
+		SI_A_AAT_RUSHING_DRONE_DYNAMO               = 9208,
+		SI_A_AMM_DIVIDING_MISSILE_DYNAMO            = 9209,
+		SI_A_AMM_FLICK_DISC_DYNAMO                  = 9210,
+		SI_A_AMM_COUNTDOWN_BOMB_DYNAMO              = 9211,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_A_ATT_SPACE_CRACK                        = 9212,
+		SI_A_ADE_FORCE_NOVA                         = 9213,
+		SI_A_ADE_FORCE_FINGER                       = 9214,
+#endif
 
 
 		/// �нú�
@@ -785,10 +875,30 @@ public:
 		SI_P_ALP_BODY_OF_TRANSCENDENCE				= 9406,		/// �ʿ����� ��ü
 		SI_P_ALP_POWER_EXCHANGER					= 9407,		/// ��� ��ȯ��
 		SI_P_ALP_FANTASY_TRACER						= 9408,		/// ȯ�� ������
+#ifdef X2_ADD_2ND_PATH
+		SI_P_AAT_NASOD_ARMOR_MODE                   = 9409,
+		SI_P_AAT_HIDDEN_MEMORY                      = 9410,
+		SI_P_AMM_ENHANCED_DYNAMO_FACTORY_TRANSFORM  = 9411,
+		SI_P_AMM_DYNAMO_FACTORY_MP_RECOVERY         = 9412,
+		SI_P_AMM_TRANSFORM_OFFENSE_MODE             = 9413,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_P_ATT_NASOD_ARMOR_MODE_OVERLIMIT         = 9414,
+		SI_P_ADE_MIND_CONTROL                       = 9415,
+		SI_P_ADE_TIME_CONTROL                       = 9416,
+		SI_P_ADE_MIND_CIRCLE                        = 9417,
+		SI_P_ADE_ESP                                = 9418,
+#endif
 
 
 		/// ������ ��Ƽ�� ��ų
 		SI_HA_ALP_DOOMS_DAY							= 9600,		/// �ҽ� ����
+#ifdef X2_ADD_2ND_PATH
+		SI_HA_AMM_APOCALYPSE                        = 9601,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_HA_ADE_PARANOIA                          = 9602,
+#endif
 
 //#pragma endregion ��ų
 	};

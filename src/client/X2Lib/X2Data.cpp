@@ -110,6 +110,15 @@ static const CharacterImageName s_CharacterImageNameMyGage[] =
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_APT_FACE"	),	//53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_ALP_FACE"	),	//54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AAT_FACE"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AMM_FACE"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture77_NEW.tga",		L"L_SPECTER_STATE"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ASURA_STATE"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SDK_FACE"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SCA_FACE"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ATT_FACE"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ADE_FACE"	),	//62
 
 };
 //#pragma endregion ���� Gage UI
@@ -196,6 +205,15 @@ static const CharacterImageName s_CharacterImageName160[] =
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_APT_LARGE"	),	//53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_ALP_LARGE"	),	//54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AAT_LARGE"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AMM_LARGE"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture77_NEW.tga",		L"L_SPECTER_LARGE"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ASURA_LARGE"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SDK_LARGE"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SCA_LARGE"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ATT_LARGE"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ADE_LARGE"	),	//62
 
 };
 	//#pragma endregion ū �ʻ�ȭ �̹���_160x160
@@ -283,6 +301,15 @@ static const CharacterImageName s_CharacterImageName160Gray[] =
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_APT_GRAY"	),	//53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_ALP_GRAY"	),	//54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AAT_GRAY"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AMM_GRAY"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture77_NEW.tga",		L"L_SPECTER_LARGE_GRAY"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ASURA_LARGE_GRAY"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SDK_GRAY"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SCA_GRAY"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ATT_GRAY"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ADE_GRAY"	),	//62
 
 };
 //#pragma endregion ū �ʻ�ȭ ȸ�� �̹���_160x160
@@ -368,6 +395,15 @@ static const CharacterImageName s_CharacterImageName50[] =
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_APT_MEDIUM"	),	//53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_ALP_MEDIUM"	),	//54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AAT_MEDIUM"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AMM_MEDIUM"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture77_NEW.tga",		L"L_SPECTER_MEDIUM"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ASURA_MEDIUM"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SDK_MEDIUM"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SCA_MEDIUM"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ATT_MEDIUM"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ADE_MEDIUM"	),	//62
 
 };
 //#pragma endregion �߰� �ʻ�ȭ ȸ�� �̹���_50x50
@@ -453,6 +489,15 @@ static const CharacterImageName s_CharacterImageName20[] =
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_APT_ICON"	),	//53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_ALP_ICON"	),	//54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AAT_ICON"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AMM_ICON"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture77_NEW.tga",		L"L_SPECTER_ICON"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ASURA_ICON"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SDK_ICON"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SCA_ICON"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ATT_ICON"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ADE_ICON"	),	//62
 
 };
 //#pragma endregion ���� �ʻ�ȭ �̹���_20x20
@@ -540,6 +585,15 @@ CharacterImageName s_CharacterImageNameDungeonClear[] =
 	CharacterImageName( L"HQ_Dungeon_Clear_Add_APT.tga",	L""		),	 //53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"HQ_Dungeon_Clear_Add_ALP.tga",	L""		),	 //54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"HQ_Dungeon_Clear_Add_AAT.tga",		L""	),	//55
+	CharacterImageName( L"HQ_Dungeon_Clear_Add_AMM.tga",		L""	),	//56
+	CharacterImageName( L"HQ_Dungeon_Clear_Ara_Little_Specter_Normal.tga",		L""	),	//57
+	CharacterImageName( L"HQ_Dungeon_Clear_Ara_Asura_Normal.tga",		L""	),	//58
+	CharacterImageName( L"HQ_Dungeon_Clear_Elesis_Dark_Knight.tga",		L""	),	//59
+	CharacterImageName( L"HQ_Dungeon_Clear_Elesis_Crimson_Avenger.tga",		L""	),	//60
+	CharacterImageName( L"HQ_Dungeon_Clear_Add_ATT.tga",		L""	),	//61
+	CharacterImageName( L"HQ_Dungeon_Clear_Add_ADE.tga",		L""	),	//62
 
 };
 //#pragma endregion ���� Ŭ���� �̹���
@@ -623,6 +677,15 @@ CharacterImageName s_CharacterImageNameInitial[] =
 	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_P" 	),	 //53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_L" 	),	 //54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_A"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_M"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_L"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_A"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_D"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_C"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_T"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture11.tga",		L"CLASS_D"	),	//62
 
 };
 //#pragma endregion ���� ���� ����
@@ -709,6 +772,15 @@ static const CharacterImageName s_CharacterImageNameParty[] =
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_APT_PARTY"	), //53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture81_NEW.tga",		L"ADD_ALP_PARTY"	), //54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AAT_PARTY"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ADD_AMM_PARTY"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture77_NEW.tga",		L"L_SPECTER_PARTY"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture82_NEW.tga",		L"ASURA_PARTY"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SDK_PARTY"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture85_NEW.tga",		L"EL_SCA_PARTY"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ATT_PARTY"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture86_NEW.tga",		L"ADD_ADE_PARTY"	),	//62
 
 };
 //#pragma endregion ��Ƽ�� �̹���
@@ -796,6 +868,15 @@ static const CharacterImageName s_CharacterImageUnitSlot[] =
 	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ADD_P_Tracer"	), //53 �ֵ� ����ű Ʈ���̼�
 
 	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ADD_ALP"), //54 �ֵ� �糪ƽ ����Ŀ
+	// Images of the classes PR 112 adds (src/define.h); kept when a path is off, so the indices stay
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ADD_AAT"	),	//55
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ADD_AMM"	),	//56
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ARA_L_SPECTER"	),	//57
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ARA_ASURA"	),	//58
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ELESIS_D_KNIGHT"	),	//59
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"list_ELESIS_C_AVENGER"	),	//60
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"List_ADD_ATT"	),	//61
+	CharacterImageName( L"DLG_UI_Common_Texture_GUI_character_01.tga",		L"List_ADD_ADE"	),	//62
 
 };
 //#pragma endregion ���� ���� �̹���
@@ -2222,6 +2303,22 @@ void CX2Data::SetServerCurrentTime( wstring wstrTime )
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:				iImageIndex = 53;		break; // �ֵ� ����ű Ʈ���̼�
 
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:				iImageIndex = 54;		break; // �ֵ� �糪ƽ ����Ŀ
+#ifdef X2_ADD_2ND_PATH
+	case CX2Unit::UC_ADD_ARC_TRACER:				iImageIndex = 55;		break;
+	case CX2Unit::UC_ADD_MASTERMIND:				iImageIndex = 56;		break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CX2Unit::UC_ARA_LITTLE_SPECTER:				iImageIndex = 57;		break;
+	case CX2Unit::UC_ARA_ASURA:				iImageIndex = 58;		break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_DARK_KNIGHT:				iImageIndex = 59;		break;
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:				iImageIndex = 60;		break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CX2Unit::UC_ADD_TIME_TRACER:				iImageIndex = 61;		break;
+	case CX2Unit::UC_ADD_DIABOLIC_ESPER:				iImageIndex = 62;		break;
+#endif
 
 	default:
 		break;
@@ -2503,6 +2600,22 @@ void CX2Data::ReadyCharacterMotion()
 	XSkinMeshReady( L"Motion_ADD_PT.x" );	/// �ֵ� 1�� ���� ����ű Ʈ���̼�
 
 	XSkinMeshReady( L"Motion_ADD_LP.x" );	/// �ֵ� 2�� ���� �糪ƽ ����Ŀ
+#ifdef X2_ADD_2ND_PATH
+	XSkinMeshReady( L"Motion_ADD_AT.x" );
+	XSkinMeshReady( L"Motion_ADD_MM.x" );
+#endif
+#ifdef X2_ARA_3RD_PATH
+	XSkinMeshReady( L"Motion_Ara_LS.x" );
+	XSkinMeshReady( L"Motion_Ara_AA.x" );
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	XSkinMeshReady( L"Motion_EL_DK.x" );
+	XSkinMeshReady( L"MOTION_EL_CA.x" );
+#endif
+#ifdef X2_ADD_3RD_PATH
+	XSkinMeshReady( L"Motion_ADD_TT.x" );
+	XSkinMeshReady( L"Motion_ADD_DE.x" );
+#endif
 }
 
 /** @function : ResetFieldManager

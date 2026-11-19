@@ -105,6 +105,23 @@ class CX2Unit : public CKTDXDeviceHolder, public CX2Unit_PreHeader
 
 			UC_ADD_LUNATIC_PSYKER		= 122,	// �糪ƽ ����Ŀ - �ֵ� 2�� ����
 
+#ifdef X2_ADD_2ND_PATH
+			UC_ADD_ARC_TRACER			= 33,	// Add 1st job, 2nd path
+			UC_ADD_MASTERMIND			= 123,	// Add 2nd job, 2nd path
+#endif
+#ifdef X2_ARA_3RD_PATH
+			UC_ARA_LITTLE_SPECTER		= 34,	// Ara 1st job, 3rd path
+			UC_ARA_ASURA				= 124,	// Ara 2nd job, 3rd path
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+			UC_ELESIS_DARK_KNIGHT		= 35,	// Elesis 1st job, 3rd path
+			UC_ELESIS_CRIMSON_AVENGER	= 125,	// Elesis 2nd job, 3rd path
+#endif
+#ifdef X2_ADD_3RD_PATH
+			UC_ADD_TIME_TRACER			= 36,	// Add 1st job, 3rd path
+			UC_ADD_DIABOLIC_ESPER		= 126,	// Add 2nd job, 3rd path
+#endif
+
 			// ������ // 2013-07-04 // 2������ enum ��ȸ�� ���� �߰�
 			UC_VALIDE_END,
 
@@ -1617,6 +1634,114 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 			}
 		} break;
 
+#ifdef X2_ADD_2ND_PATH
+	case CX2Unit::UC_ADD_ARC_TRACER:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ADD_NASOD_RULER:
+			case CX2Unit::UC_ADD_ARC_TRACER:
+				return true;
+			default:
+				break;
+			}
+		} break;
+
+	case CX2Unit::UC_ADD_MASTERMIND:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ADD_NASOD_RULER:
+			case CX2Unit::UC_ADD_ARC_TRACER:
+			case CX2Unit::UC_ADD_MASTERMIND:
+				return true;
+			default:
+				break;
+			}
+		} break;
+#endif
+
+#ifdef X2_ARA_3RD_PATH
+	case CX2Unit::UC_ARA_LITTLE_SPECTER:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ARA_MARTIAL_ARTIST:
+			case CX2Unit::UC_ARA_LITTLE_SPECTER:
+				return true;
+			default:
+				break;
+			}
+		} break;
+
+	case CX2Unit::UC_ARA_ASURA:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ARA_MARTIAL_ARTIST:
+			case CX2Unit::UC_ARA_LITTLE_SPECTER:
+			case CX2Unit::UC_ARA_ASURA:
+				return true;
+			default:
+				break;
+			}
+		} break;
+#endif
+
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ELESIS_KNIGHT:
+			case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+				return true;
+			default:
+				break;
+			}
+		} break;
+
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ELESIS_KNIGHT:
+			case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+			case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+				return true;
+			default:
+				break;
+			}
+		} break;
+#endif
+
+#ifdef X2_ADD_3RD_PATH
+	case CX2Unit::UC_ADD_TIME_TRACER:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ADD_NASOD_RULER:
+			case CX2Unit::UC_ADD_TIME_TRACER:
+				return true;
+			default:
+				break;
+			}
+		} break;
+
+	case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+		{
+			switch( stuffClass )
+			{
+			case CX2Unit::UC_ADD_NASOD_RULER:
+			case CX2Unit::UC_ADD_TIME_TRACER:
+			case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+				return true;
+			default:
+				break;
+			}
+		} break;
+#endif
+
 
 	default:
 		break;
@@ -2098,9 +2223,18 @@ inline CX2Unit::UNIT_CLASS GetThirdLineAraClassTypeByUnitClassType ( CX2Unit::UN
 {
 	switch ( eUnitClassType_ )
 	{
+#ifdef X2_ARA_3RD_PATH
+	case CX2Unit::UCT_BASIC_CLASS :
+		return CX2Unit::UC_ARA_MARTIAL_ARTIST;
+	case CX2Unit::UCT_FIRST_CLASS :
+		return CX2Unit::UC_ARA_LITTLE_SPECTER;
+	case CX2Unit::UCT_SECOND_CLASS :
+		return CX2Unit::UC_ARA_ASURA;
+#else
 	case CX2Unit::UCT_BASIC_CLASS :
 	case CX2Unit::UCT_FIRST_CLASS :
 	case CX2Unit::UCT_SECOND_CLASS :
+#endif
 	default:
 		break;
 	}
@@ -2166,9 +2300,18 @@ inline CX2Unit::UNIT_CLASS GetThirdLineElesisClassTypeByUnitClassType ( CX2Unit:
 {
 	switch ( eUnitClassType_ )
 	{
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UCT_BASIC_CLASS :
+		return CX2Unit::UC_ELESIS_KNIGHT;
+	case CX2Unit::UCT_FIRST_CLASS :
+		return CX2Unit::UC_ELESIS_DARK_KNIGHT;
+	case CX2Unit::UCT_SECOND_CLASS :
+		return CX2Unit::UC_ELESIS_CRIMSON_AVENGER;
+#else
 	case CX2Unit::UCT_BASIC_CLASS :
 	case CX2Unit::UCT_FIRST_CLASS :
 	case CX2Unit::UCT_SECOND_CLASS :
+#endif
 	default:
 		break;
 	}
@@ -2217,9 +2360,18 @@ inline CX2Unit::UNIT_CLASS GetSecondLineNewCharacterClassTypeByUnitClassType ( C
 {
 	switch ( eUnitClassType_ )
 	{
+#ifdef X2_ADD_2ND_PATH
+	case CX2Unit::UCT_BASIC_CLASS :
+		return CX2Unit::UC_ADD_NASOD_RULER;
+	case CX2Unit::UCT_FIRST_CLASS :
+		return CX2Unit::UC_ADD_ARC_TRACER;
+	case CX2Unit::UCT_SECOND_CLASS :
+		return CX2Unit::UC_ADD_MASTERMIND;
+#else
 	case CX2Unit::UCT_BASIC_CLASS :
 	case CX2Unit::UCT_FIRST_CLASS :
 	case CX2Unit::UCT_SECOND_CLASS :
+#endif
 	default:
 		break;
 	}
@@ -2231,9 +2383,18 @@ inline CX2Unit::UNIT_CLASS GetThirdLineNewCharacterClassTypeByUnitClassType ( CX
 {
 	switch ( eUnitClassType_ )
 	{
+#ifdef X2_ADD_3RD_PATH
+	case CX2Unit::UCT_BASIC_CLASS :
+		return CX2Unit::UC_ADD_NASOD_RULER;
+	case CX2Unit::UCT_FIRST_CLASS :
+		return CX2Unit::UC_ADD_TIME_TRACER;
+	case CX2Unit::UCT_SECOND_CLASS :
+		return CX2Unit::UC_ADD_DIABOLIC_ESPER;
+#else
 	case CX2Unit::UCT_BASIC_CLASS :
 	case CX2Unit::UCT_FIRST_CLASS :
 	case CX2Unit::UCT_SECOND_CLASS :
+#endif
 	default:
 		break;
 	}

@@ -31,6 +31,14 @@
 
 // (characters, systems and events made switchable go here, one switch each)
 
+// Job paths the original (2014) did not have, ported from V5's 2026 reconstruction of the March 2015 client (PR 112,
+// docs/project/add-character.md): each switch adds a path's two classes (the enums on both sides, their skills,
+// states and data). Commented out, the path does not exist and the game is the 2014 one.
+#define X2_ELESIS_3RD_PATH  // Dark Knight 35 -> Crimson Avenger 125
+#define X2_ARA_3RD_PATH     // Little Specter 34 -> Asura 124
+#define X2_ADD_2ND_PATH     // Arc Tracer 33 -> Mastermind 123
+#define X2_ADD_3RD_PATH     // Time Tracer 36 -> Diabolic Esper 126
+
 // Village movement sync (T53): villages, squares, wedding halls and dungeon lounges sync other players' movement with
 // server-validated state snapshots, interpolation, interest management and per-tick aggregation, and the servers check
 // every position against the map's line map. Commented out, the original's sync (2 s of replayed input, 5 s square
