@@ -1,5 +1,13 @@
 #pragma once
 
+#include "x2/platform/d3dx_math.h"
+
+#include <map>
+#include <string>
+#include <vector>
+
+struct lua_State;
+
 #define D3DFVF_LINE_MAP_VERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE)
 
 inline float GetDistance( const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2 )
@@ -536,11 +544,14 @@ class CXSLLineMap
 
 	private:
 		CXSLLineMap();
-		virtual ~CXSLLineMap(void);
 
 	public:
+		virtual ~CXSLLineMap(void);	// Port: public, so a loaded line map can be owned (KWorldLineMaps)
+
 		static CXSLLineMap* CreateLineMap() { return new CXSLLineMap; }
-		bool LoadLineMap( std::wstring fileName );
+		// Port: runs a line map script (g_pLineMap:AddLine_LUA{...}, AddStartPos...) in pLuaState, which must define
+		// Enum.lua's LINE_TYPE, and builds the line groups. The original's was a stub with the loading commented out.
+		bool LoadLineMap( lua_State* pLuaState, const char* szFile );
 
 		__forceinline bool IsOnLineConnect( D3DXVECTOR3 pos, int* pLastLineIndex, float fRadius = 1.0f, D3DXVECTOR3* pOutPos = NULL, bool /*bIsMonster*/ = false )
 		{
@@ -699,7 +710,11 @@ class CXSLLineMap
 		}
 
 		__forceinline LineData* GetLineData( int index );
-		__forceinline int GetNumLineData() { return (int)m_LineList.size(); }
+		const LineData* GetLineData( int index ) const
+		{
+			return 0 <= index && index < static_cast<int>( m_LineList.size() ) ? m_LineList[ index ] : nullptr;
+		}
+		__forceinline int GetNumLineData() const { return (int)m_LineList.size(); }
 		__forceinline float GetLandHeight() { return m_fLandHeight; }
 #ifdef NEW_VILLAGE_RENDERING_TEST
 		__forceinline const int GetNumCameraData() { return static_cast<int>(m_vecCameraData.size()); }
@@ -1281,4 +1296,6 @@ class CXSLLineMap
 		float							m_fYMax;
 
 		float							m_fStopTime;
+
+		lua_State*						m_pLuaState = nullptr;	// Port: the state LoadLineMap runs a script in (else g_pLua)
 };

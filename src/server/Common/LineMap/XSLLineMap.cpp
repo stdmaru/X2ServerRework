@@ -8,6 +8,25 @@
 #include "./XSLLineMap.h"
 
 
+namespace
+{
+
+// Port: the original read these vectors with lua_tinker::get, which reads a global, not the field of the table being
+// loaded (the client reads the field); the servers never ran this code, so the bug did not show. Reads the field of
+// the table on top of the stack; a vector that is missing or not a D3DXVECTOR3 is zero, as in the client.
+D3DXVECTOR3 GetTableVector( lua_State* L, const char* szName )
+{
+	D3DXVECTOR3 vValue( 0.f, 0.f, 0.f );
+	lua_getfield( L, -1, szName );
+	if( lua_isuserdata( L, -1 ) )
+		vValue = lua_tinker::read<D3DXVECTOR3>( L, -1 );
+	lua_pop( L, 1 );
+	return vValue;
+}
+
+}	// namespace
+
+
 #if defined(DEBUG) || defined(_DEBUG)
 #else
 #endif
@@ -70,27 +89,34 @@ CXSLLineMap::~CXSLLineMap(void)
 	ReleaseLineGroup();
 }
 
-bool CXSLLineMap::LoadLineMap( std::wstring /*pFileName*/ )
+bool CXSLLineMap::LoadLineMap( lua_State* pLuaState, const char* szFile )
 {
-
 #ifdef WORLD_TRIGGER
 	m_LineMapTrigger.m_vecNowTrigger.clear();
 	m_LineMapTrigger.m_vecTriggerSeg.clear();
 #endif
 
-	//KLuabinder* pKReay6lLuaBinder = g_pKTDXApp->GetLuaBinder();
+	lua_tinker::class_add<CXSLLineMap>( pLuaState, "CXSLLineMap" );
+	lua_tinker::class_def<CXSLLineMap>( pLuaState, "AddLine_LUA",		&CXSLLineMap::AddLine_LUA );
+	lua_tinker::class_def<CXSLLineMap>( pLuaState, "AddStartPos",		&CXSLLineMap::AddStartPos );
+	lua_tinker::class_def<CXSLLineMap>( pLuaState, "SetTeamStartPos",	&CXSLLineMap::SetTeamStartPos );
+	lua_tinker::class_def<CXSLLineMap>( pLuaState, "SetLandHeight",		&CXSLLineMap::SetLandHeight );
+	lua_tinker::class_def<CXSLLineMap>( pLuaState, "AddCameraData_LUA",	&CXSLLineMap::AddCameraData_LUA );
+	lua_tinker::decl( pLuaState, "g_pLineMap", this );
 
-	//if ( m_pKLuabinder != NULL )
-	//	pKRealLuaBinder = m_pKLuabinder;
-
-	//lua_tinker::decl( pKRealLuaBinder->GetLuaState(), "g_pLineMap", this );
-
-	//if( pKRealLuaBinder->DoMemory( Info->pRealData, Info->size ) == E_FAIL )
-	//{
-	//	string strFileName;
-	//	ConvertWCHARToChar( strFileName, pFileName.c_str() );
-	//	return false;
-	//}
+	m_pLuaState = pLuaState;
+	KLuaManager luaManager( pLuaState );
+	const bool bLoaded = luaManager.DoFile( szFile ) != E_FAIL;
+	m_pLuaState = nullptr;
+	if( !bLoaded )
+	{
+		START_LOG( cerr, L"Failed to load a line map script." )
+			<< BUILD_LOG( szFile )
+			<< BUILD_LOG( lua_tostring( pLuaState, -1 ) )
+			<< END_LOG;
+		lua_pop( pLuaState, 1 );
+		return false;
+	}
 
 	ReBuildLineGroup();
 
@@ -137,8 +163,8 @@ bool CXSLLineMap::AddCameraData_LUA()
 	    LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "EYE_POS", cameraData.m_vEye, D3DXVECTOR3(0,0,0) );
         LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "LOOKAT_POS", cameraData.m_vLookAt, D3DXVECTOR3(0,0,0) );
 #else
-		cameraData.m_vEye		= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "EYE_POS" );
-		cameraData.m_vLookAt	= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "LOOKAT_POS" );
+		cameraData.m_vEye		= GetTableVector( luaManager.GetLuaState(), "EYE_POS" );
+		cameraData.m_vLookAt	= GetTableVector( luaManager.GetLuaState(), "LOOKAT_POS" );
 #endif // X2OPTIMIZE_AVOID_LUA_RUNTIME_INTERPRETING
 	}
 
@@ -154,7 +180,7 @@ bool CXSLLineMap::AddCameraData_LUA()
 
 bool CXSLLineMap::AddLine_LUA()
 {
-	KLuaManager luaManager( g_pLua );
+	KLuaManager luaManager( m_pLuaState != nullptr ? m_pLuaState : g_pLua );
 
 	LineData*	pLineData = new LineData();
 
@@ -291,8 +317,8 @@ bool CXSLLineMap::AddLine_LUA()
 	LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "START_POS", pLineData->startPos, D3DXVECTOR3(0,0,0) );
 	LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "END_POS", pLineData->endPos, D3DXVECTOR3(0,0,0) );
 #else
-	pLineData->startPos		= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(),  "START_POS" );
-	pLineData->endPos		= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(),  "END_POS" );
+	pLineData->startPos		= GetTableVector( luaManager.GetLuaState(), "START_POS" );
+	pLineData->endPos		= GetTableVector( luaManager.GetLuaState(), "END_POS" );
 #endif // X2OPTIMIZE_AVOID_LUA_RUNTIME_INTERPRETING
 
 
@@ -447,8 +473,8 @@ bool CXSLLineMap::AddLineAnim_LUA()
 
 			ASSERT( pAnimData->m_fRange > 0.f );
 
-			pAnimData->m_vPivotPosition		= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "PIVOT_POSITION"			);
-			pAnimData->m_vMovingDirection	= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "LINE_ANIM_DIRECTION"	);
+			pAnimData->m_vPivotPosition		= GetTableVector( luaManager.GetLuaState(), "PIVOT_POSITION"			);
+			pAnimData->m_vMovingDirection	= GetTableVector( luaManager.GetLuaState(), "LINE_ANIM_DIRECTION"	);
 			D3DXVec3Normalize( &pAnimData->m_vMovingDirection, &pAnimData->m_vMovingDirection );
 
 
@@ -465,9 +491,9 @@ bool CXSLLineMap::AddLineAnim_LUA()
 			pAnimData->m_fMaxRotationRadian *= D3DX_PI / 180.f;
 
 
-			pAnimData->m_vPivotPosition			= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "PIVOT_POSITION"	);
-			pAnimData->m_vEquilibriumPosition	= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "LINE_ANIM_EQUILIBRIUM_POSITION"		);
-			pAnimData->m_vRotationAxis			= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "LINE_ANIM_ROTATION_AXIS"			);
+			pAnimData->m_vPivotPosition			= GetTableVector( luaManager.GetLuaState(), "PIVOT_POSITION"	);
+			pAnimData->m_vEquilibriumPosition	= GetTableVector( luaManager.GetLuaState(), "LINE_ANIM_EQUILIBRIUM_POSITION"		);
+			pAnimData->m_vRotationAxis			= GetTableVector( luaManager.GetLuaState(), "LINE_ANIM_ROTATION_AXIS"			);
 			D3DXVec3Normalize( &pAnimData->m_vRotationAxis, &pAnimData->m_vRotationAxis );
 
 			pAnimDataBasic = pAnimData;
@@ -482,9 +508,9 @@ bool CXSLLineMap::AddLineAnim_LUA()
 
 			LUA_GET_VALUE( luaManager,		L"LINE_ANIM_ROTATION_SPEED",		pAnimData->m_fRotationSpeed,				0.f	);
 
-			pAnimData->m_vPivotPosition			= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "PIVOT_POSITION"	);
-			pAnimData->m_vPositionVector		= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "LINE_ANIM_POSITION_VECTOR"		);
-			pAnimData->m_vRotationAxis			= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "LINE_ANIM_ROTATION_AXIS"		);
+			pAnimData->m_vPivotPosition			= GetTableVector( luaManager.GetLuaState(), "PIVOT_POSITION"	);
+			pAnimData->m_vPositionVector		= GetTableVector( luaManager.GetLuaState(), "LINE_ANIM_POSITION_VECTOR"		);
+			pAnimData->m_vRotationAxis			= GetTableVector( luaManager.GetLuaState(), "LINE_ANIM_ROTATION_AXIS"		);
 			D3DXVec3Normalize( &pAnimData->m_vRotationAxis, &pAnimData->m_vRotationAxis );
 
 
@@ -506,8 +532,8 @@ bool CXSLLineMap::AddLineAnim_LUA()
 			ASSERT( pAnimData->m_fMaxMovingSpeed >= 0.f );
 			ASSERT( pAnimData->m_fMaxMovingRange >= 0.f );
 
-			pAnimData->m_vPivotPosition		= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "PIVOT_POSITION"	);
-			pAnimData->m_vMovingDirection	= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(), "LINE_ANIM_DIRECTION"		);
+			pAnimData->m_vPivotPosition		= GetTableVector( luaManager.GetLuaState(), "PIVOT_POSITION"	);
+			pAnimData->m_vMovingDirection	= GetTableVector( luaManager.GetLuaState(), "LINE_ANIM_DIRECTION"		);
 			D3DXVec3Normalize( &pAnimData->m_vMovingDirection, &pAnimData->m_vMovingDirection );
 
 
@@ -561,9 +587,9 @@ bool CXSLLineMap::AddLineAnim_LUA()
         LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "RIGHT_BOTTOM", pRectData->m_vRightBottom, D3DXVECTOR3(0,0,0) );
         LUA_GET_USER_DEFINED_TYPE_VALUE( luaManager, "LEFT_BOTTOM", pRectData->m_vLeftBottom, D3DXVECTOR3(0,0,0) );
 #else
-		pRectData->m_vLeftTop		= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(),  "LEFT_TOP" );
-		pRectData->m_vRightBottom	= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(),  "RIGHT_BOTTOM" );
-		pRectData->m_vLeftBottom	= lua_tinker::get<D3DXVECTOR3>( luaManager.GetLuaState(),  "LEFT_BOTTOM" );
+		pRectData->m_vLeftTop		= GetTableVector( luaManager.GetLuaState(), "LEFT_TOP" );
+		pRectData->m_vRightBottom	= GetTableVector( luaManager.GetLuaState(), "RIGHT_BOTTOM" );
+		pRectData->m_vLeftBottom	= GetTableVector( luaManager.GetLuaState(), "LEFT_BOTTOM" );
 #endif // X2OPTIMIZE_AVOID_LUA_RUNTIME_INTERPRETING
 
 		m_RectList.push_back( pRectData );

@@ -186,6 +186,7 @@ void KGSSimLayer::DumpToLogFile()
 //}}
 
 #include <lua_tinker.h>
+#include "LineMap/WorldLineMaps.h"
 //using namespace lua_tinker;
 
 void KGSSimLayer::RegToLua()
@@ -655,6 +656,15 @@ void KGSSimLayer::Init()
 		OPEN_SCRIPT_FILE( CXSLMapData );
 	}
 
+#ifdef X2_VILLAGE_SYNC
+	// village, square and lounge movement is validated against the world's line map (T53)
+	if( !SiKWorldLineMaps()->Load() )
+	{
+		START_LOG( cerr, L"KWorldLineMaps failed to load the world line maps." );
+		KBaseServer::GetKObj()->AddFailScriptFileName( L"DLG_Map_Village.lua" );
+	}
+#endif // X2_VILLAGE_SYNC
+
 	{
 		LoadingTimer lt( L"FieldData.lua" );
 
@@ -934,6 +944,9 @@ void KGSSimLayer::ShutDown()
 	KRecommendUserTable::ReleaseInstance();
 	CXSLItemManager::ReleaseInstance();
 	CXSLMapData::ReleaseInstance();
+#ifdef X2_VILLAGE_SYNC
+	KWorldLineMaps::ReleaseInstance();
+#endif // X2_VILLAGE_SYNC
 	KSpiritTable::ReleaseInstance();
 	CXSLTitleManager::ReleaseInstance();
     //KCheckIP::ReleaseInstance();
