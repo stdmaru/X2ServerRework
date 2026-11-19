@@ -426,7 +426,7 @@ keeps the original's sync: it is a CenterServer room not yet on the new pipeline
 when `CX2InstanceData::GetIsDungeonLounge`); wedding halls (`CX2WeddingGame`) are untouched. Both games keep a
 `CX2UnitStateSync` (`X2UnitStateSync.*`), which does what follows; a unit asks its game's for the clock and the world.
 
-- **Sending** (`CX2UnitStateSync::FrameMove`, every 0.1 s instead of `SyncUnitFrame` every 2 s):
+- **Sending** (`CX2UnitStateSync::FrameMove`, every 0.1 s on average, keeping what is left of each interval, instead of `SyncUnitFrame` every 2 s):
   `EGS_FIELD_UNIT_STATE_NOT` with the own unit's position, physics speeds, last line, state ID and change count, and
   facing (`CX2SquareUnit::GetFieldUnitState`), only when one of them changed, plus once after it stops so the others
   see where. The tick is a steady millisecond clock (`GetClockMs`; `GetTickCount` steps by 10 to 16 ms on

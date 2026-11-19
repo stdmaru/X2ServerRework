@@ -271,4 +271,27 @@ TEST_CASE( "KFieldMoveSync: states carry when the client made them" )
 	}
 }
 
+TEST_CASE( "KFieldMoveSync: batches on a fixed cadence" )
+{
+	// called every 20 ms or so, as a CenterServer room is: batches 100 ms apart on average, not 100 to 120
+	KFieldMoveSync kSync = MakeSync();
+	KEGS_FIELD_UNIT_STATE_BATCH_NOT kShared;
+	std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT > mapExtra;
+	int iBatches = 0;
+	for( uint32_t uiNow = 1000; uiNow < 11000; uiNow += 23 )
+	{
+		if( kSync.IsTickDue( uiNow ) )
+		{
+			kSync.BuildSharedBatch( uiNow, kShared, mapExtra );
+			++iBatches;
+		}
+	}
+	CHECK( iBatches == doctest::Approx( 100 ).epsilon( 0.02 ) );
+
+	// after a long pause it starts again from then, without a burst
+	CHECK( kSync.IsTickDue( 20000 ) );
+	kSync.BuildSharedBatch( 20000, kShared, mapExtra );
+	CHECK_FALSE( kSync.IsTickDue( 20050 ) );
+}
+
 #endif // X2_VILLAGE_SYNC
