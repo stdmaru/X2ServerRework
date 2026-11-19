@@ -86,9 +86,10 @@ public:
 	static bool HasLineBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius );
 
 	// The highest walkable line under vFrom or vTo (within fRadius horizontally) that a unit at vFrom moving up at
-	// fSpeedY (negative: down) comes down onto within fMaxTime seconds, and its height (fY); -1 if none.
+	// fSpeedY (negative: down) lands on within fMaxTime seconds, and its height (fY); -1 if none. The unit lands once
+	// it is not rising and within fCatch of the line (CX2SquareUnit: LINE_RADIUS, 30).
 	static int FindLanding( const CXSLLineMap& kLineMap, const VECTOR3& vFrom, const VECTOR3& vTo, float fSpeedY, float fGAccel,
-							float fMaxTime, float fRadius, float& fY );
+							float fMaxTime, float fRadius, float fCatch, float& fY );
 
 	// The highest such line and its height (fY) below vPos, or -1.
 	static int FindGroundBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius, float& fY );
