@@ -34,8 +34,8 @@ namespace
 	{
 		static const struct { SEnum::VILLAGE_MAP_ID eVillage; Background kBackground; } s_aVillages[] =
 		{
-			{ SEnum::VMI_RUBEN,		{ L"HQ_LoadingVillage_RUBEN1.TGA",			L"HQ_LoadingVillage_RUBEN2.TGA", false } },
-			{ SEnum::VMI_ELDER,		{ L"HQ_LoadingVillage_ELDER1.TGA",			L"HQ_LoadingVillage_ELDER2.TGA", false } },
+			{ SEnum::VMI_RUBEN,		{ L"HQ_LoadingVillage_RUBEN.TGA",			NULL, true } },
+			{ SEnum::VMI_ELDER,		{ L"HQ_LoadingVillage_ELDER.TGA",			NULL, true } },
 			{ SEnum::VMI_BESMA,		{ L"HQ_LoadingVillage_BESMA1.TGA",			L"HQ_LoadingVillage_BESMA2.TGA", false } },
 			{ SEnum::VMI_ALTERA,	{ L"HQ_LoadingVillage_ALTERA1.TGA",			L"HQ_LoadingVillage_ALTERA2.TGA", false } },
 			{ SEnum::VMI_VELDER,	{ L"HQ_LoadingVillage_VELDER1.TGA",			L"HQ_LoadingVillage_VELDER2.TGA", false } },

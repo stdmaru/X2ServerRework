@@ -409,7 +409,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
           ([KTDXLIB](../porting/client-ktdxlib.md#backdrops-2026-11-15-clientwidescreen-backgrounds-t51)), the UI
           editor edits it, and the login screen is one 16:9 texture. The art is made outside the repository (Stable
           Diffusion outpainting of the sides, chaiNNer with 4x-AnimeSharp; [Upscaling](../tools/upscaling.md)).
-          Left: the loading screens and cut-ins, one by one.
+          Loading screens done: Ruben, Elder and the prologue (2026-11-19, `client/widescreen-loading`). Left: the
+          other loading screens and the cut-ins, one by one.
     - [ ] `client/ui-atlas-clamp` (2026-11-15, PR #80, [T49](decisions.md)): UI pictures sample only their `.tet` key, so a
           scaled window's slices show no seams from their atlas neighbours (the message box at 1080p)
           ([D3D9 device](../porting/client-d3d9.md#sprite-rectangles-2026-11-15-clientui-atlas-clamp-t49)).

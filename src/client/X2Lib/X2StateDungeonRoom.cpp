@@ -1783,14 +1783,16 @@ void CX2StateDungeonRoom::UISetting()
 		{
 			pStatic->SetShow( true );
 
+			// Port: the prologue's 16:9 picture on the script's wide picture, in place of the original's two 4:3
+			// halves (HQ_Loading_RUBEN_PROLOG_01/_02 on pictures 1 and 2)
 			if( pStatic->GetPicture(0) != NULL )
-				pStatic->GetPicture(0)->SetShow(false);
+				pStatic->GetPicture(0)->SetTex( L"HQ_Loading_RUBEN_PROLOG.tga" );
 
 			if ( pStatic->GetPicture(1) != NULL )
-				pStatic->GetPicture(1)->SetTex( L"HQ_Loading_RUBEN_PROLOG_01.tga" );
+				pStatic->GetPicture(1)->SetShow(false);
 
 			if (pStatic->GetPicture(2) != NULL )
-				pStatic->GetPicture(2)->SetTex( L"HQ_Loading_RUBEN_PROLOG_02.tga" );
+				pStatic->GetPicture(2)->SetShow(false);
 		}
 
 
@@ -1816,14 +1818,16 @@ void CX2StateDungeonRoom::UISetting()
 		{
 			pStatic->SetShow( true );
 
+			// Port: the prologue's 16:9 picture on the script's wide picture, in place of the original's two 4:3
+			// halves (HQ_Loading_RUBEN_PROLOG_01/_02 on pictures 1 and 2)
 			if( pStatic->GetPicture(0) != NULL )
-				pStatic->GetPicture(0)->SetShow(false);
+				pStatic->GetPicture(0)->SetTex( L"HQ_Loading_RUBEN_PROLOG.tga" );
 
 			if ( pStatic->GetPicture(1) != NULL )
-				pStatic->GetPicture(1)->SetTex( L"HQ_Loading_RUBEN_PROLOG_01.tga" );
+				pStatic->GetPicture(1)->SetShow(false);
 
 			if (pStatic->GetPicture(2) != NULL )
-				pStatic->GetPicture(2)->SetTex( L"HQ_Loading_RUBEN_PROLOG_02.tga" );
+				pStatic->GetPicture(2)->SetShow(false);
 		}
 
 		Handler_EGS_STATE_CHANGE_GAME_START_REQ();
@@ -2990,14 +2994,16 @@ bool CX2StateDungeonRoom::EnterTutorial()
 		{
 			pStatic->SetShow( true );
 
+			// Port: the prologue's 16:9 picture on the script's wide picture, in place of the original's two 4:3
+			// halves (HQ_Loading_RUBEN_PROLOG_01/_02 on pictures 1 and 2)
 			if( pStatic->GetPicture(0) != NULL )
-				pStatic->GetPicture(0)->SetShow(false);
+				pStatic->GetPicture(0)->SetTex( L"HQ_Loading_RUBEN_PROLOG.tga" );
 
 			if ( pStatic->GetPicture(1) != NULL )
-				pStatic->GetPicture(1)->SetTex( L"HQ_Loading_RUBEN_PROLOG_01.tga" );
+				pStatic->GetPicture(1)->SetShow(false);
 
 			if (pStatic->GetPicture(2) != NULL )
-				pStatic->GetPicture(2)->SetTex( L"HQ_Loading_RUBEN_PROLOG_02.tga" );
+				pStatic->GetPicture(2)->SetShow(false);
 		}
 
 	}
