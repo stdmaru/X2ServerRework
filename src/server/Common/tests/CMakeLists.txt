@@ -10,6 +10,7 @@ add_executable(x2_server_common_tests
     test_udp.cpp
     test_odbc.cpp
     test_auto_path.cpp
+    test_world_line_maps.cpp
     server_hooks.cpp)
 target_link_libraries(x2_server_common_tests PRIVATE x2::server_common doctest::doctest)
 add_test(NAME server_common COMMAND x2_server_common_tests --test-suite-exclude=db)

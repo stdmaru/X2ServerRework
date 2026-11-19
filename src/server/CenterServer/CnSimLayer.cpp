@@ -70,6 +70,7 @@
 	#include "X2Data/XSLFieldBossData.h"
 
 #include <lua_tinker.h>
+#include "LineMap/WorldLineMaps.h"
 using namespace lua_tinker;
 
 #include <functional>
@@ -272,6 +273,15 @@ void KCnSimLayer::Init()
 	}
 	//}}
 
+#ifdef X2_VILLAGE_SYNC
+	// square, wedding hall and lounge movement is validated against the world's line map (T53)
+	if( !SiKWorldLineMaps()->Load() )
+	{
+		START_LOG( cerr, L"KWorldLineMaps failed to load the world line maps." );
+		KBaseServer::GetKObj()->AddFailScriptFileName( L"DLG_Map_Village.lua" );
+	}
+#endif // X2_VILLAGE_SYNC
+
 	{
 		//{{ 2011. 02. 23	최육사	던전 랭크 개편
 		KResultProcess::RegScriptName( "ResultData_new.lua" );
@@ -430,6 +440,9 @@ void KCnSimLayer::ShutDown()
 {
 	CXSLItemManager::ReleaseInstance();
 	CXSLDungeonManager::ReleaseInstance();
+#ifdef X2_VILLAGE_SYNC
+	KWorldLineMaps::ReleaseInstance();
+#endif // X2_VILLAGE_SYNC
 	SiKResultProcess()->ReleaseInstance();
 	KDropTable::ReleaseInstance();
 	//{{ 2011. 07. 19	최육사	대전 개편

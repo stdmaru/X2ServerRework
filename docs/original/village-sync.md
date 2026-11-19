@@ -36,8 +36,13 @@ replacement is decision [T53](../project/decisions.md).
    time as if they were the remote player's keys, starting from the position of the **previous** packet
    (`m_SyncOUStartPos_Old`). The local simulation (line map, walls, jumps) moves the unit.
 
-`EGS_SQUARE_UNIT_SYNC_DATA_REQ`/`_NOT` (state, position, line, facing) is the older square sync of the CenterServer
-square room; `XPT_SQUARE_UNIT_SYNC*`, a P2P version, is commented out in the original.
+## Squares and wedding halls
+
+Squares and wedding halls are CenterServer rooms (`KSquare`, `KWeddingHall`) with their own, older sync:
+`CX2SquareGame` and `CX2WeddingGame` send `EGS_SQUARE_UNIT_SYNC_DATA_REQ` (state, state change count, position, line,
+facing) every **5 s** (`m_fP2PSendGap`), and the room broadcasts `EGS_SQUARE_UNIT_SYNC_DATA_NOT` to **every** user in
+it, with no sectors and no checks. The receiver (`CX2SquareUnit::RecvPacket`) sets the position and changes state when
+the count differs. `XPT_SQUARE_UNIT_SYNC*`, a P2P version, is commented out in the original.
 
 ## Why it looks broken
 
@@ -56,7 +61,32 @@ square room; `XPT_SQUARE_UNIT_SYNC*`, a P2P version, is commented out in the ori
 - Minor: the server accepts its TCP connections with Nagle on (`KAccepter::Init`, `bNagleAlgOn = true` from
   `KNetLayer`), tens of milliseconds at most.
 
-## What the server already has
+## Movement limits (2026-11-19)
+
+Every class uses one script for its village unit, `SQUARE_Unit.lua` (`CX2SquareUnit::GetSquareUnitScriptFileName`).
+`INIT_PHYSIC`: `WALK_SPEED` 500, `RUN_SPEED` 700, `JUMP_SPEED` 1500, `DASH_JUMP_SPEED` 1700, `G_ACCEL` 4000,
+`MAX_G_SPEED` −2000, `RELOAD_ACCEL` 2000 (units per second). Each state sets its speeds (`SPEED_X`/`SPEED_Y`, or
+`PASSIVE_SPEED_X` while a key is held): walking and jumping move at `WALK_SPEED`, dash and dash jump at `RUN_SPEED`,
+the dash jump rises at `JUMP_SPEED * 1.1`, riding states at up to 1.3 times those (`RIDING_WALK`, `RIDING_DASH`),
+emotions and waits stand still. A line can add its own speed (`SPEED`, moving walkways) or a jump (`JUMP_SPEED_X`/
+`_Y`). In `X2_DEBUG` an operator holding left Shift moves 6 times faster (`CX2SquareUnit`, the original's
+`VILLAGE_FLASH_MAN_DEV_ONLY`). With no line under it a unit falls at `G_ACCEL` up to `MAX_G_SPEED`; the highest jump
+is about (1500 × 1.1)² / (2 × 4000) ≈ 340 units above its line.
+
+## Line maps on the servers (2026-11-19)
+
+The client finds a world's line map through four scripts, all in `ClientScript`: `DLG_Map_Village.lua` gives each
+`VILLAGE_MAP_ID` a `WORLD_ID`, `WorldData.lua` gives each `WORLD_ID` a world script, and the world script calls
+`g_pWorld:SetLineMap("...")` with the line map script, which calls `g_pLineMap:AddLine_LUA{...}`. Squares and
+wedding halls are not in the village list; their worlds are `WI_SQUARE`, `WI_SQUARE_MARKET` and `WI_*_WEDDING`.
+On 2026-11-19 every village, gate, lounge and rest area resolved to a line map (27 village map IDs, 574 lines in
+all) except `VMI_DUNGEON_GATE_RUBEN`, whose world script `Ruben_Dungeon_Gate.lua` is in no archive (see
+[Squares](squares.md#types-cxslsquaregamesquare_type)), and `VMI_DUNGEON_LOUNGE_HAMEL`, whose world has no
+`WorldData.lua` entry. The line map scripts call only `AddLine_LUA`, `AddStartPos`, `SetTeamStartPos`,
+`AddCameraData_LUA` and `SetLandHeight`. The port loads them with `KWorldLineMaps`
+([Server: Common](../porting/server-common.md#intentional)).
+
+## What the server already had
 
 - `CXSLLineMap` (`src/server/Common/LineMap`) loads a line map from its Lua (`AddLine_LUA`...) and answers
   `IsOnLine`, `GetNearest`, `GetLineData`; the GameServer uses it only for battle field start positions

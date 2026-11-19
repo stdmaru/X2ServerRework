@@ -31,6 +31,12 @@
 
 // (characters, systems and events made switchable go here, one switch each)
 
+// Village movement sync (T53): villages, squares, wedding halls and dungeon lounges sync other players' movement with
+// server-validated state snapshots, interpolation, interest management and per-tick aggregation, and the servers check
+// every position against the map's line map. Commented out, the original's sync (2 s of replayed input, 5 s square
+// snapshots, nothing validated) is built instead.
+#define X2_VILLAGE_SYNC
+
 // --- Servers only -----------------------------------------------------------------------------------------------------
 
 // --- Client only ------------------------------------------------------------------------------------------------------
