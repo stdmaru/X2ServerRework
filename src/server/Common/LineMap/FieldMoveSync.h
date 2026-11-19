@@ -7,6 +7,7 @@
 // that changed among those it sees. It does no I/O: the GameServer's KField (and later the CenterServer's rooms) send
 // what it returns, and tell it which units each viewer sees (the sectors, the area of interest).
 
+#include "LineMap/FieldUnitSnapshots.h"
 #include "LineMap/VillageMoveValidator.h"
 
 #include <cstdint>
@@ -79,7 +80,8 @@ private:
 	{
 		KVillageMoveValidator		kValidator;
 		KFieldUnitState				kState;
-		uint32_t					uiStateTick	= 0;		// server time it was accepted
+		uint32_t					uiStateTick	= 0;		// server time the client made it (kClientClock)
+		KFieldServerClock			kClientClock;			// the client's ticks on the server's clock
 		bool						bChanged	= false;
 		std::vector< uint32_t >		vecViolation;			// server times, within the window
 

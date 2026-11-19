@@ -148,17 +148,39 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 	}
 	const float fDeltaTime = static_cast< float >( uiClientTick - uiLastTick ) / 1000.f;
 
-	const CXSLLineMap::LineData* pGroundLine = m_pLineMap != nullptr ? m_pLineMap->GetLineData( m_iGroundLine ) : nullptr;
+	bool bAir = m_bAir;
+	float fGroundY = m_fGroundY;
+	int iGroundLine = m_iGroundLine;
+	if( bAir && m_bHasClientClock && m_pLineMap != nullptr && kState.m_sSpeedY > 0 && m_kLast.m_sSpeedY <= 0 )
+	{
+		// falling at the last update and rising at this one: it landed and jumped again in between (jumping again
+		// at once lands between two updates), from the line below the last update, if it could fall that far
+		const KSquareUnitPhysics::Physic& kPhysic = m_kPhysics.GetPhysic();
+		const float fMaxFallSpeed = std::fabs( kPhysic.fMaxGSpeed );
+		const float fFallSpeed = std::min( static_cast< float >( -m_kLast.m_sSpeedY ), fMaxFallSpeed );
+		const float fMaxFall = std::min( fFallSpeed * fDeltaTime + 0.5f * kPhysic.fGAccel * fDeltaTime * fDeltaTime,
+										 fMaxFallSpeed * fDeltaTime );
+		float fLandY = 0.f;
+		const int iLandLine = FindGroundBelow( *m_pLineMap, m_kLast.m_vPos, m_kConfig.fWallRadius, fLandY );
+		if( iLandLine >= 0 && m_kLast.m_vPos.y - fLandY <= fMaxFall + m_kConfig.fHeightSlack )
+		{
+			bAir		= false;
+			fGroundY	= fLandY;
+			iGroundLine	= iLandLine;
+			uiGroundTick = uiLastTick;
+		}
+	}
+
+	const CXSLLineMap::LineData* pGroundLine = m_pLineMap != nullptr ? m_pLineMap->GetLineData( iGroundLine ) : nullptr;
 	const int iLine = m_pLineMap != nullptr ? FindLine( *m_pLineMap, kState.m_vPos, m_kConfig.fLineRadius ) : -1;
 	const CXSLLineMap::LineData* pLine = m_pLineMap != nullptr ? m_pLineMap->GetLineData( iLine ) : nullptr;
 
 	// on the ground: on a line, or (no line map) in a state that keeps it on one; an air state touching a line while
 	// not rising (landing, or the first sample of a jump) is on the ground too
 	const bool bGround = m_pLineMap != nullptr
-		? iLine >= 0 && ( pState->bLandConnect || kState.m_sSpeedY <= 0 || !m_bAir )
+		? iLine >= 0 && ( pState->bLandConnect || kState.m_sSpeedY <= 0 || !bAir )
 		: pState->bLandConnect;
 
-	bool bAir = m_bAir;
 	bool bThrownByLine = m_bThrownByLine;
 	uint32_t uiTakeoffWindowMs = m_uiTakeoffWindowMs;
 	float fLaunchSpeedX = m_fLaunchSpeedX;
@@ -195,7 +217,7 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 	if( fDistance > fMaxSpeedX * m_kConfig.fSpeedTolerance * fDeltaTime + m_kConfig.fDistanceSlack )
 		return Reject( Reason::R_SPEED, uiServerNow );
 
-	if( m_pLineMap != nullptr && HitsWall( *m_pLineMap, m_kLast.m_vPos, kState.m_vPos, m_iGroundLine, iLine >= 0, m_kConfig.fWallRadius ) )
+	if( m_pLineMap != nullptr && HitsWall( *m_pLineMap, m_kLast.m_vPos, kState.m_vPos, iGroundLine, iLine >= 0, m_kConfig.fWallRadius ) )
 		return Reject( Reason::R_WALL, uiServerNow );
 
 	if( !bGround )
@@ -206,7 +228,7 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 		const float fTime = static_cast< float >( uiClientTick - uiGroundTick ) / 1000.f;
 		const float fMaxHeight = MaxHeight( fLaunchSpeedY, m_kPhysics.GetPhysic().fGAccel, std::fabs( m_kPhysics.GetPhysic().fMaxGSpeed ),
 											fTime, static_cast< float >( uiTakeoffWindowMs ) / 1000.f );
-		if( kState.m_vPos.y - m_fGroundY > fMaxHeight + m_kConfig.fHeightSlack )
+		if( kState.m_vPos.y - fGroundY > fMaxHeight + m_kConfig.fHeightSlack )
 			return Reject( Reason::R_RISE, uiServerNow );
 	}
 
@@ -224,6 +246,8 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 	m_uiTakeoffWindowMs	= uiTakeoffWindowMs;
 	m_fLaunchSpeedX		= fLaunchSpeedX;
 	m_fLaunchSpeedY		= fLaunchSpeedY;
+	m_fGroundY			= fGroundY;
+	m_iGroundLine		= iGroundLine;
 	if( bGround )
 		SetGround( kState.m_vPos, iLine, uiClientTick );
 	return Verdict();
@@ -302,6 +326,13 @@ int KVillageMoveValidator::FindLine( const CXSLLineMap& kLineMap, const VECTOR3&
 
 bool KVillageMoveValidator::HasLineBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius )
 {
+	float fY = 0.f;
+	return FindGroundBelow( kLineMap, vPos, fRadius, fY ) >= 0;
+}
+
+int KVillageMoveValidator::FindGroundBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius, float& fY )
+{
+	int iHighest = -1;
 	for( int i = 0; i < kLineMap.GetNumLineData(); ++i )
 	{
 		const CXSLLineMap::LineData* pLine = kLineMap.GetLineData( i );
@@ -309,10 +340,14 @@ bool KVillageMoveValidator::HasLineBelow( const CXSLLineMap& kLineMap, const VEC
 			continue;
 		const float t = std::clamp( HorizontalParameter( vPos, pLine->startPos, pLine->endPos ), 0.f, 1.f );
 		const D3DXVECTOR3 vNearest = pLine->startPos + ( pLine->endPos - pLine->startPos ) * t;
-		if( std::hypot( vPos.x - vNearest.x, vPos.z - vNearest.z ) <= fRadius && vNearest.y <= vPos.y + fRadius )
-			return true;
+		if( std::hypot( vPos.x - vNearest.x, vPos.z - vNearest.z ) <= fRadius && vNearest.y <= vPos.y + fRadius
+			&& ( iHighest < 0 || vNearest.y > fY ) )
+		{
+			iHighest = i;
+			fY = vNearest.y;
+		}
 	}
-	return false;
+	return iHighest;
 }
 
 bool KVillageMoveValidator::HitsWall( const CXSLLineMap& kLineMap, const VECTOR3& vFrom, const VECTOR3& vTo, int iLastLine,
