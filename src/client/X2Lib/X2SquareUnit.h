@@ -394,6 +394,9 @@ class CX2SquareUnit : public CKTDGObject
 		void PushFieldUnitState( uint32_t uiServerTick, const KFieldUnitState& kState );
 		// the server rejected an update of the own unit: back to its last valid state
 		void ApplyFieldCorrection( const KFieldUnitState& kState );
+		// The own unit stops on the ground below it, standing: talking to an NPC hides it and stops its physics,
+		// which would leave it in the air where it jumped
+		void StopOnGround();
 #endif // X2_VILLAGE_SYNC
 
 		void SetFirstGetPacket(bool val) { m_bFirstGetPacket = val; }

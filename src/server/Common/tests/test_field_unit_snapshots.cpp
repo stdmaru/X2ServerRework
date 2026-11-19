@@ -34,9 +34,10 @@ TEST_CASE( "KFieldServerClock" )
 	REQUIRE( kClock.HasOffset() );
 	CHECK( kClock.ToServer( 1100 ) == 50100u );
 
-	// a batch that took longer changes little; one that took less is taken at once
+	// a batch that took longer moves it by 1 ms; one that took less is taken at once
 	kClock.OnBatch( 50100, 1180 );
-	CHECK( kClock.ToServer( 1200 ) == 50195u );
+	CHECK( kClock.ToServer( 1200 ) == 50199u );
+	CHECK( kClock.ToLocal( 50199 ) == 1200u );
 	kClock.OnBatch( 50200, 1150 );
 	CHECK( kClock.ToServer( 1200 ) == 50250u );
 

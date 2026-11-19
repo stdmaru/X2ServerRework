@@ -17,9 +17,11 @@
 #include <cstdint>
 #include <deque>
 
-// The server's clock seen from the client. A batch's tick, less the client's time when it arrives, is the offset
+// The server's clock seen from the client (and, on the server, the client's clock seen from the server: OnBatch with
+// the client's tick and the server's time). A batch's tick, less the client's time when it arrives, is the offset
 // between the clocks minus the batch's delay; the largest offset seen is the one with the least delay, so it is kept,
-// and it follows smaller offsets slowly in case the client's clock runs faster than the server's.
+// and it follows smaller offsets by 1 ms per batch, in case the client's clock runs faster than the server's. Faster
+// than that, the time drawn would jump ahead at every batch that came quickly and slow down between them.
 class KFieldServerClock
 {
 public:
@@ -32,15 +34,16 @@ public:
 			m_bHasOffset	= true;
 			return;
 		}
-		const int32_t iDiff = iOffset - m_iOffset;
-		if( iDiff > 0 )
+		if( iOffset > m_iOffset )
 			m_iOffset = iOffset;
-		else
-			m_iOffset += iDiff / 16;
+		else if( iOffset < m_iOffset )
+			--m_iOffset;
 	}
 
 	bool HasOffset() const { return m_bHasOffset; }
 	uint32_t ToServer( uint32_t uiLocalMs ) const { return uiLocalMs + static_cast< uint32_t >( m_iOffset ); }
+	// the local time of a server tick: when it would have arrived with the least delay
+	uint32_t ToLocal( uint32_t uiServerTick ) const { return uiServerTick - static_cast< uint32_t >( m_iOffset ); }
 
 private:
 	bool	m_bHasOffset	= false;

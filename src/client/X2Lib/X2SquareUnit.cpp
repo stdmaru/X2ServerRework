@@ -2575,6 +2575,16 @@ void CX2SquareUnit::ApplyFieldCorrection( const KFieldUnitState& kState )
 	StateChange( static_cast< char >( GetRidingOn() ? m_StateID.m_iRidingWait : m_StateID.m_Wait ) );
 }
 
+void CX2SquareUnit::StopOnGround()
+{
+	if( m_bMyUnit == false || m_bStateSync == false )
+		return;
+
+	KFieldUnitState kState = GetFieldUnitState();
+	kState.m_vPos = VECTOR3( m_LandPosition.x, m_LandPosition.y, m_LandPosition.z );
+	ApplyFieldCorrection( kState );
+}
+
 const CX2UnitStateSync* CX2SquareUnit::GetStateSyncSource() const
 {
 	if( m_bTFieldUnit )

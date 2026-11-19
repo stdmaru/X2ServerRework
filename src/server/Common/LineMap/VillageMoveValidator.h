@@ -14,7 +14,8 @@
 //   R_SPEED     it moved farther horizontally than the fastest speed allows in the time (the line's own speed and a
 //               jump line's launch count), or its clock ran ahead;
 //   R_OFF_LINE  it is away from every line in a state that keeps it on one (LAND_CONNECT), unless a jump line threw it;
-//   R_RISE      it is higher above the ground it left than a jump can carry it at that time;
+//   R_RISE      it is higher above the ground it left than a jump can carry it at that time (a unit that was falling
+//               and now rises landed and jumped again between two updates, when the line below was within its fall);
 //   R_WALL      it went where CX2SquareUnit stops a unit: over no line (the unit cannot move where it has no line
 //               below, on the ground or in the air: the edges of Elder), past an end of the line it last stood on
 //               that is closed (BEFORE_LINE/NEXT_LINE -2: Altera, Besma), or across an LT_WALL line (none in villages
@@ -75,6 +76,9 @@ public:
 
 	// Whether a walkable line is at or below vPos within fRadius horizontally (CKTDGLineMap::CanDown).
 	static bool HasLineBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius );
+
+	// The highest such line and its height (fY) below vPos, or -1.
+	static int FindGroundBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius, float& fY );
 
 	// Whether the move from vFrom to vTo is one CX2SquareUnit stops: see R_WALL. iLastLine is the line the unit last
 	// stood on (-1 none) and bOnLine whether vTo is on a line.

@@ -8,6 +8,7 @@
 
 #include <doctest/doctest.h>
 
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -201,6 +202,31 @@ TEST_CASE( "KVillageMoveValidator: off the line and in the air" )
 		if( kHover.Send( State( 100, 270, JUMP_UP, 0 ) ).ucReason == Reason::R_RISE )
 			iRejected = i;
 	CHECK( iRejected == 5 );		// at 0.8 s
+}
+
+TEST_CASE( "KVillageMoveValidator: jumping again at once" )
+{
+	// jumps one after another, sampled every 100 ms: the landings (every 0.75 s) fall between updates
+	const float g = 4000.f, fSpeedY = 1500.f, fPeriod = 2.f * fSpeedY / g;
+	const auto Sample = [&]( float t )
+	{
+		const float tJump = std::fmod( t, fPeriod );
+		return State( 100, fSpeedY * tJump - 0.5f * g * tJump * tJump, JUMP_UP, static_cast< int16_t >( fSpeedY - g * tJump ) );
+	};
+	Unit kUnit( State( 100, 0, WAIT ) );
+	for( int i = 1; i <= 50; ++i )
+		CHECK( kUnit.Reason( Sample( 0.1f * static_cast< float >( i ) ) ) == Reason::R_NONE );
+
+	// falling slowly high above the floor and then rising: it cannot have landed in between
+	Unit kHover( State( 100, 0, WAIT ) );
+	CHECK( kHover.Reason( State( 100, 130, JUMP_UP, 1100 ) ) == Reason::R_NONE );
+	CHECK( kHover.Reason( State( 100, 220, JUMP_UP, 700 ) ) == Reason::R_NONE );
+	CHECK( kHover.Reason( State( 100, 270, JUMP_UP, 300 ) ) == Reason::R_NONE );
+	int iRejected = 0;
+	for( int i = 1; i <= 20 && iRejected == 0; ++i )
+		if( kHover.Send( State( 100, 270, JUMP_UP, static_cast< int16_t >( i % 2 == 0 ? 100 : -1 ) ) ).ucReason == Reason::R_RISE )
+			iRejected = i;
+	CHECK( iRejected == 5 );		// as when it hovers without pretending to land
 }
 
 TEST_CASE( "KVillageMoveValidator: platforms" )

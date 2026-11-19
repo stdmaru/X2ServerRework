@@ -72,8 +72,13 @@ KFieldMoveSync::Result KFieldMoveSync::OnState( UidType iUnitUID, const KEGS_FIE
 	const KVillageMoveValidator::Verdict kVerdict = kUnit.kValidator.Check( kNot.m_uiTick, kNot.m_kState, uiServerNow );
 	if( kVerdict.IsValid() )
 	{
+		// stamped with when the client made it, not when it arrived: the hops on the way (the GameServer's queue, a
+		// CenterServer room's 20 ms tick) would otherwise move the samples and the others would see it speed up and
+		// slow down
+		kUnit.kClientClock.OnBatch( kNot.m_uiTick, uiServerNow );
+		const uint32_t uiMade = kUnit.kClientClock.ToLocal( kNot.m_uiTick );
 		kUnit.kState = kNot.m_kState;
-		kUnit.uiStateTick = uiServerNow;
+		kUnit.uiStateTick = static_cast< int32_t >( uiMade - kUnit.uiStateTick ) > 0 ? uiMade : kUnit.uiStateTick + 1;
 		kUnit.bChanged = true;
 		kResult.bAccepted = true;
 		return kResult;

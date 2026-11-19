@@ -446,6 +446,10 @@ when `CX2InstanceData::GetIsDungeonLounge`); wedding halls (`CX2WeddingGame`) ar
 - **Corrections** (`EGS_FIELD_UNIT_CORRECTION_NOT` → `ReceiveCorrection` → `CX2SquareUnit::ApplyFieldCorrection`): the
   own unit goes back to the last state the server accepted, standing (`WAIT` or `RIDING_WAIT`; in the air it falls
   from there), the reason is logged, and the next update reports it.
+- **Talking to an NPC** (`CX2TFieldGame::TalkNpc`): the field hides every unit and stops their frames while the
+  dialog is open, the own unit too, so one that jumped stayed in the air, where the server rejects it, and was rolled
+  back when the dialog closed. Now the own unit first stops on the ground below it, standing
+  (`CX2SquareUnit::StopOnGround`); hidden, the fall is not seen. The keys stay off as before.
 - `TCP_NODELAY` on the client's connections to its servers (`KSession::Connect`; the TCP relay already had it).
 
 Not checked in game yet (2026-11-19): riding pets, emotions, invisibility and personal shops with two clients.

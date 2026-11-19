@@ -246,4 +246,29 @@ TEST_CASE( "KFieldMoveSync: X2_DEBUG operators move faster" )
 	CHECK_FALSE( kSync.OnState( 2, StateNot( 50000, 500 ), 1100 ).bAccepted );
 }
 
+TEST_CASE( "KFieldMoveSync: states carry when the client made them" )
+{
+	KFieldMoveSync kSync = MakeSync();
+	KEGS_FIELD_UNIT_STATE_BATCH_NOT kShared;
+	std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT > mapExtra;
+	kSync.AddUnit( 1, VECTOR3( 100, 0, 0 ), false, 1000 );
+	kSync.BuildSharedBatch( 1000, kShared, mapExtra );
+
+	// made every 100 ms, arriving 10 to 60 ms late: stamped 100 ms apart, on the arrival with the least delay
+	const uint32_t aDelay[] = { 30, 60, 10, 50, 20, 40 };
+	uint32_t uiLastStamp = 0;
+	for( int i = 0; i < 6; ++i )
+	{
+		const uint32_t uiMade = 1100 + 100 * static_cast< uint32_t >( i );
+		REQUIRE( kSync.OnState( 1, StateNot( 50000 + 100 * static_cast< uint32_t >( i ), 100.f + 50.f * i ), uiMade + aDelay[ i ] ).bAccepted );
+		kSync.BuildSharedBatch( uiMade + 70, kShared, mapExtra );
+		REQUIRE( kShared.m_vecUnit.size() == 1 );
+		const uint32_t uiStamp = kShared.m_vecUnit[ 0 ].m_uiTick;
+		CHECK( uiStamp <= uiMade + aDelay[ i ] );		// never after it arrived
+		if( i >= 3 )										// the least delay (10) was seen at the third
+			CHECK( uiStamp - uiLastStamp == doctest::Approx( 100 ).epsilon( 0.02 ) );
+		uiLastStamp = uiStamp;
+	}
+}
+
 #endif // X2_VILLAGE_SYNC

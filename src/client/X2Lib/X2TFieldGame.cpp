@@ -3071,6 +3071,9 @@ bool CX2TFieldGame::TalkNpc()
 			m_iJoinNpcIndex = i;
 			pNpcNode->SetNpcTalk(true);
 			m_bJoinNpc = true;
+#ifdef X2_VILLAGE_SYNC
+			m_pMyUnit->StopOnGround();
+#endif // X2_VILLAGE_SYNC
 			g_pData->GetLocationManager()->SetLastPos( m_pMyUnit->GetLandPosition() );
 			g_pData->GetLocationManager()->SetLastPosLineIndex( m_pMyUnit->GetLastTouchLineIndex() );
 
@@ -3150,6 +3153,10 @@ bool CX2TFieldGame::TalkNpc(int iNpc)
 		m_iJoinNpcIndex = iNpc;
 		pNpcNode->SetNpcTalk(true);
 		m_bJoinNpc = true;
+#ifdef X2_VILLAGE_SYNC
+		if( m_pMyUnit != NULL )
+			m_pMyUnit->StopOnGround();
+#endif // X2_VILLAGE_SYNC
 		g_pData->GetLocationManager()->SetLastPos( m_pMyUnit->GetLandPosition() );
 		g_pData->GetLocationManager()->SetLastPosLineIndex( m_pMyUnit->GetLastTouchLineIndex() );
 
