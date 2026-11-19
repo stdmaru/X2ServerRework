@@ -3,6 +3,7 @@
 #include "./X2RidingPet.h"
 #ifdef X2_VILLAGE_SYNC
 #include "LineMap/FieldUnitSnapshots.h"
+class CX2UnitStateSync;
 #endif // X2_VILLAGE_SYNC
 
 //{{ seojt // 2009-1-13, 17:11
@@ -384,8 +385,9 @@ class CX2SquareUnit : public CKTDGObject
 		bool GetFieldUnit_LUA() { return m_bTFieldUnit; }
 
 #ifdef X2_VILLAGE_SYNC
-		// Village movement sync (decision T53): the own unit reports its state, the others are drawn from the states
-		// the server accepted. Off in the dungeon lounge, which keeps the original's input replay.
+		// Village and square movement sync (decision T53; CX2UnitStateSync): the own unit reports its state, the
+		// others are drawn from the states the server accepted. Off in the dungeon lounge and wedding halls, which
+		// keep the original's sync.
 		void SetStateSync( bool bStateSync ) { m_bStateSync = bStateSync; }
 		bool IsStateSync() const { return m_bStateSync; }
 		KFieldUnitState GetFieldUnitState() const;
@@ -440,7 +442,9 @@ class CX2SquareUnit : public CKTDGObject
 		void		SetSyncEventProcess();
 
 #ifdef X2_VILLAGE_SYNC
-		bool		IsRemoteStateSync() const { return m_bStateSync && m_bTFieldUnit && !m_bMyUnit; }
+		bool		IsRemoteStateSync() const { return m_bStateSync && !m_bMyUnit; }
+		const CX2UnitStateSync* GetStateSyncSource() const;	// the game's: village or square
+		CX2World*	GetGameWorld() const;
 		void		UpdateRemotePose();			// position, facing, line and state at the moment drawn
 		void		UpdateDirFromLine();		// m_DirDegree and m_bFootOnLine, as PhysicProcess leaves them
 #endif // X2_VILLAGE_SYNC

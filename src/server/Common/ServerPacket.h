@@ -3500,6 +3500,16 @@ DECL_PACKET( ETR_FIELD_UNIT_STATE_BATCH_NOT )
 	std::vector< UidType >				m_vecUID;
 	KEGS_FIELD_UNIT_STATE_BATCH_NOT		m_kBatch;
 };
+
+// A square user's update, from the GameServer to the CenterServer's square. The batches go back as
+// ERM_FIELD_UNIT_STATE_BATCH_NOT (a KEGS_FIELD_UNIT_STATE_BATCH_NOT) and corrections as ERM_FIELD_UNIT_CORRECTION_NOT.
+DECL_PACKET( ERM_SQUARE_UNIT_STATE_NOT )
+{
+	KEGS_FIELD_UNIT_STATE_NOT			m_kState;
+	bool								m_bFastMove;	// an X2_DEBUG operator
+
+	KERM_SQUARE_UNIT_STATE_NOT() : m_bFastMove( false ) {}
+};
 #endif // X2_VILLAGE_SYNC
 
 //////////////////////////////////////////////////////////////////////////

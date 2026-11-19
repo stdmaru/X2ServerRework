@@ -55,6 +55,7 @@ public:
 	// iViewer starts to see iUnitUID (a sector change, entering the field): it gets its state in the next batch even
 	// if it did not change.
 	void ShowTo( UidType iViewer, UidType iUnitUID );
+	void ShowAllTo( UidType iViewer );		// every unit here (entering a room where all see all)
 
 	void SetKickViolations( int iViolations ) { m_kConfig.iKickViolations = iViolations; }
 
@@ -62,6 +63,11 @@ public:
 
 	// The batches of this tick, one per viewer, and the tick starts over. fnDestinations gives who sees a unit.
 	void BuildBatches( uint32_t uiServerNow, const Destinations& fnDestinations, std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT >& mapBatch );
+
+	// The same for a room where every unit sees every other (a square): kShared has every unit that changed, for all
+	// (each client skips its own), and mapExtra, per viewer, the units it starts to see that kShared does not have.
+	void BuildSharedBatch( uint32_t uiServerNow, KEGS_FIELD_UNIT_STATE_BATCH_NOT& kShared,
+						   std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT >& mapExtra );
 
 	const KFieldUnitState* GetState( UidType iUnitUID ) const;
 
@@ -82,6 +88,7 @@ private:
 	};
 
 	int CountViolation( Unit& kUnit, uint32_t uiServerNow ) const;
+	static void AddEntry( KEGS_FIELD_UNIT_STATE_BATCH_NOT& kBatch, uint32_t uiServerNow, UidType iUnitUID, const Unit& kUnit );
 
 	const CXSLLineMap*					m_pLineMap;
 	const KSquareUnitPhysics&			m_kPhysics;

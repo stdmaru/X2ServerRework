@@ -299,6 +299,9 @@ CX2SquareUnit* CX2SquareGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit 
 		pCX2SquareUnit->UpdateEquippedEmblem();
 //#endif
 
+#ifdef X2_VILLAGE_SYNC
+	m_kStateSync.OnUnitAdded( pCX2SquareUnit.get(), bMyUnit );
+#endif // X2_VILLAGE_SYNC
 	pCX2SquareUnit->StateChange( pCX2SquareUnit->GetStateID().m_Wait  );
 
 	m_UserUnitList.push_back( pCX2SquareUnit );
@@ -356,6 +359,9 @@ CX2SquareUnit* CX2SquareGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit 
 
 void CX2SquareGame::RemoveUnit( UidType unitUID )
 {
+#ifdef X2_VILLAGE_SYNC
+	m_kStateSync.OnUnitRemoved( unitUID );
+#endif // X2_VILLAGE_SYNC
 	for( int i = 0; i < (int)m_UserUnitList.size(); i++ )
 	{
 		CX2SquareUnitPtr pCX2SquareUnit = m_UserUnitList[i];
@@ -579,6 +585,11 @@ HRESULT	CX2SquareGame::OnFrameMove( double fTime, float fElapsedTime )
 			}
 		}
 	}
+
+#ifdef X2_VILLAGE_SYNC
+	// the own unit's state 10 times per second; the 5 s update below still goes, for the ED it carries
+	m_kStateSync.FrameMove( fElapsedTime, m_pMyUnit.get(), m_bLeaveSquareGame == false );
+#endif // X2_VILLAGE_SYNC
 
 	m_fP2PSendGap -= fElapsedTime;
 	if( m_fP2PSendGap <= 0.0f )
@@ -945,6 +956,19 @@ void CX2SquareGame::KeyProcess()
 
 	m_pMyUnit->SetInputData( &m_InputData );
 }
+
+#ifdef X2_VILLAGE_SYNC
+void CX2SquareGame::ReceiveStateBatch( const KEGS_FIELD_UNIT_STATE_BATCH_NOT& kBatch )
+{
+	m_kStateSync.ReceiveBatch( kBatch, m_pMyUnit != NULL ? m_pMyUnit->GetUID() : 0,
+		[this]( UidType iUnitUID ) { return GetSquareUnitByUID( iUnitUID ); } );
+}
+
+void CX2SquareGame::ReceiveCorrection( const KEGS_FIELD_UNIT_CORRECTION_NOT& kCorrection )
+{
+	m_kStateSync.ReceiveCorrection( m_pMyUnit.get(), kCorrection );
+}
+#endif // X2_VILLAGE_SYNC
 
 void CX2SquareGame::Handler_EGS_SQUARE_UNIT_SYNC_DATA_NOT( KEGS_SQUARE_UNIT_SYNC_DATA_NOT& kEGS_SQUARE_UNIT_SYNC_DATA_NOT )
 {

@@ -92,6 +92,9 @@ g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR
 	const CXSLLineMap* pSquare = kLineMaps.GetByWorld( 1 );
 	REQUIRE( pSquare != nullptr );
 	CHECK( pSquare->GetNumLineData() == 1 );
+	CHECK( kLineMaps.GetByWorldName( "WI_SQUARE" ) == pSquare );
+	CHECK( kLineMaps.GetByWorldName( "WI_SQUARE_MARKET" ) == nullptr );	// not in this WorldData
+	CHECK( kLineMaps.GetByWorldName( "WI_VILLAGE_RUBEN" ) == nullptr );	// villages go by map ID
 
 	CHECK( kLineMaps.GetNumWorlds() == 3 );
 	CHECK( kLineMaps.GetNumLineMaps() == 2 );

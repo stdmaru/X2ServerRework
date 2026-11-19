@@ -295,8 +295,7 @@ class CX2TFieldGame
 		bool						IsStateSync() const { return m_bStateSync; }
 		void						ReceiveStateBatch( const KEGS_FIELD_UNIT_STATE_BATCH_NOT& kBatch );
 		void						ReceiveCorrection( const KEGS_FIELD_UNIT_CORRECTION_NOT& kCorrection );
-		// the server's time at which the other units are drawn
-		uint32_t					GetFieldRenderTick() const;
+		const CX2UnitStateSync&		GetStateSync() const { return m_kStateSync; }
 #endif // X2_VILLAGE_SYNC
 
 		void PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
@@ -483,10 +482,6 @@ class CX2TFieldGame
 		void						InitKey();
 		void						KeyProcess();
 		void						SyncUnitFrame();
-#ifdef X2_VILLAGE_SYNC
-		void						SendUnitState();
-		static uint32_t				GetSyncClockMs();	// milliseconds, steady; GetTickCount steps by 10-16 ms on Windows
-#endif // X2_VILLAGE_SYNC
 
 		NpcJoinShadow				*m_pNpcShadow;
 
@@ -537,17 +532,7 @@ class CX2TFieldGame
 
 #ifdef X2_VILLAGE_SYNC
 		bool						m_bStateSync = false;
-		KFieldServerClock			m_kServerClock;
-		bool						m_bSentState = false;		// m_kSentState holds what was sent last
-		bool						m_bSentChange = false;		// the last update was a change: send once more when it stops
-		KFieldUnitState				m_kSentState;
-		uint32_t					m_uiSentTick = 0;
-		struct PendingState
-		{
-			uint32_t		uiTick;
-			KFieldUnitState	kState;
-		};
-		std::map< UidType, PendingState >	m_mapPendingState;	// units still loading: their newest state
+		CX2UnitStateSync			m_kStateSync;
 #endif // X2_VILLAGE_SYNC
 		bool						m_bForceSync;			/// 이게 true면 그 프레임에서는 무조건 패킷 전송 함 // 개인적인 생각으로 첫 접속 시 움직이지 않고 Wait 상태로 있더라도 일단은 한번 Packet을 보내기 위해 사용하는 용도로가 생각 됨
 		bool						m_bNearPortalToBattleField;			/// 이동 포탈에 닿았는지 여부

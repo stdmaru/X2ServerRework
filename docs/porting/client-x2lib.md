@@ -420,17 +420,19 @@ permanent deletion after 24 hours (at once on admin accounts, to test characters
 
 Under `X2_VILLAGE_SYNC` (`src/define.h`) the village replaces the original's 2 s input replay
 ([Village movement sync](../original/village-sync.md)) with the states the server validates
-([Server: Common](server-common.md#intentional)). **Behavior change.** The dungeon lounge keeps the original's sync: it is
-a CenterServer room, not yet on the new pipeline (`CX2TFieldGame::m_bStateSync`, false when
-`CX2InstanceData::GetIsDungeonLounge`); squares and wedding halls (`CX2SquareGame`, `CX2WeddingGame`) are untouched.
+([Server: Common](server-common.md#intentional)). **Behavior change.** Squares (`CX2SquareGame`) use it too since
+2026-11-19 (their 5 s update still goes, for the ED it carries, and only that is read from it). The dungeon lounge
+keeps the original's sync: it is a CenterServer room not yet on the new pipeline (`CX2TFieldGame::m_bStateSync`, false
+when `CX2InstanceData::GetIsDungeonLounge`); wedding halls (`CX2WeddingGame`) are untouched. Both games keep a
+`CX2UnitStateSync` (`X2UnitStateSync.*`), which does what follows; a unit asks its game's for the clock and the world.
 
-- **Sending** (`CX2TFieldGame::SendUnitState`, every 0.1 s instead of `SyncUnitFrame` every 2 s):
+- **Sending** (`CX2UnitStateSync::FrameMove`, every 0.1 s instead of `SyncUnitFrame` every 2 s):
   `EGS_FIELD_UNIT_STATE_NOT` with the own unit's position, physics speeds, last line, state ID and change count, and
   facing (`CX2SquareUnit::GetFieldUnitState`), only when one of them changed, plus once after it stops so the others
-  see where. The tick is a steady millisecond clock (`GetSyncClockMs`; `GetTickCount` steps by 10 to 16 ms on
+  see where. The tick is a steady millisecond clock (`GetClockMs`; `GetTickCount` steps by 10 to 16 ms on
   Windows) that always advances.
 - **Other units** (`EGS_FIELD_UNIT_STATE_BATCH_NOT` → `ReceiveStateBatch` → `CX2SquareUnit::PushFieldUnitState`): kept
-  in a `KFieldUnitSnapshots` and drawn at the server's time less 200 ms (`GetFieldRenderTick`, with
+  in a `KFieldUnitSnapshots` and drawn at the server's time less 200 ms (`CX2UnitStateSync::GetRenderTick`, with
   `KFieldServerClock`). Each frame `UpdateRemotePose` sets the interpolated position, facing, line and speeds, and
   enters the sender's state when it changes (by ID and change count); its animation follows from the state, as
   before. Such a unit runs no physics (`PhysicProcess`: only the facing and landing point from its line,
@@ -439,7 +441,7 @@ a CenterServer room, not yet on the new pipeline (`CX2TFieldGame::m_bStateSync`,
   with the chat message, which plays them (`PlayEmotion`); a state only leaves them. A party member not drawn still
   gets its position on the party list, as with the original's sync. A unit is drawn from its first state on
   (`m_bFirstGetPacket`); the field sends a unit's state as soon as it comes into view, and while the unit's models
-  load (`AddUnitToDeviceList` creates it later) its newest state waits in `m_mapPendingState`, since a unit standing
+  load (`AddUnitToDeviceList` creates it later) its newest state waits in `m_mapPendingState` (`OnUnitAdded`), since a unit standing
   still sends no other.
 - **Corrections** (`EGS_FIELD_UNIT_CORRECTION_NOT` → `ReceiveCorrection` → `CX2SquareUnit::ApplyFieldCorrection`): the
   own unit goes back to the last state the server accepted, standing (`WAIT` or `RIDING_WAIT`; in the air it falls

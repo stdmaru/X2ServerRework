@@ -29,6 +29,8 @@ public:
 
 	const CXSLLineMap* GetByVillage( int iVillageMapID ) const;
 	const CXSLLineMap* GetByWorld( int iWorldID ) const;
+	// a square's or wedding hall's world by its WORLD_ID name (WI_SQUARE, WI_SQUARE_MARKET, WI_*_WEDDING)
+	const CXSLLineMap* GetByWorldName( const std::string& strWorldName ) const;
 	int GetWorldIDOfVillage( int iVillageMapID ) const;	// 0 when unknown
 
 	// Loads one line map script, found by name, in a clean Lua state with Enum.lua; nullptr when it fails.
@@ -40,6 +42,7 @@ public:
 private:
 	std::map< int, int >								m_mapVillageWorld;	// VILLAGE_MAP_ID -> WORLD_ID
 	std::map< int, std::shared_ptr< CXSLLineMap > >		m_mapWorldLineMap;	// WORLD_ID -> line map
+	std::map< std::string, int >						m_mapRoomWorld;		// room world name -> WORLD_ID
 };
 
 DefSingletonInline( KWorldLineMaps );

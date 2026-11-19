@@ -191,6 +191,7 @@
 #include "./X2UIUnit.h"
 #include "./X2UIUnitManager.h"
 #include "./X2SquareUnit.h"
+#include "./X2UnitStateSync.h"
 #include "./X2SquareGame.h"
 
 #include "./X2SkillTree.h"
