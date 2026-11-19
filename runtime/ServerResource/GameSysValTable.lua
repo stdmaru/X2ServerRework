@@ -220,6 +220,8 @@ GameSysVal:SetSubStageNpcDieCheck( False )
 
 -- 해킹 유저 응답 패킷 이상 시 킥 여부 // 2012년 6월 07일 적용 (문제 발생 시 false)
 GameSysVal:SetHackingUserKick( true )
+-- Village movement sync (X2_VILLAGE_SYNC, T53): rejected movement updates within a minute that kick the user, 0 never.
+GameSysVal:SetVillageMoveKickViolations( 20 )
 
 -- 랜덤 큐브 오픈 딜레이 시스템
 GameSysVal:SetEnableOpenRandomCubeDelaySystem( false )

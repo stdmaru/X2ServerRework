@@ -3347,6 +3347,13 @@ enum
 	//}}
 	//=============================================================//
 
+#ifdef X2_VILLAGE_SYNC
+	// village movement sync (T53): GSUser -> field, field -> GSUser, field -> TCP relay
+	_ENUM( ERM_FIELD_UNIT_STATE_NOT )
+	_ENUM( ERM_FIELD_UNIT_CORRECTION_NOT )
+	_ENUM( ETR_FIELD_UNIT_STATE_BATCH_NOT )
+#endif // X2_VILLAGE_SYNC
+
 	//////////////////////////////////////////////////////////////////////////
     // 여기 밑으로 패킷 타입 정의하지 마세요!!!
     _ENUM( EVENT_EVENTID_SENTINEL ) // 패킷의 끝!

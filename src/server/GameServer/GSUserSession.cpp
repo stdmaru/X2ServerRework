@@ -2119,6 +2119,9 @@ IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 	// 아직 필드에 입장해있지 않다!
 	GetFieldUserInfo( kPacket.m_kFieldUserInfo );
 	kPacket.m_kFieldUserInfo.m_vPos = kPacket_.m_vPos;
+#if defined( X2_VILLAGE_SYNC ) && defined( X2_DEBUG )
+	kPacket.m_bFastMove = GetAuthLevel() >= SEnum::UAL_GM;	// CX2SquareUnit: XUAL_OPERATOR and up
+#endif
 	kPacket.m_kFieldOption		    = m_kFieldOption;
 	if( GetPartyUID() > 0 )
 	{
