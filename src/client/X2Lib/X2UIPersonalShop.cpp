@@ -412,6 +412,32 @@ bool CX2UIPersonalShop::Handler_EGS_JOIN_PERSONAL_SHOP_ACK( HWND /*hWnd*/, UINT 
 
 			ResetSlotList( m_vecPersonalShopSlotItem );
 
+			// Port: entering a shop by picking its owner in the square shows the shop window (the original's
+			// non-SERV_UPGRADE_TRADE_SYSTEM behavior); only the trade board buys straight from a picked item
+			if ( m_bOpenFromBoard == false )
+			{
+				JoinShop();
+
+				m_bShow = true;
+				D3DXVECTOR3 tmp;
+				tmp = m_pDLGUIPersonalShop->GetDummyPos(0);
+				m_DLGPosition.x = tmp.x;
+				m_DLGPosition.y = tmp.y;
+				tmp = m_pDLGUIPersonalShop->GetDummyPos(1);
+				m_DLGSize.x = tmp.x;
+				m_DLGSize.y = tmp.y;
+				g_pData->GetUIManager()->UIOpened(CX2UIManager::UI_MENU_PERSONAL_SHOP);
+
+				if ( g_pData->GetUIManager()->GetShow(CX2UIManager::UI_MENU_INVEN) )
+					g_pData->GetUIManager()->GetUIInventory()->UpdateUIButton();
+
+				if( g_pData->GetUIManager()->GetUIInventory()->GetUISocketItem() != NULL )
+					g_pData->GetUIManager()->GetUIInventory()->GetUISocketItem()->SetShow(false);
+
+				m_uidSelectedItemUID = -1;
+				return true;
+			}
+
 			m_NowShopState			= CX2UIPersonalShop::XPSS_BUY;		/// 구입 상태
 
 			SlotInfo* pSlotInfo		= NULL;		/// 구입 대상 아이템 객체
@@ -576,7 +602,17 @@ bool CX2UIPersonalShop::Handler_BREAK_PERSONAL_SHOP_NOT( HWND /*hWnd*/, UINT /*u
 	}
 
 	m_uidSelectedItemUID	= -1;
-	m_NowShopState			= XPSS_WAIT;
+
+	// Port: the original's non-SERV_UPGRADE_TRADE_SYSTEM behavior: whoever has the shop window open (the owner or a
+	// buyer) sees it close with the reason (e.g. everything sold); the owner's next close then no longer asks the
+	// server to break a shop that is gone (NetError 347)
+	if ( m_bShow == true )
+	{
+		CloseShop();
+		g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), NetError::GetErrStrF( kEvent.m_iReason ), g_pMain->GetNowState() );
+	}
+	else
+		m_NowShopState = XPSS_CLOSE;
 
 	return true;
 }
@@ -849,6 +885,21 @@ bool CX2UIPersonalShop::Handler_UPDATE_PERSONAL_SHOP_ITEM_INFO_NOT( HWND /*hWnd*
 		// 여기서 아이템 리스트를 바꾸고 UI를 리셋해 준다
 		ResetSlotList( m_vecPersonalShopSlotItem );
 
+		// Port: the original's non-SERV_UPGRADE_TRADE_SYSTEM refresh (the upgraded one never ran, its condition
+		// tested for NULL pointers), so the windows of a shop entered from the square follow its sales
+		if ( m_NowShopState == CX2UIPersonalShop::XPSS_BUY )
+		{
+			ResetBuySlotUIList();
+		}
+		else if ( m_NowShopState == CX2UIPersonalShop::XPSS_SELL )
+		{
+			ResetSellSlotUIList();
+		}
+		else if( m_NowShopState == CX2UIPersonalShop::XPSS_AGENCY_SELL )
+		{
+			ResetBuySlotUIList();
+		}
+
 		/// 갱신
 		if ( NULL != g_pData &&
 			 NULL != g_pData->GetUIManager() &&
@@ -891,9 +942,14 @@ bool CX2UIPersonalShop::Handler_EGS_LEAVE_PERSONAL_SHOP_ACK( HWND /*hWnd*/, UINT
 
 			if ( -1 < m_uidSelectedItemUID )
 				Handler_EGS_JOIN_PERSONAL_SHOP_FROM_BOARD_REQ();
+			else if ( m_bShow == true )
+			{
+				CloseShop();	/// the buyer's window of a shop entered from the square
+				m_uidSelectedItemUID = -1;
+			}
 			else
 			{
-				m_NowShopState = XPSS_WAIT;	/// 퇴장
+				m_NowShopState = XPSS_CLOSE;	/// left (Port: the original set XPSS_WAIT, which made the next join answer "the shop is already open")
 				m_uidSelectedItemUID = -1;
 			}
 
@@ -1239,6 +1295,22 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCloseShopCheck, 0, false );
 
 			m_pDLGCloseShopCheck = NULL;
+
+			/// The owner types the shop name (original non-SERV_UPGRADE_TRADE_SYSTEM behavior)
+			if ( m_pDLGUIPersonalShop != NULL && m_NowShopState != CX2UIPersonalShop::XPSS_AGENCY_WAIT )
+			{
+				CKTDGUIIMEEditBox* pIMEEditBox = (CKTDGUIIMEEditBox*)m_pDLGUIPersonalShop->GetControl( L"IME_Editname" );
+				if ( pIMEEditBox != NULL )
+				{
+					m_ShopName = pIMEEditBox->GetText();
+					if ( m_ShopName.length() < 2 )
+					{
+						g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_863 ), g_pMain->GetNowState() );
+						return true;
+					}
+					m_ShopName = m_ShopName.substr( 0, 100 );	// server limit for shop names (see GSUserPersonalShop.cpp)
+				}
+			}
 
 			/// 한개도 등록 않했어요
 			if ( CheckShopItemListToReg() == false )
@@ -1856,6 +1928,25 @@ void CX2UIPersonalShop::SetDialog( CX2UIPersonalShop::X2_PERSONAL_SHOP_STATE per
 
 			ResetSlotList();
 
+			if( personalShopState == XPSS_WAIT )
+			{
+				// The owner may type a shop name; start with the default one
+				if( NULL != g_pData && NULL != g_pData->GetMyUser() && NULL != g_pData->GetMyUser()->GetSelectUnit() )
+					m_ShopKeeperName = g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_NickName;
+
+				CKTDGUIStatic* pStaticUp = (CKTDGUIStatic*)m_pDLGUIPersonalShop->GetControl( L"Static_Personal_Shop_Name_Up" );
+				if( pStaticUp != NULL )
+					pStaticUp->GetString(0)->msg = GET_REPLACED_STRING( ( STR_ID_864, "L", m_ShopKeeperName ) );
+
+				CKTDGUIStatic* pStaticDown = (CKTDGUIStatic*)m_pDLGUIPersonalShop->GetControl( L"Static_Personal_Shop_Name_Down" );
+				if( pStaticDown != NULL )
+					pStaticDown->SetShowEnable( false, false );
+
+				CKTDGUIIMEEditBox* pIMEName = (CKTDGUIIMEEditBox*)m_pDLGUIPersonalShop->GetControl( L"IME_Editname" );
+				if( pIMEName != NULL )
+					pIMEName->SetText( GET_REPLACED_STRING( ( STR_ID_864, "L", m_ShopKeeperName ) ) );
+			}
+
 			// 도움창을 열자
 			SAFE_DELETE_DIALOG(m_pDLGHelp);
 			m_pDLGHelp = new CKTDGUIDialog(g_pMain->GetNowState(), L"DLG_UI_Helper.lua");
@@ -1981,7 +2072,12 @@ void CX2UIPersonalShop::SetDialog( CX2UIPersonalShop::X2_PERSONAL_SHOP_STATE per
 			CKTDGUIStatic* pStaticName = (CKTDGUIStatic*)m_pDLGUIPersonalShop->GetControl( L"Static_Personal_Shop_Name_Up" );
 			pStaticName->GetString(0)->msg = GET_REPLACED_STRING( ( STR_ID_864, "L", m_ShopKeeperName ) );
 
+			CKTDGUIIMEEditBox* pIMEName = (CKTDGUIIMEEditBox*)m_pDLGUIPersonalShop->GetControl( L"IME_Editname" );
+			if( pIMEName != NULL )
+				pIMEName->SetShowEnable( false, false );
+
 			pStaticName = (CKTDGUIStatic*)m_pDLGUIPersonalShop->GetControl( L"Static_Personal_Shop_Name_Down" );
+			pStaticName->SetShowEnable( true, true );
 			//pStaticName->GetString(0)->msg = g_pMain->GetStrByLienBreak( m_ShopName.c_str(), 291, pStaticName->GetString(0)->fontIndex );
 			wstring wstrShopName = CWordLineHandler::GetStrByLineBreakInX2Main(m_ShopName.c_str(), 291, pStaticName->GetString(0)->fontIndex);
 			pStaticName->GetString(0)->msg  = g_pMain->GetStringFilter()->FilteringChatString( wstrShopName.c_str(), L'♡' );
@@ -2048,6 +2144,21 @@ void CX2UIPersonalShop::SetDialog( CX2UIPersonalShop::X2_PERSONAL_SHOP_STATE per
 
 			CKTDGUIStatic* pStaticPageNum = (CKTDGUIStatic*)m_pDLGUIPersonalShop->GetControl( L"Static_Page_Number" );
 			pStaticPageNum->GetString(0)->msg = buff;
+
+			// Port: the original's non-SERV_UPGRADE_TRADE_SYSTEM block; the buyer's window shows the keeper and the shop name
+			if( personalShopState != XPSS_AGENCY_TAKE )
+			{
+				CKTDGUIStatic* pStaticName = (CKTDGUIStatic*)m_pDLGUIPersonalShop->GetControl( L"Static_Personal_Shop_Name_Up" );
+				if( pStaticName != NULL )
+					pStaticName->GetString(0)->msg = GET_REPLACED_STRING( ( STR_ID_864, "L", m_ShopKeeperName ) );
+
+				pStaticName = (CKTDGUIStatic*)m_pDLGUIPersonalShop->GetControl( L"Static_Personal_Shop_Name_Down" );
+				if( pStaticName != NULL )
+				{
+					wstring wstrShopName = CWordLineHandler::GetStrByLineBreakInX2Main( m_ShopName.c_str(), 291, pStaticName->GetString(0)->fontIndex );
+					pStaticName->GetString(0)->msg = g_pMain->GetStringFilter()->FilteringChatString( wstrShopName.c_str(), L'♡' );
+				}
+			}
 
 
 
