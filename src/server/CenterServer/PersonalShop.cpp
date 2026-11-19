@@ -335,7 +335,8 @@ end_proc:
 IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_REQ )
 {
 	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
-	int iSellItemNum = 3;
+	// Port: 6 (the 2 pages of 3 the owner's window offers; the original accepted 3 here, so the 4th item failed)
+	int iSellItemNum = 6;
 	VERIFY_ROOM_STATE( ( 1, KPersonalShopFSM::S_WAIT ), ERM_REG_PERSONAL_SHOP_ITEM_ACK, KERM_REG_PERSONAL_SHOP_ITEM_ACK );
 
 	std::vector< KSellPersonalShopItemInfo >::const_iterator vit;

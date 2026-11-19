@@ -90,8 +90,8 @@ Audit (2026-11-18): every `SERV_UPGRADE_TRADE_SYSTEM` side the port dropped, in 
 CenterServer and the LoginServer, was read against the port, and the functions of the shop files were compared by name.
 What is left out on purpose: the trade board's own pieces, replaced by the upgraded board (see below); the agency's
 remaining-time texts for the NPC (`X2TFieldNpc.cpp`); `PRE_EQUIP_PERSONAL_SHOP_BOARD` (try an item on from the board's
-search), which only the in-house build (`InHouse2.h`) defines. A mismatch that is the original's: a regular owner's
-window offers 2 pages (6 items) while `KPersonalShop` accepts 3 (9 with the premium item).
+search), which only the in-house build (`InHouse2.h`) defines. A mismatch that was the original's and is fixed (`server/shop-item-limit`, 2026-11-18): a regular owner's window offers 2 pages
+(6 items) while `KPersonalShop` accepted 3, so registering a 4th item failed; it now accepts 6 (9 with the premium item).
 
 Still dropped, not restored: the trade board's "cheapest first" check box and the board's per-item tooltips
 (`X2UIPersonalShopBoard.cpp`), which the upgraded board replaced.
