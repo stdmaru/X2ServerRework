@@ -1,8 +1,7 @@
 #include "BaseServer.h"
 #include "LineMap/WorldLineMaps.h"
 #include "LineMap/XSLLineMap.h"
-
-#include "KAutoPath.h"
+#include "LineMap/ClientScriptState.h"
 
 #include <KncLua.h>
 #include <lua_tinker.h>
@@ -16,65 +15,10 @@ ImplementSingleton( KWorldLineMaps );
 namespace
 {
 
-// Owns a Lua state with the standard libraries.
-class LuaState
-{
-public:
-	LuaState() : m_pState( luaL_newstate() ) { luaL_openlibs( m_pState ); }
-	~LuaState() { lua_close( m_pState ); }
-	LuaState( const LuaState& ) = delete;
-	LuaState& operator=( const LuaState& ) = delete;
-
-	lua_State* Get() const { return m_pState; }
-
-private:
-	lua_State* m_pState;
-};
-
-std::string FindScript( const std::string& strName )
-{
-	std::string strPath = strName;
-	KAutoPath kAutoPath;
-	return kAutoPath.GetPullPath( strPath ) ? strPath : std::string();
-}
-
 std::string ToLower( std::string str )
 {
 	std::transform( str.begin(), str.end(), str.begin(), []( unsigned char c ) { return static_cast<char>( std::tolower( c ) ); } );
 	return str;
-}
-
-// Runs a script found by name. bRequired: an error is logged as one, otherwise as a warning.
-bool RunScript( lua_State* L, const std::string& strName, bool bRequired )
-{
-	const std::string strPath = FindScript( strName );
-	if( strPath.empty() )
-	{
-		if( bRequired )
-		{
-			START_LOG( cerr, L"Script not found." )
-				<< BUILD_LOG( strName )
-				<< END_LOG;
-		}
-		else
-		{
-			START_LOG( cwarn, L"Script not found." )
-				<< BUILD_LOG( strName )
-				<< END_LOG;
-		}
-		return false;
-	}
-
-	if( luaL_dofile( L, strPath.c_str() ) != 0 )
-	{
-		START_LOG( cerr, L"Failed to run a script." )
-			<< BUILD_LOG( strName )
-			<< BUILD_LOG( lua_tostring( L, -1 ) )
-			<< END_LOG;
-		lua_pop( L, 1 );
-		return false;
-	}
-	return true;
 }
 
 // What the client's map scripts need besides Enum.lua: DLG_Map_Village.lua fills Village[], WorldData.lua calls
@@ -100,27 +44,6 @@ g_pWorld = setmetatable( {
 setmetatable( _G, { __index = function() return any end } )
 )";
 
-bool RunChunk( lua_State* L, const char* szChunk )
-{
-	if( luaL_dostring( L, szChunk ) != 0 )
-	{
-		START_LOG( cerr, L"Failed to run a Lua chunk." )
-			<< BUILD_LOG( lua_tostring( L, -1 ) )
-			<< END_LOG;
-		lua_pop( L, 1 );
-		return false;
-	}
-	return true;
-}
-
-std::string GetGlobalString( lua_State* L, const char* szName )
-{
-	lua_getglobal( L, szName );
-	std::string str = lua_type( L, -1 ) == LUA_TSTRING ? lua_tostring( L, -1 ) : "";
-	lua_pop( L, 1 );
-	return str;
-}
-
 struct WorldScript
 {
 	int			iWorldID;
@@ -139,7 +62,7 @@ bool IsRoomWorld( const std::string& strWorldName )
 
 std::shared_ptr< CXSLLineMap > LoadLineMapScript( const std::string& strName )
 {
-	const std::string strPath = FindScript( strName );
+	const std::string strPath = KClientScriptState::Find( strName );
 	if( strPath.empty() )
 	{
 		START_LOG( cwarn, L"Line map script not found." )
@@ -148,9 +71,9 @@ std::shared_ptr< CXSLLineMap > LoadLineMapScript( const std::string& strName )
 		return nullptr;
 	}
 
-	LuaState kLua;
+	KClientScriptState kLua;
 	lua_State* L = kLua.Get();
-	if( !RunScript( L, "Enum.lua", true ) )
+	if( !kLua.Run( "Enum.lua", true ) )
 		return nullptr;
 
 	lua_tinker::class_add<D3DXVECTOR3>( L, "D3DXVECTOR3" );
@@ -175,11 +98,10 @@ bool KWorldLineMaps::Load()
 	m_mapVillageWorld.clear();
 	m_mapWorldLineMap.clear();
 
-	LuaState kLua;
+	KClientScriptState kLua;
 	lua_State* L = kLua.Get();
-	if( !RunScript( L, "Enum.lua", true ) || !RunScript( L, "DungeonEnum.lua", true )
-		|| !RunChunk( L, kMapScriptsPrelude )
-		|| !RunScript( L, "DLG_Map_Village.lua", true ) || !RunScript( L, "WorldData.lua", true ) )
+	if( !kLua.Run( "Enum.lua", true ) || !kLua.Run( "DungeonEnum.lua", true ) || !kLua.RunChunk( kMapScriptsPrelude )
+		|| !kLua.Run( "DLG_Map_Village.lua", true ) || !kLua.Run( "WorldData.lua", true ) )
 	{
 		return false;
 	}
@@ -219,7 +141,7 @@ bool KWorldLineMaps::Load()
 	}
 	lua_pop( L, 1 );
 
-	if( !RunChunk( L, kWorldScriptsPrelude ) )
+	if( !kLua.RunChunk( kWorldScriptsPrelude ) )
 		return false;
 
 	std::map< int, bool > mapVillageWorlds;
@@ -234,10 +156,10 @@ bool KWorldLineMaps::Load()
 
 		lua_pushnil( L );
 		lua_setglobal( L, "x2_lineMapFile" );
-		if( !RunScript( L, kWorld.strFile, false ) )
+		if( !kLua.Run( kWorld.strFile, false ) )
 			continue;
 
-		const std::string strLineMap = GetGlobalString( L, "x2_lineMapFile" );
+		const std::string strLineMap = kLua.GetGlobalString( "x2_lineMapFile" );
 		if( strLineMap.empty() )
 		{
 			START_LOG( cwarn, L"World script has no line map." )

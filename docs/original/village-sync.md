@@ -42,7 +42,8 @@ Squares and wedding halls are CenterServer rooms (`KSquare`, `KWeddingHall`) wit
 `CX2SquareGame` and `CX2WeddingGame` send `EGS_SQUARE_UNIT_SYNC_DATA_REQ` (state, state change count, position, line,
 facing) every **5 s** (`m_fP2PSendGap`), and the room broadcasts `EGS_SQUARE_UNIT_SYNC_DATA_NOT` to **every** user in
 it, with no sectors and no checks. The receiver (`CX2SquareUnit::RecvPacket`) sets the position and changes state when
-the count differs. `XPT_SQUARE_UNIT_SYNC*`, a P2P version, is commented out in the original.
+the count differs. `XPT_SQUARE_UNIT_SYNC*`, a P2P version, is commented out in the original. Wedding halls also
+send their units over P2P (`CX2SquareUnit::SendPacketP2PForWedding`, `KXPT_UNIT_USER_SYNC_PACK_FOR_WEDDING_HALL`).
 
 ## Why it looks broken
 
@@ -68,10 +69,18 @@ Every class uses one script for its village unit, `SQUARE_Unit.lua` (`CX2SquareU
 `MAX_G_SPEED` −2000, `RELOAD_ACCEL` 2000 (units per second). Each state sets its speeds (`SPEED_X`/`SPEED_Y`, or
 `PASSIVE_SPEED_X` while a key is held): walking and jumping move at `WALK_SPEED`, dash and dash jump at `RUN_SPEED`,
 the dash jump rises at `JUMP_SPEED * 1.1`, riding states at up to 1.3 times those (`RIDING_WALK`, `RIDING_DASH`),
-emotions and waits stand still. A line can add its own speed (`SPEED`, moving walkways) or a jump (`JUMP_SPEED_X`/
-`_Y`). In `X2_DEBUG` an operator holding left Shift moves 6 times faster (`CX2SquareUnit`, the original's
+emotions and waits stand still. A line can replace the horizontal speed (`SPEED`, moving walkways) or launch a jump
+(`LT_JUMP_UP_REL` with `JUMP_SPEED_X`/`_Y`); nothing else changes a unit's speed (`CX2SquareUnit`). In `X2_DEBUG` an operator holding left Shift moves 6 times faster (`CX2SquareUnit`, the original's
 `VILLAGE_FLASH_MAN_DEV_ONLY`). With no line under it a unit falls at `G_ACCEL` up to `MAX_G_SPEED`; the highest jump
 is about (1500 × 1.1)² / (2 × 4000) ≈ 340 units above its line.
+
+A state's ID, which the client sends, is its index in `INIT_STATE` (`CX2SquareUnit::InitState`, from 1); a name the
+list does not have maps to 0. On 2026-11-19 the list had 21 states: `WAIT` 1, `WALK` 2, `JUMP_UP` 3, `JUMP_DOWN` 4,
+`DASH` 5, `DASH_JUMP_UP` 6, `DASH_JUMP_DOWN` 7, `RIDING_ON` 8 to `RIDING_DASH_JUMP_DOWN` 17, `EMOTION_STATE` 18 (every
+emotion: `CX2Unit` gives that name), `EMOTION_SITREADY` 19, `EMOTION_SITWAIT` 20, `EMOTION_STANDUP` 21. The jump and
+fall states are the only ones with `LAND_CONNECT = FALSE`. The fastest horizontal speed is 910 (`RIDING_DASH`), the
+fastest rise 1650 (`DASH_JUMP_UP`). The port reads them with `KSquareUnitPhysics`
+([Server: Common](../porting/server-common.md#intentional)).
 
 ## Line maps on the servers (2026-11-19)
 
@@ -88,8 +97,8 @@ all) except `VMI_DUNGEON_GATE_RUBEN`, whose world script `Ruben_Dungeon_Gate.lua
 
 ## What the server already had
 
-- `CXSLLineMap` (`src/server/Common/LineMap`) loads a line map from its Lua (`AddLine_LUA`...) and answers
-  `IsOnLine`, `GetNearest`, `GetLineData`; the GameServer uses it only for battle field start positions
-  (`CXSLBattleField`).
+- `CXSLLineMap` (`src/server/Common/LineMap`) answers `IsOnLine`, `GetNearest`, `GetLineData`, but could not load
+  a line map: `LoadLineMap` was a stub, and `AddLine_LUA` read the line's `START_POS`/`END_POS` as globals. The
+  GameServer's battle fields (`CXSLBattleField`) read only start positions and leave `AddLine_LUA` empty.
 - The servers already read every client `.lua` from `ClientScript` ([Server package](../tools/runtime.md)), so the
   village line map scripts reach them with no new tool.
