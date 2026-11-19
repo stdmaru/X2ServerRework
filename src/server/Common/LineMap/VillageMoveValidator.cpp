@@ -166,7 +166,7 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 		float fLandY = 0.f;
 		const int iLandLine = FindLanding( *m_pLineMap, m_kLast.m_vPos, kState.m_vPos, fSpeedY, m_kPhysics.GetPhysic().fGAccel,
 										   fDeltaTime + static_cast< float >( m_kConfig.uiLandingSlackMs ) / 1000.f,
-										   m_kConfig.fWallRadius, fLandY );
+										   m_kConfig.fWallRadius, m_kConfig.fLineRadius, fLandY );
 		if( iLandLine >= 0 )
 		{
 			bAir		= false;
@@ -322,6 +322,13 @@ void KVillageMoveValidator::SetGround( const VECTOR3& vPos, int iLine, uint32_t 
 	m_bAir			= false;
 	m_bThrownByLine	= false;
 	m_fGroundY		= vPos.y;
+	// the line's height there, if lower: a sample taken as on the ground may be up to fLineRadius above it (one sent just
+	// before the client snapped it onto the line), and jumps go from the line
+	if( const CXSLLineMap::LineData* pLine = m_pLineMap != nullptr ? m_pLineMap->GetLineData( iLine ) : nullptr )
+	{
+		const float t = std::clamp( HorizontalParameter( vPos, pLine->startPos, pLine->endPos ), 0.f, 1.f );
+		m_fGroundY = std::min( vPos.y, pLine->startPos.y + ( pLine->endPos.y - pLine->startPos.y ) * t );
+	}
 	m_iGroundLine	= iLine;
 	m_uiGroundTick	= uiTick;
 }
@@ -376,7 +383,7 @@ int KVillageMoveValidator::FindLine( const CXSLLineMap& kLineMap, const VECTOR3&
 }
 
 int KVillageMoveValidator::FindLanding( const CXSLLineMap& kLineMap, const VECTOR3& vFrom, const VECTOR3& vTo, float fSpeedY,
-										float fGAccel, float fMaxTime, float fRadius, float& fY )
+										float fGAccel, float fMaxTime, float fRadius, float fCatch, float& fY )
 {
 	if( fGAccel <= 0.f )
 		return -1;
@@ -404,12 +411,18 @@ int KVillageMoveValidator::FindLanding( const CXSLLineMap& kLineMap, const VECTO
 		if( !bUnder || ( iHighest >= 0 && fLineY <= fY ) )
 			continue;
 
-		// coming down onto it: y(t) = y0 + v t - g t^2 / 2 reaches the line after the apex
-		const float fDrop = vFrom.y - fLineY;
-		const float fDiscriminant = fSpeedY * fSpeedY + 2.f * fGAccel * fDrop;
-		if( fDiscriminant < 0.f )
+		// coming down onto it: CX2SquareUnit lands a unit that is not rising as soon as it is within LINE_RADIUS of a
+		// line (CKTDGLineMap::IsOnLine), not when it crosses it, so a platform just under the apex (240 apart in
+		// the market, a jump 281 high) is taken at once
+		const float fApexTime = std::max( 0.f, fSpeedY / fGAccel );
+		const float fApexY = vFrom.y + fSpeedY * fApexTime - 0.5f * fGAccel * fApexTime * fApexTime;
+		if( fApexY < fLineY - fCatch )
 			continue;	// never that high
-		const float fTime = ( fSpeedY + std::sqrt( fDiscriminant ) ) / fGAccel;
+		// at the apex if it is already within reach there, else when it comes down to fCatch above the line
+		const float fDrop = vFrom.y - ( fLineY + fCatch );
+		const float fTime = fApexY <= fLineY + fCatch
+			? fApexTime
+			: ( fSpeedY + std::sqrt( fSpeedY * fSpeedY + 2.f * fGAccel * fDrop ) ) / fGAccel;
 		if( fTime > fMaxTime )
 			continue;
 

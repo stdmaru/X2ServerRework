@@ -290,7 +290,8 @@ TEST_CASE( "KVillageMoveValidator: jumping up the market's platforms" )
 {
 	// Square_Market: one-way platforms 240 apart (0, 240, 480), climbed with plain jumps (apex 281), the jump key
 	// pressed again a few frames after each landing, then jumping in place on the top; the client moves frame by
-	// frame at 60 fps and reports every 0.1 s
+	// frame at 60 fps, lands within 30 of a line, and reports every 0.1 s (2026-11-19: rejected in game while the
+	// validator expected a landing only once the unit fell to the line, 0.13 s after the apex instead of 0.05)
 	const fs::path root = fs::temp_directory_path() / "x2_village_move_validator_market";
 	fs::remove_all( root );
 	fs::create_directories( root );
@@ -333,11 +334,12 @@ TEST_CASE( "KVillageMoveValidator: jumping up the market's platforms" )
 					const float yBefore = y;
 					v = std::max( v - 4000.f * fFrame, -2000.f );
 					y += v * fFrame;
-					// lands on the highest line it fell through (one way: passed through going up)
+					// CX2SquareUnit: not rising and within LINE_RADIUS (30) of a line, it lands on it (one way: it
+					// passes through going up)
 					for( int iLine = 2; iLine >= 0; --iLine )
 					{
 						const float fLine = 240.f * static_cast< float >( iLine );
-						if( v <= 0.f && yBefore >= fLine && y < fLine )
+						if( v <= 0.f && ( std::fabs( y - fLine ) < 30.f || ( yBefore >= fLine && y < fLine ) ) )
 						{
 							y = fLine;
 							v = 0.f;
@@ -368,6 +370,21 @@ TEST_CASE( "KVillageMoveValidator: jumping up the market's platforms" )
 			CHECK( ucWorst == Reason::R_NONE );
 		}
 	}
+}
+
+TEST_CASE( "KVillageMoveValidator::FindLanding" )
+{
+	const CXSLLineMap& kLineMap = *GetFixture().spLineMap;
+	float fY = 0.f;
+	// falling under the platform at 300 (x 500-900): it cannot land on it, only on the floor
+	CHECK( KVillageMoveValidator::FindLanding( kLineMap, VECTOR3( 700, 100, 0 ), VECTOR3( 700, 20, 0 ), -2000, 4000, 0.13f, 60, 40, fY ) == 0 );
+	CHECK( fY == doctest::Approx( 0.f ) );
+	CHECK( KVillageMoveValidator::FindLanding( kLineMap, VECTOR3( 700, 200, 0 ), VECTOR3( 700, 150, 0 ), -2000, 4000, 0.03f, 60, 40, fY ) < 0 );
+	// just over the apex near the platform: taken at once, within reach of it
+	CHECK( KVillageMoveValidator::FindLanding( kLineMap, VECTOR3( 700, 325, 0 ), VECTOR3( 700, 360, 0 ), 30, 4000, 0.05f, 60, 40, fY ) == 1 );
+	CHECK( fY == doctest::Approx( 300.f ) );
+	// rising far below it: not before the apex
+	CHECK( KVillageMoveValidator::FindLanding( kLineMap, VECTOR3( 700, 100, 0 ), VECTOR3( 700, 200, 0 ), 1500, 4000, 0.13f, 60, 40, fY ) < 0 );
 }
 
 TEST_CASE( "KVillageMoveValidator: platforms" )
