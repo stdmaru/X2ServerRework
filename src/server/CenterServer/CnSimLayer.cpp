@@ -71,6 +71,7 @@
 
 #include <lua_tinker.h>
 #include "LineMap/WorldLineMaps.h"
+#include "LineMap/SquareUnitPhysics.h"
 using namespace lua_tinker;
 
 #include <functional>
@@ -280,6 +281,11 @@ void KCnSimLayer::Init()
 		START_LOG( cerr, L"KWorldLineMaps failed to load the world line maps." );
 		KBaseServer::GetKObj()->AddFailScriptFileName( L"DLG_Map_Village.lua" );
 	}
+	if( !SiKSquareUnitPhysics()->Load() )
+	{
+		START_LOG( cerr, L"KSquareUnitPhysics failed to load the village unit physics." );
+		KBaseServer::GetKObj()->AddFailScriptFileName( L"SQUARE_Unit.lua" );
+	}
 #endif // X2_VILLAGE_SYNC
 
 	{
@@ -442,6 +448,7 @@ void KCnSimLayer::ShutDown()
 	CXSLDungeonManager::ReleaseInstance();
 #ifdef X2_VILLAGE_SYNC
 	KWorldLineMaps::ReleaseInstance();
+	KSquareUnitPhysics::ReleaseInstance();
 #endif // X2_VILLAGE_SYNC
 	SiKResultProcess()->ReleaseInstance();
 	KDropTable::ReleaseInstance();

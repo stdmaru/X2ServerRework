@@ -2,7 +2,6 @@
 // world script -> line map, sharing a line map that several worlds name, and taking squares by world name.
 #include "LineMap/WorldLineMaps.h"
 #include "LineMap/XSLLineMap.h"
-#include "KAutoPath.h"
 
 #include <doctest/doctest.h>
 
@@ -66,11 +65,9 @@ g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR
 )" );
 	WriteFile( root / "dungeon.lua", "g_pWorld:SetLineMap( \"Square_LineMap.lua\" )\n" );
 
-	// the working folder and its subfolders are searched first: make it one that holds nothing else
+	// the working folder and its subfolders are searched first: the fixture's, so that no other script is found
 	const fs::path oldCurrent = fs::current_path();
-	fs::create_directories( root / "Work" );
-	fs::current_path( root / "Work" );
-	KAutoPath::AddPath( root.string() );
+	fs::current_path( root );
 
 	KWorldLineMaps kLineMaps;
 	const bool bLoaded = kLineMaps.Load();
