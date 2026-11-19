@@ -70,6 +70,11 @@ enum STR_ID_DEF13
 #   include "StringID_def13.h"
 };
 
+enum STR_ID_DEF14
+{
+#   include "StringID_def14.h"
+};
+
 class CKTDXStringTable
 {
     DeclareSingleton( CKTDXStringTable );

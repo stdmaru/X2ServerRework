@@ -446,6 +446,10 @@ class CX2Game : public CKTDXStage
 			);
 		void SetUserSummonedNPCInfo( CX2NPCAI::NPC_AI_TYPE eAIType, UidType iAllyUID, CX2GUNPC* pNPC, int iHyperMode, CX2UnitManager::NPC_UNIT_ID unitID );
 
+#ifdef X2_ADD_2ND_PATH
+		void FinishApocalypseSummonByOwnerUID( UidType iOwnerUID_ );
+#endif
+
 
 		void						CreateNPCReq( CX2UnitManager::NPC_UNIT_ID unitID, int level, bool bActive, D3DXVECTOR3 vPos,
 			bool bRight, float fDelayTime, bool bNoDrop, int iKeyCode = -1,

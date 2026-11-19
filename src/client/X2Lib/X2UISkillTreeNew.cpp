@@ -5578,6 +5578,93 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 				eUnitClass = CX2Unit::UC_ADD_LUNATIC_PSYKER;
 			}
 		} break;
+#ifdef X2_ADD_2ND_PATH
+	case CX2Unit::UC_ADD_ARC_TRACER:
+	case CX2Unit::UC_ADD_MASTERMIND:
+		{
+			if ( CX2Unit::UCT_BASIC_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_29422 );
+				eUnitClass = CX2Unit::UC_ADD_NASOD_RULER;
+			}
+			if ( CX2Unit::UCT_FIRST_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_30382 );	/// Arc Tracer
+				eUnitClass = CX2Unit::UC_ADD_ARC_TRACER;
+			}
+			if ( CX2Unit::UCT_SECOND_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_30385 );	/// Master Mind
+				eUnitClass = CX2Unit::UC_ADD_MASTERMIND;
+			}
+		} break;
+#endif
+
+#ifdef X2_ARA_3RD_PATH
+	case CX2Unit::UC_ARA_LITTLE_SPECTER:
+	case CX2Unit::UC_ARA_ASURA:
+		{
+			if ( CX2Unit::UCT_BASIC_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25052 );
+				eUnitClass = CX2Unit::UC_ARA_MARTIAL_ARTIST;
+			}
+			if ( CX2Unit::UCT_FIRST_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_31537 );	/// Little Specter
+				eUnitClass = CX2Unit::UC_ARA_LITTLE_SPECTER;
+			}
+			if ( CX2Unit::UCT_SECOND_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_31538 );	/// Asura
+				eUnitClass = CX2Unit::UC_ARA_ASURA;
+			}
+		} break;
+#endif
+
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+		{
+			if ( CX2Unit::UCT_BASIC_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25873 );
+				eUnitClass = CX2Unit::UC_ELESIS_KNIGHT;
+			}
+			if ( CX2Unit::UCT_FIRST_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_31846 );	/// Dark Knight
+				eUnitClass = CX2Unit::UC_ELESIS_DARK_KNIGHT;
+			}
+			if ( CX2Unit::UCT_SECOND_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_31847 );	/// Crimson Avenger
+				eUnitClass = CX2Unit::UC_ELESIS_CRIMSON_AVENGER;
+			}
+		} break;
+#endif
+
+#ifdef X2_ADD_3RD_PATH
+	case CX2Unit::UC_ADD_TIME_TRACER:
+	case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+		{
+			if ( CX2Unit::UCT_BASIC_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_29422 );
+				eUnitClass = CX2Unit::UC_ADD_NASOD_RULER;
+			}
+			if ( CX2Unit::UCT_FIRST_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_31954 );	/// Time Tracer
+				eUnitClass = CX2Unit::UC_ADD_TIME_TRACER;
+			}
+			if ( CX2Unit::UCT_SECOND_CLASS ==  UnitClassType )
+			{
+				pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_31955 );	/// Diabolic Esper
+				eUnitClass = CX2Unit::UC_ADD_DIABOLIC_ESPER;
+			}
+		} break;
+#endif
 
 		/// ���� Ȥ�� �ɸ��� �߰���, �ش� case�� �߰��ؾ� �մϴ�!
 		/// ���� :

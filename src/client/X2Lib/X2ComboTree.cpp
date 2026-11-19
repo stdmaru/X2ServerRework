@@ -54,6 +54,16 @@ int CX2ComboTree::GetComboIconLayer( COMBO_TREE_ICON eIcon )
 	case CTI_ICON_FIST_NA:
 	case CTI_ICON_KICK_NA:
 	case CTI_ICON_NA:
+#ifdef X2_ARA_3RD_PATH
+	case CTI_ICON_CLAW:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CTI_ICON_SAW:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CTI_Z_BLUE_TT:
+	case CTI_X_BLUE_TT:
+#endif
 		{
 			return 2;
 		} break;
@@ -138,6 +148,21 @@ void CX2ComboTree::ParseComboSet( KLuaManager &luaManager, std::vector<ComboIcon
 		case CTI_ICON_FIST_NA:
 		case CTI_ICON_KICK_NA:
 		case CTI_ICON_NA:
+#ifdef X2_ADD_2ND_PATH
+		case CTI_PUSH_DOWN_X:
+#endif
+#ifdef X2_ARA_3RD_PATH
+		case CTI_ICON_CLAW:
+		case CTI_Z_SPECTER_CLAW:
+		case CTI_X_SPECTER_CLAW:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+		case CTI_ICON_SAW:
+#endif
+#ifdef X2_ADD_3RD_PATH
+		case CTI_Z_BLUE_TT:
+		case CTI_X_BLUE_TT:
+#endif
 			{
 				iLayer = GetComboIconLayer( (COMBO_TREE_ICON) CTI_BACKGROUND );
 				vecComboSet.push_back( ComboIcon( fGridX, fGridY, CTI_BACKGROUND, iLayer ) );
@@ -248,6 +273,22 @@ bool CX2ComboTree::OpenScriptFile( const std::wstring& filename )
 	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ADD_PSYCHIC_TRACER,	"ADD_PSYCHIC_TRACER"	) );
 
 	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ADD_LUNATIC_PSYKER,	"ADD_LUNATIC_PSYKER"	) );
+#ifdef X2_ADD_2ND_PATH
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ADD_ARC_TRACER,		"ADD_ARC_TRACER"	) );
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ADD_MASTERMIND,		"ADD_MASTERMIND"	) );
+#endif
+#ifdef X2_ARA_3RD_PATH
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ARA_LITTLE_SPECTER,	"ARA_LITTLE_SPECTER"	) );
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ARA_ASURA,			"ARA_ASURA"	) );
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ELESIS_DARK_KNIGHT,	"ELESIS_DARK_KNIGHT"	) );
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ELESIS_CRIMSON_AVENGER,	"ELESIS_CRIMSON_AVENGER"	) );
+#endif
+#ifdef X2_ADD_3RD_PATH
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ADD_TIME_TRACER,		"ADD_TIME_TRACER"	) );
+	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ADD_DIABOLIC_ESPER,	"ADD_DIABOLIC_ESPER"	) );
+#endif
 
 	for( UnitClassName& unitClassName : vecUnitClassName )
 	{

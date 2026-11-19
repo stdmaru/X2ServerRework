@@ -154,7 +154,20 @@ bool CX2UIComboTree::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPa
 				break;
 			case 5:
 				wstrm << L"#CD4B5FF" << L"\n" << GET_STRING(STR_ID_29882) << L"#CX" << L"\n";
-				break;
+			break;
+#ifdef X2_ARA_3RD_PATH
+		case 6:
+			wstrm << L"#CFF4444" << L"\n" << GET_STRING(STR_ID_31608) << L"#CX" << L"\n";
+			break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+		case 7:
+			wstrm << L"#CD4B5FF" << L"\n" << GET_STRING(STR_ID_31952) << L"#CX" << L"\n";
+			break;
+		case 8:
+			wstrm << L"#CD4B5FF" << L"\n" << GET_STRING(STR_ID_31953) << L"#CX" << L"\n";
+			break;
+#endif
 			}
 
 			// 출력
@@ -546,6 +559,14 @@ D3DXVECTOR2 CX2UIComboTree::CalcPicturePosition( CX2ComboTree::COMBO_TREE_ICON e
 		case CX2ComboTree::CTI_RIGHT_X_PURPLE:
 		case CX2ComboTree::CTI_RIGHT_Z_PURPLE_CONTINUE:
 		case CX2ComboTree::CTI_RIGHT_X_PURPLE_CHARGE:
+#ifdef X2_ARA_3RD_PATH
+		case CX2ComboTree::CTI_Z_SPECTER_CLAW:
+		case CX2ComboTree::CTI_X_SPECTER_CLAW:
+#endif
+#ifdef X2_ADD_3RD_PATH
+		case CX2ComboTree::CTI_Z_BLUE_TT:
+		case CX2ComboTree::CTI_X_BLUE_TT:
+#endif
 		{
 			vReturnPosition += vOffsetOneKey;
 		} break;
@@ -583,6 +604,13 @@ D3DXVECTOR2 CX2UIComboTree::CalcPicturePosition( CX2ComboTree::COMBO_TREE_ICON e
 	case CX2ComboTree::CTI_DOWN_X_RED:
 	case CX2ComboTree::CTI_PUSH_Z:
 	case CX2ComboTree::CTI_PUSH_X:
+#ifdef X2_ADD_2ND_PATH
+	case CX2ComboTree::CTI_PUSH_DOWN_X:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2ComboTree::CTI_PUSH_X_RED:
+	case CX2ComboTree::CTI_PUSH_X_BLUE:
+#endif
 		{
 			vReturnPosition += vOffsetTwoKey;
 		} break;
@@ -670,6 +698,12 @@ D3DXVECTOR2 CX2UIComboTree::CalcPicturePosition( CX2ComboTree::COMBO_TREE_ICON e
 	case CX2ComboTree::CTI_ICON_FIST_NA:
 	case CX2ComboTree::CTI_ICON_KICK_NA:
 	case CX2ComboTree::CTI_ICON_NA:
+#ifdef X2_ARA_3RD_PATH
+	case CX2ComboTree::CTI_ICON_CLAW:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2ComboTree::CTI_ICON_SAW:
+#endif
 		{
 			vReturnPosition += vOffsetIcon;
 		} break;
@@ -805,6 +839,23 @@ bool CX2UIComboTree::GetComboIconTextureName( std::wstring& textureName, std::ws
 		case CX2ComboTree::CTI_RIGHT_Z_PURPLE_CONTINUE:	textureName = L"DLG_UI_Common_Texture80_NEW.tga";	pieceName = L"COMMAND_ICON_Z_Purple_CONTINUE";	break;
 		case CX2ComboTree::CTI_RIGHT_X_PURPLE_CHARGE:	textureName = L"DLG_UI_Common_Texture80_NEW.tga";	pieceName = L"COMMAND_ICON_X_Purple_CHARGE";	break;
 		case CX2ComboTree::CTI_ICON_NA:					textureName = L"DLG_UI_Common_Texture20.tga";		pieceName = L"ICON_NA";							break;
+#ifdef X2_ADD_2ND_PATH
+		case CX2ComboTree::CTI_PUSH_DOWN_X:				textureName = L"DLG_UI_Common_Texture43.tga";		pieceName = L"DOWN_X_PRESS";					break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+		case CX2ComboTree::CTI_ICON_CLAW:				textureName = L"DLG_UI_Common_Texture77_NEW.tga";	pieceName = L"Command_Icon_Claw";				break;
+		case CX2ComboTree::CTI_Z_SPECTER_CLAW:			textureName = L"DLG_UI_Common_Texture16_NEW.tga";	pieceName = L"Z_R";								break;
+		case CX2ComboTree::CTI_X_SPECTER_CLAW:			textureName = L"DLG_UI_Common_Texture16_NEW.tga";	pieceName = L"X_R";								break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+		case CX2ComboTree::CTI_ICON_SAW:				textureName = L"DLG_UI_Common_Texture85_NEW.tga";	pieceName = L"ICON_ELS_COMBO";					break;
+		case CX2ComboTree::CTI_PUSH_X_RED:				textureName = L"DLG_UI_Common_Texture85_NEW.tga";	pieceName = L"PUSH_X_RED";						break;
+		case CX2ComboTree::CTI_PUSH_X_BLUE:				textureName = L"DLG_UI_Common_Texture85_NEW.tga";	pieceName = L"PUSH_X_BLUE";						break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+		case CX2ComboTree::CTI_Z_BLUE_TT:				textureName = L"DLG_UI_Common_Texture16_NEW.tga";	pieceName = L"Z_B";								break;
+		case CX2ComboTree::CTI_X_BLUE_TT:				textureName = L"DLG_UI_Common_Texture16_NEW.tga";	pieceName = L"X_B";								break;
+#endif
 
 		// 띄우기 공격인지 다운공격인지 표시
 	case CX2ComboTree::CTI_UP_DECISION:
@@ -974,6 +1025,14 @@ void CX2UIComboTree::CreateMouseOverButton( const CX2ComboTree::ComboIcon& eIcon
 	case CX2ComboTree::CTI_RIGHT_Z_PURPLE_CONTINUE:
 	case CX2ComboTree::CTI_RIGHT_X_PURPLE_CHARGE:
 	case CX2ComboTree::CTI_ICON_NA:
+#ifdef X2_ARA_3RD_PATH
+	case CX2ComboTree::CTI_Z_SPECTER_CLAW:
+	case CX2ComboTree::CTI_X_SPECTER_CLAW:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CX2ComboTree::CTI_Z_BLUE_TT:
+	case CX2ComboTree::CTI_X_BLUE_TT:
+#endif
 		{
 			bCheck = true;
 		} break;
@@ -999,6 +1058,10 @@ void CX2UIComboTree::CreateMouseOverButton( const CX2ComboTree::ComboIcon& eIcon
 	case CX2ComboTree::CTI_DOWN_X_RED:
 	case CX2ComboTree::CTI_X_CONTINUE_OVERHEAT:
 	case CX2ComboTree::CTI_PUSH_Z_OVERHEAT:
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2ComboTree::CTI_PUSH_X_RED:
+	case CX2ComboTree::CTI_PUSH_X_BLUE:
+#endif
 		{
 			bCheck = true;
 			fAddSizeX = 22.f;
@@ -1065,6 +1128,30 @@ void CX2UIComboTree::CreateMouseOverButton( const CX2ComboTree::ComboIcon& eIcon
 			fAddSizeX = 20.f;
 			fAddSizeY = 20.f;
 		} break;
+#ifdef X2_ARA_3RD_PATH
+	case CX2ComboTree::CTI_ICON_CLAW:
+	case CX2ComboTree::CTI_Z_SPECTER_CLAW:
+	case CX2ComboTree::CTI_X_SPECTER_CLAW:
+		{
+			iDummyInt = 6;
+			fAddSizeX = 20.f;
+			fAddSizeY = 20.f;
+		} break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CX2ComboTree::CTI_Z_BLUE_TT:
+		{
+			iDummyInt = 7;
+			fAddSizeX = 20.f;
+			fAddSizeY = 20.f;
+		} break;
+	case CX2ComboTree::CTI_X_BLUE_TT:
+		{
+			iDummyInt = 8;
+			fAddSizeX = 20.f;
+			fAddSizeY = 20.f;
+		} break;
+#endif
 	default:
 		break;
 	}

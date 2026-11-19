@@ -62,6 +62,15 @@ static const CX2GUUser::SkillCutInSet s_SkillCutInSet[] =
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SBH.dds"),
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SBH.dds"),
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SBH.dds"),
+#ifdef X2_ELESIS_3RD_PATH
+		},
+
+#ifdef X2_ELESIS_3RD_PATH
+		{
+			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SCA.dds"),
+			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SCA.dds"),
+			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SCA.dds"),
+#endif
 		}
 };
 
@@ -84,6 +93,11 @@ CX2GUEL::CX2GUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int 
 , m_uiChivalryDefenceBuffFactorID ( 0 )
 , m_uiChivalryLevel( 0 )
 , m_bIsActiveEndurancePower( false )
+#ifdef X2_ELESIS_3RD_PATH
+, m_fDarkForceWoSPointMultiplier( 1.f )
+, m_fDarkForceHPIntakeRate( 0.f )
+, m_fDarkForceDamageRate( 1.f )
+#endif
 , m_fStigmaOfFireCoolTime( 0.f )
 , m_bIsStigmaOfFire( false )
 , m_uiSkillLevelStigmaOfFire( 0 )
@@ -125,6 +139,11 @@ CX2GUEL::CX2GUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int 
 , m_hSBHScaletRoseDamageEffect( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_bIsThereBlazingDanceTarget( false )
 , m_bIsBlazingDanceLastAttack( false )
+#ifdef X2_ELESIS_3RD_PATH
+, m_bBloodHitBoost( false ), m_fEJBusterChargeTime( 0.f ), m_fEJBusterChargeStageMark( 0.f )
+, m_wBBLoopCount( 0 ), m_wBPSpinCount( 0 ), m_wDWLoopCount( 0 ), m_hDWLoopES( INVALID_EFFECTSET_HANDLE )
+, m_fBloodRunawayProcTimer( 999.0f ), m_fBBLoopTime( 0.f ), m_fBPLoopTime( 0.f )
+#endif
 , m_bIsFrameSword( false )
 , m_uiSkillLevelFlameSword( 0 )
 
@@ -136,6 +155,14 @@ CX2GUEL::CX2GUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int 
 	m_fThrowStartTime = 0.66f;
 	m_vThrowStartPosOffset = D3DXVECTOR3(40.f, 130.f, 0.f);
 	m_vThrowStartVelocity = D3DXVECTOR3(2000.f, 100.f, 0.f);
+#ifdef X2_ELESIS_3RD_PATH
+
+
+	m_fBloodRunawayCoolTime[0] = 9999.0f;
+	m_fBloodRunawayCoolTime[1] = 9999.0f;
+	m_fBloodRunawayCoolTime[2] = 9999.0f;
+//}} 2026-09-03 //
+#endif
 
 	m_vecBlazingDanceTargetUid.clear();
 
@@ -208,6 +235,21 @@ CX2GUEL::~CX2GUEL(void)
 			{
 				tableName = "EL_BLAZING_HEART";
 			} break;
+#ifdef X2_ELESIS_3RD_PATH
+
+#ifdef X2_ELESIS_3RD_PATH
+		case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+			{
+				tableName = "EL_DARK_KNIGHT";
+			} break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+		case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+			{
+				tableName = "EL_CRIMSON_AVENGER";
+			} break;
+#endif
+#endif
 		default:
 			{
 				ASSERT( !"NO" );
@@ -236,6 +278,16 @@ CX2GUEL::~CX2GUEL(void)
 		{
 			m_iSkillCutInSetIndex = 2;
 		} break;
+#ifdef X2_ELESIS_3RD_PATH
+
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+		{
+			m_iSkillCutInSetIndex = 3;
+		} break;
+#endif
+//}} 2026-09-03 //
+#endif
 	default:
 	case CX2Unit::UC_NONE:
 		{
@@ -243,6 +295,16 @@ CX2GUEL::~CX2GUEL(void)
 			m_iSkillCutInSetIndex = 0;
 		} break;
 	}
+#ifdef X2_ELESIS_3RD_PATH
+
+
+	ClearShadowLinkEffects();
+	if( INVALID_EFFECTSET_HANDLE != m_hDWLoopES && NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+		g_pX2Game->GetEffectSet()->StopEffectSet( m_hDWLoopES );
+	m_hDWLoopES = INVALID_EFFECTSET_HANDLE;
+	m_wDWLoopCount = 0;
+//}} 2026-09-03 //
+#endif
 
 	InitStateID();
 	InitStateCommon();
@@ -340,6 +402,19 @@ CX2GUEL::~CX2GUEL(void)
 	// ����&������ ���� Ƚ��
 	m_uiDodgeAndSlashMaxReuseCount = 0;
 
+#ifdef X2_ELESIS_3RD_PATH
+
+	m_fDarkForceWoSPointMultiplier = 1.f;
+	m_fDarkForceHPIntakeRate = 0.f;
+	m_fDarkForceDamageRate = 1.f;
+//}} 2026-09-03 //
+
+
+	m_fSonicAssaultChargeTime = 0.f;
+	m_fSonicAssaultChargeRatio = 0.f;
+//}} 2026-09-03 //
+
+#endif
 	// �Ҳ��� ���� �ʱ�ȭ
 	m_fStigmaOfFireCoolTime = 0.f;
 	m_bIsStigmaOfFire = false;
@@ -375,6 +450,47 @@ CX2GUEL::~CX2GUEL(void)
 			}
 		}
 	}
+#ifdef X2_ELESIS_3RD_PATH
+
+
+	{
+		const CX2SkillTree::SKILL_ID eSkillID = CX2SkillTree::SI_P_SDK_DARK_FORCE;
+		const int iSkillLevel = userSkillTree.GetSkillLevel( eSkillID );
+		if ( 0 < iSkillLevel )
+		{
+			const CX2SkillTree::SkillTemplet* pSkillTemplet = pSkillTree->GetSkillTemplet( eSkillID );
+			if( NULL != pSkillTemplet )
+			{
+				m_fDarkForceWoSPointMultiplier = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_WAY_OF_SWORD_POINT_MULTIPLIER, iSkillLevel );
+				m_fDarkForceHPIntakeRate = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_HP_INTAKE_REL_DAMAGE, iSkillLevel );
+				m_fDarkForceDamageRate = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_REL, iSkillLevel );
+			}
+		}
+	}
+//}} 2026-09-03 //
+
+
+	{
+		m_fBloodRunawayCoolTime[0] = 9999.0f;	/// official slot_260 default-writes before the read (9999.0 = never, flt_32D3BD3C) //
+		m_fBloodRunawayCoolTime[1] = 9999.0f;
+		m_fBloodRunawayCoolTime[2] = 9999.0f;
+		const CX2SkillTree::SKILL_ID eSkillID = CX2SkillTree::SI_P_SDK_BLOOD_RUNAWAY;
+		const int iSkillLevel = userSkillTree.GetSkillLevel( eSkillID );
+		if ( 0 < iSkillLevel )
+		{
+			const CX2SkillTree::SkillTemplet* pSkillTemplet = pSkillTree->GetSkillTemplet( eSkillID );
+			if( NULL != pSkillTemplet )
+			{
+				m_fBloodRunawayCoolTime[0] = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_COOLTIME_1, iSkillLevel );
+				m_fBloodRunawayCoolTime[1] = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_COOLTIME_2, iSkillLevel );
+				m_fBloodRunawayCoolTime[2] = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_COOLTIME_3, iSkillLevel );
+			}
+		}
+	}
+	if( 0 < userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SCA_JUDGMENT ) || 0 < userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SDK_BLOOD_RUNAWAY ) )
+		InsertDelegateProcessToAttackResult( SET_DELEGATE_PROCESS_WITH_DAMAGE_DATA(CX2GUEL, OnCAAttackHitPassives ) );
+//}} 2026-09-03 //
+#endif
 
 	switch( GetUnitClass() )
 	{
@@ -1477,6 +1593,137 @@ CX2GUEL::~CX2GUEL(void)
 
 
 
+#ifdef X2_ELESIS_3RD_PATH
+
+
+#pragma region ELESIS_3RD_PATH_SKILLS
+	case CX2SkillTree::SI_SA_SDK_BRUTAL_CUTTER:
+	{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_SA_SDK_BRUTAL_CUTTER" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_SA_SDK_BRUTAL_CUTTER" );
+		normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRUTAL_CUTTER_BuffFrameMove ); hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRUTAL_CUTTER_BuffFrameMove );
+		normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRUTAL_CUTTER_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRUTAL_CUTTER_StateInit ); } break;
+	case CX2SkillTree::SI_SA_SDK_EJECTION_BUSTER:
+		{
+
+
+			ESI_ThirdPath_CreateChainedState( normalStateData, normalStateData.stateID, "SI_SA_SDK_EJECTION_BUSTER_CHARGE", ESI_SA_SDK_EJECTION_BUSTER_ATTACK );
+			ESI_ThirdPath_CreateChainedState( hyperStateData, hyperStateData.stateID, "SI_SA_SDK_EJECTION_BUSTER_CHARGE", ESI_SA_SDK_EJECTION_BUSTER_ATTACK );
+			normalStateData.StateStartFuture	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_CHARGE_StartFuture );
+			normalStateData.StateStart			= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_CHARGE_Start );
+			normalStateData.OnFrameMove			= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_FrameMove );
+			normalStateData.OnEventProcess		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_EventProcess );
+			hyperStateData.StateStartFuture		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_CHARGE_StartFuture );
+			hyperStateData.StateStart			= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_CHARGE_Start );
+			hyperStateData.OnFrameMove			= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_FrameMove );
+			hyperStateData.OnEventProcess		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_EventProcess );
+		normalStateData.StateInit			= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_StateInit );
+		hyperStateData.StateInit			= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_StateInit );
+		ESI_ThirdPath_CreateState( m_StateList[ESI_SA_SDK_EJECTION_BUSTER_ATTACK], ESI_SA_SDK_EJECTION_BUSTER_ATTACK, "SI_SA_SDK_EJECTION_BUSTER_ATTACK" );
+		m_StateList[ESI_SA_SDK_EJECTION_BUSTER_ATTACK].OnFrameMove	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_ATTACK_FrameMove );
+		m_StateList[ESI_SA_SDK_EJECTION_BUSTER_ATTACK].OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_EJECTION_BUSTER_ATTACK_EventProcess );
+		} break;
+	case CX2SkillTree::SI_SA_SDK_BRANDISH_BREAKER:
+		{
+
+			ESI_ThirdPath_CreateChainedState( normalStateData, normalStateData.stateID, "SI_SA_SDK_BRANDISH_BREAKER_START", ESI_SA_SDK_BRANDISH_BREAKER_LOOP );
+			ESI_ThirdPath_CreateChainedState( hyperStateData, hyperStateData.stateID, "SI_SA_SDK_BRANDISH_BREAKER_START", ESI_SA_SDK_BRANDISH_BREAKER_LOOP );
+			normalStateData.StateInit		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_StateInit );
+			hyperStateData.StateInit		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_StateInit );
+			normalStateData.StateStart		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_START_StateStart );
+			hyperStateData.StateStart		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_START_StateStart );
+			normalStateData.OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_START_EventProcess );
+			hyperStateData.OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_START_EventProcess );
+			ESI_ThirdPath_CreateChainedState( m_StateList[ESI_SA_SDK_BRANDISH_BREAKER_LOOP], ESI_SA_SDK_BRANDISH_BREAKER_LOOP, "SI_SA_SDK_BRANDISH_BREAKER_LOOP", ESI_SA_SDK_BRANDISH_BREAKER_FINISH );
+			m_StateList[ESI_SA_SDK_BRANDISH_BREAKER_LOOP].OnFrameMove		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_LOOP_FrameMove );
+			m_StateList[ESI_SA_SDK_BRANDISH_BREAKER_LOOP].OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRANDISH_BREAKER_LOOP_EventProcess );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_SA_SDK_BRANDISH_BREAKER_FINISH], ESI_SA_SDK_BRANDISH_BREAKER_FINISH, "SI_SA_SDK_BRANDISH_BREAKER_FINISH" );
+			//}} 2026-09-03 //
+		} break;
+	case CX2SkillTree::SI_SA_SDK_BURNING_PHANTOM:
+		{
+
+			ESI_ThirdPath_CreateChainedState( normalStateData, normalStateData.stateID, "SI_SA_SDK_BURNING_PHANTOM_READY", ESI_SA_SDK_BURNING_PHANTOM_START );
+			ESI_ThirdPath_CreateChainedState( hyperStateData, hyperStateData.stateID, "SI_SA_SDK_BURNING_PHANTOM_READY", ESI_SA_SDK_BURNING_PHANTOM_START );
+			normalStateData.StateInit		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BURNING_PHANTOM_StateInit );
+			hyperStateData.StateInit		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BURNING_PHANTOM_StateInit );
+			normalStateData.StateStart		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BURNING_PHANTOM_READY_StateStart );
+			hyperStateData.StateStart		= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BURNING_PHANTOM_READY_StateStart );
+			ESI_ThirdPath_CreateChainedState( m_StateList[ESI_SA_SDK_BURNING_PHANTOM_START], ESI_SA_SDK_BURNING_PHANTOM_START, "SI_SA_SDK_BURNING_PHANTOM_START", ESI_SA_SDK_BURNING_PHANTOM_LOOP );
+			ESI_ThirdPath_CreateChainedState( m_StateList[ESI_SA_SDK_BURNING_PHANTOM_LOOP], ESI_SA_SDK_BURNING_PHANTOM_LOOP, "SI_SA_SDK_BURNING_PHANTOM_LOOP", ESI_SA_SDK_BURNING_PHANTOM_END );
+			m_StateList[ESI_SA_SDK_BURNING_PHANTOM_LOOP].OnFrameMove	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BURNING_PHANTOM_LOOP_FrameMove );
+			m_StateList[ESI_SA_SDK_BURNING_PHANTOM_LOOP].OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BURNING_PHANTOM_LOOP_EventProcess );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_SA_SDK_BURNING_PHANTOM_END], ESI_SA_SDK_BURNING_PHANTOM_END, "SI_SA_SDK_BURNING_PHANTOM_END" );
+			//}} 2026-09-03 //
+		} break;
+	case CX2SkillTree::SI_SA_SCA_CRIMSON_BREAK:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_SA_SCA_CRIMSON_BREAK" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_SA_SCA_CRIMSON_BREAK" );
+			normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_CRIMSON_BREAK_DamageFrameMove ); hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_CRIMSON_BREAK_DamageFrameMove );
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_CRIMSON_BREAK_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_CRIMSON_BREAK_StateInit ); } break;
+	case CX2SkillTree::SI_SA_SCA_DREAD_WEAPON:
+		{
+
+			ESI_ThirdPath_CreateChainedState( normalStateData, normalStateData.stateID, "SI_SA_SCA_DREAD_WEAPON_START", ESI_SA_SCA_DREAD_WEAPON_LOOP );
+			ESI_ThirdPath_CreateChainedState( hyperStateData, hyperStateData.stateID, "SI_SA_SCA_DREAD_WEAPON_START", ESI_SA_SCA_DREAD_WEAPON_LOOP );
+			normalStateData.StateInit			= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_StateInit );
+			hyperStateData.StateInit			= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_StateInit );
+			normalStateData.StateStartFuture	= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_START_StateStartFuture );
+			hyperStateData.StateStartFuture		= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_START_StateStartFuture );
+			normalStateData.OnFrameMove			= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_START_FrameMove );
+			hyperStateData.OnFrameMove			= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_START_FrameMove );
+			ESI_ThirdPath_CreateChainedState( m_StateList[ESI_SA_SCA_DREAD_WEAPON_LOOP], ESI_SA_SCA_DREAD_WEAPON_LOOP, "SI_SA_SCA_DREAD_WEAPON_LOOP", ESI_SA_SCA_DREAD_WEAPON_END );
+			m_StateList[ESI_SA_SCA_DREAD_WEAPON_LOOP].StateStartFuture	= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_LOOP_StateStartFuture );
+			m_StateList[ESI_SA_SCA_DREAD_WEAPON_LOOP].OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_LOOP_EventProcess );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_SA_SCA_DREAD_WEAPON_END], ESI_SA_SCA_DREAD_WEAPON_END, "SI_SA_SCA_DREAD_WEAPON_END" );
+			m_StateList[ESI_SA_SCA_DREAD_WEAPON_END].StateStart	= SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_DREAD_WEAPON_END_StateStart );
+			//}} 2026-09-03 //
+		} break;
+	case CX2SkillTree::SI_SA_SCA_SHADE_THE_ILLUSION:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_SA_SCA_SHADE_THE_ILLUSION" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_SA_SCA_SHADE_THE_ILLUSION" );
+			normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_SHADE_THE_ILLUSION_DamageFrameMove ); hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_SHADE_THE_ILLUSION_DamageFrameMove );
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_SHADE_THE_ILLUSION_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_SHADE_THE_ILLUSION_StateInit ); } break;
+	case CX2SkillTree::SI_SA_SCA_BLOOD_CUTTER:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_SA_SCA_BLOOD_CUTTER" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_SA_SCA_BLOOD_CUTTER" );
+
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_BLOOD_CUTTER_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_BLOOD_CUTTER_StateInit );
+			normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_BLOOD_CUTTER_DamageFrameMove ); hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SCA_BLOOD_CUTTER_DamageFrameMove ); } break;	//}} 2026-09-03 //
+	case CX2SkillTree::SI_HA_SCA_FATE_SMASHER:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_HA_SCA_FATE_SMASHER" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_HA_SCA_FATE_SMASHER" );
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_HA_SCA_FATE_SMASHER_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_HA_SCA_FATE_SMASHER_StateInit ); } break;
+	case CX2SkillTree::SI_A_SDK_INJECTION_STIGMA:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_A_SDK_INJECTION_STIGMA" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_A_SDK_INJECTION_STIGMA" );
+			normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_A_SDK_INJECTION_STIGMA_DamageFrameMove ); hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_A_SDK_INJECTION_STIGMA_DamageFrameMove );
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SDK_INJECTION_STIGMA_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SDK_INJECTION_STIGMA_StateInit ); } break;
+	case CX2SkillTree::SI_A_SDK_DARK_WAVE:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_A_SDK_DARK_WAVE" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_A_SDK_DARK_WAVE" );
+			normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SI_A_SDK_DARK_WAVE_FrameMove );
+			hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SI_A_SDK_DARK_WAVE_FrameMove );
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SDK_DARK_WAVE_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SDK_DARK_WAVE_StateInit );
+		} break;
+	case CX2SkillTree::SI_A_SCA_SHADE_SCRATCH:
+		{
+
+			ESI_ThirdPath_CreateChainedState( normalStateData, normalStateData.stateID, "SI_A_SCA_SHADE_SCRATCH", ESI_A_SCA_SHADE_SCRATCH_ATTACK );
+			ESI_ThirdPath_CreateChainedState( hyperStateData, hyperStateData.stateID, "SI_A_SCA_SHADE_SCRATCH", ESI_A_SCA_SHADE_SCRATCH_ATTACK );
+			normalStateData.StateInit		= SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADE_SCRATCH_StateInit );
+			hyperStateData.StateInit		= SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADE_SCRATCH_StateInit );
+			normalStateData.OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADE_SCRATCH_EventProcess );
+			hyperStateData.OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADE_SCRATCH_EventProcess );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_A_SCA_SHADE_SCRATCH_ATTACK], ESI_A_SCA_SHADE_SCRATCH_ATTACK, "SI_A_SCA_SHADE_SCRATCH_ATTACK" );
+			//}} 2026-09-03 //
+		} break;
+	case CX2SkillTree::SI_A_SCA_SHADOW_EDGE:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_A_SCA_SHADOW_EDGE" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_A_SCA_SHADOW_EDGE" );
+			normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADOW_EDGE_DamageFrameMove ); hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADOW_EDGE_DamageFrameMove );
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADOW_EDGE_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_SHADOW_EDGE_StateInit ); } break;
+	case CX2SkillTree::SI_A_SCA_ASSAULT_STRIKE:
+		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_A_SCA_ASSAULT_STRIKE" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_A_SCA_ASSAULT_STRIKE" );
+			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_ASSAULT_STRIKE_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_ASSAULT_STRIKE_StateInit ); } break;
+#pragma endregion ELESIS_3RD_PATH_SKILLS
+
+#pragma region ELESIS_3RD_PATH_COMBOS
+
+#pragma endregion ELESIS_3RD_PATH_COMBOS
+//}} 2026-08-19 MARCH2015 GU parity //
+#endif
 	default:
 		break;
 	}
@@ -1613,6 +1860,50 @@ CX2GUEL::~CX2GUEL(void)
 			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SI_A_SBH_FLAME_SWORD_FINISH );
 		}
 	}
+#ifdef X2_ELESIS_3RD_PATH
+
+	if ( true == bChangeAll_ || CX2SkillTree::SI_SA_SDK_EJECTION_BUSTER == eSkillID_ )
+	{
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_SDK_EJECTION_BUSTER );
+		if( NULL != pSkillTemplet )
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SDK_EJECTION_BUSTER_ATTACK );
+	}
+	if ( true == bChangeAll_ || CX2SkillTree::SI_SA_SDK_BRANDISH_BREAKER == eSkillID_ )
+	{
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_SDK_BRANDISH_BREAKER );
+		if( NULL != pSkillTemplet )
+		{
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SDK_BRANDISH_BREAKER_LOOP );
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SDK_BRANDISH_BREAKER_FINISH );
+		}
+	}
+	if ( true == bChangeAll_ || CX2SkillTree::SI_SA_SDK_BURNING_PHANTOM == eSkillID_ )
+	{
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_SDK_BURNING_PHANTOM );
+		if( NULL != pSkillTemplet )
+		{
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SDK_BURNING_PHANTOM_START );
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SDK_BURNING_PHANTOM_LOOP );
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SDK_BURNING_PHANTOM_END );
+		}
+	}
+	if ( true == bChangeAll_ || CX2SkillTree::SI_SA_SCA_DREAD_WEAPON == eSkillID_ )
+	{
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_SCA_DREAD_WEAPON );
+		if( NULL != pSkillTemplet )
+		{
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SCA_DREAD_WEAPON_LOOP );
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_SA_SCA_DREAD_WEAPON_END );
+		}
+	}
+	if ( true == bChangeAll_ || CX2SkillTree::SI_A_SCA_SHADE_SCRATCH == eSkillID_ )
+	{
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_A_SCA_SHADE_SCRATCH );
+		if( NULL != pSkillTemplet )
+			SetEquippedSkillLevelStateData( pSkillTemplet, ESI_A_SCA_SHADE_SCRATCH_ATTACK );
+	}
+	//}} 2026-09-03 //
+#endif
 }
 
 /*virtual*/ void CX2GUEL::CommonStateStartFuture()
@@ -1622,9 +1913,152 @@ CX2GUEL::~CX2GUEL(void)
 }
 /*virtual*/ void CX2GUEL::CommonStateStart()
 {
+#ifdef X2_ELESIS_3RD_PATH
+
+	const CX2SkillTree::SKILL_ID eBloodSkillID = m_NowStateData.m_eSkillID;
+	bool bBloodHitSkill = false;
+	switch( eBloodSkillID )
+	{
+	case CX2SkillTree::SI_SA_SDK_BRUTAL_CUTTER:
+	case CX2SkillTree::SI_SA_SCA_CRIMSON_BREAK:
+	case CX2SkillTree::SI_SA_SCA_DREAD_WEAPON:
+	case CX2SkillTree::SI_SA_SCA_SHADE_THE_ILLUSION:
+	case CX2SkillTree::SI_SA_SCA_BLOOD_CUTTER:
+	case CX2SkillTree::SI_A_SDK_INJECTION_STIGMA:
+	case CX2SkillTree::SI_A_SDK_DARK_WAVE:
+		bBloodHitSkill = true;
+		break;
+	default: break;
+	}
+
+
+	if( true == bBloodHitSkill && false == m_bBloodHitBoost )
+	{
+		m_bBloodHitBoost = true;
+		const float fMaxHP = GetMaxHp();
+		const float fCurHP = GetNowHp();
+		if( fCurHP > fMaxHP * 0.2f )
+		{
+			float fDrain = fMaxHP * 0.2f;
+
+			if( fCurHP - fDrain < fMaxHP * 0.1f )
+				fDrain = fCurHP - fMaxHP * 0.1f;
+			//}} 2026-09-03 //
+			if( fDrain > 0.f )
+			{
+				UpNowHp( -fDrain );
+
+				ProcShadowLinkEffects( fDrain );
+				//}} 2026-09-03 //
+			}
+		}
+	}
+	else if( CX2SkillTree::SI_NONE == eBloodSkillID && NULL == m_NowStateData.m_ptrComboAndSkillChainInfo )
+		m_bBloodHitBoost = false;
+//}} 2026-08-20 MARCH2015 3rd-path //
+
+#endif
 	CX2GUUser::CommonStateStart();
 }
 
+#ifdef X2_ELESIS_3RD_PATH
+/*virtual*/ float CX2GUEL::GetPowerRate()
+{
+	float fPowerRate = CX2GUUser::GetPowerRate();
+	if( true == m_bBloodHitBoost )
+		fPowerRate *= 1.4f;
+	return fPowerRate;
+}
+
+
+void CX2GUEL::OnCAAttackHitPassives( const CX2DamageManager::DamageData& damageData_ )
+{
+	if( CX2DamageManager::AT_NORMAL != damageData_.attackType )
+		return;
+
+	CX2GameUnit* pTargetUnit = NULL;
+	if( null != damageData_.optrDefenderGameUnit )
+		pTargetUnit = damageData_.optrDefenderGameUnit.GetObservable();
+	if( NULL == pTargetUnit )
+		return;
+
+	const float fDamage = damageData_.damage.fPhysic + damageData_.damage.fMagic;	/// == damage.GetAllDamage() (const-safe field read on the const ref) //
+
+	// 8414 Judgment (SI_P_SCA_JUDGMENT): bleed apply (BFI 465 - the RATE 3.5->18% rolls engine-side at apply) + vs-bleeding drain transfer: the VICTIM loses dmg x 0.2 AND self heals dmg x 0.2 (official: two vtable+200 HP writes, target then self; dbl_32D28198=0.2); the heal chance = templet SA_EFFECTIVE_RATE (12.5->85%, +2.5%/lv) rolled only when the target is bleeding (BTI 99 - covers a bleed applied by this same hit) //
+	const int iJudgmentLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SCA_JUDGMENT );
+	if( iJudgmentLevel > 0 )
+	{
+		pTargetUnit->SetBuffFactorToGameUnitByBuffFactorID( BFI_DEBUFF_JUDGEMENT_BLEEDING, (UINT)iJudgmentLevel );
+
+		bool bTargetBleeding = false;
+		const std::vector<CX2BuffFactorPtr>& vecBuff = pTargetUnit->GetBuffFactorList();
+		for( size_t i = 0; i < vecBuff.size(); ++i )
+		{
+			if( vecBuff[i] && vecBuff[i]->GetBuffTempletID() == BTI_DEBUFF_BLEEDING )
+			{ bTargetBleeding = true; break; }
+		}
+		if( bTargetBleeding )
+		{
+			const CX2SkillTree::SkillTemplet* pJudgmentTemplet = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_P_SCA_JUDGMENT );
+			const float fHealChance = ( NULL != pJudgmentTemplet ) ? pJudgmentTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_RATE, iJudgmentLevel ) : 0.f;
+			if( GetRandomFloat() < fHealChance )
+			{
+				const float fTransfer = fDamage * 0.2f;
+				if( fTransfer > 0.f )
+				{
+					pTargetUnit->UpNowHp( -fTransfer );
+					UpNowHp( fTransfer );
+					if( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+					{
+						g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_B_EL_SDC_Bleeding", pTargetUnit, NULL, false, 1.f );
+						g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_B_EL_Blood_Sucking", this, NULL, false, 1.f );
+					}
+				}
+			}
+		}
+	}
+
+	// 8411 Overflowing Blood (SI_P_SDK_BLOOD_RUNAWAY) mechanic A - the VISIBLE stacking injector (official f_3254EAB0): apply BFI 462 -> BTI 426 on self per qualifying hit (the injection chance 12->70% = the factor RATE, rolled engine-side at apply; per-stack 8->23s expiry handled by the buff system FINALIZER); when the self stack count passes 4 -> erase ALL stacks + heal 3% maxHP FLAT (dbl_32D2FDE8=0.03) + Blood_Sucking effect. NO debuff removal here (that lives in the timed banded proc = mechanic B in CommonFrameMove) //
+	const int iBloodRunawayLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SDK_BLOOD_RUNAWAY );
+	if( iBloodRunawayLevel > 0 )
+	{
+		SetBuffFactorToGameUnitByBuffFactorID( BFI_BUFF_BLOOD_RUNAWAY, (UINT)iBloodRunawayLevel );
+
+		std::vector<KBuffFactor> vecMyBuff;
+		GetBuffFactor( vecMyBuff );
+		for( size_t i = 0; i < vecMyBuff.size(); ++i )
+		{
+			if( vecMyBuff[i].m_BuffIdentity.m_eBuffTempletID == BTI_BUFF_BLOOD_RUNAWAY && vecMyBuff[i].m_ucAccumulationCountNow > 4 )
+			{
+				EraseBuffTempletFromGameUnit( BTI_BUFF_BLOOD_RUNAWAY );
+				UpNowHp( GetMaxHp() * 0.03f );
+				if( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+					g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_B_EL_Blood_Sucking", this, NULL, false, 1.f );
+				break;
+			}
+		}
+	}
+}
+
+
+/*virtual*/ void CX2GUEL::SetMPChangeRateValue( float fElapsedTime )
+{
+	CX2GUUser::SetMPChangeRateValue( fElapsedTime );
+
+	const int iMadnessLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SDK_MADNESS_RUNAWAY );
+	if( iMadnessLevel > 0 )
+	{
+		const float fHPRatio = GetNowHp() / GetMaxHp();
+		float fStageBase;
+		if( fHPRatio > 0.50f )      fStageBase = 0.10f;
+		else if( fHPRatio > 0.30f ) fStageBase = 0.25f;
+		else                        fStageBase = 0.40f;
+		const float fBonusMP = (float)GetSocketData().m_iMPChangeValue * fElapsedTime * ( fStageBase + 0.01f * (float)( iMadnessLevel - 1 ) );
+		if( fBonusMP > 0.f )
+			UpNowMp( fBonusMP );
+	}
+}
+#endif
 /*virtual*/ void CX2GUEL::CommonFrameMoveFuture()
 {
 	KTDXPROFILE();
@@ -1642,6 +2076,48 @@ CX2GUEL::~CX2GUEL(void)
 
 	// ����� ���� �нú� ó��
 	ChivalryProc_FrameMove();
+#ifdef X2_ELESIS_3RD_PATH
+
+
+	if( 0 < GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SDK_BLOOD_RUNAWAY ) )
+	{
+		m_fBloodRunawayProcTimer += m_fElapsedTime;
+		const float fHPRatio = GetNowHp() / GetMaxHp();
+		float fCoolTime; float fHealPct;
+		if( fHPRatio >= 0.7f )		{ fCoolTime = 9999.0f;						fHealPct = 0.05f; }
+		else if( fHPRatio >= 0.5f )	{ fCoolTime = m_fBloodRunawayCoolTime[0];	fHealPct = 0.05f; }
+		else if( fHPRatio >= 0.3f )	{ fCoolTime = m_fBloodRunawayCoolTime[1];	fHealPct = 0.10f; }
+		else						{ fCoolTime = m_fBloodRunawayCoolTime[2];	fHealPct = 0.15f; }
+
+		if( m_fBloodRunawayProcTimer >= fCoolTime )
+		{
+			bool bRemovedDebuff = false;
+			if( NULL != g_pX2Game )
+			{
+				BOOST_FOREACH( BUFF_TEMPLET_ID eDebuffID, g_pX2Game->GetOfficiallyDebuffList() )
+				{
+					auto FindDebuff = [eDebuffID]( CX2BuffTempletPtr ptrBuffTemplet_ ) { return eDebuffID == ptrBuffTemplet_->GetBuffTempletID(); };
+					if( m_vecBuffTempletPtr.end() != std::find_if( m_vecBuffTempletPtr.begin(), m_vecBuffTempletPtr.end(), FindDebuff ) )
+					{
+						EraseBuffTempletFromGameUnit( eDebuffID );
+						bRemovedDebuff = true;
+						break;
+					}
+				}
+			}
+			if( bRemovedDebuff )
+			{
+				m_fBloodRunawayProcTimer = 0.f;
+				UpNowHp( GetMaxHp() * fHealPct );
+				if( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+					g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_B_EL_Blood_Sucking", this, NULL, false, 1.f );
+			}
+		}
+	}
+//}} 2026-09-03 //
+
+	TickShadowLinkEffects();
+#endif
 
 	DrasticChargeProc_FrameMove ();			// �巡��ƽ ���� ����Ʈ
 	XX_DOWN_XProc_FrameMove ();				// XX �� X ����Ʈ
@@ -2850,6 +3326,103 @@ void CX2GUEL::InitStateByUnitClass()
 			stateData.OnFrameMove		= SET_CB_FUNC( CX2GUEL, ESI_DASH_JUMP_COMBO_SPK_XZ_FrameMove );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+#ifdef X2_ELESIS_3RD_PATH
+
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+		{
+			// Dark Knight SDK ground X chain (XX->XXX->XXXX->XXXXX->XXXXXX->XXXXXXX, input-driven) //
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XX], ESI_COMBO_SDK_XX, "ESI_COMBO_SDK_XX" );
+			m_StateList[ESI_COMBO_SDK_XX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XX] = ESI_COMBO_SDK_XXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXX], ESI_COMBO_SDK_XXX, "ESI_COMBO_SDK_XXX" );
+			m_StateList[ESI_COMBO_SDK_XXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXX] = ESI_COMBO_SDK_XXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXX], ESI_COMBO_SDK_XXXX, "ESI_COMBO_SDK_XXXX" );
+			m_StateList[ESI_COMBO_SDK_XXXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXXX] = ESI_COMBO_SDK_XXXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXXX], ESI_COMBO_SDK_XXXXX, "ESI_COMBO_SDK_XXXXX" );
+			m_StateList[ESI_COMBO_SDK_XXXXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXXXX] = ESI_COMBO_SDK_XXXXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXXXX], ESI_COMBO_SDK_XXXXXX, "ESI_COMBO_SDK_XXXXXX" );
+			m_StateList[ESI_COMBO_SDK_XXXXXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXXXXX] = ESI_COMBO_SDK_XXXXXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXXXXX], ESI_COMBO_SDK_XXXXXXX, "ESI_COMBO_SDK_XXXXXXX" );
+
+			// Dark Knight SDK Z chain (ZZZX->ZZZXX, continuation key = Z per lua COMBO_GUIDE) //
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_ZZZX], ESI_COMBO_SDK_ZZZX, "ESI_COMBO_SDK_ZZZX" );
+			m_StateList[ESI_COMBO_SDK_ZZZX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_Z_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_ZZZX] = ESI_COMBO_SDK_ZZZXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_ZZZXX], ESI_COMBO_SDK_ZZZXX, "ESI_COMBO_SDK_ZZZXX" );
+
+			// Dark Knight SDK dash-jump X chain (SDK_XX->SDK_XXX) //
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_JUMP_COMBO_SDK_XX], ESI_DASH_JUMP_COMBO_SDK_XX, "ESI_DASH_JUMP_COMBO_SDK_XX" );
+			m_StateList[ESI_DASH_JUMP_COMBO_SDK_XX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_DASH_JUMP_COMBO_SDK_XX] = ESI_DASH_JUMP_COMBO_SDK_XXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_JUMP_COMBO_SDK_XXX], ESI_DASH_JUMP_COMBO_SDK_XXX, "ESI_DASH_JUMP_COMBO_SDK_XXX" );
+		} break;
+#endif
+
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+		{
+			// Crimson Avenger SCA dash combos: SCA_ZZ branch -> (oneX) ZX chain / (oneZ) ZZZ chain //
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZX_ATTACK], ESI_DASH_COMBO_SCA_ZX_ATTACK, "ESI_DASH_COMBO_SCA_ZX_ATTACK" );
+			m_StateList[ESI_DASH_COMBO_SCA_ZX_ATTACK].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_ThirdPath_Chain_EventProcess );
+			m_mapThirdPathChain[ESI_DASH_COMBO_SCA_ZX_ATTACK] = ESI_DASH_COMBO_SCA_ZX_END;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZX_END], ESI_DASH_COMBO_SCA_ZX_END, "ESI_DASH_COMBO_SCA_ZX_END" );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZX_LOOP], ESI_DASH_COMBO_SCA_ZX_LOOP, "ESI_DASH_COMBO_SCA_ZX_LOOP" );
+			m_StateList[ESI_DASH_COMBO_SCA_ZX_LOOP].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SCA_ZX_LOOP_EventProcess );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZX_START], ESI_DASH_COMBO_SCA_ZX_START, "ESI_DASH_COMBO_SCA_ZX_START" );
+			m_StateList[ESI_DASH_COMBO_SCA_ZX_START].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SCA_ZX_START_EventProcess );
+			m_mapThirdPathChain[ESI_DASH_COMBO_SCA_ZX_START] = ESI_DASH_COMBO_SCA_ZX_LOOP;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZZ], ESI_DASH_COMBO_SCA_ZZ, "ESI_DASH_COMBO_SCA_ZZ" );
+			m_StateList[ESI_DASH_COMBO_SCA_ZZ].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SCA_ZZ_EventProcess );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZZZ_END], ESI_DASH_COMBO_SCA_ZZZ_END, "ESI_DASH_COMBO_SCA_ZZZ_END" );
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZZZ_LOOP_1], ESI_DASH_COMBO_SCA_ZZZ_LOOP_1, "ESI_DASH_COMBO_SCA_ZZZ_LOOP_1" );
+			m_StateList[ESI_DASH_COMBO_SCA_ZZZ_LOOP_1].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SCA_ZZZ_Chain_EventProcess );
+			m_mapThirdPathChain[ESI_DASH_COMBO_SCA_ZZZ_LOOP_1] = ESI_DASH_COMBO_SCA_ZZZ_LOOP_2;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZZZ_LOOP_2], ESI_DASH_COMBO_SCA_ZZZ_LOOP_2, "ESI_DASH_COMBO_SCA_ZZZ_LOOP_2" );
+			m_StateList[ESI_DASH_COMBO_SCA_ZZZ_LOOP_2].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SCA_ZZZ_Chain_EventProcess );
+			m_mapThirdPathChain[ESI_DASH_COMBO_SCA_ZZZ_LOOP_2] = ESI_DASH_COMBO_SCA_ZZZ_END;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_COMBO_SCA_ZZZ_START], ESI_DASH_COMBO_SCA_ZZZ_START, "ESI_DASH_COMBO_SCA_ZZZ_START" );
+			m_StateList[ESI_DASH_COMBO_SCA_ZZZ_START].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SCA_ZZZ_Chain_EventProcess );
+			m_mapThirdPathChain[ESI_DASH_COMBO_SCA_ZZZ_START] = ESI_DASH_COMBO_SCA_ZZZ_LOOP_1;
+
+
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XX], ESI_COMBO_SDK_XX, "ESI_COMBO_SDK_XX" );
+			m_StateList[ESI_COMBO_SDK_XX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XX] = ESI_COMBO_SDK_XXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXX], ESI_COMBO_SDK_XXX, "ESI_COMBO_SDK_XXX" );
+			m_StateList[ESI_COMBO_SDK_XXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXX] = ESI_COMBO_SDK_XXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXX], ESI_COMBO_SDK_XXXX, "ESI_COMBO_SDK_XXXX" );
+			m_StateList[ESI_COMBO_SDK_XXXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXXX] = ESI_COMBO_SDK_XXXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXXX], ESI_COMBO_SDK_XXXXX, "ESI_COMBO_SDK_XXXXX" );
+			m_StateList[ESI_COMBO_SDK_XXXXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXXXX] = ESI_COMBO_SDK_XXXXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXXXX], ESI_COMBO_SDK_XXXXXX, "ESI_COMBO_SDK_XXXXXX" );
+			m_StateList[ESI_COMBO_SDK_XXXXXX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_XXXXXX] = ESI_COMBO_SDK_XXXXXXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_XXXXXXX], ESI_COMBO_SDK_XXXXXXX, "ESI_COMBO_SDK_XXXXXXX" );
+
+			// SDK Z chain (ZZZX->ZZZXX, continuation key = Z per lua COMBO_GUIDE) //
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_ZZZX], ESI_COMBO_SDK_ZZZX, "ESI_COMBO_SDK_ZZZX" );
+			m_StateList[ESI_COMBO_SDK_ZZZX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_Z_EventProcess );
+			m_mapThirdPathChain[ESI_COMBO_SDK_ZZZX] = ESI_COMBO_SDK_ZZZXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_COMBO_SDK_ZZZXX], ESI_COMBO_SDK_ZZZXX, "ESI_COMBO_SDK_ZZZXX" );
+
+			// SDK dash-jump X chain (SDK_XX->SDK_XXX) //
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_JUMP_COMBO_SDK_XX], ESI_DASH_JUMP_COMBO_SDK_XX, "ESI_DASH_JUMP_COMBO_SDK_XX" );
+			m_StateList[ESI_DASH_JUMP_COMBO_SDK_XX].OnEventProcess = SET_CB_FUNC( CX2GUEL, ESI_SDKComboChain_EventProcess );
+			m_mapThirdPathChain[ESI_DASH_JUMP_COMBO_SDK_XX] = ESI_DASH_JUMP_COMBO_SDK_XXX;
+			ESI_ThirdPath_CreateState( m_StateList[ESI_DASH_JUMP_COMBO_SDK_XXX], ESI_DASH_JUMP_COMBO_SDK_XXX, "ESI_DASH_JUMP_COMBO_SDK_XXX" );
+			//}} 2026-09-04 //
+		} break;
+#endif
+//}} 2026-08-28 //
+#endif
 	default:
 		ASSERT(!"GetUnitClass Error");
 		break;
@@ -2998,6 +3571,10 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 
 		CountUsedSkill( m_iPressedSkillSlotIndex );
 		UpNowMp( -m_fMPConsume );
+#ifdef X2_ELESIS_3RD_PATH
+		m_eSpecialAttackKeyPressed = (SPECIAL_ATTACK_KEY_PRESSED) (m_iPressedSkillSlotIndex + 1);
+		m_bBloodHitBoost = false;
+#endif
 
 		if ( pSkillTemplet_->m_eType == CX2SkillTree::ST_HYPER_ACTIVE_SKILL && g_pMain->GetNowStateID() != CX2Main::XS_TRAINING_GAME )
 		{
@@ -3132,6 +3709,45 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 {
 	KTDXPROFILE();
 
+#ifdef X2_ELESIS_3RD_PATH
+
+	const int iBloodRevengeLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SCA_BLOOD_REVENGE );
+	if( iBloodRevengeLevel > 0 && pDamageData_->damage.GetAllDamage() > 0.f )
+	{
+		SetBuffFactorToGameUnitByBuffFactorID( BFI_BUFF_BLOOD_REVENGE, (UINT)iBloodRevengeLevel );
+
+		const CX2SkillTree::SkillTemplet* pRevengeTemplet = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_P_SCA_BLOOD_REVENGE );
+		if( NULL != pRevengeTemplet )
+		{
+			const float fProcChance = pRevengeTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_RATE, iBloodRevengeLevel );
+			if( GetRandomFloat() < fProcChance )
+			{
+				const float fAbsorbRate = pRevengeTemplet->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_ABSORB_REL_MAX_HP, iBloodRevengeLevel );
+				const float fAbsorb = fAbsorbRate * min( GetNowHp(), pDamageData_->damage.GetAllDamage() );
+				if( fAbsorb > 0.f )
+				{
+					CX2GameUnit* pAttackerUnit = NULL;
+					if( null != pDamageData_->optrAttackerGameUnit )
+						pAttackerUnit = pDamageData_->optrAttackerGameUnit.GetObservable();
+					if( NULL != pAttackerUnit )
+					{
+						pAttackerUnit->UpNowHp( -fAbsorb );
+						if( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+							g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_B_EL_SDC_Bleeding", pAttackerUnit, NULL, false, 1.f );
+					}
+					UpNowHp( fAbsorb );
+					if( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+						g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_B_EL_Blood_Sucking", this, NULL, false, 1.f );
+				}
+			}
+		}
+	}
+//}} 2026-09-03 //
+
+	ProcShadowLinkEffects( pDamageData_->damage.GetAllDamage() );
+//}} 2026-09-03 //
+
+#endif
 	if( WSS_DESTRUCTION == GetWayOfSwordState() && // ���� ���� �� �� ���� ����ó��
 		true == IsDamagedReaction( pDamageData_ ) &&
 		true == DamageFlushMp() )
@@ -3162,7 +3778,11 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 		if( WSS_VIGOR != iWayOfSwordState )
 		{ // ���� ���Ǳ��� ��ǳ ���¿��� �Ҹ��Ű�� ����.
 			const float fWSPGain =
-				g_pData->GetDamageManager()->CalcWayOfSwordPointOnDamageReact( pDamageData_->damage.GetAllDamage(), iWayOfSwordState );
+				g_pData->GetDamageManager()->CalcWayOfSwordPointOnDamageReact( pDamageData_->damage.GetAllDamage(), iWayOfSwordState )
+#ifdef X2_ELESIS_3RD_PATH
+				* GetDarkForceWoSPointMultiplier()
+#endif
+				;
 
 			SetWayOfSwordPoint( GetWayOfSwordPoint() + fWSPGain );
 		}
@@ -3395,6 +4015,27 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 		}
 	}
 }
+#ifdef X2_ADD_3RD_PATH
+
+
+/*virtual*/ void CX2GUEL::RecordCrestSnapshot()
+{
+	CX2GUUser::RecordCrestSnapshot();	/// shared HP/MP
+	if ( false == IsMyUnit() )
+		return;
+
+	m_fCrestRecordWoS = GetWayOfSwordPoint();	/// official: vtable+1020 gauge getter
+}
+
+/*virtual*/ void CX2GUEL::RestoreCrestSnapshot()
+{
+	if ( true == IsMyUnit() )
+		SetWayOfSwordPoint( m_fCrestRecordWoS );	/// official: vtable+1024 (slot 256 setter)
+	CX2GUUser::RestoreCrestSnapshot();
+}
+//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
+
+#endif
 /** @function	: UnSetSpecificValueByBuffTempletID
 	@brief		: �� ���ָ��� Ư�� ������ ���� �� �� �����ؾ� �ϴ� �Լ� ����(ex: �����ø���ũ���� ���� ��ٴ� �÷��� ���� ��...)
 	@param		: �������ø�ID(eBuffTempletId_)
@@ -3460,6 +4101,13 @@ void CX2GUEL::SetWayOfSwordState( const int iWayOfSwordState_ )
 	return 0.f;
 }
 
+#ifdef X2_ELESIS_3RD_PATH
+
+/*virtual*/ float CX2GUEL::GetDarkForceWoSPointMultiplier() const { return m_fDarkForceWoSPointMultiplier; }
+/*virtual*/ float CX2GUEL::GetDarkForceHPIntakeRate() const { return m_fDarkForceHPIntakeRate; }
+//}} 2026-09-03 //
+
+#endif
 /*virtual*/ void CX2GUEL::SetWayOfSwordPoint( float fWayOfSwordPoint_ )
 {
 	if( fWayOfSwordPoint_ > g_pData->GetDamageManager()->GetVigorStateThreshold() )
@@ -3480,7 +4128,12 @@ void CX2GUEL::Start_SwordmanVigor()
 		g_pX2Game->GetWorld()->FadeWorldColor( g_pX2Game->GetWorld()->GetOriginColor(), 4.0f );
 	}
 
-	SetBuffFactorToGameUnitByBuffFactorID(BFI_BUFF_GALE_WAY_OF_SWORD);
+#ifdef X2_ELESIS_3RD_PATH
+	if( CX2Unit::UC_ELESIS_DARK_KNIGHT == GetUnitClass() || CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass() )
+		SetBuffFactorToGameUnitByBuffFactorID(BFI_BUFF_GALE_WAY_OF_SWORD_DARK_KNIGHT);
+	else
+#endif
+		SetBuffFactorToGameUnitByBuffFactorID(BFI_BUFF_GALE_WAY_OF_SWORD);
 	PlaySound( L"elsword_vitality_use_VOX.ogg" );
 
 	m_CommonState.m_Wait = ESI_SWORD_WAIT;
@@ -3488,7 +4141,19 @@ void CX2GUEL::Start_SwordmanVigor()
 // ��ǳ ����
 void CX2GUEL::End_SwordmanVigor()
 {
+#ifdef X2_ELESIS_3RD_PATH
+	if( CX2Unit::UC_ELESIS_DARK_KNIGHT == GetUnitClass() || CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass() )
+		EraseBuffTempletFromGameUnit(BTI_BUFF_GALE_WAY_OF_SWORD_DARK_KNIGHT);
+	else
+#endif
 	EraseBuffTempletFromGameUnit(BTI_BUFF_GALE_WAY_OF_SWORD);
+#ifdef X2_ELESIS_3RD_PATH
+//}} 2026-08-20 MARCH2015 3rd-path //
+
+
+	g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_P_SDK_DARK_FORCE_J_End", this );
+//}} 2026-09-03 //
+#endif
 
 	g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_VigorEnd", this );
 	PlaySound( L"elsword_vitality_end.ogg" );
@@ -3504,10 +4169,21 @@ void CX2GUEL::Start_SwordmanDestruction()
 		g_pX2Game->GetWorld()->FadeWorldColor( g_pX2Game->GetWorld()->GetOriginColor(), 4.0f );
 	}
 
+#ifdef X2_ELESIS_3RD_PATH
+	const bool bDarkChivalry = ( CX2Unit::UC_ELESIS_DARK_KNIGHT == GetUnitClass() || CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass() );
+#endif
 	if( NULL != g_pX2Game && CX2Game::GT_PVP == g_pX2Game->GetGameType() )
+#ifdef X2_ELESIS_3RD_PATH
+		SetBuffFactorToGameUnitByBuffFactorID( bDarkChivalry ? BFI_BUFF_ANNIHILATION_WAY_OF_SWORD_PVP_DARK_KNIGHT : BFI_BUFF_ANNIHILATION_WAY_OF_SWORD_PVP );
+#else
 		SetBuffFactorToGameUnitByBuffFactorID(BFI_BUFF_ANNIHILATION_WAY_OF_SWORD_PVP);
+#endif
 	else
+#ifdef X2_ELESIS_3RD_PATH
+		SetBuffFactorToGameUnitByBuffFactorID( bDarkChivalry ? BFI_BUFF_ANNIHILATION_WAY_OF_SWORD_DARK_KNIGHT : BFI_BUFF_ANNIHILATION_WAY_OF_SWORD );
+#else
 		SetBuffFactorToGameUnitByBuffFactorID(BFI_BUFF_ANNIHILATION_WAY_OF_SWORD);
+#endif
 
 	PlaySound( L"elsword_demolition_use_VOX.ogg" );
 
@@ -3517,7 +4193,19 @@ void CX2GUEL::Start_SwordmanDestruction()
 void CX2GUEL::End_SwordmanDestruction()
 {
 	SetNowChargeMpForDetonation( 0.f ) ;
+#ifdef X2_ELESIS_3RD_PATH
+	if( CX2Unit::UC_ELESIS_DARK_KNIGHT == GetUnitClass() || CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass() )
+		EraseBuffTempletFromGameUnit(BTI_BUFF_ANNIHILATION_WAY_OF_SWORD_DARK_KNIGHT);
+	else
+#endif
 	EraseBuffTempletFromGameUnit(BTI_BUFF_ANNIHILATION_WAY_OF_SWORD);
+#ifdef X2_ELESIS_3RD_PATH
+//}} 2026-08-20 MARCH2015 3rd-path //
+
+
+	g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_P_SDK_DARK_FORCE_S_End", this );
+//}} 2026-09-03 //
+#endif
 
 	g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_DestructionEnd", this );
 	PlaySound( L"elsword_demolition_end.ogg" );
@@ -3768,10 +4456,25 @@ bool CX2GUEL::CanSpecialReactProcess( CX2DamageManager::REACT_TYPE eReActType_ )
 		case CX2DamageManager::WST_DESTRUCTION_NORMAL:
 			{
 				if( CX2Game::GT_PVP == g_pX2Game->GetGameType() )
+#ifdef X2_ELESIS_3RD_PATH
+					fDamageMagnifications = 1.25f * m_fDarkForceDamageRate;
+				else
+					fDamageMagnifications = 1.5f * m_fDarkForceDamageRate;
+#else
 					fDamageMagnifications = 1.25f;
 				else
 					fDamageMagnifications = 1.5f;
+#endif
 			} break;
+#ifdef X2_ELESIS_3RD_PATH
+
+		case CX2DamageManager::WST_DESTRUCTION_ACTIVE:
+		case CX2DamageManager::WST_DESTRUCTION_SPECIAL:
+			{
+				fDamageMagnifications = 1.0f * m_fDarkForceDamageRate;
+			} break;
+		//}} 2026-09-03 //
+#endif
 		default:
 			break;
 		}
@@ -5185,6 +5888,10 @@ void CX2GUEL::ComboZZZEventProcess()
 	{
 		StateChange( USI_WAIT );
 	}
+#ifdef X2_ELESIS_3RD_PATH
+
+	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 2, 2, m_InputData.oneX == true && ( CX2Unit::UC_ELESIS_DARK_KNIGHT == GetUnitClass() || CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass() ), ESI_COMBO_SDK_ZZZX )
+#endif
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 0, 0, m_InputData.oneZ == true, ESI_COMBO_ZZZZ )
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 1, 1, m_InputData.oneX == true, ESI_COMBO_ZZZX )
 	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
@@ -5244,7 +5951,14 @@ void CX2GUEL::ComboXEventProcess()
 		StateChange( USI_JUMP_DOWN );
 		m_FrameDataFuture.syncData.position.y -= LINE_RADIUS;
 	}
+#ifdef X2_ELESIS_3RD_PATH
+	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 0, 0, m_InputData.oneX == true && CX2Unit::UC_ELESIS_DARK_KNIGHT != GetUnitClass() && CX2Unit::UC_ELESIS_CRIMSON_AVENGER != GetUnitClass(), ESI_COMBO_XX )
+
+	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 2, 2, m_InputData.oneX == true && ( CX2Unit::UC_ELESIS_DARK_KNIGHT == GetUnitClass() || CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass() ), ESI_COMBO_SDK_XX )
+//}} 2026-09-04 //
+#else
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 0, 0, m_InputData.oneX == true, ESI_COMBO_XX )
+#endif
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 1, 1, m_InputData.oneZ == true && CX2Unit::UC_ELESIS_BLAZING_HEART == GetUnitClass() ,
 										ESI_COMBO_SBH_XZ )
 	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
@@ -5378,7 +6092,17 @@ void CX2GUEL::DashComboZEventProcess()
 		ESI_DASH_COMBO_SSK_ZZ )
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 2, 2, m_InputData.oneZ == true && GetUnitClassLine( UCL_SECOND ) ,
 										ESI_DASH_COMBO_SPK_ZZ )
+#ifdef X2_ELESIS_3RD_PATH
+
+	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 0, 0, m_InputData.oneZ == true && CX2Unit::UC_ELESIS_CRIMSON_AVENGER != GetUnitClass(), ESI_DASH_COMBO_ZZ )
+	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 4, 0, m_InputData.oneZ == true && CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass(), ESI_DASH_COMBO_SCA_ZZ )
+
+	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 5, 5, true == m_InputData.oneX && CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass(), ESI_DASH_COMBO_SCA_ZX_START )
+	//}} 2026-09-04 //
+//}} 2026-08-20 MARCH2015 3rd-path //
+#else
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 0, 0, m_InputData.oneZ == true, ESI_DASH_COMBO_ZZ )
+#endif
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 3, 3, true == m_InputData.oneX && GetUnitClassLine( UCL_SECOND ) ,
 										ESI_DASH_COMBO_SPK_ZX )
 	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
@@ -5458,7 +6182,15 @@ void CX2GUEL::DashJumpComboXEventProcess()
 		ESI_DASH_JUMP_COMBO_SSK_XX )
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 2, 2, true == m_InputData.oneZ && GetUnitClassLine( UCL_SECOND ),
 										ESI_DASH_JUMP_COMBO_SPK_XZ )
+#ifdef X2_ELESIS_3RD_PATH
+
+	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 0, 0, true == m_InputData.oneX && CX2Unit::UC_ELESIS_DARK_KNIGHT != GetUnitClass() && CX2Unit::UC_ELESIS_CRIMSON_AVENGER != GetUnitClass(), ESI_DASH_JUMP_COMBO_XX )
+	ELSE_IF_STATE_CHANGE_ON_EX_( 4, 0.f, 100, 0.416f,
+		m_InputData.oneX == true && ( CX2Unit::UC_ELESIS_DARK_KNIGHT == GetUnitClass() || CX2Unit::UC_ELESIS_CRIMSON_AVENGER == GetUnitClass() ), ESI_DASH_JUMP_COMBO_SDK_XX )
+//}} 2026-09-04 //
+#else
 	ELSE_IF_STATE_CHANGE_ON_EX_STRUCT( 0, 0, true == m_InputData.oneX , ESI_DASH_JUMP_COMBO_XX )
+#endif
 
 	ELSE_IF_STATE_CHANGE_ON_EX_( 3, m_fEventTime[3].keyInputStart, m_fEventTime[3].keyInputEnd, m_fEventTime[3].stateChange,
 	m_InputData.oneZ == true && CX2Unit::UC_ELESIS_GRAND_MASTER == GetUnitClass(), ESI_DASH_JUMP_COMBO_SGM_XZ )
@@ -5576,6 +6308,43 @@ void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_EventProcess()
 
 	CommonEventProcess();
 }
+#ifdef X2_ADD_3RD_PATH
+
+void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_BACK_StartFuture()
+{
+	CommonStateStartFuture();
+
+	--m_uiDodgeAndSlashReuseCount;
+}
+
+void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_BACK_EventProcess()
+{
+	m_sCurrentSkillKeyManager.CheckSkillSlotSwap();
+
+	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( USI_WAIT );
+	}
+	else if ( m_uiDodgeAndSlashReuseCount > 0 &&
+			  true == m_sCurrentSkillKeyManager.IsPressedCurrentSkillKey(m_InputData) )
+	{
+		StateChange( ESI_SI_A_EL_DODGE_AND_SLASH_SECOND );
+	}
+	else if ( true == m_InputData.oneZ || true == m_InputData.oneX )
+	{
+		StateChange( ESI_SI_A_EL_DODGE_AND_SLASH_ATTACK_Z );
+	}
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+		DASH_CANCEL_AFTER( m_fDashCancelAfter )
+		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+
+	CommonEventProcess();
+}
+//}} 2026-08-19 MARCH2015 GU parity //
+
+#endif
 void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_SECOND_StartFuture()
 {
 	CommonStateStartFuture();
@@ -5870,7 +6639,1142 @@ void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_EventProcess()
 
 	CommonEventProcess();
 }
+#ifdef X2_ELESIS_3RD_PATH
+
+
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_READY_StartFuture()
+{
+	CommonStateStartFuture();
+
+	m_fSonicAssaultChargeTime = 0.f;
+	m_fSonicAssaultChargeRatio = 0.f;
+}
+//}} 2026-09-03 //
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_READY_EventProcess()
+{
+	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+		StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_CHARGE );
+
+	CommonEventProcess();
+}
+
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_CHARGE_FrameMove()
+{
+	m_fSonicAssaultChargeTime += g_pKTDXApp->GetElapsedTime();
+	CommonFrameMove();
+}
+//}} 2026-09-03 //
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_CHARGE_EventProcess()
+{
+
+	m_sCurrentSkillKeyManager.CheckSkillSlotSwap();
+
+	if ( m_fSonicAssaultChargeTime >= 2.0f || false == IsElesisMemoSkillKeyHeld() )
+	{
+		if ( m_fSonicAssaultChargeTime <= 1.0f )
+			StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE );
+		else
+			StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE_CHARGED );
+	}
+	//}} 2026-09-03 //
+
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE_EventProcess()
+{
+	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( USI_WAIT );
+	}
+
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+		DASH_CANCEL_AFTER( m_fDashCancelAfter )
+		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+	//}} 2026-09-03 //
+
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE_CHARGED_EventProcess()
+{
+	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( USI_WAIT );
+	}
+
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+		DASH_CANCEL_AFTER( m_fDashCancelAfter )
+		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+	//}} 2026-09-03 //
+
+	CommonEventProcess();
+}
+
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_READY_StartFuture()
+{
+	CommonStateStartFuture();
+
+	m_fSonicAssaultChargeTime = 0.f;
+	m_fSonicAssaultChargeRatio = 0.f;
+}
+//}} 2026-09-03 //
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_READY_EventProcess()
+{
+	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_CHARGE );
+	}
+
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_CHARGE_FrameMove()
+{
+
+	const float fElapsed = g_pKTDXApp->GetElapsedTime();
+	const float fCost = 50.f * fElapsed;
+	if ( fCost <= GetNowMp() && m_fSonicAssaultChargeRatio < 1.f )
+	{
+		m_fSonicAssaultChargeRatio = min( m_fSonicAssaultChargeRatio + fElapsed, 1.f );
+		UpNowMp( -fCost );
+		if ( m_fSonicAssaultChargeRatio >= 1.f )
+			g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SA_EL_SONIC_ASSAULT_CHARGE", this, this, IsHyperState(), 1.f );
+	}
+	m_fSonicAssaultChargeTime += fElapsed;
+	//}} 2026-09-03 //
+	CommonFrameMove();
+}
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_CHARGE_EventProcess()
+{
+
+	m_sCurrentSkillKeyManager.CheckSkillSlotSwap();
+
+	if ( m_fSonicAssaultChargeTime >= 2.0f || false == IsElesisMemoSkillKeyHeld() )
+		StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE );
+	//}} 2026-09-03 //
+
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE_StateStart()
+{
+
+	CommonStateStart();
+	//}} 2026-09-03 //
+}
+
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE_FrameMove()
+{
+	if( true == m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
+	{
+		const float fScale = min( m_fSonicAssaultChargeRatio, 1.f ) * 0.5f + 1.f;
+		m_PhysicParam.nowSpeed.x *= fScale;
+
+		std::vector<TIME_SPEED>& vecSpeedFactor = AccessSpeedFatorVector();
+		if( vecSpeedFactor.empty() == false )
+		{
+			TIME_SPEED timeSpeed;
+			timeSpeed.vSpeed = D3DXVECTOR3( vecSpeedFactor[0].vSpeed.x * fScale, 0.f, 0.11f );
+			timeSpeed.iFlag = 2;
+			vecSpeedFactor.push_back( timeSpeed );
+		}
+	}
+	CommonFrameMove();
+}
+//}} 2026-09-03 //
+
+void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE_EventProcess()
+{
+	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( USI_WAIT );
+	}
+
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+		DASH_CANCEL_AFTER( m_fDashCancelAfter )
+		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+	//}} 2026-09-03 //
+
+	CommonEventProcess();
+}
+
+bool CX2GUEL::IsElesisMemoSkillKeyHeld()
+{
+	switch( m_eSpecialAttackKeyPressed )
+	{
+	case SAKP_A: return m_InputData.pureA;
+	case SAKP_S: return m_InputData.pureS;
+	case SAKP_D: return m_InputData.pureD;
+	case SAKP_C: return m_InputData.pureC;
+	case SAKP_Q: return m_InputData.pureQ;
+	case SAKP_W: return m_InputData.pureW;
+	case SAKP_E: return m_InputData.pureE;
+	case SAKP_R: return m_InputData.pureR;
+	default: break;
+	}
+	return false;
+}
+//}} 2026-08-19 MARCH2015 GU parity //
+
+
+void CX2GUEL::ESI_ThirdPath_CreateState( UserUnitStateData& stateData_, const int iStateId_, const char* pszTableName )
+{
+	stateData_.Init();
+	stateData_.stateID			= iStateId_;
+	m_LuaManager.MakeTableReference( pszTableName, stateData_.stateID );
+	stateData_.OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_ThirdPath_OneShot_EventProcess );
+}
+
+void CX2GUEL::ESI_ThirdPath_CreateChainedState( UserUnitStateData& stateData_, const int iStateId_, const char* pszTableName, const int iNextStateId_ )
+{
+	ESI_ThirdPath_CreateState( stateData_, iStateId_, pszTableName );
+	stateData_.OnEventProcess	= SET_CB_FUNC( CX2GUEL, ESI_ThirdPath_Chain_EventProcess );
+	m_mapThirdPathChain[iStateId_] = iNextStateId_;
+}
+
+void CX2GUEL::ESI_ThirdPath_OneShot_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		if( false == IsOnSomethingFuture() )
+		{
+			StateChange( USI_JUMP_DOWN );
+			m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
+		}
+		else
+			StateChange( USI_WAIT );
+	}
+
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+	WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+	BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+	DASH_CANCEL_AFTER( m_fDashCancelAfter )
+	ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+//}} 2026-09-03 //
+
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_ThirdPath_Chain_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		std::map<int,int>::const_iterator it = m_mapThirdPathChain.find( GetNowStateID() );
+		if( it != m_mapThirdPathChain.end() )
+		{
+			StateChange( it->second );
+		}
+		else if( false == IsOnSomethingFuture() )
+		{
+			StateChange( USI_JUMP_DOWN );
+			m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
+		}
+		else
+			StateChange( USI_WAIT );
+	}
+
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+	WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+	BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+	DASH_CANCEL_AFTER( m_fDashCancelAfter )
+	ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+//}} 2026-09-03 //
+
+	CommonEventProcess();
+}
+
+
+bool CX2GUEL::IsELSkillKeyHeld()
+{
+	switch( m_eSpecialAttackKeyPressed )
+	{
+	case SAKP_A: return m_InputData.pureA;
+	case SAKP_S: return m_InputData.pureS;
+	case SAKP_D: return m_InputData.pureD;
+	case SAKP_C: return m_InputData.pureC;
+	case SAKP_Q: return m_InputData.pureQ;
+	case SAKP_W: return m_InputData.pureW;
+	case SAKP_E: return m_InputData.pureE;
+	case SAKP_R: return m_InputData.pureR;
+	default: break;
+	}
+	return false;
+}
+
+
+bool CX2GUEL::IsAnyELSkillKeyHeld()
+{
+	return ( m_InputData.pureA || m_InputData.pureS || m_InputData.pureD || m_InputData.pureC ||
+			 m_InputData.pureQ || m_InputData.pureW || m_InputData.pureE || m_InputData.pureR );
+}
+//}} 2026-09-03 //
+
+
+void CX2GUEL::ClearShadowLinkEffects()
+{
+	for( size_t i = 0; i < m_vecShadowLink.size(); ++i )
+	{
+		CX2GameUnit* pTarget = NULL;
+		if( NULL != g_pX2Game )
+		{
+			if( m_vecShadowLink[i].isPlayer )
+				pTarget = g_pX2Game->GetUserUnitByUID( m_vecShadowLink[i].uid );
+			else
+				pTarget = g_pX2Game->GetNPCUnitByUID( (int)m_vecShadowLink[i].uid );
+		}
+		if( NULL != pTarget )
+			pTarget->EraseBuffTempletFromGameUnit( BTI_DEBUFF_SHADOW_EDGE );
+		if( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_vecShadowLink[i].handle, true );
+	}
+	m_vecShadowLink.clear();
+}
+
+void CX2GUEL::TickShadowLinkEffects()
+{
+	if( m_vecShadowLink.empty() )
+		return;
+
+	for( std::vector<SShadowLinkFx>::iterator it = m_vecShadowLink.begin(); it != m_vecShadowLink.end(); )
+	{
+		it->timeLeft -= m_fElapsedTime;
+		if( it->timeLeft <= 0.f )
+		{
+			CX2GameUnit* pTarget = NULL;
+			if( NULL != g_pX2Game )
+			{
+				if( it->isPlayer )
+					pTarget = g_pX2Game->GetUserUnitByUID( it->uid );
+				else
+					pTarget = g_pX2Game->GetNPCUnitByUID( (int)it->uid );
+			}
+			if( NULL != pTarget )
+				pTarget->EraseBuffTempletFromGameUnit( BTI_DEBUFF_SHADOW_EDGE );
+			if( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+				g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( it->handle, true );
+			it = m_vecShadowLink.erase( it );
+			continue;
+		}
+
+		// alive: keep the link visual on the target (official re-aims the beam endpoints; we re-position - deviation documented above) //
+		CX2GameUnit* pTarget = NULL;
+		if( NULL != g_pX2Game )
+		{
+			if( it->isPlayer )
+				pTarget = g_pX2Game->GetUserUnitByUID( it->uid );
+			else
+				pTarget = g_pX2Game->GetNPCUnitByUID( (int)it->uid );
+		}
+		if( NULL != pTarget && pTarget->GetNowHp() > 0.f && NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+		{
+			CX2DamageEffect::CEffect* pLinkFx = g_pX2Game->GetDamageEffect()->GetInstance( it->handle );
+			if( NULL != pLinkFx )
+			{
+				D3DXVECTOR3 vTargetPos = pTarget->GetPos();
+				vTargetPos.y += 25.f;	/// official dbl_32D3D478 = 25.0 (bone Y offset) //
+				pLinkFx->SetPos( vTargetPos );
+			}
+		}
+		++it;
+	}
+}
+
+void CX2GUEL::ProcShadowLinkEffects( float fAmount )
+{
+	if( m_vecShadowLink.empty() || fAmount <= 0.f )
+		return;
+
+	for( size_t i = 0; i < m_vecShadowLink.size(); ++i )
+	{
+		if( m_vecShadowLink[i].timeLeft <= 0.f )
+			continue;
+		CX2GameUnit* pTarget = NULL;
+		if( NULL != g_pX2Game )
+		{
+			if( m_vecShadowLink[i].isPlayer )
+				pTarget = g_pX2Game->GetUserUnitByUID( m_vecShadowLink[i].uid );
+			else
+				pTarget = g_pX2Game->GetNPCUnitByUID( (int)m_vecShadowLink[i].uid );
+		}
+		if( NULL == pTarget || pTarget->GetNowHp() <= 0.f )
+			continue;
+
+		const float fProcDamage = m_vecShadowLink[i].rate * min( GetNowHp(), fAmount );	/// official: rate x min(EL self current HP, amount) - newslot_296 + f_31D40090 //
+		if( fProcDamage <= 0.f )
+			continue;
+		pTarget->UpNowHp( -fProcDamage );	/// official: direct HP write on the target (vtable+200) //
+		if( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+			g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_B_EL_SDC_Bleeding", pTarget, NULL, false, 1.f );
+	}
+}
+//}} 2026-09-03 //
+
+void CX2GUEL::ESI_SA_SDK_EJECTION_BUSTER_CHARGE_StartFuture()
+{
+	CommonStateStartFuture();
+	m_fEJBusterChargeTime = 0.f;
+	m_fEJBusterChargeStageMark = 0.f;
+}
+
+void CX2GUEL::ESI_SA_SDK_EJECTION_BUSTER_CHARGE_Start()
+{
+	CommonStateStart();
+	m_fEJBusterChargeTime = 0.f;
+	m_fEJBusterChargeStageMark = 0.f;
+}
+
+void CX2GUEL::ESI_SA_SDK_EJECTION_BUSTER_EventProcess()
+{
+	if( m_fEJBusterChargeTime >= 1.2f || false == IsELSkillKeyHeld() )
+		StateChange( ESI_SA_SDK_EJECTION_BUSTER_ATTACK );
+
+	CommonEventProcess();
+}
+
+
+void CX2GUEL::ESI_SA_SDK_EJECTION_BUSTER_FrameMove()
+{
+	m_fEJBusterChargeTime += m_fElapsedTime;
+
+	const float fWayOfSwordPoint = GetWayOfSwordPoint();
+	if( m_fEJBusterChargeTime < 1.0f || fWayOfSwordPoint < 100.0f )
+	{
+		if( m_fEJBusterChargeTime < 0.5f || fWayOfSwordPoint < 50.0f )
+		{
+			if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
+				g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_SDK_EJECTION_BUSTER_Charge_1", this, NULL, IsHyperState(), GetPowerRate() );
+		}
+		else if( m_fEJBusterChargeStageMark < 0.5f )
+		{
+			g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_SDK_EJECTION_BUSTER_Charge_2", this, NULL, IsHyperState(), GetPowerRate() );
+			m_fEJBusterChargeStageMark = 0.5f;
+		}
+	}
+	else if( m_fEJBusterChargeStageMark < 1.0f )
+	{
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_SDK_EJECTION_BUSTER_Charge_3", this, NULL, IsHyperState(), GetPowerRate() );
+		m_fEJBusterChargeStageMark = 1.0f;
+	}
+
+	CommonFrameMove();
+}
+
+bool CX2GUEL::ConsumeWayOfSwordPoint( float fConsume_ )
+{
+	CX2ElesisGageData* pGageData = GetELGageData();
+	if( NULL == pGageData )
+		return false;
+
+	const float fPoint = pGageData->GetWayOfSwordPoint();
+	if( fPoint < fConsume_ )
+		return false;
+
+	SetWayOfSwordPoint( fPoint - fConsume_ );
+	return true;
+}
+
+
+void CX2GUEL::ESI_SA_SDK_EJECTION_BUSTER_ATTACK_FrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
+	{
+
+		const float fWoSPoint = GetWayOfSwordPoint();
+		const bool bHasStage3 = ( m_fEJBusterChargeStageMark >= 1.0f && fWoSPoint >= 100.0f );
+		const bool bHasStage2 = ( m_fEJBusterChargeStageMark >= 0.5f && fWoSPoint >= 50.0f );
+		const wchar_t* pszEffectSet = L"EffectSet_SI_SA_SDK_EJECTION_BUSTER_Attack_1000";
+		if( bHasStage3 )
+		{
+			pszEffectSet = L"EffectSet_SI_SA_SDK_EJECTION_BUSTER_Attack_1500";
+			if( true == IsMyUnit() ) ConsumeWayOfSwordPoint( 100.0f );
+		}
+		else if( bHasStage2 )
+		{
+			pszEffectSet = L"EffectSet_SI_SA_SDK_EJECTION_BUSTER_Attack_1250";
+			if( true == IsMyUnit() ) ConsumeWayOfSwordPoint( 50.0f );
+		}
+		//}} 2026-09-03 //
+
+		g_pX2Game->GetEffectSet()->PlayEffectSet( pszEffectSet, this, NULL, IsHyperState(), GetPowerRate() );
+	}
+
+	CommonFrameMove();
+}
+
+void CX2GUEL::ESI_SI_A_SDK_DARK_WAVE_FrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )
+	{
+
+		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+		{
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_A_SDK_DARK_WAVE_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+		}
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_A_SDK_DARK_WAVE_HIT_Pushing", this, NULL, IsHyperState(), GetPowerRate() );
+	}
+	if( m_pXSkinAnim->EventTimerOneshot( 0.8f ) )
+	{
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_A_SDK_DARK_WAVE_HIT_Impact", this, NULL, IsHyperState(), GetPowerRate() );
+	}
+	CommonFrameMove();
+}
+//}} 2026-08-29 //
+//}} 2026-08-28 //
+
+
+#define EL_3RDPATH_DMG_AT( eff, t )	if( m_pXSkinAnim->EventTimerOneshot( t ) ) { g_pX2Game->GetEffectSet()->PlayEffectSet( eff, this, NULL, IsHyperState(), GetPowerRate() ); }
+
+void CX2GUEL::ESI_SA_SCA_CRIMSON_BREAK_DamageFrameMove()
+{
+
+	if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
+	{
+		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SA_SCA_Crimson_Break_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SA_SCA_CRIMSON_BREAK_Attack", this, NULL, IsHyperState(), GetPowerRate() );
+	}
+	CommonFrameMove();
+}
+
+void CX2GUEL::ESI_SA_SDK_BRUTAL_CUTTER_BuffFrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
+	{
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_SA_SDK_BRUTAL_CUTTER );
+		if( NULL != pSkillTemplet )
+			SetBuffFactorToGameUnit( pSkillTemplet, 0 );
+	}
+	CommonFrameMove();
+}
+void CX2GUEL::ESI_SA_SCA_SHADE_THE_ILLUSION_DamageFrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
+	{
+
+		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SI_SA_SCA_SHADE_THE_ILLUSION_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+		//}} 2026-09-03 //
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_SCA_SHADE_THE_ILLUSION_Attack", this, NULL, IsHyperState(), GetPowerRate() );
+
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_SA_SCA_SHADE_THE_ILLUSION );
+		if( NULL != pSkillTemplet )
+			SetBuffFactorToGameUnit( pSkillTemplet, 0 );
+	}
+	CommonFrameMove();
+}
+
+void CX2GUEL::ESI_A_SCA_SHADOW_EDGE_DamageFrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.31f ) )
+	{
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_A_SCA_SHADOW_EDGE_Projectile", this, NULL, IsHyperState(), GetPowerRate() );
+
+		ClearShadowLinkEffects();
+
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_A_SCA_SHADOW_EDGE );
+		if( NULL != pSkillTemplet )
+		{
+			const int iSkillLevel = ( NULL != GetUnit() ) ? max( 1, GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) ) : 1;
+			const float fLinkTime = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_TIME, iSkillLevel );
+			float fLinkRate = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_REL, iSkillLevel );
+			if( NULL != g_pX2Game && CX2Game::GT_PVP == g_pX2Game->GetGameType() )
+				fLinkRate *= 0.1f;
+
+			const D3DXVECTOR3 vSelfPos = GetPos();
+			const D3DXVECTOR3 vSelfDir = GetDirVector();
+
+			std::vector<CX2GameUnit*> vecTargets;
+			for( int i = 0; i < g_pX2Game->GetUnitNum(); i++ )
+			{
+				CX2GameUnit* pTarget = g_pX2Game->GetUnit( i );
+				if( NULL == pTarget || pTarget == this || pTarget->GetTeam() == GetTeam() || pTarget->GetNowHp() <= 0.f )
+					continue;
+				const D3DXVECTOR3 vToTarget = pTarget->GetPos() - vSelfPos;
+				if( fabsf( vToTarget.y ) > 180.f )	/// official Y band +-180 //
+					continue;
+				if( GetDistance3Sq( vSelfPos, pTarget->GetPos() ) > 640000.f )	// 800^2 (official flt_32D8BDE4=800) //
+					continue;
+				D3DXVECTOR3 vFlat = vToTarget; vFlat.y = 0.f;
+				if( D3DXVec3Dot( &vSelfDir, &vFlat ) <= 0.f )	/// front-cone (angle unresolved - f_31F21EB0 decompile-failed; DESIGN INFERENCE front-half) //
+					continue;
+				vecTargets.push_back( pTarget );
+			}
+			std::sort( vecTargets.begin(), vecTargets.end(), [vSelfPos]( CX2GameUnit* a, CX2GameUnit* b ) { return GetDistance3Sq( vSelfPos, a->GetPos() ) < GetDistance3Sq( vSelfPos, b->GetPos() ); } );
+
+			for( size_t i = 0; i < vecTargets.size(); ++i )
+			{
+				CX2GameUnit* pTarget = vecTargets[i];
+				D3DXVECTOR3 vTargetPos = pTarget->GetPos(); vTargetPos.y += 25.f;	/// official dbl_32D3D478 = 25.0 bone Y offset //
+				D3DXVECTOR3 vSelfBone = vSelfPos; vSelfBone.y += 25.f;
+
+				// per-target explosion (the mark detonation visual+hit) //
+				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SCA_SHADOW_EDGE_Projectile_EXPLOSION", GetPowerRate(),
+					vTargetPos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+				// the link beam self->target - the record carries its handle for the tick lifecycle //
+				const CX2DamageEffect::CEffectHandle hLink = g_pX2Game->GetDamageEffect()->CreateInstanceHandle( this, L"DAMAGE_EFFECT_SCA_SHADOW_EDGE_Link", GetPowerRate(),
+					vSelfBone, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+
+				SShadowLinkFx kLink;
+				kLink.timeLeft	= fLinkTime;
+				kLink.rate		= fLinkRate;
+				kLink.uid		= pTarget->GetUnitUID();
+				kLink.isPlayer	= ( CX2GameUnit::GUT_USER == pTarget->GetGameUnitType() );
+				kLink.handle	= hLink;
+				m_vecShadowLink.push_back( kLink );
+
+				// the templet debuff per target (official: vtable+440 on the target with skill-8223's debuff factor) //
+				if( false == pSkillTemplet->m_vecBuffFactorID.empty() )
+					pTarget->SetBuffFactorToGameUnitByBuffFactorID( pSkillTemplet->m_vecBuffFactorID[0], iSkillLevel );
+			}
+		}
+	}
+	CommonFrameMove();
+}
+//}} 2026-09-03 //
+void CX2GUEL::ESI_A_SDK_INJECTION_STIGMA_DamageFrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
+	{
+
+		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SI_A_SDK_INJECTION_STIGMA_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+		//}} 2026-09-03 //
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_A_SDK_INJECTION_STIGMA", this, NULL, IsHyperState(), GetPowerRate() );
+
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_A_SDK_INJECTION_STIGMA );
+		if( NULL != pSkillTemplet )
+			SetBuffFactorToGameUnit( pSkillTemplet, 0 );
+	}
+	CommonFrameMove();
+}
+
+
+
+
+void CX2GUEL::ESI_SA_SDK_BRANDISH_BREAKER_START_StateStart()
+{
+	CommonStateStart();
+	m_wBBLoopCount = 0;
+	m_fBBLoopTime = 0.f;
+}
+
+void CX2GUEL::ESI_SA_SDK_BRANDISH_BREAKER_START_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		if( true == IsAnyELSkillKeyHeld() )
+			StateChange( ESI_SA_SDK_BRANDISH_BREAKER_LOOP );
+		else
+			StateChange( ESI_SA_SDK_BRANDISH_BREAKER_FINISH );
+	}
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+	WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+	BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+	DASH_CANCEL_AFTER( m_fDashCancelAfter )
+	ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_SA_SDK_BRANDISH_BREAKER_LOOP_FrameMove()
+{
+	m_fBBLoopTime += m_fElapsedTime;
+	const WORD wNewCount = (WORD)min( 6, (int)( m_fBBLoopTime / 0.15f ) );
+	while( m_wBBLoopCount < wNewCount )
+	{
+		++m_wBBLoopCount;
+		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SA_SDK_BRANDISH_BREAKER_LOOP_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+	}
+	CommonFrameMove();
+}
+
+void CX2GUEL::ESI_SA_SDK_BRANDISH_BREAKER_LOOP_EventProcess()
+{
+	if( m_wBBLoopCount >= 6 || false == IsAnyELSkillKeyHeld() )
+		StateChange( ESI_SA_SDK_BRANDISH_BREAKER_FINISH );
+	CommonEventProcess();
+}
+//}} 2026-09-03 //
+
+
+void CX2GUEL::ESI_SA_SDK_BURNING_PHANTOM_READY_StateStart()
+{
+	CommonStateStart();
+	m_wBPSpinCount = 0;
+	m_fBPLoopTime = 0.f;
+}
+
+void CX2GUEL::ESI_SA_SDK_BURNING_PHANTOM_LOOP_FrameMove()
+{
+	m_fBPLoopTime += m_fElapsedTime;
+	const WORD wNewCount = (WORD)min( 9, (int)( m_fBPLoopTime / 0.15f ) );
+	while( m_wBPSpinCount < wNewCount )
+	{
+		++m_wBPSpinCount;
+		if( m_wBPSpinCount > 3 && NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SA_SDK_BURNING_PHANTOM_LOOP_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+	}
+	CommonFrameMove();
+}
+
+void CX2GUEL::ESI_SA_SDK_BURNING_PHANTOM_LOOP_EventProcess()
+{
+	if( m_wBPSpinCount >= 9 || ( m_wBPSpinCount >= 3 && false == IsAnyELSkillKeyHeld() ) )
+		StateChange( ESI_SA_SDK_BURNING_PHANTOM_END );
+	CommonEventProcess();
+}
+//}} 2026-09-03 //
+
+
+void CX2GUEL::ESI_SA_SCA_DREAD_WEAPON_START_StateStartFuture()
+{
+	CommonStateStartFuture();
+	m_wDWLoopCount = 0;
+}
+
+void CX2GUEL::ESI_SA_SCA_DREAD_WEAPON_START_FrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )
+	{
+		if( INVALID_EFFECTSET_HANDLE != m_hDWLoopES && NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+			g_pX2Game->GetEffectSet()->StopEffectSet( m_hDWLoopES );
+		m_hDWLoopES = INVALID_EFFECTSET_HANDLE;
+
+		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SI_SA_SCA_DREAD_WEAPON_Loop_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+
+		if( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+		{
+			m_hDWLoopES = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_SCA_DREAD_WEAPON_Loop", this, NULL, IsHyperState(), GetPowerRate() );
+			m_vecEffectSetToDeleteOnCustomState.push_back( m_hDWLoopES );
+			m_vecEffectSetToDeleteOnDie.push_back( m_hDWLoopES );
+		}
+	}
+	CommonFrameMove();
+}
+
+void CX2GUEL::ESI_SA_SCA_DREAD_WEAPON_LOOP_StateStartFuture()
+{
+	CommonStateStartFuture();
+	++m_wDWLoopCount;
+}
+
+void CX2GUEL::ESI_SA_SCA_DREAD_WEAPON_LOOP_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		if( m_wDWLoopCount >= 4 )
+			StateChange( ESI_SA_SCA_DREAD_WEAPON_END );
+		else
+			StateChange( ESI_SA_SCA_DREAD_WEAPON_LOOP );
+	}
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+	WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+	BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+	DASH_CANCEL_AFTER( m_fDashCancelAfter )
+	ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_SA_SCA_DREAD_WEAPON_END_StateStart()
+{
+	if( INVALID_EFFECTSET_HANDLE != m_hDWLoopES && NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+		g_pX2Game->GetEffectSet()->StopEffectSet( m_hDWLoopES );
+	m_hDWLoopES = INVALID_EFFECTSET_HANDLE;
+	CommonStateStart();
+}
+//}} 2026-09-03 //
+
+
+void CX2GUEL::ESI_SA_SCA_BLOOD_CUTTER_DamageFrameMove()
+{
+	if( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
+	{
+		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SI_SA_SCA_BLOOD_CUTTER_DUMMY", GetPowerRate(),
+				GetPos(), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
+	}
+	CommonFrameMove();
+}
+//}} 2026-09-03 //
+
+
+void CX2GUEL::ESI_A_SCA_SHADE_SCRATCH_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		if( false == IsOnSomethingFuture() )
+		{
+			StateChange( USI_JUMP_DOWN );
+			m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
+		}
+		else
+			StateChange( USI_WAIT );
+	}
+	else if( ( true == m_InputData.oneX || true == m_InputData.pureX ) &&
+		m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[0].keyInputStart &&
+		m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[0].keyInputEnd )
+	{
+		StateChange( ESI_A_SCA_SHADE_SCRATCH_ATTACK );
+	}
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+	WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+	BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+	DASH_CANCEL_AFTER( m_fDashCancelAfter )
+	ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+	CommonEventProcess();
+}
+//}} 2026-09-03 //
+
+
+void CX2GUEL::ESI_SA_SDK_EJECTION_BUSTER_ATTACK_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		if( false == IsOnSomethingFuture() )
+		{
+			StateChange( USI_JUMP_DOWN );
+			m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
+		}
+		else
+			StateChange( USI_JUMP_LANDING );
+	}
+	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
+	WALK_CANCEL_AFTER( m_fWalkCancelAfter )
+	BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
+	DASH_CANCEL_AFTER( m_fDashCancelAfter )
+	ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
+	CommonEventProcess();
+}
+//}} 2026-09-03 //
+
+
+void CX2GUEL::ESI_SA_SDK_BRUTAL_CUTTER_StateInit()
+{
+	XSkinMeshReadyInBackground(L"Brutal_Cutter_Weapon_T.X");
+	XSkinMeshReadyInBackground(L"Brutal_Cutter_Weapon_W.X");
+	TextureReadyInBackground(L"EL_Base_Blood_M01.dds");
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XMeshReadyInBackground(L"ELK_WIND_SLICER_M02.Y");
+}
+void CX2GUEL::ESI_SA_SDK_EJECTION_BUSTER_StateInit()
+{
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"Ejection_Buster_Oura.Y");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XMeshReadyInBackground(L"SDK_Ejection_Buster_Blade01.Y");
+	XMeshReadyInBackground(L"Ejection_Buster_Oura4.Y");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_PE02.Y");
+	XMeshReadyInBackground(L"Ejection_Buster_Oura5.Y");
+	XMeshReadyInBackground(L"Ejection_Buster_Oura6.Y");
+	XSkinMeshReadyInBackground(L"Ejection_Buster_Weapon.X");
+	XSkinMeshReadyInBackground(L"SDK_EJECTION_BUSTER_Attack01.X");
+}
+void CX2GUEL::ESI_SA_SDK_BRANDISH_BREAKER_StateInit()
+{
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	TextureReadyInBackground(L"WhiteImage.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XSkinMeshReadyInBackground(L"SDK_BRANDISH_BREAKER_DUMMY01.X");
+}
+void CX2GUEL::ESI_SA_SDK_BURNING_PHANTOM_StateInit()
+{
+	TextureReadyInBackground(L"WhiteImage.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_P001.Y");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XSkinMeshReadyInBackground(L"DummyAttackBox_50x50x50.X");
+	XSkinMeshReadyInBackground(L"SDK_BURNING_PHANTOM_StartDummy.X");
+}
+void CX2GUEL::ESI_SA_SCA_CRIMSON_BREAK_StateInit()
+{
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	TextureReadyInBackground(L"WhiteImage.dds");
+	TextureReadyInBackground(L"ColorBallFire.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XSkinMeshReadyInBackground(L"DummyAttackBox_50x50x50.x");
+}
+void CX2GUEL::ESI_SA_SCA_DREAD_WEAPON_StateInit()
+{
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	TextureReadyInBackground(L"EL_Base_Blood_M01.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_PE02.Y");
+	XSkinMeshReadyInBackground(L"Brutal_Cutter_Weapon_T.X");
+	XSkinMeshReadyInBackground(L"Brutal_Cutter_Weapon_W.X");
+	XSkinMeshReadyInBackground(L"DREAD_WEAPON_TRACE01.X");
+	XSkinMeshReadyInBackground(L"DREAD_WEAPON_TRACE02.X");
+	XSkinMeshReadyInBackground(L"DREAD_WEAPON_sawtooth.X");
+}
+void CX2GUEL::ESI_SA_SCA_SHADE_THE_ILLUSION_StateInit()
+{
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	TextureReadyInBackground(L"ColorBallFire.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_PE02.Y");
+	XMeshReadyInBackground(L"SCA_SHADE_THE_ILLUSION_P01.Y");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_P001.Y");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_Storm001.Y");
+	XSkinMeshReadyInBackground(L"DummyAttackBox_50x50x50.X");
+	XSkinMeshReadyInBackground(L"SDK_BURNING_PHANTOM_PT01.X");
+	XSkinMeshReadyInBackground(L"SHADE_THE_ILLUSION_Shadow.X");
+}
+void CX2GUEL::ESI_SA_SCA_BLOOD_CUTTER_StateInit()
+{
+	TextureReadyInBackground(L"SCA_BLOOD_CUTTER_TRACE01.dds");
+	TextureReadyInBackground(L"WhiteImage.dds");
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XSkinMeshReadyInBackground(L"BLOOD_CUTTER_Weapon.X");
+	XSkinMeshReadyInBackground(L"BLOOD_CUTTER_Weapon_T01.X");
+	XSkinMeshReadyInBackground(L"BLOOD_CUTTER_Weapon_TRACE.X");
+}
+void CX2GUEL::ESI_A_SDK_INJECTION_STIGMA_StateInit()
+{
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	TextureReadyInBackground(L"ASL_HIT_P001.dds");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_Storm001.Y");
+	XSkinMeshReadyInBackground(L"DummyAttackBox_50x50x50.X");
+	XSkinMeshReadyInBackground(L"SDK_INJECTION_STIGMA_Blade01.X");
+	XSkinMeshReadyInBackground(L"SDK_BURNING_PHANTOM_PT01.X");
+}
+void CX2GUEL::ESI_A_SDK_DARK_WAVE_StateInit()
+{
+	TextureReadyInBackground(L"WhiteImage.dds");
+	TextureReadyInBackground(L"EL_Base_Blood_M01.dds");
+	XMeshReadyInBackground(L"ELK_WIND_SLICER_M02.Y");
+	XMeshReadyInBackground(L"Ejection_Buster_Oura5.Y");
+	XSkinMeshReadyInBackground(L"DummyAttackBox_50x50x50.X");
+}
+void CX2GUEL::ESI_A_SCA_SHADE_SCRATCH_StateInit()
+{
+	TextureReadyInBackground(L"EL_Base_Blood_M01.dds");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	TextureReadyInBackground(L"star2.dds");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_P001.Y");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_Storm001.Y");
+	XMeshReadyInBackground(L"ALS_SHAKE_CHAOS_02.Y");
+	XMeshReadyInBackground(L"ELK_WIND_SLICER_M02.Y");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_P01.Y");
+	XMeshReadyInBackground(L"Raven_Seven_Burst_MEMO_F01.Y");
+	XSkinMeshReadyInBackground(L"DummyAttackBox_50x50x50.X");
+}
+void CX2GUEL::ESI_A_SCA_SHADOW_EDGE_StateInit()
+{
+	TextureReadyInBackground(L"WhiteImage.dds");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_Storm001.Y");
+	XSkinMeshReadyInBackground(L"BREAKING_FIST_Attack_Box.x");
+}
+void CX2GUEL::ESI_A_SCA_ASSAULT_STRIKE_StateInit()
+{
+	TextureReadyInBackground(L"WhiteImage.dds");
+	TextureReadyInBackground(L"EL_Base_Blood_M01.dds");
+	TextureReadyInBackground(L"DEBUFF_MANA_BREAK.tga");
+	XSkinMeshReadyInBackground(L"DummyAttackBox_50x50x50.X");
+}
+void CX2GUEL::ESI_HA_SCA_FATE_SMASHER_StateInit()
+{
+	XSkinMeshReadyInBackground(L"SCA_FATE_SMASHER_DUMMY01.X");
+	XMeshReadyInBackground(L"SCA_FATE_SMASHER_P001.Y");
+	XMeshReadyInBackground(L"SDK_BURNING_PHANTOM_P001.Y");
+	TextureReadyInBackground(L"WhiteImage.dds");
+	TextureReadyInBackground(L"smoke02.dds");
+	XSkinMeshReadyInBackground(L"SCA_FATE_SMASHER_BLADE01.X");
+	TextureReadyInBackground(L"SDK_AIRWAVE_T01.dds");
+	XMeshReadyInBackground(L"SDK_Ejection_Buster_Blade01.Y");
+	TextureReadyInBackground(L"EL_Base_Blood_M01.dds");
+	TextureReadyInBackground(L"Mesh_Elsword_Event_AC_Upbody21A_Effect.tga");
+	XMeshReadyInBackground(L"SCA_CRIMSON_BREAK_PT01.Y");
+	TextureReadyInBackground(L"cube_light_P02.dds");
+	XSkinMeshReadyInBackground(L"elsword_SA_rageCutter_attackSphere.X");
+	XSkinMeshReadyInBackground(L"SDK_BRANDISH_BREAKER_DUMMY01.x");
+}
+//}} 2026-09-03 //
+//}} 2026-08-28 //
+//}} 2026-08-19 MARCH2015 GU parity //
+#endif
 // �Ҵ� ���Ʈ - ����
+#ifdef X2_ELESIS_3RD_PATH
+
+void CX2GUEL::ESI_SDKComboChain_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		if( false == IsOnSomethingFuture() )
+		{
+			StateChange( USI_JUMP_DOWN );
+			m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
+		}
+		else
+			StateChange( USI_WAIT );
+	}
+	else if( m_FrameDataFuture.stateParam.bEventFlagList[0] == true && m_pXSkinAnimFuture->GetNowAnimationTime() > m_fEventTime[0].stateChange )
+	{
+		std::map<int,int>::const_iterator it = m_mapThirdPathChain.find( GetNowStateID() );
+		if( it != m_mapThirdPathChain.end() )
+		{
+			StateChange( it->second );
+			m_FrameDataFuture.stateParam.bEventFlagList[0] = false;
+		}
+	}
+	else if( m_InputData.oneX == true && m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[0].keyInputEnd && m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[0].keyInputStart )
+	{
+		m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
+	}
+
+	CommonEventProcess();
+}
+//}} 2026-08-20 MARCH2015 3rd-path //
+
+
+void CX2GUEL::ESI_SDKComboChain_Z_EventProcess()
+{
+	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
+	{
+		if( false == IsOnSomethingFuture() )
+		{
+			StateChange( USI_JUMP_DOWN );
+			m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
+		}
+		else
+			StateChange( USI_WAIT );
+	}
+	else if( m_FrameDataFuture.stateParam.bEventFlagList[0] == true && m_pXSkinAnimFuture->GetNowAnimationTime() > m_fEventTime[0].stateChange )
+	{
+		std::map<int,int>::const_iterator it = m_mapThirdPathChain.find( GetNowStateID() );
+		if( it != m_mapThirdPathChain.end() )
+		{
+			StateChange( it->second );
+			m_FrameDataFuture.stateParam.bEventFlagList[0] = false;
+		}
+	}
+	else if( m_InputData.oneZ == true && m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[0].keyInputEnd && m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[0].keyInputStart )
+	{
+		m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
+	}
+
+	CommonEventProcess();
+}
+//}} 2026-08-28 //
+
+
+
+void CX2GUEL::ESI_DASH_COMBO_SCA_ZZ_EventProcess()
+{
+	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( USI_WAIT );
+	}
+	else if( m_FrameDataFuture.stateParam.bEventFlagList[0] == true && m_pXSkinAnimFuture->GetNowAnimationTime() > m_fEventTime[0].stateChange )
+	{
+		StateChange( ESI_DASH_COMBO_SCA_ZX_START );
+		m_FrameDataFuture.stateParam.bEventFlagList[0] = false;
+	}
+	else if( m_FrameDataFuture.stateParam.bEventFlagList[1] == true && m_pXSkinAnimFuture->GetNowAnimationTime() > m_fEventTime[0].stateChange )
+	{
+		StateChange( ESI_DASH_COMBO_SCA_ZZZ_START );
+		m_FrameDataFuture.stateParam.bEventFlagList[1] = false;
+	}
+	else if( m_InputData.oneX == true && m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[0].keyInputEnd && m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[0].keyInputStart )
+	{
+		m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
+	}
+	else if( m_InputData.oneZ == true && m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[0].keyInputEnd && m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[0].keyInputStart )
+	{
+		m_FrameDataFuture.stateParam.bEventFlagList[1] = true;
+	}
+
+	CommonEventProcess();
+}
+
+
+void CX2GUEL::ESI_DASH_COMBO_SCA_ZX_START_EventProcess()
+{
+	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( USI_WAIT );
+	}
+	else if( m_FrameDataFuture.stateParam.bEventFlagList[0] == true && m_pXSkinAnimFuture->GetNowAnimationTime() > m_fEventTime[0].stateChange )
+	{
+		StateChange( ESI_DASH_COMBO_SCA_ZX_LOOP );
+		m_FrameDataFuture.stateParam.bEventFlagList[0] = false;
+	}
+	else if( ( true == m_InputData.oneX || true == m_InputData.pureX ) && m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[0].keyInputEnd && m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[0].keyInputStart )
+	{
+		m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
+	}
+
+	CommonEventProcess();
+}
+
+
+void CX2GUEL::ESI_DASH_COMBO_SCA_ZZZ_Chain_EventProcess()
+{
+	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
+	{
+		StateChange( USI_WAIT );
+	}
+	else if( m_FrameDataFuture.stateParam.bEventFlagList[0] == true && m_pXSkinAnimFuture->GetNowAnimationTime() > m_fEventTime[0].stateChange )
+	{
+		std::map<int,int>::const_iterator it = m_mapThirdPathChain.find( GetNowStateID() );
+		if( it != m_mapThirdPathChain.end() )
+		{
+			StateChange( it->second );
+			m_FrameDataFuture.stateParam.bEventFlagList[0] = false;
+		}
+	}
+	else if( m_InputData.oneZ == true && m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[0].keyInputEnd && m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[0].keyInputStart )
+	{
+		m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
+	}
+
+	CommonEventProcess();
+}
+
+void CX2GUEL::ESI_DASH_COMBO_SCA_ZX_LOOP_EventProcess()
+{
+	//{{ DESIGN INFERENCE: ZX channel continues while X held, release -> ATTACK //
+	if( false == m_InputData.pureX )
+	{
+		StateChange( ESI_DASH_COMBO_SCA_ZX_ATTACK );
+	}
+	//}} DESIGN INFERENCE //
+
+	CommonEventProcess();
+}
+//}} 2026-08-20 MARCH2015 3rd-path //
+
+#endif
 void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_Init()
 {
 	TextureReadyInBackground(L"EL_FIRE_01.dds");
@@ -6080,6 +7984,23 @@ void CX2GUEL::ESI_SI_A_EL_ENDURANCE_POWER_ACTIVE_StateStart()
 	EraseBuffTempletFromGameUnit(BTI_DEBUFF_COLD);
 	EraseBuffTempletFromGameUnit(BTI_DEBUFF_CONFUSION);
 	EraseBuffTempletFromGameUnit(BTI_BUFF_INDURANCE_POWER);
+#ifdef X2_ELESIS_3RD_PATH
+	// 8413 Punish (SI_P_SCA_PUNISH): Endurance Power also strikes (its effect set at the passive's attack rate) and buffs
+	{
+		const int iPunishLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SCA_PUNISH );
+		const CX2SkillTree::SkillTemplet* pPunishTemplet = iPunishLevel > 0 ? g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_P_SCA_PUNISH ) : NULL;
+		const float fPunishAtkRel = NULL != pPunishTemplet ? pPunishTemplet->GetSkillAbilityValue( CX2SkillTree::SA_ATK_REL, iPunishLevel ) : 0.f;
+		if( fPunishAtkRel > 0.f )
+		{
+			g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_EL_ENDURANCE_POWER_PUNISH", this, this, IsHyperState(), GetPowerRate() * fPunishAtkRel );
+			const int iEnduranceLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_A_EL_ENDURANCE_POWER );
+			if( CX2Game::GT_PVP == g_pX2Game->GetGameType() )
+				SetBuffFactorToGameUnitByBuffFactorID( BFI_BUFF_PUNISH_PVP, (UINT)iEnduranceLevel );
+			else
+				SetBuffFactorToGameUnitByBuffFactorID( BFI_BUFF_PUNISH, (UINT)iEnduranceLevel );
+		}
+	}
+#endif
 
 	CommonStateStart();
 }

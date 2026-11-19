@@ -4312,6 +4312,18 @@ bool CX2CashShop::IsPossibleUsedByMyBankMembership( int itemID ) const
 	case CLASS_CHANGE_PYRO_KNIGHT_ID:
 	case CLASS_CHANGE_LITTLE_DEVIL_ID:
 	case CLASS_CHANGE_ADD_PSYCHIC_TRACER_ID:
+#ifdef X2_ADD_2ND_PATH
+	case CLASS_CHANGE_ARC_TRACER_ID:
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CLASS_CHANGE_LITTLE_SPECTER_ID:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CLASS_CHANGE_DARK_KNIGHT_ID:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CLASS_CHANGE_TIME_TRACER_ID:
+#endif
 		{
 			return 1;
 		} break;
@@ -4344,6 +4356,18 @@ bool CX2CashShop::IsPossibleUsedByMyBankMembership( int itemID ) const
 	case CLASS_CHANGE_GRAND_MASTER_ID:
 	case CLASS_CHANGE_BLAZING_HEART_ID:
 	case CLASS_CHANGE_ADD_LUNATIC_PSYKER_ID:
+#ifdef X2_ADD_2ND_PATH
+	case CLASS_CHANGE_MASTERMIND_ID:
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CLASS_CHANGE_ASURA_ID:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CLASS_CHANGE_CRIMSON_AVENGER_ID:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CLASS_CHANGE_DIABOLIC_ESPER_ID:
+#endif
 		{
 			return 2;
 		} break;
@@ -4571,6 +4595,54 @@ const wstring CX2CashShop::GetClassNameByClassChangeItem( int itemID )
 		{
 			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_LUNATIC_PSYKER )->m_Description;
 		} break;
+#ifdef X2_ADD_2ND_PATH
+
+	case CLASS_CHANGE_ARC_TRACER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_ARC_TRACER )->m_Description;
+		} break;
+
+	case CLASS_CHANGE_MASTERMIND_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_MASTERMIND )->m_Description;
+		} break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+
+	case CLASS_CHANGE_LITTLE_SPECTER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ARA_LITTLE_SPECTER )->m_Description;
+		} break;
+
+	case CLASS_CHANGE_ASURA_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ARA_ASURA )->m_Description;
+		} break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+
+	case CLASS_CHANGE_DARK_KNIGHT_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ELESIS_DARK_KNIGHT )->m_Description;
+		} break;
+
+	case CLASS_CHANGE_CRIMSON_AVENGER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ELESIS_CRIMSON_AVENGER )->m_Description;
+		} break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+
+	case CLASS_CHANGE_TIME_TRACER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_TIME_TRACER )->m_Description;
+		} break;
+
+	case CLASS_CHANGE_DIABOLIC_ESPER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_DIABOLIC_ESPER )->m_Description;
+		} break;
+#endif
 	}
 
 	return L"";

@@ -6596,6 +6596,34 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
             iAttackerUnitIndex = pAttackerUnit->GetUnitIndex();
             bAttackedByMe = pAttackerUnit->IsMyUnit();
         }
+#ifdef X2_ARA_3RD_PATH
+		// Asura's Fox Smile: Smash bleeds the target
+		if( bAttackedByMe && NULL != pAttackerUnit &&
+			CX2GameUnit::GUT_USER == pAttackerUnit->GetGameUnitType() )
+		{
+			CX2GUUser* pAttackerGU = static_cast<CX2GUUser*>( pAttackerUnit );
+			if( NULL != pAttackerGU->GetUnit() && CX2Unit::UT_ARA == pAttackerGU->GetUnit()->GetType() &&
+				CX2GUAra::ASI_SA_AA_SMASH == pAttackerGU->GetNowStateID() )
+			{
+				const int iFoxSmileLevel = pAttackerGU->GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AA_FOX_SMILE );
+				if( iFoxSmileLevel > 0 )
+					SetBuffFactorToGameUnitByBuffFactorID( BFI_DEBUFF_JUDGEMENT_BLEEDING, (UINT)iFoxSmileLevel );
+			}
+		}
+#endif
+#ifdef X2_ADD_3RD_PATH
+		// Diabolic Esper's Force Nova: tell the caster it hit
+		if( bAttackedByMe && NULL != pAttackerUnit &&
+			CX2GameUnit::GUT_USER == pAttackerUnit->GetGameUnitType() )
+		{
+			CX2GUUser* pAttackerGU = static_cast<CX2GUUser*>( pAttackerUnit );
+			if( NULL != pAttackerGU->GetUnit() && CX2Unit::UT_ADD == pAttackerGU->GetUnit()->GetType() &&
+				pDamageData->m_eUsedSkillID == CX2SkillTree::SI_A_ADE_FORCE_NOVA )
+			{
+				static_cast<CX2GUAdd*>( pAttackerUnit )->SetForceNovaHitFlag();
+			}
+		}
+#endif
 		switch(pDamageData->attackerType)
 		{
 		case CX2DamageManager::AT_UNIT:
@@ -6644,6 +6672,17 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
             uidAttackerUID = pAttackerEffect->GetOwnerUnit()->GetUnitUID();
             iAttackerUnitIndex = pAttackerEffect->GetOwnerUnit()->GetUnitIndex();
             bAttackedByMe = pAttackerEffect->GetOwnerUnit()->IsMyUnit();
+#ifdef X2_ADD_3RD_PATH
+			if ( bAttackedByMe )
+			{
+				CX2GUUser* pOwnerGU = static_cast<CX2GUUser*>( pAttackerEffect->GetOwnerUnit() );
+				if ( NULL != pOwnerGU->GetUnit() && CX2Unit::UT_ADD == pOwnerGU->GetUnit()->GetType() &&
+					pDamageData->m_eUsedSkillID == CX2SkillTree::SI_A_ADE_FORCE_NOVA )
+				{
+					static_cast<CX2GUAdd*>( pAttackerEffect->GetOwnerUnit() )->SetForceNovaHitFlag();
+				}
+			}
+#endif
         }
     }
 

@@ -1989,6 +1989,20 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 				fDefenceRateBySkill	 = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_UNFIXED_DEFENSE_REL, iSkillLevel );
 			}
 		}
+#ifdef X2_ELESIS_3RD_PATH
+		// Dark Knight's Madness Runaway: a chance to ignore the defense
+		const int iMadnessRunawayLevel = pUser->GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_SDK_MADNESS_RUNAWAY, true );
+		if( iMadnessRunawayLevel > 0 && this != pAttacker )
+		{
+			const CX2SkillTree::SkillTemplet* pSkillTempletMR = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_P_SDK_MADNESS_RUNAWAY );
+			if( NULL != pSkillTempletMR )
+			{
+				const float fIgnoreDefenceChance = pSkillTempletMR->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_RATE, iMadnessRunawayLevel );
+				if( GetRandomFloat( CKTDXRandomNumbers::SRO_MADNESS_RUNAWAY_IGNORE_DEFENCE ) < fIgnoreDefenceChance )
+					fDefenceRateBySkill = 0.f;
+			}
+		}
+#endif
 	}
 
 
@@ -10950,6 +10964,26 @@ void CX2GameUnit::CreateAndInsertCustomFunctionByBuff( const KBuffIdentity& Buff
 				m_vecCustomFunctionByBuffPtr.push_back( ptrCustomFunctionByBuff );
 		} break;
 
+#if defined(X2_ARA_3RD_PATH) || defined(X2_ADD_3RD_PATH)
+
+		case BTI_DEBUFF_PANDEMONIUM_FEAR:
+			{
+				CX2CustomFunctionByBuffPtr ptrCustomFunctionByBuff( new CX2CustomFunctionByBuffPandemoniumFear( BuffIdentity_, kBehaviorFactor_ ) );
+				if ( NULL != ptrCustomFunctionByBuff )
+					m_vecCustomFunctionByBuffPtr.push_back( ptrCustomFunctionByBuff );
+			} break;
+//}}
+
+
+		case BTI_DEBUFF_MOONLIGHT_RHAPSODY:
+			{
+				CX2CustomFunctionByBuffPtr ptrCustomFunctionByBuff( new CX2CustomFunctionByBuffMoonlightRhapsody( BuffIdentity_, kBehaviorFactor_ ) );
+				if ( NULL != ptrCustomFunctionByBuff )
+					m_vecCustomFunctionByBuffPtr.push_back( ptrCustomFunctionByBuff );
+			} break;
+//}}
+
+#endif
 	default:
 		break;
 	}

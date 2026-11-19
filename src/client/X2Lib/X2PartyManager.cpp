@@ -601,6 +601,11 @@ bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/,
 
 	g_pKTDXApp->GetDeviceManager()->PlaySound( L"PartyLeave.ogg", false, false );
 
+#ifdef X2_ADD_2ND_PATH
+	if ( NULL != g_pX2Game )
+		g_pX2Game->FinishApocalypseSummonByOwnerUID( kEvent.m_iLeaveUnitUID );
+#endif
+
 	g_pData->GetPartyManager()->GetMyPartyData()->RemovePartyMemberData( kEvent.m_iLeaveUnitUID );
 	CX2GageManager::GetInstance()->RemovePartyMemberUIByUserUid( kEvent.m_iLeaveUnitUID );
 

@@ -10701,6 +10701,30 @@ D3DXVECTOR3 CX2Game::GetEmptyStartPos()
 		return pLineMap->GetLineData(0)->startPos;
 	}
 }
+#ifdef X2_ADD_2ND_PATH
+void CX2Game::FinishApocalypseSummonByOwnerUID( UidType iOwnerUID_ )
+{
+	if ( -1 == iOwnerUID_ )
+		return;
+
+	for ( size_t i = 0; i < m_NPCUnitList.size(); ++i )
+	{
+		CX2GUNPC* pNPC = m_NPCUnitList[i];
+		if ( NULL == pNPC )
+			continue;
+		if ( CX2UnitManager::NUI_SI_HA_APOCALYPSE != pNPC->GetNPCTemplet().m_nNPCUnitID )
+			continue;
+		if ( pNPC->GetNowHp() <= 0.f || pNPC->GetGameUnitState() == CX2GameUnit::GUSI_DIE )
+			continue;
+		if ( pNPC->GetOwnerGameUnitUID() != iOwnerUID_ )
+			continue;
+
+		pNPC->StateChange_LUA( "APOCALYPSE_DIE_ATTACK", true );
+		break;
+	}
+}
+#endif
+
 
 
 
@@ -11537,6 +11561,37 @@ void CX2Game::SetUserSummonedNPCInfo( CX2NPCAI::NPC_AI_TYPE eAIType, UidType iAl
 						pNPC->SetNowHp( 0.f );
 					}
 				} break;
+#ifdef X2_ADD_2ND_PATH
+			case CX2UnitManager::NUI_SI_HA_APOCALYPSE:
+				{
+					ASSERT( CX2Unit::UT_ADD == pUser->GetUnit()->GetType() );
+					if( NULL != pUser->GetUnit() && CX2Unit::UT_ADD == pUser->GetUnit()->GetType() )
+					{
+						const CX2SkillTree::SkillTemplet* pSkillTemplet = pUser->GetEquippedActiveSkillTemplet( CX2SkillTree::SI_HA_AMM_APOCALYPSE );
+						if( NULL != pSkillTemplet )
+						{
+							const CX2UserSkillTree& userSkillTree = pUser->GetUnit()->GetUnitData().m_UserSkillTree;
+
+							const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( CX2SkillTree::SI_HA_AMM_APOCALYPSE ) );	/// summon level scale
+
+							pNPC->SetDefaultPowerRate( pSkillTemplet->GetSkillPowerRateValue( iSkillTempletLevel ) );
+
+							pNPC->SetSelfDestructionState( pNPC->GetStateID( "APOCALYPSE_DIE_ATTACK" ) );
+							float fRemainTime = static_cast<float>(pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_TIME, iSkillTempletLevel ));
+							pNPC->StartSelfDestruction( fRemainTime );
+						}
+						else
+						{
+							pNPC->SetNowHp( 0.f );
+						}
+					}
+					else
+					{
+						pNPC->SetNowHp( 0.f );
+					}
+				} break;
+#endif
+
 
 			case CX2UnitManager::NUI_ELESIS_FIRE_BLOSSOM:		/// 블레이징 하트 - 불꽃 개화.
 				{

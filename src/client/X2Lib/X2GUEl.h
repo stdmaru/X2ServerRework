@@ -219,6 +219,54 @@ public:
 
 		//하이퍼 액티브
 		ESI_SI_HA_SBH_ANCIENT_FIRE,					/// 에인션트 파이어
+#ifdef X2_ELESIS_3RD_PATH
+		ESI_SA_SDK_BRUTAL_CUTTER,
+		ESI_SA_SDK_EJECTION_BUSTER,
+		ESI_SA_SDK_EJECTION_BUSTER_ATTACK,
+		ESI_SA_SDK_EJECTION_BUSTER_CHARGE,
+		ESI_SA_SDK_BRANDISH_BREAKER,
+		ESI_SA_SDK_BRANDISH_BREAKER_START,
+		ESI_SA_SDK_BRANDISH_BREAKER_LOOP,
+		ESI_SA_SDK_BRANDISH_BREAKER_FINISH,
+		ESI_SA_SDK_BURNING_PHANTOM,
+		ESI_SA_SDK_BURNING_PHANTOM_READY,
+		ESI_SA_SDK_BURNING_PHANTOM_START,
+		ESI_SA_SDK_BURNING_PHANTOM_LOOP,
+		ESI_SA_SDK_BURNING_PHANTOM_END,
+		ESI_SA_SCA_CRIMSON_BREAK,
+		ESI_SA_SCA_DREAD_WEAPON,
+		ESI_SA_SCA_DREAD_WEAPON_START,
+		ESI_SA_SCA_DREAD_WEAPON_LOOP,
+		ESI_SA_SCA_DREAD_WEAPON_END,
+		ESI_SA_SCA_SHADE_THE_ILLUSION,
+		ESI_SA_SCA_BLOOD_CUTTER,
+		ESI_HA_SCA_FATE_SMASHER,
+		ESI_A_SDK_INJECTION_STIGMA,
+		ESI_A_SDK_DARK_WAVE,
+		ESI_A_SCA_SHADE_SCRATCH,
+		ESI_A_SCA_SHADE_SCRATCH_ATTACK,
+		ESI_A_SCA_SHADOW_EDGE,
+		ESI_A_SCA_ASSAULT_STRIKE,
+		ESI_COMBO_SDK_XX,
+		ESI_COMBO_SDK_XXX,
+		ESI_COMBO_SDK_XXXX,
+		ESI_COMBO_SDK_XXXXX,
+		ESI_COMBO_SDK_XXXXXX,
+		ESI_COMBO_SDK_XXXXXXX,
+		ESI_COMBO_SDK_ZZZX,
+		ESI_COMBO_SDK_ZZZXX,
+		ESI_DASH_COMBO_SCA_ZX_ATTACK,
+		ESI_DASH_COMBO_SCA_ZX_END,
+		ESI_DASH_COMBO_SCA_ZX_LOOP,
+		ESI_DASH_COMBO_SCA_ZX_START,
+		ESI_DASH_COMBO_SCA_ZZ,
+		ESI_DASH_COMBO_SCA_ZZZ_END,
+		ESI_DASH_COMBO_SCA_ZZZ_LOOP_1,
+		ESI_DASH_COMBO_SCA_ZZZ_LOOP_2,
+		ESI_DASH_COMBO_SCA_ZZZ_START,
+		ESI_DASH_JUMP_COMBO_SDK_XX,
+		ESI_DASH_JUMP_COMBO_SDK_XXX,
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -499,6 +547,89 @@ protected:
 	void ESI_SI_A_EL_MEGA_SLASH_EventProcess();
 
 	void ESI_SI_A_EL_SONIC_ASSAULT_STAB_Init();				// 소닉 어썰트 - 스탭
+#ifdef X2_ELESIS_3RD_PATH
+	virtual float GetPowerRate();							/// Blood hit: x1.4 while a blood skill runs
+	virtual void SetMPChangeRateValue( float fElapsedTime );	/// 8412 Overflowing Madness: staged MP recovery
+	void OnCAAttackHitPassives( const CX2DamageManager::DamageData& damageData_ );
+	void ESI_ThirdPath_CreateState( UserUnitStateData& stateData_, const int iStateId_, const char* pszTableName );
+	void ESI_ThirdPath_CreateChainedState( UserUnitStateData& stateData_, const int iStateId_, const char* pszTableName, const int iNextStateId_ );
+	void ESI_ThirdPath_OneShot_EventProcess();
+	void ESI_ThirdPath_Chain_EventProcess();
+	std::map<int,int> m_mapThirdPathChain;
+
+
+	void ESI_SDKComboChain_EventProcess();
+	void ESI_SDKComboChain_Z_EventProcess();
+
+
+	bool IsELSkillKeyHeld();
+	void ESI_SA_SDK_EJECTION_BUSTER_EventProcess();
+	void ESI_SI_A_SDK_DARK_WAVE_FrameMove();
+
+	void ESI_SA_SDK_EJECTION_BUSTER_CHARGE_StartFuture();
+	void ESI_SA_SDK_EJECTION_BUSTER_CHARGE_Start();
+	void ESI_SA_SDK_EJECTION_BUSTER_FrameMove();
+	void ESI_SA_SDK_EJECTION_BUSTER_ATTACK_FrameMove();
+	bool ConsumeWayOfSwordPoint( float fConsume_ );
+	float m_fEJBusterChargeTime;
+	float m_fEJBusterChargeStageMark;
+	//}} 2026-08-29 //
+
+
+	void ESI_SA_SCA_CRIMSON_BREAK_DamageFrameMove();
+	void ESI_SA_SDK_BRUTAL_CUTTER_BuffFrameMove();
+	void ESI_SA_SCA_SHADE_THE_ILLUSION_DamageFrameMove();
+	void ESI_A_SCA_SHADOW_EDGE_DamageFrameMove();
+	void ESI_A_SDK_INJECTION_STIGMA_DamageFrameMove();
+
+
+	bool IsAnyELSkillKeyHeld();	/// official BB/BP channel gate = ANY of the 8 skill-slot keys held (input bytes +22386..+22418 stride-4)
+	void ProcShadowLinkEffects( float fAmount );	/// official newslot_296 0x32543690: linked targets take rate x min(selfHP, amount) bonus damage + Bleeding visual on them (NO self-heal - extraction-corrected)
+	void TickShadowLinkEffects();					/// official sub_325453E0 (newslot_317 tail): per-frame timeLeft decrement, expiry = destroy link DE + erase BTI_DEBUFF_SHADOW_EDGE on target + erase entry
+	void ClearShadowLinkEffects();					/// official slot_15 clear + SHADOW_EDGE FM head (stale links die on recast/map-change)
+	// 7-B BRANDISH_BREAKER (8023) key-hold channel: slot SS resets counter; slot EP anim-end -> key-held ? LOOP : FINISH; LOOP FM spawns LOOP_DUMMY per 0.15s increment (cap 6); LOOP EP counter>=6 || no-key -> FINISH
+	void ESI_SA_SDK_BRANDISH_BREAKER_START_StateStart();
+	void ESI_SA_SDK_BRANDISH_BREAKER_START_EventProcess();
+	void ESI_SA_SDK_BRANDISH_BREAKER_LOOP_FrameMove();
+	void ESI_SA_SDK_BRANDISH_BREAKER_LOOP_EventProcess();
+	// 7-C BURNING_PHANTOM (8024) key-hold channel: READY SS resets counter; LOOP FM spawns LOOP_DUMMY per 0.15s increment only when counter>3 (cap 9); LOOP EP counter>=9 || (>=3 && no-key) -> END
+	void ESI_SA_SDK_BURNING_PHANTOM_READY_StateStart();
+	void ESI_SA_SDK_BURNING_PHANTOM_LOOP_FrameMove();
+	void ESI_SA_SDK_BURNING_PHANTOM_LOOP_EventProcess();
+	// 7-E DREAD_WEAPON (8026): slot SF counter reset + FM @0.3 (invalidate old loop handle + Loop_DUMMY DE + Loop ES stored handle); LOOP SF ++counter; LOOP EP anim-end -> counter>=4 ? END : re-loop; END SS destroys the loop field
+	void ESI_SA_SCA_DREAD_WEAPON_START_StateStartFuture();
+	void ESI_SA_SCA_DREAD_WEAPON_START_FrameMove();
+	void ESI_SA_SCA_DREAD_WEAPON_LOOP_StateStartFuture();
+	void ESI_SA_SCA_DREAD_WEAPON_LOOP_EventProcess();
+	void ESI_SA_SCA_DREAD_WEAPON_END_StateStart();
+	// 7-F BLOOD_CUTTER (8028) missing FM: DUMMY DE create @0.01 (official 0x325512E0); the numeric effect-1641 spawn (f_31F36300) = boost::statechart action dispatch - unresolvable to an effect name, DESIGN INFERENCE skip
+	void ESI_SA_SCA_BLOOD_CUTTER_DamageFrameMove();
+	// 7-G SHADE_SCRATCH (8222): chain to ATTACK on chain-key press within the lua EVENT_PROCESS_TIME0 window (was anim-end auto-chain)
+	void ESI_A_SCA_SHADE_SCRATCH_EventProcess();
+	// 7-J: EJ ATTACK EP exits to USI_JUMP_LANDING on ground per official EP 0x3253D270 (was OneShot -> USI_WAIT)
+	void ESI_SA_SDK_EJECTION_BUSTER_ATTACK_EventProcess();
+	// 7-A StateInit asset preloads (official SI bodies, asset lists verified against the deployed kom set 2026-09-03)
+	void ESI_SA_SDK_BRUTAL_CUTTER_StateInit();
+	void ESI_SA_SDK_EJECTION_BUSTER_StateInit();
+	void ESI_SA_SDK_BRANDISH_BREAKER_StateInit();
+	void ESI_SA_SDK_BURNING_PHANTOM_StateInit();
+	void ESI_SA_SCA_CRIMSON_BREAK_StateInit();
+	void ESI_SA_SCA_DREAD_WEAPON_StateInit();
+	void ESI_SA_SCA_SHADE_THE_ILLUSION_StateInit();
+	void ESI_SA_SCA_BLOOD_CUTTER_StateInit();
+	void ESI_A_SDK_INJECTION_STIGMA_StateInit();
+	void ESI_A_SDK_DARK_WAVE_StateInit();
+	void ESI_A_SCA_SHADE_SCRATCH_StateInit();
+	void ESI_A_SCA_SHADOW_EDGE_StateInit();
+	void ESI_A_SCA_ASSAULT_STRIKE_StateInit();
+	void ESI_HA_SCA_FATE_SMASHER_StateInit();
+
+
+	void ESI_DASH_COMBO_SCA_ZZ_EventProcess();
+	void ESI_DASH_COMBO_SCA_ZX_LOOP_EventProcess();
+	void ESI_DASH_COMBO_SCA_ZX_START_EventProcess();
+	void ESI_DASH_COMBO_SCA_ZZZ_Chain_EventProcess();
+#endif
 	void ESI_SI_A_EL_SONIC_ASSAULT_STAB_EventProcess();
 
 	void ESI_SI_A_EL_SONIC_ASSAULT_STING_Init();			// 소닉 어썰트 - 스팅
@@ -812,6 +943,13 @@ public:
 
 	virtual void SetSpecificValueByBuffTempletID( const BUFF_TEMPLET_ID eBuffTempletId_ );
 	virtual void UnSetSpecificValueByBuffTempletID( const BUFF_TEMPLET_ID eBuffTempletId_ );
+#ifdef X2_ADD_3RD_PATH
+
+
+	virtual void		RecordCrestSnapshot();
+	virtual void		RestoreCrestSnapshot();
+	//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
+#endif
 
 	virtual void InitEnchantWeaponEffectUnitSpecific();
 
@@ -824,6 +962,11 @@ public:
 
 	virtual float		GetWayOfSwordPoint() const;
 	virtual void		SetWayOfSwordPoint( float fWayOfSwordPoint_ );
+#ifdef X2_ELESIS_3RD_PATH
+
+	virtual float		GetDarkForceWoSPointMultiplier() const;
+	virtual float		GetDarkForceHPIntakeRate() const;
+#endif
 
 	void				Start_SwordmanVigor();
 	void				End_SwordmanVigor();
@@ -916,6 +1059,23 @@ protected:
 
 	// 엘리시스 공통 - 극기 - 강(强)
 	bool m_bIsActiveEndurancePower;		/// 활성화 여부
+#ifdef X2_ELESIS_3RD_PATH
+	bool	m_bBloodHitBoost;			/// a blood skill (SDK/SCA) drained HP: power x1.4 until the chain ends
+	float	m_fDarkForceWoSPointMultiplier;
+	float	m_fDarkForceHPIntakeRate;
+	float	m_fDarkForceDamageRate;
+
+	WORD	m_wBBLoopCount;
+	WORD	m_wBPSpinCount;
+	WORD	m_wDWLoopCount;
+	CX2EffectSet::Handle	m_hDWLoopES;
+	struct SShadowLinkFx { float timeLeft; float rate; UidType uid; bool isPlayer; CX2DamageEffect::CEffectHandle handle; };
+	std::vector<SShadowLinkFx>	m_vecShadowLink;
+	float	m_fBloodRunawayCoolTime[3];
+	float	m_fBloodRunawayProcTimer;
+	float	m_fBBLoopTime;	/// 8023 channel state-time accumulator (the official reads the engine's per-state clock; this adds m_fElapsedTime per frame in the LOOP state)
+	float	m_fBPLoopTime;	/// 8024 same
+#endif
 
 	// 블레이징 하트 - 불꽃의 낙인
 	float m_fStigmaOfFireCoolTime;		// 스킬 쿨타임

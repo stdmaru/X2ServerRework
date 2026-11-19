@@ -879,6 +879,38 @@ void CX2SquareUnit::InitWaitMotion()
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 		m_wstrLobbyWaitMotionName = L"ALP_LobbyWait";
 		break;
+#ifdef X2_ADD_2ND_PATH
+	case CX2Unit::UC_ADD_ARC_TRACER:
+		m_wstrLobbyWaitMotionName = L"AAT_LobbyWait";
+		break;
+	case CX2Unit::UC_ADD_MASTERMIND:
+		m_wstrLobbyWaitMotionName = L"AMM_LobbyWait";
+		break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CX2Unit::UC_ARA_LITTLE_SPECTER:
+		m_wstrLobbyWaitMotionName = L"ALS_LobbyWait";
+		break;
+	case CX2Unit::UC_ARA_ASURA:
+		m_wstrLobbyWaitMotionName = L"AA_LobbyWait";
+		break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+		m_wstrLobbyWaitMotionName = L"SDK_LobbyWait";
+		break;
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+		m_wstrLobbyWaitMotionName = L"SCA_LobbyWait";
+		break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CX2Unit::UC_ADD_TIME_TRACER:
+		m_wstrLobbyWaitMotionName = L"ATT_LobbyWait";
+		break;
+	case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+		m_wstrLobbyWaitMotionName = L"ADE_LobbyWait";
+		break;
+#endif
 	default:
 		break;
 	}
