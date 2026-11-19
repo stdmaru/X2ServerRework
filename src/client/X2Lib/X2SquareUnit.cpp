@@ -2575,12 +2575,29 @@ void CX2SquareUnit::ApplyFieldCorrection( const KFieldUnitState& kState )
 	StateChange( static_cast< char >( GetRidingOn() ? m_StateID.m_iRidingWait : m_StateID.m_Wait ) );
 }
 
+const CX2UnitStateSync* CX2SquareUnit::GetStateSyncSource() const
+{
+	if( m_bTFieldUnit )
+		return g_pTFieldGame != NULL ? &g_pTFieldGame->GetStateSync() : NULL;
+	return g_pSquareGame != NULL ? &g_pSquareGame->GetStateSync() : NULL;
+}
+
+CX2World* CX2SquareUnit::GetGameWorld() const
+{
+	if( m_bTFieldUnit )
+		return g_pTFieldGame != NULL ? g_pTFieldGame->GetWorld() : NULL;
+	if( g_pSquareGame != NULL )
+		return g_pSquareGame->GetWorld();
+	return g_pWeddingGame != NULL ? g_pWeddingGame->GetWorld() : NULL;
+}
+
 void CX2SquareUnit::UpdateRemotePose()
 {
-	if( g_pTFieldGame == NULL || m_kSnapshots.IsEmpty() )
+	const CX2UnitStateSync* pSync = GetStateSyncSource();
+	if( pSync == NULL || m_kSnapshots.IsEmpty() )
 		return;
 
-	const uint32_t uiRenderTick = g_pTFieldGame->GetFieldRenderTick();
+	const uint32_t uiRenderTick = pSync->GetRenderTick();
 	KFieldUnitSnapshots::Pose kPose;
 	if( !m_kSnapshots.Sample( uiRenderTick, kPose ) )
 		return;
@@ -2615,7 +2632,7 @@ void CX2SquareUnit::UpdateRemotePose()
 
 void CX2SquareUnit::UpdateDirFromLine()
 {
-	CX2World* pWorld = g_pTFieldGame != NULL ? g_pTFieldGame->GetWorld() : NULL;
+	CX2World* pWorld = GetGameWorld();
 	if( pWorld == NULL || pWorld->GetLineMap() == NULL )
 		return;
 
@@ -2632,6 +2649,14 @@ void CX2SquareUnit::UpdateDirFromLine()
 
 void CX2SquareUnit::RecvPacket( KEGS_SQUARE_UNIT_SYNC_DATA_NOT& kEGS_SQUARE_UNIT_SYNC_DATA_NOT )
 {
+#ifdef X2_VILLAGE_SYNC
+	// the square's 5 s update still carries the unit's ED (monitoring); its position comes from the batches
+	if( m_bStateSync )
+	{
+		m_iED = kEGS_SQUARE_UNIT_SYNC_DATA_NOT.m_iED;
+		return;
+	}
+#endif // X2_VILLAGE_SYNC
 	m_bFirstGetPacket = true;
 
 	if( m_bMyUnit == true )

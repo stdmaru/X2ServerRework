@@ -113,6 +113,12 @@ class CX2SquareGame
 		CKTDGFontManager::CUKFont*	GetFontForUnitName() { return m_pFontForUnitName; }
 
 		void						Handler_EGS_SQUARE_UNIT_SYNC_DATA_NOT( KEGS_SQUARE_UNIT_SYNC_DATA_NOT& kEGS_SQUARE_UNIT_SYNC_DATA_NOT );
+#ifdef X2_VILLAGE_SYNC
+		// movement sync (decision T53), as in villages
+		const CX2UnitStateSync&		GetStateSync() const { return m_kStateSync; }
+		void						ReceiveStateBatch( const KEGS_FIELD_UNIT_STATE_BATCH_NOT& kBatch );
+		void						ReceiveCorrection( const KEGS_FIELD_UNIT_CORRECTION_NOT& kCorrection );
+#endif // X2_VILLAGE_SYNC
 		bool						Handler_EGS_JOIN_SQUARE_NOT( KEGS_JOIN_SQUARE_NOT& kEGS_JOIN_SQUARE_NOT );
 		void						Handler_EGS_LEAVE_SQUARE_REQ() { m_bLeaveSquareGame = true; }
 		bool						Handler_EGS_LEAVE_SQUARE_NOT( KEGS_LEAVE_SQUARE_NOT& kEGS_LEAVE_SQUARE_NOT );
@@ -176,6 +182,9 @@ class CX2SquareGame
 		float						m_fSortTime;
 
 		float						m_fP2PSendGap;
+#ifdef X2_VILLAGE_SYNC
+		CX2UnitStateSync			m_kStateSync;
+#endif // X2_VILLAGE_SYNC
 
 		bool						m_bEnableKeyProcess;
 		bool						m_bEnableCameraProcess;

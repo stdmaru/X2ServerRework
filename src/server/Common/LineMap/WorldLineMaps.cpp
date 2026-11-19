@@ -98,6 +98,7 @@ bool KWorldLineMaps::Load()
 {
 	m_mapVillageWorld.clear();
 	m_mapWorldLineMap.clear();
+	m_mapRoomWorld.clear();
 
 	KClientScriptState kLua;
 	lua_State* L = kLua.Get();
@@ -152,7 +153,9 @@ bool KWorldLineMaps::Load()
 	std::map< std::string, std::shared_ptr< CXSLLineMap > > mapByFile;	// lower-case file name -> line map
 	for( const WorldScript& kWorld : vecWorld )
 	{
-		if( mapVillageWorlds.count( kWorld.iWorldID ) == 0 && !IsRoomWorld( kWorld.strName ) )
+		if( IsRoomWorld( kWorld.strName ) )
+			m_mapRoomWorld[ kWorld.strName ] = kWorld.iWorldID;
+		else if( mapVillageWorlds.count( kWorld.iWorldID ) == 0 )
 			continue;
 
 		lua_pushnil( L );
@@ -193,6 +196,12 @@ const CXSLLineMap* KWorldLineMaps::GetByWorld( int iWorldID ) const
 {
 	const auto mit = m_mapWorldLineMap.find( iWorldID );
 	return mit != m_mapWorldLineMap.end() ? mit->second.get() : nullptr;
+}
+
+const CXSLLineMap* KWorldLineMaps::GetByWorldName( const std::string& strWorldName ) const
+{
+	const auto mit = m_mapRoomWorld.find( strWorldName );
+	return mit != m_mapRoomWorld.end() ? GetByWorld( mit->second ) : nullptr;
 }
 
 int KWorldLineMaps::GetWorldIDOfVillage( int iVillageMapID ) const

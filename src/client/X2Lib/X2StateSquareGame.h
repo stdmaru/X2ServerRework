@@ -42,6 +42,10 @@ protected:
 	bool Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	bool Handler_EGS_SQUARE_UNIT_SYNC_DATA_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+#ifdef X2_VILLAGE_SYNC
+	bool Handler_EGS_FIELD_UNIT_STATE_BATCH_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+	bool Handler_EGS_FIELD_UNIT_CORRECTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+#endif // X2_VILLAGE_SYNC
 
 	bool Handler_EGS_JOIN_SQUARE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 

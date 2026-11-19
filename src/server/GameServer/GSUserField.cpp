@@ -633,8 +633,21 @@ unsigned short FractionToHalf( float f )
 // Village movement (T53): the field validates it and sends it to the units that see this one.
 IMPL_ON_FUNC( EGS_FIELD_UNIT_STATE_NOT )
 {
-	// the dungeon lounge (S_ROOM) joins with the CenterServer's rooms; a state packet arriving while the user moves
-	// between field and room is dropped
+	// squares are CenterServer rooms; the dungeon lounge (S_ROOM too) keeps the original's sync. A state packet
+	// arriving while the user moves between field and room is dropped.
+	if( GetStateID() == KGSFSM::S_ROOM )
+	{
+		if( GetRoomUID() > 0 && CXSLRoom::GetRoomType( GetRoomUID() ) == CXSLRoom::RT_SQUARE )
+		{
+			KERM_SQUARE_UNIT_STATE_NOT kNot;
+			kNot.m_kState = kPacket_;
+#ifdef X2_DEBUG
+			kNot.m_bFastMove = GetAuthLevel() >= SEnum::UAL_GM;
+#endif // X2_DEBUG
+			SendToCnRoom( ERM_SQUARE_UNIT_STATE_NOT, kNot );
+		}
+		return;
+	}
 	if( GetStateID() != KGSFSM::S_FIELD_MAP || GetFieldUID() == 0 )
 		return;
 
@@ -661,9 +674,19 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_STATE_NOT )
 	m_kLastPos.m_usLastPosValue = FractionToHalf( fFraction );
 }
 
+_IMPL_ON_FUNC( ERM_FIELD_UNIT_STATE_BATCH_NOT, KEGS_FIELD_UNIT_STATE_BATCH_NOT )
+{
+	// a square's batch (the villages' come through the TCP relay)
+	if( GetStateID() != KGSFSM::S_ROOM )
+		return;
+
+	SendPacket( EGS_FIELD_UNIT_STATE_BATCH_NOT, kPacket_ );
+}
+
 IMPL_ON_FUNC( ERM_FIELD_UNIT_CORRECTION_NOT )
 {
-	if( GetStateID() != KGSFSM::S_FIELD_MAP )
+	// a village field's (S_FIELD_MAP) or a square's (S_ROOM)
+	if( GetStateID() != KGSFSM::S_FIELD_MAP && GetStateID() != KGSFSM::S_ROOM )
 		return;
 
 	SendPacket( EGS_FIELD_UNIT_CORRECTION_NOT, kPacket_.m_kCorrection );

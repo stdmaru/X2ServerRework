@@ -98,6 +98,54 @@ void KFieldMoveSync::ShowTo( UidType iViewer, UidType iUnitUID )
 		m_mapShow[ iViewer ].insert( iUnitUID );
 }
 
+void KFieldMoveSync::ShowAllTo( UidType iViewer )
+{
+	for( const auto& kUnit : m_mapUnit )
+		ShowTo( iViewer, kUnit.first );
+}
+
+void KFieldMoveSync::AddEntry( KEGS_FIELD_UNIT_STATE_BATCH_NOT& kBatch, uint32_t uiServerNow, UidType iUnitUID, const Unit& kUnit )
+{
+	kBatch.m_uiTick = uiServerNow;
+	KFieldUnitStateEntry kEntry;
+	kEntry.m_UnitUID	= iUnitUID;
+	kEntry.m_uiTick		= kUnit.uiStateTick;
+	kEntry.m_kState		= kUnit.kState;
+	kBatch.m_vecUnit.push_back( kEntry );
+}
+
+void KFieldMoveSync::BuildSharedBatch( uint32_t uiServerNow, KEGS_FIELD_UNIT_STATE_BATCH_NOT& kShared,
+									   std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT >& mapExtra )
+{
+	kShared = KEGS_FIELD_UNIT_STATE_BATCH_NOT();
+	mapExtra.clear();
+	m_bTicked = true;
+	m_uiLastTick = uiServerNow;
+
+	for( auto& [iUnitUID, kUnit] : m_mapUnit )
+	{
+		if( !kUnit.bChanged )
+			continue;
+		kUnit.bChanged = false;
+		AddEntry( kShared, uiServerNow, iUnitUID, kUnit );
+		for( auto& kShow : m_mapShow )
+			kShow.second.erase( iUnitUID );	// already in the shared batch
+	}
+
+	for( const auto& [iViewer, setUnit] : m_mapShow )
+	{
+		if( !HasUnit( iViewer ) )
+			continue;
+		for( UidType iUnitUID : setUnit )
+		{
+			auto it = m_mapUnit.find( iUnitUID );
+			if( it != m_mapUnit.end() )
+				AddEntry( mapExtra[ iViewer ], uiServerNow, iUnitUID, it->second );
+		}
+	}
+	m_mapShow.clear();
+}
+
 bool KFieldMoveSync::IsTickDue( uint32_t uiServerNow ) const
 {
 	return !m_bTicked || uiServerNow - m_uiLastTick >= m_kConfig.uiTickMs;
@@ -112,13 +160,7 @@ void KFieldMoveSync::BuildBatches( uint32_t uiServerNow, const Destinations& fnD
 
 	const auto Add = [&]( UidType iViewer, UidType iUnitUID, const Unit& kUnit )
 	{
-		KEGS_FIELD_UNIT_STATE_BATCH_NOT& kBatch = mapBatch[ iViewer ];
-		kBatch.m_uiTick = uiServerNow;
-		KFieldUnitStateEntry kEntry;
-		kEntry.m_UnitUID = iUnitUID;
-		kEntry.m_uiTick = kUnit.uiStateTick;
-		kEntry.m_kState = kUnit.kState;
-		kBatch.m_vecUnit.push_back( kEntry );
+		AddEntry( mapBatch[ iViewer ], uiServerNow, iUnitUID, kUnit );
 	};
 
 	std::vector< UidType > vecViewer;

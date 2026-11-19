@@ -7,6 +7,11 @@
 #include "SquareUserManager.h"
 
 #include "X2Data/XSLSquareGame.h"
+
+#ifdef X2_VILLAGE_SYNC
+#include "LineMap/FieldMoveSync.h"
+#include <memory>
+#endif // X2_VILLAGE_SYNC
 #define ST(s)	CXSLSquareGame::ST_##s
 
 SmartPointer( KSquare );
@@ -52,11 +57,22 @@ protected:
 
 	void	DeleteZombie( std::vector<UidType>& vecZombieUnit );
 
+#ifdef X2_VILLAGE_SYNC
+	// Movement sync (decision T53), as a village field's: everyone in a square sees everyone
+	KFieldMoveSync&	GetMoveSync();
+	void			TickMoveSync();
+	void			RemoveMoveSyncUnit( UidType iUnitUID );
+	void			SendCorrection( UidType iUnitUID, const KFieldMoveSync::Result& kResult );
+#endif // X2_VILLAGE_SYNC
+
 	//////////////////////////////////////////////////////////////////////////
 	// event handler
 	DECL_ON_FUNC( ERM_OPEN_SQUARE_NOT );
 	DECL_ON_FUNC( ERM_JOIN_SQUARE_REQ );
    _DECL_ON_FUNC( ERM_SQUARE_UNIT_SYNC_DATA_REQ, KEGS_SQUARE_UNIT_SYNC_DATA_REQ );
+#ifdef X2_VILLAGE_SYNC
+    DECL_ON_FUNC( ERM_SQUARE_UNIT_STATE_NOT );
+#endif // X2_VILLAGE_SYNC
    _DECL_ON_FUNC( ERM_LEAVE_SQUARE_REQ, KEGS_LEAVE_SQUARE_REQ );
    _DECL_ON_FUNC( ERM_CHAT_REQ, KEGS_CHAT_REQ );
    _DECL_ON_FUNC( ERM_CHECK_INVALID_USER_NOT, UidType );
@@ -89,6 +105,10 @@ protected:
 	bool				m_bIsDefault;		//기본설정 방인가..?(기본생성방이면 유저가 다 나가도 close 되지 않는다.)
 
 	KSquareUserManager	m_kSquareUserManager;
+
+#ifdef X2_VILLAGE_SYNC
+	std::unique_ptr< KFieldMoveSync >	m_spMoveSync;
+#endif // X2_VILLAGE_SYNC
 };
 
 //{{ 2010. 05. 10  최육사	대전던전 서버군 통합

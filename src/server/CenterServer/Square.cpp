@@ -4,6 +4,12 @@
 #include "NetError.h"
 #include "X2Data/XSLRoom.h"
 
+#ifdef X2_VILLAGE_SYNC
+#include "GameSysVal/GameSysVal.h"
+#include "LineMap/SquareUnitPhysics.h"
+#include "LineMap/WorldLineMaps.h"
+#endif // X2_VILLAGE_SYNC
+
 #define CLASS_TYPE KSquare
 
 NiImplementRTTI( KSquare, KCnBaseRoom );
@@ -36,6 +42,9 @@ void KSquare::Tick()
 		break;
 
 	case KBaseRoomFSM::S_WAIT:
+#ifdef X2_VILLAGE_SYNC
+		TickMoveSync();
+#endif // X2_VILLAGE_SYNC
 		break;
 
 	case KBaseRoomFSM::S_CLOSE:
@@ -76,6 +85,9 @@ void KSquare::ProcessEvent( const KEventPtr& spEvent_ )
 	CASE( ERM_OPEN_SQUARE_NOT );
 	CASE( ERM_JOIN_SQUARE_REQ );
    _CASE( ERM_SQUARE_UNIT_SYNC_DATA_REQ, KEGS_SQUARE_UNIT_SYNC_DATA_REQ );
+#ifdef X2_VILLAGE_SYNC
+    CASE( ERM_SQUARE_UNIT_STATE_NOT );
+#endif // X2_VILLAGE_SYNC
    _CASE( ERM_LEAVE_SQUARE_REQ, KEGS_LEAVE_SQUARE_REQ );
    _CASE( ERM_CHAT_REQ, KEGS_CHAT_REQ );
    _CASE( ERM_CHECK_INVALID_USER_NOT, UidType );
@@ -190,6 +202,9 @@ void KSquare::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		KERM_CHECK_INVALID_ZOMBIE_USER_NOT kPacket;
 		kPacket.m_iRoomUID = GetUID();
 		SendToGSCharacter( spUser->GetGSUID(), spUser->GetCID(), ERM_CHECK_INVALID_ZOMBIE_USER_NOT, kPacket );
+#ifdef X2_VILLAGE_SYNC
+		RemoveMoveSyncUnit( iUnitUID );
+#endif // X2_VILLAGE_SYNC
 
 		if( m_kSquareUserManager.LeaveSquare( iUnitUID ) == false )
 		{
@@ -323,6 +338,111 @@ _IMPL_ON_FUNC( ERM_SQUARE_UNIT_SYNC_DATA_REQ, KEGS_SQUARE_UNIT_SYNC_DATA_REQ )
 	BroadCast( ERM_SQUARE_UNIT_SYNC_DATA_NOT, kNot );
 }
 
+#ifdef X2_VILLAGE_SYNC
+KFieldMoveSync& KSquare::GetMoveSync()
+{
+	if( !m_spMoveSync )
+	{
+		// only the square maps are made for squares (docs/original/squares.md); the others go without a line map
+		const char* szWorld = nullptr;
+		if( m_cSquareType == CXSLSquareGame::ST_TRADE )
+			szWorld = "WI_SQUARE_MARKET";
+		else if( m_cSquareType == CXSLSquareGame::ST_NONE )
+			szWorld = "WI_SQUARE";
+		const CXSLLineMap* pLineMap = szWorld != nullptr ? SiKWorldLineMaps()->GetByWorldName( szWorld ) : nullptr;
+		if( pLineMap == nullptr )
+		{
+			START_LOG( cwarn, L"Square without a line map: its movement is checked for speed only." )
+				<< BUILD_LOG( GetUID() )
+				<< BUILD_LOG( static_cast< int >( m_cSquareType ) )
+				<< END_LOG;
+		}
+
+		KFieldMoveSync::Config kConfig;
+		kConfig.iKickViolations = SiKGameSysVal()->GetVillageMoveKickViolations();
+		m_spMoveSync = std::make_unique< KFieldMoveSync >( pLineMap, *SiKSquareUnitPhysics(), kConfig );
+	}
+	return *m_spMoveSync;
+}
+
+void KSquare::TickMoveSync()
+{
+	if( !m_spMoveSync )
+		return;
+	const uint32_t uiNow = ::GetTickCount();
+	if( !m_spMoveSync->IsTickDue( uiNow ) )
+		return;
+
+	KEGS_FIELD_UNIT_STATE_BATCH_NOT kShared;
+	std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT > mapExtra;
+	m_spMoveSync->BuildSharedBatch( uiNow, kShared, mapExtra );
+	if( !kShared.m_vecUnit.empty() )
+		BroadCast( ERM_FIELD_UNIT_STATE_BATCH_NOT, kShared );
+	for( const auto& kExtra : mapExtra )
+	{
+		KSquareUserPtr spUser = m_kSquareUserManager.GetUser( kExtra.first );
+		if( spUser != NULL )
+			SendToGSCharacter( spUser->GetGSUID(), spUser->GetCID(), ERM_FIELD_UNIT_STATE_BATCH_NOT, kExtra.second );
+	}
+}
+
+void KSquare::RemoveMoveSyncUnit( UidType iUnitUID )
+{
+	if( m_spMoveSync )
+		m_spMoveSync->RemoveUnit( iUnitUID );
+}
+
+void KSquare::SendCorrection( UidType iUnitUID, const KFieldMoveSync::Result& kResult )
+{
+	KSquareUserPtr spUser = m_kSquareUserManager.GetUser( iUnitUID );
+	if( spUser == NULL )
+		return;
+	KERM_FIELD_UNIT_CORRECTION_NOT kNot;
+	kNot.m_kCorrection	= kResult.kCorrection;
+	kNot.m_iViolations	= kResult.iViolations;
+	kNot.m_bKick		= kResult.bKick;
+	SendToGSCharacter( spUser->GetGSUID(), spUser->GetCID(), ERM_FIELD_UNIT_CORRECTION_NOT, kNot );
+}
+
+IMPL_ON_FUNC( ERM_SQUARE_UNIT_STATE_NOT )
+{
+	if( GetStateID() != KBaseRoomFSM::S_WAIT || m_kSquareUserManager.GetUser( FIRST_SENDER_UID ) == NULL )
+		return;	// left meanwhile
+
+	KFieldMoveSync& kSync = GetMoveSync();
+	const uint32_t uiNow = ::GetTickCount();
+	KFieldMoveSync::Result kResult;
+	if( !kSync.HasUnit( FIRST_SENDER_UID ) )
+	{
+		// the client places its unit on entering (a start position of the map), as in the original
+		kResult = kSync.AddUnit( FIRST_SENDER_UID, kPacket_.m_kState.m_kState.m_vPos, kPacket_.m_bFastMove, uiNow );
+		if( kResult.bAccepted )
+		{
+			KFieldUnitState kState = kPacket_.m_kState.m_kState;
+			kSync.SetUnitState( FIRST_SENDER_UID, kState, uiNow );
+		}
+		kSync.ShowAllTo( FIRST_SENDER_UID );
+	}
+	else
+	{
+		kResult = kSync.OnState( FIRST_SENDER_UID, kPacket_.m_kState, uiNow );
+	}
+
+	if( kResult.bAccepted )
+	{
+		if( const KFieldUnitState* pState = kSync.GetState( FIRST_SENDER_UID ) )
+		{
+			VECTOR3 vPos = pState->m_vPos;
+			m_kSquareUserManager.SetSyncPos( FIRST_SENDER_UID, vPos );
+		}
+	}
+	else if( kResult.bCorrect )
+	{
+		SendCorrection( FIRST_SENDER_UID, kResult );
+	}
+}
+#endif // X2_VILLAGE_SYNC
+
 _IMPL_ON_FUNC( ERM_LEAVE_SQUARE_REQ, KEGS_LEAVE_SQUARE_REQ )
 {
 	// 의도적인 Leave 직후 접속이 끊겼을 때 한 번 더 Leave 하게 되는 경우가 있다.
@@ -338,6 +458,9 @@ _IMPL_ON_FUNC( ERM_LEAVE_SQUARE_REQ, KEGS_LEAVE_SQUARE_REQ )
     VERIFY_ROOM_STATE( ( 1, KBaseRoomFSM::S_WAIT ), ERM_LEAVE_SQUARE_ACK, KEGS_LEAVE_SQUARE_ACK );
     kPacket.m_iOK	= NetError::NET_OK;
 
+#ifdef X2_VILLAGE_SYNC
+	RemoveMoveSyncUnit( FIRST_SENDER_UID );
+#endif // X2_VILLAGE_SYNC
 	if( m_kSquareUserManager.LeaveSquare( FIRST_SENDER_UID ) == false )
 	{
 		START_LOG( cerr, L"Failed to leave square." );
@@ -446,6 +569,9 @@ _IMPL_ON_FUNC( ERM_CHECK_INVALID_USER_NOT, UidType )
 	for( int i = 0; i < (int)vecDelUserUID.size(); i++ )
 	{
 		m_kSquareUserManager.LeaveSquare( vecDelUserUID[i] );
+#ifdef X2_VILLAGE_SYNC
+		RemoveMoveSyncUnit( vecDelUserUID[i] );
+#endif // X2_VILLAGE_SYNC
 	}
 
 	//남은 유저에게 지워진 유저 나간 정보를 알린다.

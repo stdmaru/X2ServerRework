@@ -3,9 +3,6 @@
 
 
 #include "./X2TFieldGame.h"
-#ifdef X2_VILLAGE_SYNC
-#include <chrono>
-#endif // X2_VILLAGE_SYNC
 
 CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareData )
 : m_pNpcShadow( NULL )
@@ -881,15 +878,8 @@ CX2SquareUnit* CX2TFieldGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit 
 
 
 #ifdef X2_VILLAGE_SYNC
-	pCX2FieldUnit->SetStateSync( m_bStateSync );
-	// states that came while its models loaded
-	std::map< UidType, PendingState >::iterator itPending = m_mapPendingState.find( pCX2FieldUnit->GetUID() );
-	if( itPending != m_mapPendingState.end() )
-	{
-		if( bMyUnit == false )
-			pCX2FieldUnit->PushFieldUnitState( itPending->second.uiTick, itPending->second.kState );
-		m_mapPendingState.erase( itPending );
-	}
+	if( m_bStateSync )
+		m_kStateSync.OnUnitAdded( pCX2FieldUnit.get(), bMyUnit );
 #endif // X2_VILLAGE_SYNC
 	pCX2FieldUnit->StateChange( pCX2FieldUnit->GetStateID().m_Wait );
 
@@ -966,7 +956,7 @@ CX2SquareUnit* CX2TFieldGame::AddUnit( CX2Unit* pUnit, bool bMyUnit, bool bInit 
 void CX2TFieldGame::RemoveUnit( UidType unitUID )
 {
 #ifdef X2_VILLAGE_SYNC
-	m_mapPendingState.erase( unitUID );
+	m_kStateSync.OnUnitRemoved( unitUID );
 #endif // X2_VILLAGE_SYNC
 
 	if ( NULL != g_pData->GetRelationshipManager() &&
@@ -1497,13 +1487,7 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 #ifdef X2_VILLAGE_SYNC
 	// the own unit's state 10 times per second (the server's tick)
 	if( m_bStateSync )
-	{
-		if( m_fStateSyncTime >= 0.1f )
-		{
-			SendUnitState();
-			m_fStateSyncTime = 0.f;
-		}
-	}
+		m_kStateSync.FrameMove( fElapsedTime, m_pMyUnit.get(), m_bLoadComplete );
 	else
 #endif // X2_VILLAGE_SYNC
 	if(m_fStateSyncTime >= 2.0f)
@@ -2654,95 +2638,15 @@ void CX2TFieldGame::SyncUnitFrame()
 }
 
 #ifdef X2_VILLAGE_SYNC
-/*static*/ uint32_t CX2TFieldGame::GetSyncClockMs()
-{
-	return static_cast< uint32_t >( std::chrono::duration_cast< std::chrono::milliseconds >(
-		std::chrono::steady_clock::now().time_since_epoch() ).count() );
-}
-
-uint32_t CX2TFieldGame::GetFieldRenderTick() const
-{
-	return m_kServerClock.ToServer( GetSyncClockMs() ) - KFieldUnitSnapshots::Config().uiDelayMs;
-}
-
-void CX2TFieldGame::SendUnitState()
-{
-	if( m_pMyUnit == NULL || m_bLoadComplete == false )
-		return;
-
-	const KFieldUnitState kState = m_pMyUnit->GetFieldUnitState();
-	const bool bChanged = !m_bSentState
-		|| kState.m_vPos.x != m_kSentState.m_vPos.x || kState.m_vPos.y != m_kSentState.m_vPos.y
-		|| kState.m_vPos.z != m_kSentState.m_vPos.z || kState.m_sSpeedX != m_kSentState.m_sSpeedX
-		|| kState.m_sSpeedY != m_kSentState.m_sSpeedY || kState.m_sLineIndex != m_kSentState.m_sLineIndex
-		|| kState.m_ucStateID != m_kSentState.m_ucStateID || kState.m_ucStateSeq != m_kSentState.m_ucStateSeq
-		|| kState.m_bIsRight != m_kSentState.m_bIsRight;
-	// standing still sends nothing, but once: the others see it stopped where it stopped
-	if( !bChanged && !m_bSentChange )
-		return;
-
-	KEGS_FIELD_UNIT_STATE_NOT kPacket;
-	kPacket.m_uiTick = GetSyncClockMs();
-	if( m_bSentState && static_cast< int32_t >( kPacket.m_uiTick - m_uiSentTick ) <= 0 )
-		kPacket.m_uiTick = m_uiSentTick + 1;	// the server drops a tick that does not advance
-	kPacket.m_kState = kState;
-	g_pData->GetServerProtocol()->SendPacket( EGS_FIELD_UNIT_STATE_NOT, kPacket );
-
-	m_bSentState	= true;
-	m_bSentChange	= bChanged;
-	m_kSentState	= kState;
-	m_uiSentTick	= kPacket.m_uiTick;
-}
-
 void CX2TFieldGame::ReceiveStateBatch( const KEGS_FIELD_UNIT_STATE_BATCH_NOT& kBatch )
 {
-	KTDXPROFILE();
-
-	m_kServerClock.OnBatch( kBatch.m_uiTick, GetSyncClockMs() );
-
-	// units that never got created (left before they loaded, or not drawn at all)
-	for( std::map< UidType, PendingState >::iterator it = m_mapPendingState.begin(); it != m_mapPendingState.end(); )
-	{
-		if( kBatch.m_uiTick - it->second.uiTick > 60000 )
-			it = m_mapPendingState.erase( it );
-		else
-			++it;
-	}
-
-	for( const KFieldUnitStateEntry& kEntry : kBatch.m_vecUnit )
-	{
-		if( m_pMyUnit != NULL && m_pMyUnit->GetUID() == kEntry.m_UnitUID )
-			continue;
-
-		CX2SquareUnit* pUnit = GetSquareUnitByUID( kEntry.m_UnitUID );
-		if( pUnit != NULL )
-		{
-			pUnit->PushFieldUnitState( kEntry.m_uiTick, kEntry.m_kState );
-			continue;
-		}
-
-		// a unit that came into view is created once its models load (AddUnitToDeviceList); its state comes at
-		// once, and a unit standing still sends no other
-		m_mapPendingState[ kEntry.m_UnitUID ] = PendingState{ kEntry.m_uiTick, kEntry.m_kState };
-
-		// not drawn here: a party member's position still goes to the party list, as the original's sync did
-		if( g_pData != NULL && g_pData->GetPartyManager()->DoIHaveParty() == true
-			&& g_pData->GetPartyManager()->IsMyPartyMember( kEntry.m_UnitUID ) == true )
-		{
-			const VECTOR3& vPos = kEntry.m_kState.m_vPos;
-			g_pData->GetPartyManager()->GetMyPartyData()->GetPartyMemberData( kEntry.m_UnitUID )->m_vPosition = D3DXVECTOR3( vPos.x, vPos.y, vPos.z );
-		}
-	}
+	m_kStateSync.ReceiveBatch( kBatch, m_pMyUnit != NULL ? m_pMyUnit->GetUID() : 0,
+		[this]( UidType iUnitUID ) { return GetSquareUnitByUID( iUnitUID ); } );
 }
 
 void CX2TFieldGame::ReceiveCorrection( const KEGS_FIELD_UNIT_CORRECTION_NOT& kCorrection )
 {
-	if( m_pMyUnit == NULL )
-		return;
-
-	dbg::clog << L"Village movement corrected by the server, reason " << static_cast< int >( kCorrection.m_ucReason ) << dbg::endl;
-	m_pMyUnit->ApplyFieldCorrection( kCorrection.m_kState );
-	m_bSentChange = true;	// tell the server where the unit is now, even if it stays
+	m_kStateSync.ReceiveCorrection( m_pMyUnit.get(), kCorrection );
 }
 #endif // X2_VILLAGE_SYNC
 

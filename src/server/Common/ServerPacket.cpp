@@ -5943,6 +5943,20 @@ SERIALIZE_DEFINE_GET( KETR_FIELD_UNIT_SYNC_DATA_BROAD_NOT, obj, ks )
 //}}
 
 #ifdef X2_VILLAGE_SYNC
+SERIALIZE_DEFINE_PUT( KERM_SQUARE_UNIT_STATE_NOT, obj, ks )
+{
+	return PUT( m_kState )
+		&& PUT( m_bFastMove )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KERM_SQUARE_UNIT_STATE_NOT, obj, ks )
+{
+	return GET( m_kState )
+		&& GET( m_bFastMove )
+		;
+}
+
 SERIALIZE_DEFINE_PUT( KERM_FIELD_UNIT_CORRECTION_NOT, obj, ks )
 {
 	return PUT( m_kCorrection )

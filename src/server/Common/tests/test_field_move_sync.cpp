@@ -162,6 +162,40 @@ TEST_CASE( "KFieldMoveSync: batches" )
 	CHECK( kSync.OnState( 2, StateNot( 70100, 2540 ), 1650 ).bAccepted );
 }
 
+TEST_CASE( "KFieldMoveSync: shared batches (squares)" )
+{
+	KFieldMoveSync kSync = MakeSync();
+	KEGS_FIELD_UNIT_STATE_BATCH_NOT kShared;
+	std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT > mapExtra;
+
+	kSync.AddUnit( 1, VECTOR3( 100, 0, 0 ), false, 1000 );
+	kSync.BuildSharedBatch( 1000, kShared, mapExtra );
+	REQUIRE( kShared.m_vecUnit.size() == 1 );		// who entered, for all
+	CHECK( kShared.m_uiTick == 1000u );
+	CHECK( mapExtra.empty() );
+
+	kSync.BuildSharedBatch( 1100, kShared, mapExtra );
+	CHECK( kShared.m_vecUnit.empty() );
+
+	// a second unit enters: everyone gets it, and it gets the ones already there
+	kSync.AddUnit( 2, VECTOR3( 500, 0, 0 ), false, 1150 );
+	kSync.ShowAllTo( 2 );
+	kSync.BuildSharedBatch( 1200, kShared, mapExtra );
+	REQUIRE( kShared.m_vecUnit.size() == 1 );
+	CHECK( kShared.m_vecUnit[ 0 ].m_UnitUID == 2 );
+	REQUIRE( mapExtra.size() == 1 );
+	REQUIRE( mapExtra[ 2 ].m_vecUnit.size() == 1 );
+	CHECK( mapExtra[ 2 ].m_vecUnit[ 0 ].m_UnitUID == 1 );
+
+	// one that moved is in the shared batch only
+	CHECK( kSync.OnState( 1, StateNot( 50000, 140 ), 1250 ).bAccepted );
+	kSync.ShowTo( 2, 1 );
+	kSync.BuildSharedBatch( 1300, kShared, mapExtra );
+	REQUIRE( kShared.m_vecUnit.size() == 1 );
+	CHECK( kShared.m_vecUnit[ 0 ].m_kState.m_vPos.x == doctest::Approx( 140.f ) );
+	CHECK( mapExtra.empty() );
+}
+
 TEST_CASE( "KFieldMoveSync: corrections and kicks" )
 {
 	KFieldMoveSync::Config kConfig;

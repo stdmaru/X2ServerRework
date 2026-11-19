@@ -3352,6 +3352,9 @@ enum
 	_ENUM( ERM_FIELD_UNIT_STATE_NOT )
 	_ENUM( ERM_FIELD_UNIT_CORRECTION_NOT )
 	_ENUM( ETR_FIELD_UNIT_STATE_BATCH_NOT )
+	// squares (CenterServer rooms): GSUser -> square, square -> GSUser
+	_ENUM( ERM_SQUARE_UNIT_STATE_NOT )
+	_ENUM( ERM_FIELD_UNIT_STATE_BATCH_NOT )
 #endif // X2_VILLAGE_SYNC
 
 	//////////////////////////////////////////////////////////////////////////
