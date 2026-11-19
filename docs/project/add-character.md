@@ -107,6 +107,18 @@ and Elesis's first two (with the sync above) and Add's first (this PR) come next
   game cannot do. Every class we have today has its job change quests (checked 2026-11-16).
 - **Per-character scene lines** need nothing per class: a scene picks its line by unit type (`PLAYER_TEXT<type - 1>`),
   and our scenes have all nine types since 2026-11-16 (`merge_player_text.py`, [client_data](../tools/client-data.md)).
+- **V5's code for these classes is a 2026 reconstruction, not KOG's** (checked 2026-11-19): V5's repository is a git
+  history from its V4 release (2026-08-15, the August 2014 source) to V5 (2026-09-08), and its `CHANGELOG.md` says the
+  March 2015 content was "ported feature-by-feature" from the official 2015 `x2.exe` through IDA/Hex-Rays pseudo-C.
+  Every flag of these classes (`SERV_ADD_ARC_TRACER`, `SERV_ARA_LITTLE_SPECTER`, ...) sits in a `2026-08 MARCH2015gc`
+  block of its `ServerDefine.h`, with `[AUG2014]`/`[MAR2015]` tags; V4 already had part of Add's second path
+  (`SI_SA_AAT_INSTALLATION_DRONE_ACTIVATOR`, tagged `[AUG2014]`), none of the third paths. `git diff ae28cbe8 379dc65d`
+  isolates what V5 added (415 C++ files, +85,804/−45,687 lines, other systems included: professions, customization,
+  random missions, PvE): `X2GUAdd.cpp` +7,044, `X2GUAra.cpp` +3,395, `X2GUEL.cpp` +2,687, `X2GameUnit.cpp` +2,307.
+- **Assets**: the skills' animations live in the characters' KSM motion files (`ELESIS_KNIGHT.lua` plays
+  `SI_SA_SDK_BRUTAL_CUTTER` from `Motion_EL_Common.x`). Ours (2014-03, 1.4 MB) predates them; BR 2017's
+  (`kom_BR/data206_kom`, 6.1 MB) is newer. KSM names are not plain text in the file, so checking which sets a motion
+  file has needs a reader (`KTDXAnimationController::ReadFromMemory`).
 - **Still to check in PR 83**: packets or structs these classes need (T4: the original `x2.exe` must still connect);
   `Game01` (`gup_create_unit` and the job change procedures for the new classes); the character switches of PR 81.
 
