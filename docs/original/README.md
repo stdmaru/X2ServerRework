@@ -29,6 +29,7 @@ This page is reference material; decisions based on it are recorded in [Project 
 | [Debug and development](debug-and-development.md) | Debug/admin tools to retain (`X2_DEBUG`) |
 | [Encoding](encoding.md) | CP949, line endings, original code conventions |
 | [Squares](squares.md) | The trade plaza: where it runs, its table, types, entrances, personal shops |
+| [Village movement sync](village-sync.md) | How villages show other players moving (input replay every 2 s over TCP) and why it lags |
 | [Original bugs](bugs.md) | Original incorrect behavior retained in the port: Phase 5 backlog |
 
 ## Out of scope
