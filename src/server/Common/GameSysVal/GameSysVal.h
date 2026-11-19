@@ -234,6 +234,10 @@ public:
 	bool	GetHackingUserKick()							{	return m_bHackingUserKick;	}
 	//}}
 
+	// village movement violations within a minute that kick the user (T53); 0 never kicks
+	void	SetVillageMoveKickViolations_LUA( int iViolations );
+	int		GetVillageMoveKickViolations() const			{	return m_iVillageMoveKickViolations;	}
+
 	//{{ 2012. 07. 12	최육사		랜덤 큐브 오픈 딜레이 시스템
 	void	SetEnableOpenRandomCubeDelaySystem_LUA( bool bValue );
 	void	SetOpenRandomCubeDelayTime_LUA( double fTime );
@@ -421,6 +425,7 @@ protected:
 
 	//{{ 2012. 06. 04	김민성       서버 해킹 유저 체크 요청 응답으로 변경
 	bool						m_bHackingUserKick;
+	int							m_iVillageMoveKickViolations = 20;
 	//}}
 
 	//{{ 2011. 06. 07    김민성    우편 및 거래 감시 실시간 계정 블록

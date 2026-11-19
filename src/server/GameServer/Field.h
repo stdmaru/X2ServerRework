@@ -21,6 +21,11 @@
 
 #include "FieldUserManager.h"
 
+#ifdef X2_VILLAGE_SYNC
+#include "LineMap/FieldMoveSync.h"
+#include <memory>
+#endif // X2_VILLAGE_SYNC
+
 //{{ 2008. 12. 19  최육사	프로파일러
 #include "Profiler/Profiler.h"
 //}}
@@ -115,6 +120,9 @@ protected:
 
 	DECL_ON_FUNC( ERM_LEAVE_FIELD_REQ );
    _DECL_ON_FUNC( ERM_FIELD_UNIT_SYNC_DATA_NOT, KEGS_FIELD_UNIT_SYNC_DATA_NOT );
+#ifdef X2_VILLAGE_SYNC
+   _DECL_ON_FUNC( ERM_FIELD_UNIT_STATE_NOT, KEGS_FIELD_UNIT_STATE_NOT );
+#endif // X2_VILLAGE_SYNC
 	DECL_ON_FUNC( ERM_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT );
 	//{{ 2008. 12. 9  최육사	친구리스트
 	DECL_ON_FUNC( ERM_OPTION_UPDATE_NOT );
@@ -161,9 +169,21 @@ protected:
 	_DECL_ON_FUNC( ERM_UNSUMMON_RIDING_PET_NOT, KEGS_UNSUMMON_RIDING_PET_NOT );
 
 protected:
+#ifdef X2_VILLAGE_SYNC
+	// village movement (T53): created on first use, once the server has loaded the line maps
+	KFieldMoveSync&		GetMoveSync();
+	void				AddMoveSyncUnit( const KERM_JOIN_FIELD_REQ& kJoin, const std::vector< KFieldUserInfo >& vecSeen );
+	void				TickMoveSync();
+	// moves a unit between sectors as EGS_FIELD_UNIT_SYNC_DATA_NOT did, and the units that come into view are sent
+	void				MoveUserToSector( UidType iUnitUID, const VECTOR3& vPos );
+#endif // X2_VILLAGE_SYNC
+
 	int					m_iMapID;
 
 	KFieldUserManager	m_kFieldUserManager;
+#ifdef X2_VILLAGE_SYNC
+	std::unique_ptr< KFieldMoveSync >	m_spMoveSync;
+#endif // X2_VILLAGE_SYNC
 };
 
 template < class T >

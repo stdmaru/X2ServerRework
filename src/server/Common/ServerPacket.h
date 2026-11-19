@@ -3,6 +3,9 @@
 //#include <Serializer/SerializeMacro.h>
 //#include "KncUidType.h"
 #include "CommonPacket.h"
+#ifdef X2_VILLAGE_SYNC
+#include "ClientPacket.h"	// the village sync packets the field relays (T53)
+#endif // X2_VILLAGE_SYNC
 
 #pragma pack( push, 1 )
 
@@ -3446,6 +3449,9 @@ DECL_PACKET( ERM_JOIN_FIELD_REQ )
 	std::set< UidType >					m_setFriendUIDList;
 	KFieldOption						m_kFieldOption;
 	//}}
+#ifdef X2_VILLAGE_SYNC
+	bool								m_bFastMove = false;	// an X2_DEBUG operator (CX2SquareUnit moves 6 times faster)
+#endif // X2_VILLAGE_SYNC
 };
 
 DECL_PACKET( ERM_JOIN_FIELD_ACK )
@@ -3476,6 +3482,25 @@ DECL_PACKET( ETR_FIELD_UNIT_SYNC_DATA_BROAD_NOT )
 	bool								m_bIsRight;
 };
 //}}
+
+#ifdef X2_VILLAGE_SYNC
+// The field's answer to a rejected village movement update (T53): the correction for the client, and whether the
+// user is kicked for too many violations.
+DECL_PACKET( ERM_FIELD_UNIT_CORRECTION_NOT )
+{
+	KEGS_FIELD_UNIT_CORRECTION_NOT		m_kCorrection;
+	int									m_iViolations;
+	bool								m_bKick;
+
+	KERM_FIELD_UNIT_CORRECTION_NOT() : m_iViolations( 0 ), m_bKick( false ) {}
+};
+
+DECL_PACKET( ETR_FIELD_UNIT_STATE_BATCH_NOT )
+{
+	std::vector< UidType >				m_vecUID;
+	KEGS_FIELD_UNIT_STATE_BATCH_NOT		m_kBatch;
+};
+#endif // X2_VILLAGE_SYNC
 
 //////////////////////////////////////////////////////////////////////////
 DECL_PACKET( ETR_CHANGE_USER_LIST_IN_SECTOR_NOT )

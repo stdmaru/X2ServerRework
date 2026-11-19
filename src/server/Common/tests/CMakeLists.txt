@@ -14,6 +14,7 @@ add_executable(x2_server_common_tests
     test_square_unit_physics.cpp
     test_village_sync_packets.cpp
     test_village_move_validator.cpp
+    test_field_move_sync.cpp
     server_hooks.cpp)
 target_link_libraries(x2_server_common_tests PRIVATE x2::server_common doctest::doctest)
 add_test(NAME server_common COMMAND x2_server_common_tests --test-suite-exclude=db)

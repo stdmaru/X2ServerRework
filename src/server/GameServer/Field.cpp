@@ -13,6 +13,12 @@
 #include "Enum/Enum.h"
 //}}
 
+#ifdef X2_VILLAGE_SYNC
+#include "GameSysVal/GameSysVal.h"
+#include "LineMap/SquareUnitPhysics.h"
+#include "LineMap/WorldLineMaps.h"
+#endif // X2_VILLAGE_SYNC
+
 #define CLASS_TYPE KField
 
 NiImplementRTTI( KField, KPerformer );
@@ -44,6 +50,9 @@ void KField::Tick()
 		break;
 
 	case KFieldFSM::S_WAIT:
+#ifdef X2_VILLAGE_SYNC
+		TickMoveSync();
+#endif // X2_VILLAGE_SYNC
 		break;
 
 	case KFieldFSM::S_CLOSE:
@@ -179,6 +188,9 @@ void KField::ProcessEvent( const KEventPtr& spEvent_ )
 
 	CASE( ERM_LEAVE_FIELD_REQ );
    _CASE( ERM_FIELD_UNIT_SYNC_DATA_NOT, KEGS_FIELD_UNIT_SYNC_DATA_NOT );
+#ifdef X2_VILLAGE_SYNC
+   _CASE( ERM_FIELD_UNIT_STATE_NOT, KEGS_FIELD_UNIT_STATE_NOT );
+#endif // X2_VILLAGE_SYNC
 	CASE( ERM_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT );
 
 	CASE( ERM_OPTION_UPDATE_NOT );
@@ -296,6 +308,9 @@ IMPL_ON_FUNC( ERM_JOIN_FIELD_REQ )
 	kPacket.m_iOK		= NetError::NET_OK;
 	kPacket.m_iFieldUID = GetUID();
 	SendToCharacter( FIRST_SENDER_UID, ERM_JOIN_FIELD_ACK, kPacket );
+#ifdef X2_VILLAGE_SYNC
+	AddMoveSyncUnit( kPacket_, kChangeToThisNot.m_vecNewUserList );
+#endif // X2_VILLAGE_SYNC
 
 	//////////////////////////////////////////////////////////////////////////
     kChangeToThisNot.m_vecUID.push_back( FIRST_SENDER_UID );
@@ -345,6 +360,9 @@ _IMPL_ON_FUNC( ERM_JOIN_FIELD_CHANNEL_CHANGE_REQ, KERM_JOIN_FIELD_REQ )
 	kPacket.m_iOK		= NetError::NET_OK;
 	kPacket.m_iFieldUID = GetUID();
 	SendToCharacter( FIRST_SENDER_UID, ERM_JOIN_FIELD_CHANNEL_CHANGE_ACK, kPacket );
+#ifdef X2_VILLAGE_SYNC
+	AddMoveSyncUnit( kPacket_, kChangeToThisNot.m_vecNewUserList );
+#endif // X2_VILLAGE_SYNC
 
 	//////////////////////////////////////////////////////////////////////////
 	kChangeToThisNot.m_vecUID.push_back( FIRST_SENDER_UID );
@@ -382,6 +400,10 @@ IMPL_ON_FUNC( ERM_LEAVE_FIELD_REQ )
 		SendToCharacter( FIRST_SENDER_UID, ERM_LEAVE_FIELD_ACK, kPacket );
 		return;
 	}
+
+#ifdef X2_VILLAGE_SYNC
+	GetMoveSync().RemoveUnit( FIRST_SENDER_UID );
+#endif // X2_VILLAGE_SYNC
 
 	if( kPacket_.m_iReason == NetError::NOT_LEAVE_FIELD_REASON_00 )
 	{
@@ -438,6 +460,113 @@ _IMPL_ON_FUNC( ERM_FIELD_UNIT_SYNC_DATA_NOT, KEGS_FIELD_UNIT_SYNC_DATA_NOT )
         SendToTR( ETR_FIELD_UNIT_SYNC_DATA_BROAD_NOT, kPacketNot );
     }
 }
+
+#ifdef X2_VILLAGE_SYNC
+_IMPL_ON_FUNC( ERM_FIELD_UNIT_STATE_NOT, KEGS_FIELD_UNIT_STATE_NOT )
+{
+	VERIFY_STATE( ( 1, KFieldFSM::S_WAIT ) );
+
+	KFieldMoveSync& kSync = GetMoveSync();
+	kSync.SetKickViolations( SiKGameSysVal()->GetVillageMoveKickViolations() );
+	const KFieldMoveSync::Result kResult = kSync.OnState( FIRST_SENDER_UID, kPacket_, ::GetTickCount() );
+	if( kResult.bAccepted )
+	{
+		MoveUserToSector( FIRST_SENDER_UID, kPacket_.m_kState.m_vPos );
+		return;
+	}
+	if( kResult.bCorrect )
+	{
+		KERM_FIELD_UNIT_CORRECTION_NOT kNot;
+		kNot.m_kCorrection = kResult.kCorrection;
+		kNot.m_iViolations = kResult.iViolations;
+		kNot.m_bKick = kResult.bKick;
+		SendToCharacter( FIRST_SENDER_UID, ERM_FIELD_UNIT_CORRECTION_NOT, kNot );
+	}
+}
+
+KFieldMoveSync& KField::GetMoveSync()
+{
+	if( !m_spMoveSync )
+	{
+		const CXSLLineMap* pLineMap = SiKWorldLineMaps()->GetByVillage( m_iMapID );
+		if( pLineMap == nullptr )
+		{
+			START_LOG( cwarn, L"A village with no line map: movement is checked without it." )
+				<< BUILD_LOG( m_iMapID )
+				<< END_LOG;
+		}
+		m_spMoveSync = std::make_unique< KFieldMoveSync >( pLineMap, *SiKSquareUnitPhysics(), KFieldMoveSync::Config() );
+	}
+	return *m_spMoveSync;
+}
+
+void KField::AddMoveSyncUnit( const KERM_JOIN_FIELD_REQ& kJoin, const std::vector< KFieldUserInfo >& vecSeen )
+{
+	const UidType iUnitUID = kJoin.m_kFieldUserInfo.m_iUnitUID;
+	KFieldMoveSync& kSync = GetMoveSync();
+	const KFieldMoveSync::Result kResult = kSync.AddUnit( iUnitUID, kJoin.m_kFieldUserInfo.m_vPos, kJoin.m_bFastMove, ::GetTickCount() );
+	for( const KFieldUserInfo& kSeen : vecSeen )
+		kSync.ShowTo( iUnitUID, kSeen.m_iUnitUID );
+	if( kResult.bCorrect )
+	{
+		// it entered where it cannot be: put on the nearest line
+		MoveUserToSector( iUnitUID, kResult.kCorrection.m_kState.m_vPos );
+		KERM_FIELD_UNIT_CORRECTION_NOT kNot;
+		kNot.m_kCorrection = kResult.kCorrection;
+		SendToCharacter( iUnitUID, ERM_FIELD_UNIT_CORRECTION_NOT, kNot );
+	}
+}
+
+void KField::MoveUserToSector( UidType iUnitUID, const VECTOR3& vPos )
+{
+	KFieldUserInfo kFieldUserInfoOfThis;
+	KETR_CHANGE_USER_LIST_IN_SECTOR_NOT kChangeToThisNot;
+	KETR_CHANGE_USER_LIST_IN_SECTOR_NOT kNewToOtherNot;
+	KETR_CHANGE_USER_LIST_IN_SECTOR_NOT kDelToOtherNot;
+	m_kFieldUserManager.MoveUser( iUnitUID, vPos, kFieldUserInfoOfThis, kNewToOtherNot.m_vecUID, kDelToOtherNot.m_vecUID, kChangeToThisNot.m_vecNewUserList, kChangeToThisNot.m_vecDelUserList );
+
+	KFieldMoveSync& kSync = GetMoveSync();
+	for( const KFieldUserInfo& kSeen : kChangeToThisNot.m_vecNewUserList )
+		kSync.ShowTo( iUnitUID, kSeen.m_iUnitUID );
+	for( UidType iViewer : kNewToOtherNot.m_vecUID )
+		kSync.ShowTo( iViewer, iUnitUID );
+
+	kChangeToThisNot.m_vecUID.push_back( iUnitUID );
+	kNewToOtherNot.m_vecNewUserList.push_back( kFieldUserInfoOfThis );
+	kDelToOtherNot.m_vecDelUserList.push_back( iUnitUID );
+	if( !kChangeToThisNot.m_vecNewUserList.empty() || !kChangeToThisNot.m_vecDelUserList.empty() )
+		SendToTR( ETR_CHANGE_USER_LIST_IN_SECTOR_NOT, kChangeToThisNot );
+	if( !kNewToOtherNot.m_vecUID.empty() )
+		SendToTR( ETR_CHANGE_USER_LIST_IN_SECTOR_NOT, kNewToOtherNot );
+	if( !kDelToOtherNot.m_vecUID.empty() )
+		SendToTR( ETR_CHANGE_USER_LIST_IN_SECTOR_NOT, kDelToOtherNot );
+}
+
+void KField::TickMoveSync()
+{
+	if( !m_spMoveSync )
+		return;
+	const uint32_t uiNow = ::GetTickCount();
+	if( !m_spMoveSync->IsTickDue( uiNow ) )
+		return;
+
+	std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT > mapBatch;
+	m_spMoveSync->BuildBatches( uiNow, [this]( UidType iUnitUID, std::vector< UidType >& vecViewer )
+	{
+		vecViewer.clear();
+		if( m_kFieldUserManager.IsExistUser( iUnitUID ) )
+			m_kFieldUserManager.GetBroadcastDestination( iUnitUID, vecViewer );
+	}, mapBatch );
+
+	for( auto& [iViewer, kBatch] : mapBatch )
+	{
+		KETR_FIELD_UNIT_STATE_BATCH_NOT kNot;
+		kNot.m_vecUID.push_back( iViewer );
+		kNot.m_kBatch = std::move( kBatch );
+		SendToTR( ETR_FIELD_UNIT_STATE_BATCH_NOT, kNot );
+	}
+}
+#endif // X2_VILLAGE_SYNC
 
 IMPL_ON_FUNC( ERM_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT )
 {

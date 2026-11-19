@@ -303,6 +303,7 @@ ImplementLuaScriptParser( KGameSysVal )
 
 	//{{ 2012. 06. 04	김민성       서버 해킹 유저 체크 요청 응답으로 변경
 	lua_tinker::class_def<KGameSysVal>( GetLuaState(), "SetHackingUserKick",					&KGameSysVal::SetHackingUserKick_LUA );
+	lua_tinker::class_def<KGameSysVal>( GetLuaState(), "SetVillageMoveKickViolations",		&KGameSysVal::SetVillageMoveKickViolations_LUA );
 	//}}
 	//{{ 2012. 07. 12	최육사		랜덤 큐브 오픈 딜레이 시스템
 	lua_tinker::class_def<KGameSysVal>( GetLuaState(), "SetEnableOpenRandomCubeDelaySystem",	&KGameSysVal::SetEnableOpenRandomCubeDelaySystem_LUA );
@@ -1009,6 +1010,15 @@ void KGameSysVal::SetHackingUserKick_LUA( bool bValue )
 		<< END_LOG;
 }
 //}}
+
+void KGameSysVal::SetVillageMoveKickViolations_LUA( int iViolations )
+{
+	m_iVillageMoveKickViolations = std::max( 0, iViolations );
+
+	START_LOG( cout, L"Village movement violations per minute that kick: " )
+		<< BUILD_LOG( m_iVillageMoveKickViolations )
+		<< END_LOG;
+}
 
 //{{ 2011. 06. 07    김민성    우편 및 거래 감시 실시간 계정 블록
 void KGameSysVal::SetMonitoringLetterAndTradeBlockTime_LUA( int hh, int mm, int ss, int iDuration_s )

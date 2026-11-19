@@ -5856,6 +5856,9 @@ SERIALIZE_DEFINE_PUT( KERM_JOIN_FIELD_REQ, obj, ks )
 		&& PUT( m_setFriendUIDList )
 		&& PUT( m_kFieldOption )
         //}}
+#ifdef X2_VILLAGE_SYNC
+		&& PUT( m_bFastMove )
+#endif // X2_VILLAGE_SYNC
 		;
 }
 
@@ -5868,6 +5871,9 @@ SERIALIZE_DEFINE_GET( KERM_JOIN_FIELD_REQ, obj, ks )
 		&& GET( m_setFriendUIDList )
 		&& GET( m_kFieldOption )
 		//}}
+#ifdef X2_VILLAGE_SYNC
+		&& GET( m_bFastMove )
+#endif // X2_VILLAGE_SYNC
 		;
 }
 
@@ -5935,6 +5941,38 @@ SERIALIZE_DEFINE_GET( KETR_FIELD_UNIT_SYNC_DATA_BROAD_NOT, obj, ks )
 		;
 }
 //}}
+
+#ifdef X2_VILLAGE_SYNC
+SERIALIZE_DEFINE_PUT( KERM_FIELD_UNIT_CORRECTION_NOT, obj, ks )
+{
+	return PUT( m_kCorrection )
+		&& PUT( m_iViolations )
+		&& PUT( m_bKick )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KERM_FIELD_UNIT_CORRECTION_NOT, obj, ks )
+{
+	return GET( m_kCorrection )
+		&& GET( m_iViolations )
+		&& GET( m_bKick )
+		;
+}
+
+SERIALIZE_DEFINE_PUT( KETR_FIELD_UNIT_STATE_BATCH_NOT, obj, ks )
+{
+	return PUT( m_vecUID )
+		&& PUT( m_kBatch )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KETR_FIELD_UNIT_STATE_BATCH_NOT, obj, ks )
+{
+	return GET( m_vecUID )
+		&& GET( m_kBatch )
+		;
+}
+#endif // X2_VILLAGE_SYNC
 
 //////////////////////////////////////////////////////////////////////////
 SERIALIZE_DEFINE_PUT( KETR_CHANGE_USER_LIST_IN_SECTOR_NOT, obj, ks )

@@ -74,7 +74,12 @@ void KNetLayer::DumpToLogFile()
 
 bool KNetLayer::Init()
 {
+#ifdef X2_VILLAGE_SYNC
+	// small, frequent movement packets and their corrections: sent right away (T53)
+	m_kAccepter.Init( m_usPortMaster, KNetLayer::OnAccept, false );
+#else
 	m_kAccepter.Init( m_usPortMaster, KNetLayer::OnAccept );
+#endif // X2_VILLAGE_SYNC
 
     // 050502. florist. 보안 코드 초기화 설정
     KncSecurity::InitSecurity();

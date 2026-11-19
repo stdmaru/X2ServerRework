@@ -20,6 +20,14 @@
 //}}
 
 #include "GameEvent/GameEventManager.h"
+#ifdef X2_VILLAGE_SYNC
+#include "LineMap/WorldLineMaps.h"
+#include "LineMap/XSLLineMap.h"
+#include <algorithm>
+#include <bit>
+#include <climits>
+#include <cmath>
+#endif // X2_VILLAGE_SYNC
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -305,6 +313,9 @@ IMPL_ON_FUNC( EGS_FIELD_LOADING_COMPLETE_REQ )
 		// 아직 필드에 입장해있지 않다!
 		GetFieldUserInfo( kPacket.m_kFieldUserInfo );
 		kPacket.m_kFieldUserInfo.m_vPos = kPacket_.m_vPos;
+#if defined( X2_VILLAGE_SYNC ) && defined( X2_DEBUG )
+		kPacket.m_bFastMove = GetAuthLevel() >= SEnum::UAL_GM;	// CX2SquareUnit: XUAL_OPERATOR and up
+#endif
 		kPacket.m_kFieldOption		    = m_kFieldOption;
 		if( GetPartyUID() > 0 )
 		{
@@ -518,6 +529,10 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_SYNC_DATA_NOT )
 			return;
 		}
 
+#ifdef X2_VILLAGE_SYNC
+		// villages take EGS_FIELD_UNIT_STATE_NOT (T53); the dungeon lounge (S_ROOM) still takes this one
+		return;
+#endif // X2_VILLAGE_SYNC
 		SendToGSField( ERM_FIELD_UNIT_SYNC_DATA_NOT, kPacket_ );
 
 		//{{ 2012. 02. 02	최육사	배틀필드 시스템
@@ -593,6 +608,89 @@ _IMPL_ON_FUNC( ERM_FIELD_UNIT_SYNC_DATA_BROAD_NOT, KEGS_FIELD_UNIT_SYNC_DATA_BRO
 	// 던전 라운지로부터 오는 싱크 이벤트
 	SendPacket( EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT, kPacket_ );
 }
+
+#ifdef X2_VILLAGE_SYNC
+namespace
+{
+// A fraction of a line as the client stores it in m_usLastPosValue (floatToHalf, KTDXCommonFunc.h), for 0..1.
+unsigned short FractionToHalf( float f )
+{
+	f = std::clamp( f, 0.f, 1.f );
+	const uint32_t i = std::bit_cast< uint32_t >( f );
+	const int e = static_cast< int >( ( i >> 23 ) & 0xff ) - ( 127 - 15 );
+	int m = static_cast< int >( i & 0x007fffff );
+	if( e <= 0 )
+	{
+		if( e < -10 )
+			return 0;
+		m = ( m | 0x00800000 ) >> ( 1 - e );
+		return static_cast< unsigned short >( m >> 13 );
+	}
+	return static_cast< unsigned short >( ( e << 10 ) | ( m >> 13 ) );
+}
+}	// namespace
+
+// Village movement (T53): the field validates it and sends it to the units that see this one.
+IMPL_ON_FUNC( EGS_FIELD_UNIT_STATE_NOT )
+{
+	// the dungeon lounge (S_ROOM) joins with the CenterServer's rooms; a state packet arriving while the user moves
+	// between field and room is dropped
+	if( GetStateID() != KGSFSM::S_FIELD_MAP || GetFieldUID() == 0 )
+		return;
+
+	SendToGSField( ERM_FIELD_UNIT_STATE_NOT, kPacket_ );
+
+	// where the user comes back (EGS_FIELD_LOADING_COMPLETE_REQ stores the same): the line and how far along it.
+	// As the original, it is what the client says; the field corrects a client that lies about where it is.
+	const KFieldUnitState& kState = kPacket_.m_kState;
+	if( kState.m_sLineIndex < 0 || kState.m_sLineIndex > UCHAR_MAX )
+		return;
+	m_kLastPos.m_ucLastTouchLineIndex = static_cast< unsigned char >( kState.m_sLineIndex );
+	float fFraction = 0.5f;
+	if( const CXSLLineMap* pLineMap = SiKWorldLineMaps()->GetByVillage( GetMapID() ) )
+	{
+		if( const CXSLLineMap::LineData* pLine = pLineMap->GetLineData( kState.m_sLineIndex ) )
+		{
+			const D3DXVECTOR3 vLine = pLine->endPos - pLine->startPos;
+			const D3DXVECTOR3 vPos( kState.m_vPos.x - pLine->startPos.x, kState.m_vPos.y - pLine->startPos.y, kState.m_vPos.z - pLine->startPos.z );
+			const float fLineLength = std::sqrt( vLine.x * vLine.x + vLine.y * vLine.y + vLine.z * vLine.z );
+			if( fLineLength > 0.f )
+				fFraction = std::sqrt( vPos.x * vPos.x + vPos.y * vPos.y + vPos.z * vPos.z ) / fLineLength;
+		}
+	}
+	m_kLastPos.m_usLastPosValue = FractionToHalf( fFraction );
+}
+
+IMPL_ON_FUNC( ERM_FIELD_UNIT_CORRECTION_NOT )
+{
+	if( GetStateID() != KGSFSM::S_FIELD_MAP )
+		return;
+
+	SendPacket( EGS_FIELD_UNIT_CORRECTION_NOT, kPacket_.m_kCorrection );
+
+	START_LOG( cwarn, L"Village movement rejected." )
+		<< BUILD_LOG( GetCharUID() )
+		<< BUILD_LOG( GetCharName() )
+		<< BUILD_LOG( GetMapID() )
+		<< BUILD_LOG( static_cast< int >( kPacket_.m_kCorrection.m_ucReason ) )
+		<< BUILD_LOG( kPacket_.m_iViolations )
+		<< BUILD_LOG( kPacket_.m_kCorrection.m_kState.m_vPos.x )
+		<< BUILD_LOG( kPacket_.m_kCorrection.m_kState.m_vPos.y )
+		<< BUILD_LOG( kPacket_.m_kCorrection.m_kState.m_vPos.z )
+		<< END_LOG;
+
+	if( kPacket_.m_bKick )
+	{
+		START_LOG( cerr, L"Kicking a user for village movement violations." )
+			<< BUILD_LOG( GetCharUID() )
+			<< BUILD_LOG( GetCharName() )
+			<< BUILD_LOG( kPacket_.m_iViolations )
+			<< END_LOG;
+		SetDisconnectReason( KStatistics::eSIColDR_Client_Hacking );
+		ReserveDestroy();
+	}
+}
+#endif // X2_VILLAGE_SYNC
 
 //{{ 2009. 1. 13  최육사	필드 유저 리스트
 IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )

@@ -4,7 +4,7 @@
 
 #include "ServerPacket.h"
 
-TEST_CASE("server packets: Put -> Get -> Put round trip (923 types)")
+TEST_CASE("server packets: Put -> Get -> Put round trip (925 types)")
 {
     CheckRoundTrip<KServerInfo>("KServerInfo");
     CheckRoundTrip<KECN_VERIFY_SERVER_CONNECT_REQ>("KECN_VERIFY_SERVER_CONNECT_REQ");
@@ -278,6 +278,12 @@ TEST_CASE("server packets: Put -> Get -> Put round trip (923 types)")
     CheckRoundTrip<KERM_LEAVE_FIELD_REQ>("KERM_LEAVE_FIELD_REQ");
     CheckRoundTrip<KERM_LEAVE_FIELD_ACK>("KERM_LEAVE_FIELD_ACK");
     CheckRoundTrip<KETR_FIELD_UNIT_SYNC_DATA_BROAD_NOT>("KETR_FIELD_UNIT_SYNC_DATA_BROAD_NOT");
+#if (defined(X2_VILLAGE_SYNC))
+    CheckRoundTrip<KERM_FIELD_UNIT_CORRECTION_NOT>("KERM_FIELD_UNIT_CORRECTION_NOT");
+#endif
+#if (defined(X2_VILLAGE_SYNC))
+    CheckRoundTrip<KETR_FIELD_UNIT_STATE_BATCH_NOT>("KETR_FIELD_UNIT_STATE_BATCH_NOT");
+#endif
     CheckRoundTrip<KETR_CHANGE_USER_LIST_IN_SECTOR_NOT>("KETR_CHANGE_USER_LIST_IN_SECTOR_NOT");
     CheckRoundTrip<KERM_OPTION_UPDATE_NOT>("KERM_OPTION_UPDATE_NOT");
     CheckRoundTrip<KERM_UPDATE_PARTY_NOT>("KERM_UPDATE_PARTY_NOT");
