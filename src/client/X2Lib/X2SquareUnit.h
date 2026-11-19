@@ -1,6 +1,9 @@
 #pragma once
 
 #include "./X2RidingPet.h"
+#ifdef X2_VILLAGE_SYNC
+#include "LineMap/FieldUnitSnapshots.h"
+#endif // X2_VILLAGE_SYNC
 
 //{{ seojt // 2009-1-13, 17:11
 class CX2SquareUnit;
@@ -380,6 +383,17 @@ class CX2SquareUnit : public CKTDGObject
 		void SetFieldUnit() { m_bTFieldUnit = true; }
 		bool GetFieldUnit_LUA() { return m_bTFieldUnit; }
 
+#ifdef X2_VILLAGE_SYNC
+		// Village movement sync (decision T53): the own unit reports its state, the others are drawn from the states
+		// the server accepted. Off in the dungeon lounge, which keeps the original's input replay.
+		void SetStateSync( bool bStateSync ) { m_bStateSync = bStateSync; }
+		bool IsStateSync() const { return m_bStateSync; }
+		KFieldUnitState GetFieldUnitState() const;
+		void PushFieldUnitState( uint32_t uiServerTick, const KFieldUnitState& kState );
+		// the server rejected an update of the own unit: back to its last valid state
+		void ApplyFieldCorrection( const KFieldUnitState& kState );
+#endif // X2_VILLAGE_SYNC
+
 		void SetFirstGetPacket(bool val) { m_bFirstGetPacket = val; }
 		void SetFirstSync(bool val) { m_bFirstSync = val; }
 		void SetSyncOUStartPos(D3DXVECTOR3 vPos) { m_SyncOUStartPos = vPos; }
@@ -424,6 +438,12 @@ class CX2SquareUnit : public CKTDGObject
 
 		void		SetSyncEventId(u_char eventId);
 		void		SetSyncEventProcess();
+
+#ifdef X2_VILLAGE_SYNC
+		bool		IsRemoteStateSync() const { return m_bStateSync && m_bTFieldUnit && !m_bMyUnit; }
+		void		UpdateRemotePose();			// position, facing, line and state at the moment drawn
+		void		UpdateDirFromLine();		// m_DirDegree and m_bFootOnLine, as PhysicProcess leaves them
+#endif // X2_VILLAGE_SYNC
 
 
 
@@ -532,6 +552,15 @@ class CX2SquareUnit : public CKTDGObject
 		bool							m_bFirstSync;			/// 패킷 처리 후 패킷을 받았는지 여부
 
 		bool							m_bTFieldUnit;			/// 마을 유닛인지 광장유닛인지를 알기위한 정보
+
+#ifdef X2_VILLAGE_SYNC
+		bool							m_bStateSync = false;
+		KFieldUnitSnapshots				m_kSnapshots;			// other units: the states the server accepted
+		bool							m_bAppliedState = false;
+		u_char							m_ucAppliedStateID = 0;	// the last snapshot state entered, and its count
+		u_char							m_ucAppliedStateSeq = 0;
+		char							m_cAppliedChangeNum = 0;	// m_StateChangeNum then: the unit changed state itself since
+#endif // X2_VILLAGE_SYNC
 
 		CKTDXDeviceTexture*				m_pTextureRank;			/// 대전 랭크 표시 텍스쳐
 		//{{ oasis907 : 김상윤 [2010.5.17] // 던전 대전 통합 서버 아이콘
