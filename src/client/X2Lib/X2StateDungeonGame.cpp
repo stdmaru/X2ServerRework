@@ -5124,6 +5124,22 @@ void CX2StateDungeonGame::DungeonEndingEvent::SetDungeonClearTexture( CKTDGUISta
 			else
 				CX2Data::GetCharacterImageName( fileName, pieceName, g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UnitClass, CX2Data::CIT_DungeonClear );
 		} break;
+#ifdef X2_ARA_3RD_PATH
+	case CX2Unit::UC_ARA_LITTLE_SPECTER:
+		{
+			if ( pMyUser->IsFullHyperMode() )
+				fileName = L"HQ_Dungeon_Clear_Ara_Little_Specter_Rage.tga";
+			else
+				CX2Data::GetCharacterImageName( fileName, pieceName, g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UnitClass, CX2Data::CIT_DungeonClear );
+		} break;
+	case CX2Unit::UC_ARA_ASURA:
+		{
+			if ( pMyUser->IsFullHyperMode() )
+				fileName = L"HQ_Dungeon_Clear_Ara_Asura_Rage.tga";
+			else
+				CX2Data::GetCharacterImageName( fileName, pieceName, g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UnitClass, CX2Data::CIT_DungeonClear );
+		} break;
+#endif
 	default:
 		CX2Data::GetCharacterImageName( fileName, pieceName, g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UnitClass, CX2Data::CIT_DungeonClear );
 		break;

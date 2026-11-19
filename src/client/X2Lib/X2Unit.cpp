@@ -906,6 +906,19 @@ float CX2Unit::ResetMaxMp( const float fMaxMp_ )
 
 	//{{ kimhc // 2009-10-19 // �ִ� MP ���� �� �߰�
 	{
+#ifdef X2_ADD_2ND_PATH
+	iSkillLevel = GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AAT_HIDDEN_MEMORY, true );
+	if( iSkillLevel > 0 )
+	{
+		const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_P_AAT_HIDDEN_MEMORY );
+		if( NULL != pSkillTemplet )
+		{
+			const float maxMPIncrementHiddenMemory = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_MAX_MP_ABS, iSkillLevel );
+			fResultMaxMp += maxMPIncrementHiddenMemory;
+		}
+	}
+#endif
+
 		const float maxMPIncrement = GetInventory().GetAddMaxMPValue();
 		fResultMaxMp += maxMPIncrement;
 	}
@@ -1830,6 +1843,18 @@ int CX2Unit::GetClassLevel()
 	case UC_ELESIS_PYRO_KNIGHT:
 	case UC_ARA_LITTLE_DEVIL:
 	case UC_ADD_PSYCHIC_TRACER:
+#ifdef X2_ADD_2ND_PATH
+	case UC_ADD_ARC_TRACER:
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case UC_ARA_LITTLE_SPECTER:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case UC_ELESIS_DARK_KNIGHT:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case UC_ADD_TIME_TRACER:
+#endif
 		{
 			return 1;
 		} break;
@@ -1863,6 +1888,18 @@ int CX2Unit::GetClassLevel()
 	case UC_ELESIS_GRAND_MASTER:
 	case UC_ELESIS_BLAZING_HEART:
 	case UC_ADD_LUNATIC_PSYKER:
+#ifdef X2_ADD_2ND_PATH
+	case UC_ADD_MASTERMIND:
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case UC_ARA_ASURA:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case UC_ELESIS_CRIMSON_AVENGER:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case UC_ADD_DIABOLIC_ESPER:
+#endif
 
 		{
 			return 2;

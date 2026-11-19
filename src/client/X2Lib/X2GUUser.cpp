@@ -637,6 +637,21 @@ CX2GUUser::CX2GUUser( int unitIndex, int teamNum,
 , m_bIsPlayAvatarEmotionSoundWithoutEmotion ( false )
 {
 
+#ifdef X2_ADD_3RD_PATH
+, m_fCrestRecordHP( 0.f )
+, m_fCrestRecordMP( 0.f )
+, m_fCrestRecordDP( 0.f )
+, m_iCrestRecordMutation( 0 )
+, m_iCrestRecordNF( 0 )
+, m_fCrestRecordWoS( 0.f )
+, m_iCrestRecordFP( 0 )
+, m_iCrestRecordCannonBall( 0 )
+, m_iCrestRecordCannonBallEx( 0 )
+, m_iCrestPendingReviveKind( 0 )
+, m_bCrestRevivePending( false )
+, m_bCrestSuppressDamageWrite( false )
+#endif
+
     m_bFutureCanPassUnit = false;
     m_bFutureApplyAnimMove = true;
     m_bNowFallDown = true;
@@ -4073,6 +4088,14 @@ void CX2GUUser::InitState()
 		if( pData->StateInit != 0 )
 			pData->StateInit();
 	}
+#ifdef X2_ADD_3RD_PATH
+
+
+	m_bCrestRevivePending		= false;
+	m_iCrestPendingReviveKind	= 0;
+	m_bCrestSuppressDamageWrite	= false;
+	//}}
+#endif
 }
 
 
@@ -7214,7 +7237,12 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 //			}
 //#else PVP_BOSS_COMBAT_TEST
 			//{{AFX
+#ifdef X2_ADD_3RD_PATH
+
+			if ( m_bCrestSuppressDamageWrite ) { m_bCrestSuppressDamageWrite = false; } else { UpNowHp( -fFinalDamage ); }
+#else
 			UpNowHp( -fFinalDamage );
+#endif
 			//}}AFX
 //#endif PVP_BOSS_COMBAT_TEST
 
@@ -9376,9 +9404,24 @@ void CX2GUUser::AttackResult()
 			{
 				float fWSPGain = 0.f;
 				fWSPGain = g_pData->GetDamageManager()->CalcWayOfSwordPoint(m_DamageData.m_WayofSwordType, m_DamageData.damage.GetAllDamage(), GetWayOfSwordState() );
+#ifdef X2_ELESIS_3RD_PATH
+				fWSPGain *= GetDarkForceWoSPointMultiplier();
+#endif
 				SetWayOfSwordPoint( GetWayOfSwordPoint() + fWSPGain );
 
 				fIncreaseMpRate *= g_pData->GetDamageManager()->CalcVigorMpUpOnAttack_Elesis(m_DamageData.m_WayofSwordType, GetWayOfSwordState() );
+#ifdef X2_ELESIS_3RD_PATH
+
+
+				if( WSS_VIGOR == GetWayOfSwordState() &&
+					(unsigned)( m_DamageData.m_WayofSwordType - CX2DamageManager::WST_VIGOR_NORMAL ) <= 2 )
+				{
+					const float fHPIntakeRate = GetDarkForceHPIntakeRate();
+					if( 0.f < fHPIntakeRate )
+						UpNowHp( fHPIntakeRate * m_DamageData.damage.GetAllDamage() );
+				}
+//}} 2026-09-03 //
+#endif
 			}
 
 
@@ -11831,6 +11874,13 @@ void CX2GUUser::CommonFrameMove()
 
 	DoDelegateProcessInCommonFrameMove();
 
+#ifdef X2_ADD_3RD_PATH
+
+	if ( true == m_bCrestRevivePending && CX2GameUnit::GUSI_DIE != GetGameUnitState() )
+		ProcessCrestRevivePending();
+	//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
+
+#endif
 	if( m_hSeqHeadMarker != INVALID_PARTICLE_SEQUENCE_HANDLE)
 	{
 		CKTDGParticleSystem::CParticleEventSequence* pSeqHeadMarker    = g_pX2Game->GetMajorParticle()->GetInstanceSequence( m_hSeqHeadMarker );
@@ -24679,6 +24729,12 @@ float CX2GUUser::GetMpUpRateBySkill()
 	return;
 }
 
+#ifdef X2_ELESIS_3RD_PATH
+/*virtual*/ float CX2GUUser::GetDarkForceWoSPointMultiplier() const { return 1.0f; }
+/*virtual*/ float CX2GUUser::GetDarkForceHPIntakeRate() const { return 0.0f; }
+//}} 2026-09-03 //
+
+#endif
 
 void CX2GUUser::StartSpecialItemBuffWind()
 {
@@ -25409,6 +25465,25 @@ void CX2GUUser::SetSpecificValueByBuffTempletID( const BUFF_TEMPLET_ID eBuffTemp
 		} break;
 
 
+#ifdef X2_ADD_3RD_PATH
+
+	case BTI_BUFF_CREST_OF_TIME:
+		{
+			m_fCrestRecordHP			= 0.f;
+			m_fCrestRecordMP			= 0.f;
+			m_fCrestRecordDP			= 0.f;
+			m_iCrestRecordMutation		= 0;
+			m_iCrestRecordNF			= 0;
+			m_fCrestRecordWoS			= 0.f;
+			m_iCrestRecordFP			= 0;
+			m_iCrestRecordCannonBall	= 0;
+			m_iCrestRecordCannonBallEx	= 0;
+
+			RecordCrestSnapshot();	/// virtual — per-class gauges (Add DP+Mutation / WoS / FP / CannonBall / NF) recorded by the overrides
+		} break;
+	//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
+
+#endif
 	default:
 		break;
 	}
@@ -28775,6 +28850,27 @@ bool CX2GUUser::ProcessSkillAtDie( IN const float fFinalDamage_, IN CX2DamageMan
 	/// �׿����� ���������
 	if ( fFinalDamage_ > GetNowHp() )
 	{
+#ifdef X2_ADD_3RD_PATH
+
+		if ( IsMyUnit() && HaveThisBuff( BTI_BUFF_CREST_OF_TIME ) )
+		{
+			RestoreCrestSnapshot();				/// official f_31ECC550 + slot 338 — restore the recorded snapshot (HP floor 1.0 + full block)
+
+			if ( NULL != pDamageData_ )
+			{
+				/// Oracle review fix (2026-09-01): the +fFinalDamage_ pre-compensation was defeated by the gage maxHP clamp (X2GageData.h:201) whenever recordedHP + killingBlow > maxHP (the dominant case - buff cast at high HP) -> revive HP was wrong. Official 2015 SUPPRESSES the lethal write (HP-setter-intercept, DEC_A 4a) -> same effect via one-shot flag consumed at the UpNowHp(-fFinalDamage_) site. Net = recorded HP exactly in all cases. //
+				m_bCrestSuppressDamageWrite = true;
+				pDamageData_->reActResult = CX2DamageManager::RT_DOWN;	/// knocked down (same react as the other revive paths)
+			}
+
+			m_iCrestPendingReviveKind	= 41;	/// official +24792 pending revive kind = 41 (Crest; 39 = Ara, 40 = Softbody)
+			m_bCrestRevivePending		= true;	/// official +24796 pending flag — consumed by ProcessCrestRevivePending() from CommonFrameMove
+
+			return true;	/// death canceled — priority FIRST, no fall-through to Ara/Softbody (official returns 1 immediately)
+		}
+		//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
+
+#endif
 		/// �ƶ� 2�� ���� ���� - ȸ������-------------------------------------------------------------------------------------------
 		int iSkillLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AYR_RESURRECTION, true );
 
@@ -28839,6 +28935,61 @@ bool CX2GUUser::ProcessSkillAtDie( IN const float fFinalDamage_, IN CX2DamageMan
 	return false;
 }
 
+#ifdef X2_ADD_3RD_PATH
+
+/*virtual*/ void CX2GUUser::RecordCrestSnapshot()
+{
+	/// official shared body: IsMyUnit-gated; HP = the gage+8 protected float (default 1.0 when no gage), MP = gage+12 (default 0.0); the block was just zeroed by SetSpecificValueByBuffTempletID case 436 //
+	if ( false == IsMyUnit() )
+		return;
+
+	m_fCrestRecordHP = GetNowHp();
+	m_fCrestRecordMP = ( NULL != GetGageData() ) ? GetNowMp() : 0.f;
+}
+
+/*virtual*/ void CX2GUUser::RestoreCrestSnapshot()
+{
+	/// official f_31ECC550: IsMyUnit-gated; HP restored with a 1.0 floor (dbl_32D20D50) via the HP setter; MP written back into the gauge object (f_31D69690); the record block (+25344..+25380) is cleared after //
+	if ( false == IsMyUnit() )
+		return;
+
+	SetNowHp( ( m_fCrestRecordHP >= 1.0f ) ? m_fCrestRecordHP : 1.0f );
+	if ( NULL != GetGageData() )
+		SetNowMp( m_fCrestRecordMP );
+
+	m_fCrestRecordHP			= 0.f;
+	m_fCrestRecordMP			= 0.f;
+	m_fCrestRecordDP			= 0.f;
+	m_iCrestRecordMutation		= 0;
+	m_iCrestRecordNF			= 0;
+	m_fCrestRecordWoS			= 0.f;
+	m_iCrestRecordFP			= 0;
+	m_iCrestRecordCannonBall	= 0;
+	m_iCrestRecordCannonBallEx	= 0;
+}
+
+void CX2GUUser::ProcessCrestRevivePending()
+{
+	if ( false == m_bCrestRevivePending || 41 != m_iCrestPendingReviveKind )	/// official newslot_327 compares the pending revive-kind word against 41 (Crest) //
+		return;
+
+	/// official: the per-class CommonEventProcess overrides consume the pending flag -> StateChange(USI_DAMAGE_DOWN_FRONT=29, knocked-down, same as the other revives); newslot_327 then spawns the Revival effect set on the unit + erases buff 436 (the Crest buff is CONSUMED on revive) //
+	StateChange( USI_DAMAGE_DOWN_FRONT );
+
+	if ( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_ATT_Common_Crest_of_Time_Revival", this, NULL, false, 1.0f );
+
+	EraseBuffTempletFromGameUnit( BTI_BUFF_CREST_OF_TIME );
+
+	m_bCrestRevivePending		= false;
+	m_iCrestPendingReviveKind	= 0;
+
+	/// DEC_A 7 open-item 2: official also writes GUUser+2636 = 1.0 via vtable+228 — field identity NOT-FOUND (single write site; likely a visual/time-scale reset) — skipped by design //
+	/// DEC_A 7 open-item 1: the write propagating the pending kind (+24792) into the protected word (+21524 KPT ref-table machinery) is computed-address/unlocated — our plain members carry the same semantics end-to-end //
+}
+//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
+
+#endif
 /** @function : IsAvaliableActionDuringDamageReact
 	@brief :  �ǰ� �� ��밡���� Action���� �˻��ϴ� �Լ�.
 			  ������ ����� ���� ������ �����Լ� ������� �ʾ���.

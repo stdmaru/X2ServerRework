@@ -2155,6 +2155,9 @@ public:
 		NUI_PVE_BLUE_KNIGHT_CANNON,				/// 하멜 공성탑
 		NUI_PVE_TESTER_OF_BRAVE,				/// 엘 타워(중립 몬스터)
 		NUI_PVE_TESTER_OF_GHOST			= 1601,	/// 망령의 시험관(중립 몬스터)
+#ifdef X2_ADD_2ND_PATH
+		NUI_SI_HA_APOCALYPSE			= 1604,	/// Mastermind hyper skill Apocalypse
+#endif
 
 		/// 국내 이벤트 몬스터 ( 3000 ~ 3999 )
 		NUI_EVENT_TEACHER_HAGERS							= 3000,

@@ -152,6 +152,23 @@ public:
 		CTI_RIGHT_Z_PURPLE_CONTINUE	= 100,
 		CTI_RIGHT_X_PURPLE_CHARGE	= 101,
 		CTI_ICON_NA					= 102,
+#ifdef X2_ADD_2ND_PATH
+		CTI_PUSH_DOWN_X				= 103,
+#endif
+#ifdef X2_ARA_3RD_PATH
+		CTI_ICON_CLAW				= 104,
+		CTI_Z_SPECTER_CLAW			= 105,
+		CTI_X_SPECTER_CLAW			= 106,
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+		CTI_ICON_SAW				= 107,
+		CTI_PUSH_X_RED				= 108,
+		CTI_PUSH_X_BLUE				= 109,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		CTI_Z_BLUE_TT				= 110,
+		CTI_X_BLUE_TT				= 111,
+#endif
 	};
 
 

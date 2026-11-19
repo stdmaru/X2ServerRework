@@ -38,6 +38,10 @@
 #define X2_ARA_3RD_PATH     // Little Specter 34 -> Asura 124
 #define X2_ADD_2ND_PATH     // Arc Tracer 33 -> Mastermind 123
 #define X2_ADD_3RD_PATH     // Time Tracer 36 -> Diabolic Esper 126
+// Add's two paths share their code (V5's ThirdPath helpers, the combos both change): on or off together.
+#if defined(X2_ADD_2ND_PATH) != defined(X2_ADD_3RD_PATH)
+#error "X2_ADD_2ND_PATH and X2_ADD_3RD_PATH go together"
+#endif
 
 // Village movement sync (T53): villages, squares, wedding halls and dungeon lounges sync other players' movement with
 // server-validated state snapshots, interpolation, interest management and per-tick aggregation, and the servers check

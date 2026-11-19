@@ -3,6 +3,53 @@
 #include "./X2UIPersonalShopBoard.h"
 #include <iomanip>
 
+namespace
+{
+	/// The second classes the class filter lists for Ara, Elesis and Add, in the combo's order (index 0 is "all").
+	/// The original listed only Yama Raja's path for Ara, none for Elesis and Lunatic Psyker for Add.
+	struct FilterClass { CX2Unit::UNIT_CLASS eClass; int iStringID; };
+
+	const std::vector<FilterClass>& GetFilterClasses( CX2Unit::UNIT_TYPE eUnitType_ )
+	{
+		static const std::vector<FilterClass> vecAra = {
+			{ CX2Unit::UC_ARA_SAKRA_DEVANAM, STR_ID_25373 }, { CX2Unit::UC_ARA_YAMA_RAJA, STR_ID_29385 },
+#ifdef X2_ARA_3RD_PATH
+			{ CX2Unit::UC_ARA_ASURA, STR_ID_31538 },
+#endif
+		};
+		static const std::vector<FilterClass> vecElesis = {
+			{ CX2Unit::UC_ELESIS_GRAND_MASTER, STR_ID_28263 }, { CX2Unit::UC_ELESIS_BLAZING_HEART, STR_ID_28264 },
+#ifdef X2_ELESIS_3RD_PATH
+			{ CX2Unit::UC_ELESIS_CRIMSON_AVENGER, STR_ID_31847 },
+#endif
+		};
+		static const std::vector<FilterClass> vecAdd = {
+			{ CX2Unit::UC_ADD_LUNATIC_PSYKER, STR_ID_30044 },
+#ifdef X2_ADD_2ND_PATH
+			{ CX2Unit::UC_ADD_MASTERMIND, STR_ID_30385 },
+#endif
+#ifdef X2_ADD_3RD_PATH
+			{ CX2Unit::UC_ADD_DIABOLIC_ESPER, STR_ID_31955 },
+#endif
+		};
+		static const std::vector<FilterClass> vecNone;
+		switch ( eUnitType_ )
+		{
+		case CX2Unit::UT_ARA:		return vecAra;
+		case CX2Unit::UT_ELESIS:	return vecElesis;
+		case CX2Unit::UT_ADD:		return vecAdd;
+		default:					return vecNone;
+		}
+	}
+
+	/// The class the filter's index stands for; UC_NONE for "all" or an index past the list.
+	CX2Unit::UNIT_CLASS GetFilterClass( CX2Unit::UNIT_TYPE eUnitType_, int iIndex_ )
+	{
+		const std::vector<FilterClass>& vecClasses = GetFilterClasses( eUnitType_ );
+		return ( 0 < iIndex_ && iIndex_ <= static_cast<int>( vecClasses.size() ) ) ? vecClasses[iIndex_ - 1].eClass : CX2Unit::UC_NONE;
+	}
+}
+
 CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHAR* pFileName )
 : CX2ItemSlotManager( pNowStage, NULL )
 , m_bShow( false )
@@ -865,30 +912,33 @@ bool CX2UIPersonalShopBoard::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WP
 				break;
 
 			case 7:
-				m_pComboClass->RemoveAllItems();
-				m_pComboClass->AddItem(GET_STRING( STR_ID_9691 ), NULL, false);
-				m_pComboClass->AddItem(GET_STRING( STR_ID_25373 ), NULL, false);
-				m_pComboClass->SetEnable(true);
-				m_pComboClass->AddItem(GET_STRING( STR_ID_29385 ), NULL, false);
-				m_pComboClass->SetEnable(true);
-				m_iComboClassindex = 0;
-				break;
+				{
+					m_pComboClass->RemoveAllItems();
+					m_pComboClass->AddItem(GET_STRING( STR_ID_9691 ), NULL, false);		// all classes
+					for ( const FilterClass& filterClass : GetFilterClasses( CX2Unit::UT_ARA ) )
+						m_pComboClass->AddItem( GET_STRING( filterClass.iStringID ), NULL, false );
+					m_pComboClass->SetEnable(true);
+					m_iComboClassindex = 0;
+				} break;
 
 			case 8:
 				{
 					m_pComboClass->RemoveAllItems();
-					m_pComboClass->AddItem(GET_STRING( STR_ID_9691 ), NULL, false);
+					m_pComboClass->AddItem(GET_STRING( STR_ID_9691 ), NULL, false);		// all classes
+					for ( const FilterClass& filterClass : GetFilterClasses( CX2Unit::UT_ELESIS ) )
+						m_pComboClass->AddItem( GET_STRING( filterClass.iStringID ), NULL, false );
 					m_pComboClass->SetEnable(true);
-
+					m_iComboClassindex = 0;
 				} break;
 
 			case 9:
 				{
 					m_pComboClass->RemoveAllItems();
-					m_pComboClass->AddItem(L"#C0000FF클래스(전체)#CX", NULL, false);
-					m_pComboClass->AddItem(L"#C0000FF루나틱사이커#CX", NULL, false );
+					m_pComboClass->AddItem(GET_STRING( STR_ID_9691 ), NULL, false);		// all classes
+					for ( const FilterClass& filterClass : GetFilterClasses( CX2Unit::UT_ADD ) )
+						m_pComboClass->AddItem( GET_STRING( filterClass.iStringID ), NULL, false );
 					m_pComboClass->SetEnable(true);
-					m_pComboClass->SetEnable(true);
+					m_iComboClassindex = 0;
 				} break;
 			default:
 				m_pComboClass->RemoveAllItems();
@@ -1799,56 +1849,10 @@ bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_REQ()
 		break;
 
 	case CX2Unit::UT_ARA:
-		{
-			switch(m_iComboClassindex)
-			{
-			case 0:
-				nowUnitClass = CX2Unit::UC_NONE;
-				break;
-			case 1:
-				nowUnitClass = CX2Unit::UC_ARA_SAKRA_DEVANAM;
-				break;
-			case 2:
-				nowUnitClass = CX2Unit::UC_ARA_YAMA_RAJA;
-				break;
-			default:
-				nowUnitClass = CX2Unit::UC_NONE;
-				break;
-			}
-		} break;
 	case CX2Unit::UT_ELESIS:
-		{
-			switch(m_iComboClassindex)
-			{
-			case 0:
-				nowUnitClass = CX2Unit::UC_NONE;
-				break;
-			case 1:
-				nowUnitClass = CX2Unit::UC_ELESIS_GRAND_MASTER;
-				break;
-			case 2:
-				nowUnitClass = CX2Unit::UC_ELESIS_BLAZING_HEART;
-				break;
-			default:
-				nowUnitClass = CX2Unit::UC_NONE;
-				break;
-			}
-		} break;
 	case CX2Unit::UT_ADD:
-		{
-			switch(m_iComboClassindex)
-			{
-			case 0:
-				nowUnitClass = CX2Unit::UC_NONE;
-				break;
-			case 1:
-				nowUnitClass = CX2Unit::UC_ADD_LUNATIC_PSYKER;
-				break;
-			default:
-				nowUnitClass = CX2Unit::UC_NONE;
-				break;
-			}
-		} break;
+		nowUnitClass = GetFilterClass( nowUnitType, m_iComboClassindex );
+		break;
 	default:
 		nowUnitClass = CX2Unit::UC_NONE;
 		break;
@@ -2905,59 +2909,25 @@ bool CX2UIPersonalShopBoard::CheckSelectCategoryOption( IN const CX2Item::ItemTe
 		{
 			if ( eUnitType != CX2Unit::UT_ARA )
 				return false;
-			else
-			{
-				switch(m_iComboClassindex)
-				{
-				case 1:
-					{
-						if ( eUnitClass != CX2Unit::UC_ARA_SAKRA_DEVANAM )
-							return false;
-					} break;
-				case 2:
-					{
-						if ( eUnitClass != CX2Unit::UC_ARA_YAMA_RAJA )
-							return false;
-					} break;
-				} break;
-			}
+			const CX2Unit::UNIT_CLASS eFilterClass = GetFilterClass( CX2Unit::UT_ARA, m_iComboClassindex );
+			if ( CX2Unit::UC_NONE != eFilterClass && eUnitClass != eFilterClass )
+				return false;
 		} break;
 	case 8:
 		{
 			if ( eUnitType != CX2Unit::UT_ELESIS )
 				return false;
-			else
-			{
-				switch(m_iComboClassindex)
-				{
-				case 1:
-					{
-						if ( eUnitClass != CX2Unit::UC_ELESIS_GRAND_MASTER )
-							return false;
-					} break;
-				case 2:
-					{
-						if ( eUnitClass != CX2Unit::UC_ELESIS_BLAZING_HEART )
-							return false;
-					} break;
-				} break;
-			}
+			const CX2Unit::UNIT_CLASS eFilterClass = GetFilterClass( CX2Unit::UT_ELESIS, m_iComboClassindex );
+			if ( CX2Unit::UC_NONE != eFilterClass && eUnitClass != eFilterClass )
+				return false;
 		} break;
 	case 9:
 		{
 			if ( eUnitType != CX2Unit::UT_ADD )
 				return false;
-			else
-			{
-				switch(m_iComboClassindex)
-				{
-				case 1:
-					{
-						if ( eUnitClass != CX2Unit::UC_ADD_LUNATIC_PSYKER )
-							return false;
-					} break;
-				} break;
-			}
+			const CX2Unit::UNIT_CLASS eFilterClass = GetFilterClass( CX2Unit::UT_ADD, m_iComboClassindex );
+			if ( CX2Unit::UC_NONE != eFilterClass && eUnitClass != eFilterClass )
+				return false;
 		} break;
 	}
 

@@ -1985,6 +1985,9 @@ class CX2GUNPC : public CX2GameUnit
 		{
 			SetSelfDestruction( false );
 		}
+#ifdef X2_ADD_2ND_PATH
+		void SetSelfDestructionState( int iState_ ) { m_SelfDestructionState = iState_; }
+#endif
 
         bool GetAttackFront()
         {

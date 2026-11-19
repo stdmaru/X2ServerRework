@@ -499,11 +499,59 @@ void CX2ClassChangePopup::SetShow( bool bShow )
 			{
 				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Add_PT.lua" );
 			} break;
+#ifdef X2_ADD_2ND_PATH
+		case CX2Unit::UC_ADD_ARC_TRACER:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Add_AT.lua" );
+			} break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+		case CX2Unit::UC_ARA_LITTLE_SPECTER:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Ara_LS.lua" );
+			} break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+		case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Elesis_DK.lua" );
+			} break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+		case CX2Unit::UC_ADD_TIME_TRACER:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Add_TT.lua" );
+			} break;
+#endif
 
 		case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 			{
 				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Add_LP.lua" );
 			} break;
+#ifdef X2_ADD_2ND_PATH
+		case CX2Unit::UC_ADD_MASTERMIND:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Add_MM.lua" );
+			} break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+		case CX2Unit::UC_ARA_ASURA:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Ara_AS.lua" );
+			} break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+		case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Elesis_CA.lua" );
+			} break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+		case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+			{
+				m_pDLGClassChange = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Class_Change_Add_DE.lua" );
+			} break;
+#endif
 
 		default:
 			{

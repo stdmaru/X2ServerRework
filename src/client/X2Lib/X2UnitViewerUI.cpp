@@ -3438,6 +3438,38 @@ void CX2UnitViewerUI::PlayByMotionType( CX2UnitViewerUI::UNIT_VIEWER_UI_MOTION_T
 				case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 					PlayAnim( L"ALP_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
 					break;
+#ifdef X2_ADD_2ND_PATH
+				case CX2Unit::UC_ADD_ARC_TRACER:
+					PlayAnim( L"AAT_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+				case CX2Unit::UC_ADD_MASTERMIND:
+					PlayAnim( L"AMM_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+				case CX2Unit::UC_ARA_LITTLE_SPECTER:
+					PlayAnim( L"ALS_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+				case CX2Unit::UC_ARA_ASURA:
+					PlayAnim( L"AA_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+				case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+					PlayAnim( L"SDK_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+				case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+					PlayAnim( L"SCA_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+				case CX2Unit::UC_ADD_TIME_TRACER:
+					PlayAnim( L"ATT_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+				case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+					PlayAnim( L"ADE_LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
+					break;
+#endif
 
 				default:
 					{
@@ -3594,6 +3626,38 @@ void CX2UnitViewerUI::PlayByMotionType( CX2UnitViewerUI::UNIT_VIEWER_UI_MOTION_T
 				case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 					PlayAnim( L"ALP_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
 					break;
+#ifdef X2_ADD_2ND_PATH
+				case CX2Unit::UC_ADD_ARC_TRACER:
+					PlayAnim( L"AAT_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_MASTERMIND:
+					PlayAnim( L"AMM_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+				case CX2Unit::UC_ARA_LITTLE_SPECTER:
+					PlayAnim( L"ALS_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ARA_ASURA:
+					PlayAnim( L"AA_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+				case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+					PlayAnim( L"SDK_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+					PlayAnim( L"SCA_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+				case CX2Unit::UC_ADD_TIME_TRACER:
+					PlayAnim( L"ATT_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+					PlayAnim( L"ADE_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
 
 				default:
 					{
@@ -3751,6 +3815,38 @@ void CX2UnitViewerUI::PlayByMotionType( CX2UnitViewerUI::UNIT_VIEWER_UI_MOTION_T
 				case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 					PlayAnim( L"ALP_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
 					break;
+#ifdef X2_ADD_2ND_PATH
+				case CX2Unit::UC_ADD_ARC_TRACER:
+					PlayAnim( L"AAT_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_MASTERMIND:
+					PlayAnim( L"AMM_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+				case CX2Unit::UC_ARA_LITTLE_SPECTER:
+					PlayAnim( L"ALS_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ARA_ASURA:
+					PlayAnim( L"AA_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+				case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+					PlayAnim( L"SDK_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+					PlayAnim( L"SCA_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+				case CX2Unit::UC_ADD_TIME_TRACER:
+					PlayAnim( L"ATT_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+					PlayAnim( L"ADE_LobbyWait", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
 
 				default:
 					{
@@ -3930,6 +4026,38 @@ void CX2UnitViewerUI::PlayByMotionType( CX2UnitViewerUI::UNIT_VIEWER_UI_MOTION_T
 				case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 					PlayAnim( L"ALP_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
 					break;
+#ifdef X2_ADD_2ND_PATH
+				case CX2Unit::UC_ADD_ARC_TRACER:
+					PlayAnim( L"AAT_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_MASTERMIND:
+					PlayAnim( L"AMM_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+				case CX2Unit::UC_ARA_LITTLE_SPECTER:
+					PlayAnim( L"ALS_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ARA_ASURA:
+					PlayAnim( L"AA_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+				case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+					PlayAnim( L"SDK_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+					PlayAnim( L"SCA_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+				case CX2Unit::UC_ADD_TIME_TRACER:
+					PlayAnim( L"ATT_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+					PlayAnim( L"ADE_LobbyDownLanding", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
 
 				default:
 					{
@@ -4113,6 +4241,38 @@ void CX2UnitViewerUI::PlayByMotionType( CX2UnitViewerUI::UNIT_VIEWER_UI_MOTION_T
 				case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 					PlayAnim( L"ALP_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
 					break;
+#ifdef X2_ADD_2ND_PATH
+				case CX2Unit::UC_ADD_ARC_TRACER:
+					PlayAnim( L"AAT_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_MASTERMIND:
+					PlayAnim( L"AMM_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ARA_3RD_PATH
+				case CX2Unit::UC_ARA_LITTLE_SPECTER:
+					PlayAnim( L"ALS_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ARA_ASURA:
+					PlayAnim( L"AA_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+				case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+					PlayAnim( L"SDK_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+					PlayAnim( L"SCA_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
+#ifdef X2_ADD_3RD_PATH
+				case CX2Unit::UC_ADD_TIME_TRACER:
+					PlayAnim( L"ATT_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+				case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+					PlayAnim( L"ADE_LobbyReadyAction", CKTDGXSkinAnim::XAP_ONE_WAIT, true );
+					break;
+#endif
 
 				default:
 					{

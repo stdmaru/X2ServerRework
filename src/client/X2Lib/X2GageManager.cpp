@@ -171,6 +171,10 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 	case CX2Unit::UC_ARA_SAKRA_DEVANAM:
 	case CX2Unit::UC_ARA_LITTLE_DEVIL:
 	case CX2Unit::UC_ARA_YAMA_RAJA:
+#ifdef X2_ARA_3RD_PATH
+	case CX2Unit::UC_ARA_LITTLE_SPECTER:
+	case CX2Unit::UC_ARA_ASURA:
+#endif
 		{
 			pGageData = new CX2AraGageData();
 			pGageUI = new CX2AraMyGageUI( pGageData, eGameUnitClass_ );
@@ -181,6 +185,10 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 
 	case CX2Unit::UC_ELESIS_GRAND_MASTER:
 	case CX2Unit::UC_ELESIS_BLAZING_HEART:
+#ifdef X2_ELESIS_3RD_PATH
+	case CX2Unit::UC_ELESIS_DARK_KNIGHT:
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+#endif
 
 
 		{
@@ -191,6 +199,14 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 	case CX2Unit::UC_ADD_NASOD_RULER:
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:
+#ifdef X2_ADD_2ND_PATH
+	case CX2Unit::UC_ADD_ARC_TRACER:
+	case CX2Unit::UC_ADD_MASTERMIND:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CX2Unit::UC_ADD_TIME_TRACER:
+	case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+#endif
 		{
 			pGageData	= new CX2AddGageData();
 			pGageUI		= new CX2AddMyGageUI( pGageData, eGameUnitClass_ );

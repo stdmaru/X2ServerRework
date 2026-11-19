@@ -2122,6 +2122,10 @@ public:
 		virtual int			GetWayOfSwordState() const;
 		virtual float		GetWayOfSwordPoint() const;
 		virtual void		SetWayOfSwordPoint( float fWayOfSwordPoint_ );
+#ifdef X2_ELESIS_3RD_PATH
+		virtual float		GetDarkForceWoSPointMultiplier() const;
+		virtual float		GetDarkForceHPIntakeRate() const;
+#endif
 		bool				IsActionActive( USER_ACTION_ID eUserActionID_ );
 //		void				AddComboToBrutalSlayer();
 // 		float				GetBrutalSlayerDamageRel();
@@ -2344,7 +2348,32 @@ public:
         std::vector<D3DXVECTOR2>&   AccessVecNowSuperArmorTime() { return m_vecNowSuperArmorTime; }
 
 
+#ifdef X2_ADD_3RD_PATH
+		bool ProcessSkillAtDie( IN const float fFinalDamage_, IN CX2DamageManager::DamageData* pDamageData_ = NULL );	/// ��� ������ �ߵ��Ǵ� ��ų �˻�
+
+
+		virtual void		RecordCrestSnapshot();		///< official slot 300: base records HP (gage+8 holder) + MP (gage+12 holder), IsMyUnit-gated; derived classes call base then add their own gauge
+		virtual void		RestoreCrestSnapshot();		///< official slot 338: derived restores its gauge first, then calls base (HP floor 1.0 + MP + record-block clear)
+		void				ProcessCrestRevivePending();	///< official newslot_327: consume the pending Crest revive — knockdown state + Revival effect set + buff 436 consumed
+
+	protected:
+		float				m_fCrestRecordHP;			///< official +25344
+		float				m_fCrestRecordMP;			///< official +25348
+		float				m_fCrestRecordDP;			///< official +25352 (Add)
+		int					m_iCrestRecordMutation;		///< official +25356 (Add mutation count)
+		int					m_iCrestRecordNF;			///< official +25360 (Rena Natural Force)
+		float				m_fCrestRecordWoS;			///< official +25364 (Elsword/Elesis Way-of-Sword point)
+		int					m_iCrestRecordFP;			///< official +25368 (Ara Force Power beads)
+		int					m_iCrestRecordCannonBall;	///< official +25372 (Chung now-cannonball count)
+		int					m_iCrestRecordCannonBallEx;	///< official +25376 (Chung TT Ex count; official gates the Ex record on unit class == 117 (UC_CHUNG_TACTICAL_TROOPER) && an unidentified flag byte (2015 GUChung+25996, NOT-FOUND per DEC_A §7 — DESIGN INFERENCE: class gate only))
+		int					m_iCrestPendingReviveKind;	///< official +24792 (39 = Ara resurrection, 40 = Softbody, 41 = Crest — only 41 is produced by this port)
+		bool				m_bCrestRevivePending;		///< official +24796
+		bool				m_bCrestSuppressDamageWrite;	///< 2026-09-01 Oracle review (Crest HP): one-shot flag set in ProcessSkillAtDie (pDamageData_ != NULL) -> consumed at the UpNowHp(-fFinalDamage) site in DamageReact; replaces the +fFinalDamage_ pre-compensation that was defeated by the gage's maxHP clamp (X2GageData.h:201)
+	public:
+//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
+#else
 		bool ProcessSkillAtDie( IN const float fFinalDamage_, IN CX2DamageManager::DamageData* pDamageData_ = NULL );	/// 사망 직전에 발동되는 스킬 검사
+#endif
 
 		bool IsValideSlotChange() const { return ( m_fSlotChangeLeftCoolTime > 0.f ) ? false : true; }
 		void SetSlotChangeCoolTime(float val) { m_fSlotChangeLeftCoolTime = val; }
