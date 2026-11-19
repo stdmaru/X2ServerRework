@@ -96,7 +96,12 @@ all) except `VMI_DUNGEON_GATE_RUBEN`, whose world script `Ruben_Dungeon_Gate.lua
 ([Server: Common](../porting/server-common.md#intentional)).
 
 What they hold (2026-11-19): line types 0 (`LT_NORMAL`), 2 (`LT_POTAL`), 4 (`LT_JUMP_UP_REL`) and 9
-(`LT_OTHER_ROAD`); no `LT_WALL` in any village or room. World 491 has 4 jump lines (`JUMP_SPEED_X` 5000,
+(`LT_OTHER_ROAD`); no `LT_WALL` in any village or room. Walls are made another way: `CX2SquareUnit` cancels a
+horizontal step that leaves the unit with no line below it within `LINE_RADIUS` (`CKTDGLineMap::CanDown`, down to
+y 0), on the ground or in the air, so the end of a line with nothing under it stops the unit (the edges of Elder,
+user, 2026-11-19); and a line end marked `BEFORE_LINE`/`NEXT_LINE` −2 keeps a unit that left that line within it
+even with a line below (`LINEMAP_Altera_Village.lua`, `Besma_Village_Linemap.lua`). `LT_WALL` lines, where they
+exist, stop a step that crosses them (`CrossedWall`, a 3D segment test with radius 1). World 491 has 4 jump lines (`JUMP_SPEED_X` 5000,
 `JUMP_SPEED_Y` 3000) and 5 lines with `SPEED` 5000. A jump line throws the unit without changing its state, so a
 unit in a state that keeps it on a line can be in the air. Portal lines do not teleport village units. The port
 checks reported movement against these lines with `KVillageMoveValidator`

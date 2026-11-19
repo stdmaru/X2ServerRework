@@ -31,6 +31,53 @@ bool IsWalkable( const CXSLLineMap::LineData& kLine )
 	return kLine.bEnable && kLine.lineType != CXSLLineMap::LT_WALL && kLine.lineType != CXSLLineMap::LT_MONSTER_ROAD;
 }
 
+// Where the segment a-b is nearest to p horizontally, from 0 (a) to 1 (b), unclamped; 0 for a vertical segment.
+float HorizontalParameter( const VECTOR3& p, const D3DXVECTOR3& a, const D3DXVECTOR3& b )
+{
+	const float abx = b.x - a.x, abz = b.z - a.z;
+	const float fLength2 = abx * abx + abz * abz;
+	return fLength2 > 0.f ? ( ( p.x - a.x ) * abx + ( p.z - a.z ) * abz ) / fLength2 : 0.f;
+}
+
+// The distance between the segments p1-p2 and q1-q2 (CKTDXCollision::LineToLine, which the client tests against
+// walls with a radius of 1).
+float SegmentDistance( const VECTOR3& p1, const VECTOR3& p2, const D3DXVECTOR3& q1, const D3DXVECTOR3& q2 )
+{
+	const D3DXVECTOR3 a( p1.x, p1.y, p1.z ), b( p2.x, p2.y, p2.z );
+	const D3DXVECTOR3 d1 = b - a, d2 = q2 - q1, r = a - q1;
+	const auto Dot = []( const D3DXVECTOR3& u, const D3DXVECTOR3& v ) { return u.x * v.x + u.y * v.y + u.z * v.z; };
+	const float aa = Dot( d1, d1 ), ee = Dot( d2, d2 ), ff = Dot( d2, r );
+	float s = 0.f, t = 0.f;
+	if( aa <= 1e-6f && ee <= 1e-6f )
+		;
+	else if( aa <= 1e-6f )
+		t = std::clamp( ff / ee, 0.f, 1.f );
+	else
+	{
+		const float cc = Dot( d1, r );
+		if( ee <= 1e-6f )
+			s = std::clamp( -cc / aa, 0.f, 1.f );
+		else
+		{
+			const float bb = Dot( d1, d2 ), fDenominator = aa * ee - bb * bb;
+			s = fDenominator > 1e-6f ? std::clamp( ( bb * ff - cc * ee ) / fDenominator, 0.f, 1.f ) : 0.f;
+			t = ( bb * s + ff ) / ee;
+			if( t < 0.f )
+			{
+				t = 0.f;
+				s = std::clamp( -cc / aa, 0.f, 1.f );
+			}
+			else if( t > 1.f )
+			{
+				t = 1.f;
+				s = std::clamp( ( bb - cc ) / aa, 0.f, 1.f );
+			}
+		}
+	}
+	const D3DXVECTOR3 vDelta = ( a + d1 * s ) - ( q1 + d2 * t );
+	return std::sqrt( Dot( vDelta, vDelta ) );
+}
+
 }	// namespace
 
 KVillageMoveValidator::KVillageMoveValidator( const CXSLLineMap* pLineMap, const KSquareUnitPhysics& kPhysics, const Config& kConfig )
@@ -148,6 +195,9 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 	if( fDistance > fMaxSpeedX * m_kConfig.fSpeedTolerance * fDeltaTime + m_kConfig.fDistanceSlack )
 		return Reject( Reason::R_SPEED, uiServerNow );
 
+	if( m_pLineMap != nullptr && HitsWall( *m_pLineMap, m_kLast.m_vPos, kState.m_vPos, m_iGroundLine, iLine >= 0, m_kConfig.fWallRadius ) )
+		return Reject( Reason::R_WALL, uiServerNow );
+
 	if( !bGround )
 	{
 		if( pState->bLandConnect && m_pLineMap != nullptr && !bThrownByLine )
@@ -248,6 +298,53 @@ int KVillageMoveValidator::FindLine( const CXSLLineMap& kLineMap, const VECTOR3&
 		}
 	}
 	return iNearest;
+}
+
+bool KVillageMoveValidator::HasLineBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius )
+{
+	for( int i = 0; i < kLineMap.GetNumLineData(); ++i )
+	{
+		const CXSLLineMap::LineData* pLine = kLineMap.GetLineData( i );
+		if( pLine == nullptr || !IsWalkable( *pLine ) )
+			continue;
+		const float t = std::clamp( HorizontalParameter( vPos, pLine->startPos, pLine->endPos ), 0.f, 1.f );
+		const D3DXVECTOR3 vNearest = pLine->startPos + ( pLine->endPos - pLine->startPos ) * t;
+		if( std::hypot( vPos.x - vNearest.x, vPos.z - vNearest.z ) <= fRadius && vNearest.y <= vPos.y + fRadius )
+			return true;
+	}
+	return false;
+}
+
+bool KVillageMoveValidator::HitsWall( const CXSLLineMap& kLineMap, const VECTOR3& vFrom, const VECTOR3& vTo, int iLastLine,
+									  bool bOnLine, float fRadius )
+{
+	for( const CXSLLineMap::LineData* pWall : kLineMap.GetWallList() )
+	{
+		if( pWall->bEnable && SegmentDistance( vFrom, vTo, pWall->startPos, pWall->endPos ) <= 1.f )
+			return true;
+	}
+	// a closed end of the line it last stood on: the client keeps a unit off its line within that end
+	const CXSLLineMap::LineData* pLast = bOnLine ? nullptr : kLineMap.GetLineData( iLastLine );
+	if( pLast != nullptr )
+	{
+		const float t = HorizontalParameter( vTo, pLast->startPos, pLast->endPos );
+		const float fLength = std::hypot( pLast->endPos.x - pLast->startPos.x, pLast->endPos.z - pLast->startPos.z );
+		const float fBeyond = fLength > 0.f ? ( t < 0.f ? -t : t - 1.f ) * fLength : 0.f;
+		if( fBeyond > fRadius && ( ( t < 0.f && pLast->beforeLine == -2 ) || ( t > 1.f && pLast->nextLine == -2 ) ) )
+			return true;
+	}
+
+	// no line below somewhere on the way
+	const float fDistance = std::hypot( vTo.x - vFrom.x, vTo.z - vFrom.z );
+	const int iSteps = std::max( 1, static_cast< int >( std::ceil( fDistance / fRadius ) ) );
+	for( int iStep = 1; iStep <= iSteps; ++iStep )
+	{
+		const float f = static_cast< float >( iStep ) / static_cast< float >( iSteps );
+		const VECTOR3 vPos( vFrom.x + ( vTo.x - vFrom.x ) * f, vFrom.y + ( vTo.y - vFrom.y ) * f, vFrom.z + ( vTo.z - vFrom.z ) * f );
+		if( !HasLineBelow( kLineMap, vPos, fRadius ) )
+			return true;
+	}
+	return false;
 }
 
 #endif // X2_VILLAGE_SYNC
