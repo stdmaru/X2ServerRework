@@ -231,7 +231,7 @@ readable Lua: 4,553 scripts decompiled, none kept as bytecode, Item.kim converte
 
 ## Bringing data from other clients
 
-Four scripts bring what our client lacks from other clients, and can be run again (a second run changes nothing). The sources and their order are on [Add character](../project/add-character.md).
+These scripts bring what our client lacks from other clients, and can be run again (a second run changes nothing). The sources and their order are on [Add character](../project/add-character.md).
 
 ```bash
 tools/assets/merge_skills.py <client_data>/data/NewSkillTempletVer2.lua --skills 9000-9014,9200-9207 \
@@ -277,6 +277,12 @@ tools/assets/merge_items.py <client_data>/items --enum <client_data>/data/Enum.l
   `--max-index` (8) a text play of ours lacks are taken, by scene ID, sequence and text play, from the first
   `--source` that has them; ours are never changed. Their STR_IDs are defined and their strings copied as
   `merge_quests.py` does.
+- `merge_dungeon_data.py <client_data> --source <DungeonData.lua> [--source ...] [--units ADD,...] --ess <our
+  general.ess>`: a dungeon's `BOSS_DROP_ITEM` (the boss items its window shows) and `ENDING_SPEECH<n>` (a character's
+  line when the dungeon is cleared) list entries by character; the characters a table of ours lacks are taken, by
+  `dungeonID`, from the first `--source` that has them (read by running it with LuaJIT), and inserted as text, so the
+  rest of the file stays byte for byte. Nothing is written when an item is not in our `Item.lua` or a `STR_ID` not in
+  our `StringID_def.lua` and `general.ess`.
 
 ## Content changes (T42)
 
@@ -324,6 +330,7 @@ is listed here with the step that changed it and why.
 | `items/Item.lua` | `server/add-character` (2026-11-15) | 44 skill memos of Ara's 2nd path and Elesis (607018–607035, 608001–608030; 608002–608005 are in no source) from BR 2014-08, text from BR 2017, by `merge_items.py --ids`, for the server's `ClassChangeItem/Memo.lua`; their icons were already in our client |
 | `items/Item.lua`, `items/ManufactureItem.lua` | `server/add-character` (2026-11-15) | 47 recipes of Add's items (materials and cost; 55 result rows, 52 village rows: BR 2014-08 first, V5's for the villages, which BR 2014-08 lacks) by `tools/runtime/merge_server_tables.py --client-manufacture`, and 3 of their materials (61538, 133536, 133537; BR 2014-08) by `merge_items.py --ids` |
 | `DungeonData.lua` | `server/add-character` (2026-11-15) | Add's tutorial (39608, `Dungeon_Battle_Field_Tutorial_Add.lua`, already in the client_data) after Elesis's, from V5: without it the GameServer had no such dungeon and Add's tutorial stayed black |
+| `DungeonData.lua` | `server/third-paths` (2026-11-19) | Add's boss drops in 56 `BOSS_DROP_ITEM` tables and his clear lines in 57 `ENDING_SPEECH<n>` tables (91 dungeons), and Chung's missing lines in one, by `tools/assets/merge_dungeon_data.py` (`_reference`, then V5's `ClientScript`, then BR 2020; V5 and BR 2020 agree on every line both have). The 29 items and 170 strings were already in our client, in Portuguese |
 | `general.ess` (client folder) | `server/add-character` (2026-11-16) | 2,510 placeholders (`STR_ID_<n>` shown as text: Add's dungeon lines 29599–29602 and DP/Dynamo messages 29419–29421, 29939, among others) and 299 Korean strings replaced by BR 2017's `General.ess`, by `tools/assets/fill_strings.py`; 3,235 placeholders are in no source (2026-11-16) |
 | `data/EventScene.lua` | `server/add-character` (2026-11-16) | Add's lines (`PLAYER_TEXT8`) in 104 text plays (Lowe's after the tutorial, among others) from BR 2014-08 (BR 2017 as fallback), by `tools/assets/merge_player_text.py`; their strings were already in `general.ess`. 22 text plays stop at `PLAYER_TEXT5` in every source (Ara, Elesis and Add see `TEXT`) |
 | `ui/scripts/DLG_Dungeon_Stage_Loading.lua` (new) | `client/dungeon-stage-loading` (2026-11-18) | The screen between a dungeon's stages as a dialog, one static with two pictures: 0 `Back` (generic loading picture; the code puts the stage's last frame there) and 1 `Frame` (`HQ_LoadingOutLine.tga`), both 1024×768 layout units. A new file: dev builds read it as a loose file until `pack` writes new files |
