@@ -159,6 +159,7 @@ See [Server — Windows dependencies](../original/server.md).
         user (2026-11-05).
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
 - [x] Milestone: login + town + dungeon with original `elsword.exe` against servers running on Linux (2026-10-31).
+- [ ] `server/village-sync`: village and dungeon lounge movement sync rewritten as server-validated snapshots with interpolation, interest management and per-tick aggregation ([T53](decisions.md), [Village movement sync](../original/village-sync.md)); planned 2026-11-19.
 
 ## Phase 3 — Client: platform
 
