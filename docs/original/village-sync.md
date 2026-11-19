@@ -95,6 +95,13 @@ all) except `VMI_DUNGEON_GATE_RUBEN`, whose world script `Ruben_Dungeon_Gate.lua
 `AddCameraData_LUA` and `SetLandHeight`. The port loads them with `KWorldLineMaps`
 ([Server: Common](../porting/server-common.md#intentional)).
 
+What they hold (2026-11-19): line types 0 (`LT_NORMAL`), 2 (`LT_POTAL`), 4 (`LT_JUMP_UP_REL`) and 9
+(`LT_OTHER_ROAD`); no `LT_WALL` in any village or room. World 491 has 4 jump lines (`JUMP_SPEED_X` 5000,
+`JUMP_SPEED_Y` 3000) and 5 lines with `SPEED` 5000. A jump line throws the unit without changing its state, so a
+unit in a state that keeps it on a line can be in the air. Portal lines do not teleport village units. The port
+checks reported movement against these lines with `KVillageMoveValidator`
+([Server: Common](../porting/server-common.md#intentional)).
+
 ## What the server already had
 
 - `CXSLLineMap` (`src/server/Common/LineMap`) answers `IsOnLine`, `GetNearest`, `GetLineData`, but could not load

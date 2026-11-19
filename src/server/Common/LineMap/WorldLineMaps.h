@@ -31,6 +31,9 @@ public:
 	const CXSLLineMap* GetByWorld( int iWorldID ) const;
 	int GetWorldIDOfVillage( int iVillageMapID ) const;	// 0 when unknown
 
+	// Loads one line map script, found by name, in a clean Lua state with Enum.lua; nullptr when it fails.
+	static std::shared_ptr< CXSLLineMap > LoadLineMap( const std::string& strName );
+
 	size_t GetNumWorlds() const		{ return m_mapWorldLineMap.size(); }
 	size_t GetNumLineMaps() const;	// distinct line maps (several worlds share one)
 

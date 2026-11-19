@@ -60,7 +60,10 @@ bool IsRoomWorld( const std::string& strWorldName )
 			 && strWorldName.compare( strWorldName.size() - kWedding.size(), kWedding.size(), kWedding ) == 0 );
 }
 
-std::shared_ptr< CXSLLineMap > LoadLineMapScript( const std::string& strName )
+
+}	// namespace
+
+std::shared_ptr< CXSLLineMap > KWorldLineMaps::LoadLineMap( const std::string& strName )
 {
 	const std::string strPath = KClientScriptState::Find( strName );
 	if( strPath.empty() )
@@ -87,8 +90,6 @@ std::shared_ptr< CXSLLineMap > LoadLineMapScript( const std::string& strName )
 		return nullptr;
 	return spLineMap;
 }
-
-}	// namespace
 
 KWorldLineMaps::KWorldLineMaps() = default;
 KWorldLineMaps::~KWorldLineMaps() = default;
@@ -170,7 +171,7 @@ bool KWorldLineMaps::Load()
 
 		std::shared_ptr< CXSLLineMap >& spLineMap = mapByFile[ ToLower( strLineMap ) ];
 		if( !spLineMap )
-			spLineMap = LoadLineMapScript( strLineMap );
+			spLineMap = LoadLineMap( strLineMap );
 		if( spLineMap )
 			m_mapWorldLineMap[ kWorld.iWorldID ] = spLineMap;
 	}
