@@ -711,6 +711,7 @@ class CXSLLineMap
 			return 0 <= index && index < static_cast<int>( m_LineList.size() ) ? m_LineList[ index ] : nullptr;
 		}
 		__forceinline int GetNumLineData() const { return (int)m_LineList.size(); }
+		const std::vector<LineData*>& GetWallList() const { return m_WallList; }	// Port: LT_WALL lines are kept apart
 		__forceinline float GetLandHeight() { return m_fLandHeight; }
 #ifdef NEW_VILLAGE_RENDERING_TEST
 		__forceinline const int GetNumCameraData() { return static_cast<int>(m_vecCameraData.size()); }

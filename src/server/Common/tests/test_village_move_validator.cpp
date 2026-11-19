@@ -55,7 +55,8 @@ JUMP_DOWN = { LAND_CONNECT = FALSE, PASSIVE_SPEED_X = INIT_PHYSIC.WALK_SPEED }
 DASH = { LAND_CONNECT = TRUE, PASSIVE_SPEED_X = INIT_PHYSIC.RUN_SPEED }
 DASH_JUMP_UP = { LAND_CONNECT = FALSE, PASSIVE_SPEED_X = INIT_PHYSIC.RUN_SPEED, SPEED_Y = INIT_PHYSIC.JUMP_SPEED * 1.1 }
 )";
-	// 0 floor, 1 platform within a dash jump (300 < 340), 2 platform out of reach, 3 jump line, 4 moving walkway
+	// 0 floor, 1 platform within a dash jump (300 < 340), 2 platform out of reach, 3 jump line, 4 moving walkway,
+	// 5 floor past the jump line, ending at 9000, 6 a wall on it, 7 a ledge above it whose end at 7500 is closed
 	std::ofstream( root / "Test_LineMap.lua" ) << R"(
 g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 0, 0, 0 ), END_POS = D3DXVECTOR3( 3000, 0, 0 ) })
 g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 500, 300, 0 ), END_POS = D3DXVECTOR3( 900, 300, 0 ) })
@@ -64,6 +65,10 @@ g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_JUMP_UP_REL, START_POS = D3DXV
 	JUMP_SPEED_X = 800, JUMP_SPEED_Y = 3000 })
 g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( -3000, 0, 0 ), END_POS = D3DXVECTOR3( -1000, 0, 0 ),
 	SPEED = 5000 })
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 3200, 0, 0 ), END_POS = D3DXVECTOR3( 9000, 0, 0 ) })
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_WALL, START_POS = D3DXVECTOR3( 6000, 0, 0 ), END_POS = D3DXVECTOR3( 6000, 300, 0 ) })
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 7000, 200, 0 ), END_POS = D3DXVECTOR3( 7500, 200, 0 ),
+	NEXT_LINE = -2 })
 )";
 
 	const fs::path oldCurrent = fs::current_path();
@@ -75,7 +80,8 @@ g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR
 	fs::remove_all( root );
 	REQUIRE( bPhysics );
 	REQUIRE( spFixture->spLineMap != nullptr );
-	REQUIRE( spFixture->spLineMap->GetNumLineData() == 5 );
+	REQUIRE( spFixture->spLineMap->GetNumLineData() == 7 );	// the wall is kept apart
+	REQUIRE( spFixture->spLineMap->GetWallList().size() == 1 );
 	s_spFixture = std::move( spFixture );
 	return *s_spFixture;
 }
@@ -231,6 +237,37 @@ TEST_CASE( "KVillageMoveValidator: jump lines and moving walkways" )
 		CHECK( kWalkway.Reason( State( -2900.f + 450.f * i, 0, WAIT ) ) == Reason::R_NONE );
 	Unit kNoWalkway( State( 100, 0, WAIT ) );
 	CHECK( kNoWalkway.Reason( State( 550, 0, WAIT ) ) == Reason::R_SPEED );
+}
+
+TEST_CASE( "KVillageMoveValidator: walls" )
+{
+	// the end of a line with no other below (the edges of Elder): the client stops the unit there
+	Unit kEdge( State( 8900, 0, WAIT ) );
+	CHECK( kEdge.Reason( State( 8960, 0, WALK ) ) == Reason::R_NONE );
+	CHECK( kEdge.Reason( State( 9010, 0, WALK ) ) == Reason::R_NONE );		// within the wall radius
+	CHECK( kEdge.Reason( State( 9070, 0, WALK ) ) == Reason::R_WALL );
+	CHECK( kEdge.Reason( State( 9070, 100, JUMP_UP, 1000 ) ) == Reason::R_WALL );	// in the air too
+
+	// a narrow gap cannot be skipped between two updates: the floor ends at -1000 and starts again at 0
+	Unit kGap( State( -1100, 0, WAIT ) );
+	CHECK( kGap.Reason( State( 50, 0, WAIT ), 300 ) == Reason::R_WALL );		// from the walkway, fast enough to cross it
+
+	// a closed end (NEXT_LINE -2, Altera and Besma): the unit cannot leave the ledge past it, though the floor is below
+	Unit kLedge( State( 7450, 200, WAIT ) );
+	CHECK( kLedge.Reason( State( 7540, 190, JUMP_DOWN, -200 ) ) == Reason::R_NONE );	// 40 past it
+	CHECK( kLedge.Reason( State( 7580, 160, JUMP_DOWN, -400 ) ) == Reason::R_WALL );
+	// its open start is a way down
+	Unit kDown( State( 7050, 200, WAIT ) );
+	CHECK( kDown.Reason( State( 6950, 180, JUMP_DOWN, -200 ) ) == Reason::R_NONE );
+
+	// an LT_WALL line
+	Unit kWall( State( 5960, 0, WAIT ) );
+	CHECK( kWall.Reason( State( 6030, 0, DASH ) ) == Reason::R_WALL );
+	CHECK( kWall.Reason( State( 6000, 0, DASH ) ) == Reason::R_WALL );		// touching it
+	CHECK( kWall.Reason( State( 5990, 0, DASH ) ) == Reason::R_NONE );
+	// above it
+	Unit kOver( State( 5900, 400, JUMP_DOWN, 0 ) );
+	CHECK( kOver.Reason( State( 5960, 395, JUMP_DOWN, -100 ) ) == Reason::R_NONE );
 }
 
 TEST_CASE( "KVillageMoveValidator: corrections, resets and operators" )
