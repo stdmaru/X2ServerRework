@@ -381,7 +381,11 @@ textures made to be stretched to 4:3, as the dungeon loading screen draws them; 
 image or a single picture, 4:3 (over the 1024 column) or, for the 16:9 redraws planned under
 [T51](../project/decisions.md) (one texture each), 1365.33 units wide centered on the column; the second picture is
 then hidden (or absent, once the dialog's own background is one 16:9 picture). If a texture is missing the dialog is
-rebuilt with its own background, the first login's.
+rebuilt with its own background, the first login's. Redrawn at 16:9 so far (2026-11-19, `client/widescreen-loading`):
+Ruben and Elder (`HQ_LoadingVillage_RUBEN.TGA`, `HQ_LoadingVillage_ELDER.TGA`, in the client_data's
+`ui/loading/widescreen`), and the prologue's picture, which `CX2StateDungeonRoom` puts on the first dungeon's and the
+tutorial's loading screen (`HQ_Loading_RUBEN_PROLOG.tga` on picture 0 of `Static_Loading_Dungeon_BG`, the script's
+16:9 picture, in place of the two halves `_01`/`_02` on pictures 1 and 2).
 
 ## Dungeon stage loading screen (2026-11-18, `client/dungeon-stage-loading`)
 
