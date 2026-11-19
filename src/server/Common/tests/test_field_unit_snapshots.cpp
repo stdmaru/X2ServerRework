@@ -83,6 +83,20 @@ TEST_CASE( "KFieldUnitSnapshots: interpolation" )
 	CHECK( X( kSnapshots, 1350 ) == doctest::Approx( 210.f ) );
 }
 
+TEST_CASE( "KFieldUnitSnapshots: a state that did not reach us" )
+{
+	// running at 700 u/s; the state of 1100 never came (two states in one batch): a long gap after a moving state is
+	// moving all along, not a stop
+	KFieldUnitState kRun = At( 0 );
+	kRun.m_sSpeedX = 700;
+	KFieldUnitSnapshots kSnapshots;
+	kRun.m_vPos.x = 0.f;	kSnapshots.Push( 1000, kRun );
+	kRun.m_vPos.x = 154.f;	kSnapshots.Push( 1220, kRun );
+	CHECK( X( kSnapshots, 1110 ) == doctest::Approx( 77.f ) );
+	// and past the newest it goes on
+	CHECK( X( kSnapshots, 1330 ) == doctest::Approx( 231.f ) );
+}
+
 TEST_CASE( "KFieldUnitSnapshots: standing, teleports and limits" )
 {
 	KFieldUnitSnapshots kSnapshots;

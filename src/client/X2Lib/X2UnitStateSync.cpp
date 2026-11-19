@@ -19,10 +19,11 @@ uint32_t CX2UnitStateSync::GetRenderTick() const
 
 void CX2UnitStateSync::FrameMove( float fElapsedTime, CX2SquareUnit* pMyUnit, bool bCanSend )
 {
+	// every 0.1 s on average: dropping what is left of the interval made it 0.1 s plus up to a frame
 	m_fSendTime += fElapsedTime;
 	if( m_fSendTime < 0.1f )
 		return;
-	m_fSendTime = 0.f;
+	m_fSendTime = m_fSendTime < 0.2f ? m_fSendTime - 0.1f : 0.f;
 
 	if( pMyUnit == NULL || bCanSend == false )
 		return;

@@ -14,8 +14,9 @@
 //   R_SPEED     it moved farther horizontally than the fastest speed allows in the time (the line's own speed and a
 //               jump line's launch count), or its clock ran ahead;
 //   R_OFF_LINE  it is away from every line in a state that keeps it on one (LAND_CONNECT), unless a jump line threw it;
-//   R_RISE      it is higher above the ground it left than a jump can carry it at that time (a unit that was falling
-//               and now rises landed and jumped again between two updates, when the line below was within its fall);
+//   R_RISE      it is higher above the ground it left than a jump can carry it at that time (a unit in the air that
+//               now rises may have landed and jumped again between two updates: on the highest line below it that the
+//               last update's height and vertical speed bring it down onto within the time);
 //   R_WALL      it went where CX2SquareUnit stops a unit: over no line (the unit cannot move where it has no line
 //               below, on the ground or in the air: the edges of Elder), past an end of the line it last stood on
 //               that is closed (BEFORE_LINE/NEXT_LINE -2: Altera, Besma), or across an LT_WALL line (none in villages
@@ -45,6 +46,7 @@ public:
 		float		fUpdatesPerSecond	= 20.f;
 		float		fUpdateBurst		= 10.f;
 		uint32_t	uiCorrectionGraceMs	= 1000;		// rejections this soon after a correction are not new
+		uint32_t	uiLandingSlackMs	= 30;		// a landing between two updates may come this much later
 	};
 
 	struct Verdict
@@ -76,6 +78,11 @@ public:
 
 	// Whether a walkable line is at or below vPos within fRadius horizontally (CKTDGLineMap::CanDown).
 	static bool HasLineBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius );
+
+	// The highest walkable line under vFrom or vTo (within fRadius horizontally) that a unit at vFrom moving up at
+	// fSpeedY (negative: down) comes down onto within fMaxTime seconds, and its height (fY); -1 if none.
+	static int FindLanding( const CXSLLineMap& kLineMap, const VECTOR3& vFrom, const VECTOR3& vTo, float fSpeedY, float fGAccel,
+							float fMaxTime, float fRadius, float& fY );
 
 	// The highest such line and its height (fY) below vPos, or -1.
 	static int FindGroundBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius, float& fY );

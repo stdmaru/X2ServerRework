@@ -103,8 +103,9 @@ struct Unit
 	uint32_t				uiTick		= 100000;
 	uint32_t				uiServer	= 5000;
 
-	explicit Unit( const KFieldUnitState& kStart, const KVillageMoveValidator::Config& kConfig = KVillageMoveValidator::Config() )
-		: kValidator( GetFixture().spLineMap.get(), GetFixture().kPhysics, kConfig )
+	explicit Unit( const KFieldUnitState& kStart, const KVillageMoveValidator::Config& kConfig = KVillageMoveValidator::Config(),
+				   const CXSLLineMap* pLineMap = nullptr )
+		: kValidator( pLineMap != nullptr ? pLineMap : GetFixture().spLineMap.get(), GetFixture().kPhysics, kConfig )
 	{
 		kValidator.Reset( kStart, uiServer );
 	}
@@ -227,6 +228,62 @@ TEST_CASE( "KVillageMoveValidator: jumping again at once" )
 		if( kHover.Send( State( 100, 270, JUMP_UP, static_cast< int16_t >( i % 2 == 0 ? 100 : -1 ) ) ).ucReason == Reason::R_RISE )
 			iRejected = i;
 	CHECK( iRejected == 5 );		// as when it hovers without pretending to land
+}
+
+TEST_CASE( "KVillageMoveValidator: up platforms one after another" )
+{
+	// a stair of one-way platforms 250 apart, climbed with dash jumps (up to 340), each one taken as soon as the unit
+	// lands: the landing comes 0.21 s after the apex and often falls between updates, after a rising one
+	const fs::path root = fs::temp_directory_path() / "x2_village_move_validator_stairs";
+	fs::remove_all( root );
+	fs::create_directories( root );
+	std::ofstream( root / "Enum.lua" ) << "LINE_TYPE = { LT_NORMAL = 0 }\n";
+	{
+		std::ofstream kStairs( root / "Stairs_LineMap.lua" );
+		for( int i = 0; i <= 4; ++i )
+			kStairs << "g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 0, " << 250 * i
+					<< ", 0 ), END_POS = D3DXVECTOR3( 3000, " << 250 * i << ", 0 ) })\n";
+	}
+	const fs::path oldCurrent = fs::current_path();
+	fs::current_path( root );
+	const std::shared_ptr< CXSLLineMap > spStairs = KWorldLineMaps::LoadLineMap( "Stairs_LineMap.lua" );
+	fs::current_path( oldCurrent );
+	fs::remove_all( root );
+	REQUIRE( spStairs != nullptr );
+	REQUIRE( spStairs->GetNumLineData() == 5 );
+
+	const float g = 4000.f, fSpeedY = 1650.f;
+	const float fFlight = ( fSpeedY + std::sqrt( fSpeedY * fSpeedY - 2.f * g * 250.f ) ) / g;	// 0.625 s
+	const auto Sample = [&]( float t )
+	{
+		const int iStep = static_cast< int >( t / fFlight );
+		if( iStep >= 4 )
+			return State( 1000, 1000, WAIT );
+		const float tJump = t - static_cast< float >( iStep ) * fFlight;
+		return State( 1000, 250.f * static_cast< float >( iStep ) + fSpeedY * tJump - 0.5f * g * tJump * tJump, DASH_JUMP_UP,
+					  static_cast< int16_t >( fSpeedY - g * tJump ) );
+	};
+	for( uint32_t uiPhase = 0; uiPhase < 100; uiPhase += 10 )
+	{
+		CAPTURE( uiPhase );
+		Unit kUnit( State( 1000, 0, WAIT ), KVillageMoveValidator::Config(), spStairs.get() );
+		u_char ucWorst = Reason::R_NONE;
+		for( int i = 0; i < 30; ++i )
+		{
+			const float t = static_cast< float >( uiPhase + 100 * static_cast< uint32_t >( i ) ) / 1000.f + 0.001f;
+			const u_char ucReason = kUnit.Reason( Sample( t ), i == 0 ? uiPhase + 1 : 100 );
+			if( ucReason != Reason::R_NONE && ucWorst == Reason::R_NONE )
+				ucWorst = ucReason;
+		}
+		CHECK( ucWorst == Reason::R_NONE );
+		CHECK( kUnit.kValidator.GetLastValid().m_vPos.y == doctest::Approx( 1000.f ) );
+	}
+
+	// it cannot climb a platform it could not reach from where it was: from the floor straight to 500
+	Unit kHigh( State( 1000, 0, WAIT ), KVillageMoveValidator::Config(), spStairs.get() );
+	CHECK( kHigh.Reason( State( 1000, 150, DASH_JUMP_UP, 1250 ) ) == Reason::R_NONE );
+	CHECK( kHigh.Reason( State( 1000, 280, DASH_JUMP_UP, 850 ) ) == Reason::R_NONE );
+	CHECK( kHigh.Reason( State( 1000, 640, DASH_JUMP_UP, 1000 ) ) == Reason::R_RISE );	// "landed" on 500, never that high
 }
 
 TEST_CASE( "KVillageMoveValidator: platforms" )

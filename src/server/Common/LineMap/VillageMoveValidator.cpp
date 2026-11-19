@@ -151,18 +151,17 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 	bool bAir = m_bAir;
 	float fGroundY = m_fGroundY;
 	int iGroundLine = m_iGroundLine;
-	if( bAir && m_bHasClientClock && m_pLineMap != nullptr && kState.m_sSpeedY > 0 && m_kLast.m_sSpeedY <= 0 )
+	if( bAir && m_bHasClientClock && m_pLineMap != nullptr && kState.m_sSpeedY > 0 )
 	{
-		// falling at the last update and rising at this one: it landed and jumped again in between (jumping again
-		// at once lands between two updates), from the line below the last update, if it could fall that far
-		const KSquareUnitPhysics::Physic& kPhysic = m_kPhysics.GetPhysic();
-		const float fMaxFallSpeed = std::fabs( kPhysic.fMaxGSpeed );
-		const float fFallSpeed = std::min( static_cast< float >( -m_kLast.m_sSpeedY ), fMaxFallSpeed );
-		const float fMaxFall = std::min( fFallSpeed * fDeltaTime + 0.5f * kPhysic.fGAccel * fDeltaTime * fDeltaTime,
-										 fMaxFallSpeed * fDeltaTime );
+		// rising, in the air since an update ago: it may have landed and jumped again in between (jumping again at
+		// once, or up platforms one after another, whose landing comes soon after the apex), on a line it could reach
+		// from the last update's height and speed within the time
+		const float fSpeedY = std::min( static_cast< float >( m_kLast.m_sSpeedY ), m_fLaunchSpeedY );
 		float fLandY = 0.f;
-		const int iLandLine = FindGroundBelow( *m_pLineMap, m_kLast.m_vPos, m_kConfig.fWallRadius, fLandY );
-		if( iLandLine >= 0 && m_kLast.m_vPos.y - fLandY <= fMaxFall + m_kConfig.fHeightSlack )
+		const int iLandLine = FindLanding( *m_pLineMap, m_kLast.m_vPos, kState.m_vPos, fSpeedY, m_kPhysics.GetPhysic().fGAccel,
+										   fDeltaTime + static_cast< float >( m_kConfig.uiLandingSlackMs ) / 1000.f,
+										   m_kConfig.fWallRadius, fLandY );
+		if( iLandLine >= 0 )
 		{
 			bAir		= false;
 			fGroundY	= fLandY;
@@ -322,6 +321,50 @@ int KVillageMoveValidator::FindLine( const CXSLLineMap& kLineMap, const VECTOR3&
 		}
 	}
 	return iNearest;
+}
+
+int KVillageMoveValidator::FindLanding( const CXSLLineMap& kLineMap, const VECTOR3& vFrom, const VECTOR3& vTo, float fSpeedY,
+										float fGAccel, float fMaxTime, float fRadius, float& fY )
+{
+	if( fGAccel <= 0.f )
+		return -1;
+
+	int iHighest = -1;
+	for( int i = 0; i < kLineMap.GetNumLineData(); ++i )
+	{
+		const CXSLLineMap::LineData* pLine = kLineMap.GetLineData( i );
+		if( pLine == nullptr || !IsWalkable( *pLine ) )
+			continue;
+
+		// under the unit at either update
+		float fLineY = 0.f;
+		bool bUnder = false;
+		for( const VECTOR3* pPos : { &vFrom, &vTo } )
+		{
+			const float t = std::clamp( HorizontalParameter( *pPos, pLine->startPos, pLine->endPos ), 0.f, 1.f );
+			const D3DXVECTOR3 vNearest = pLine->startPos + ( pLine->endPos - pLine->startPos ) * t;
+			if( std::hypot( pPos->x - vNearest.x, pPos->z - vNearest.z ) <= fRadius && ( !bUnder || vNearest.y > fLineY ) )
+			{
+				fLineY = vNearest.y;
+				bUnder = true;
+			}
+		}
+		if( !bUnder || ( iHighest >= 0 && fLineY <= fY ) )
+			continue;
+
+		// coming down onto it: y(t) = y0 + v t - g t^2 / 2 reaches the line after the apex
+		const float fDrop = vFrom.y - fLineY;
+		const float fDiscriminant = fSpeedY * fSpeedY + 2.f * fGAccel * fDrop;
+		if( fDiscriminant < 0.f )
+			continue;	// never that high
+		const float fTime = ( fSpeedY + std::sqrt( fDiscriminant ) ) / fGAccel;
+		if( fTime > fMaxTime )
+			continue;
+
+		iHighest = i;
+		fY = fLineY;
+	}
+	return iHighest;
 }
 
 bool KVillageMoveValidator::HasLineBelow( const CXSLLineMap& kLineMap, const VECTOR3& vPos, float fRadius )

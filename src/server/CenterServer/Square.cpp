@@ -438,6 +438,20 @@ IMPL_ON_FUNC( ERM_SQUARE_UNIT_STATE_NOT )
 	}
 	else if( kResult.bCorrect )
 	{
+		START_LOG( cwarn, L"Square movement rejected." )
+			<< BUILD_LOG( FIRST_SENDER_UID )
+			<< BUILD_LOGc( kResult.kCorrection.m_ucReason )
+			<< BUILD_LOG( kPacket_.m_kState.m_uiTick )
+			<< BUILD_LOGc( kPacket_.m_kState.m_kState.m_ucStateID )
+			<< BUILD_LOG( kPacket_.m_kState.m_kState.m_vPos.x )
+			<< BUILD_LOG( kPacket_.m_kState.m_kState.m_vPos.y )
+			<< BUILD_LOG( kPacket_.m_kState.m_kState.m_sSpeedX )
+			<< BUILD_LOG( kPacket_.m_kState.m_kState.m_sSpeedY )
+			<< BUILD_LOG( kResult.kCorrection.m_kState.m_vPos.x )
+			<< BUILD_LOG( kResult.kCorrection.m_kState.m_vPos.y )
+			<< BUILD_LOG( kResult.kCorrection.m_kState.m_sSpeedY )
+			<< BUILD_LOG( kResult.iViolations )
+			<< END_LOG;
 		SendCorrection( FIRST_SENDER_UID, kResult );
 	}
 }

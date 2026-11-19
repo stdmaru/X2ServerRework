@@ -124,8 +124,7 @@ void KFieldMoveSync::BuildSharedBatch( uint32_t uiServerNow, KEGS_FIELD_UNIT_STA
 {
 	kShared = KEGS_FIELD_UNIT_STATE_BATCH_NOT();
 	mapExtra.clear();
-	m_bTicked = true;
-	m_uiLastTick = uiServerNow;
+	MarkTick( uiServerNow );
 
 	for( auto& [iUnitUID, kUnit] : m_mapUnit )
 	{
@@ -151,6 +150,17 @@ void KFieldMoveSync::BuildSharedBatch( uint32_t uiServerNow, KEGS_FIELD_UNIT_STA
 	m_mapShow.clear();
 }
 
+void KFieldMoveSync::MarkTick( uint32_t uiServerNow )
+{
+	// on a fixed cadence: the caller ticks every 20 ms or so (a CenterServer room), and taking its time as the start of
+	// the next interval made them 100 to 120 ms long, beating with the clients' updates
+	if( m_bTicked && uiServerNow - m_uiLastTick < 2 * m_kConfig.uiTickMs )
+		m_uiLastTick += m_kConfig.uiTickMs;
+	else
+		m_uiLastTick = uiServerNow;
+	m_bTicked = true;
+}
+
 bool KFieldMoveSync::IsTickDue( uint32_t uiServerNow ) const
 {
 	return !m_bTicked || uiServerNow - m_uiLastTick >= m_kConfig.uiTickMs;
@@ -160,8 +170,7 @@ void KFieldMoveSync::BuildBatches( uint32_t uiServerNow, const Destinations& fnD
 								   std::map< UidType, KEGS_FIELD_UNIT_STATE_BATCH_NOT >& mapBatch )
 {
 	mapBatch.clear();
-	m_bTicked = true;
-	m_uiLastTick = uiServerNow;
+	MarkTick( uiServerNow );
 
 	const auto Add = [&]( UidType iViewer, UidType iUnitUID, const Unit& kUnit )
 	{

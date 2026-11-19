@@ -124,7 +124,7 @@ public:
 		{
 			const Snapshot& kPrev = m_deqSnapshot[ m_deqSnapshot.size() - 2 ];
 			const uint32_t uiGap = kLast.uiTick - kPrev.uiTick;
-			if( uiGap > 0 && uiGap <= HoldMs() && Distance( kPrev.kState.m_vPos, kLast.kState.m_vPos ) <= m_kConfig.fSnapDistance )
+			if( uiGap > 0 && ( uiGap <= HoldMs() || IsMoving( kPrev.kState ) ) && Distance( kPrev.kState.m_vPos, kLast.kState.m_vPos ) <= m_kConfig.fSnapDistance )
 			{
 				uint32_t uiAhead = uiRenderTick - kLast.uiTick;
 				if( uiAhead > m_kConfig.uiMaxExtrapolateMs )
@@ -156,7 +156,9 @@ private:
 		KFieldUnitState	kState;
 	};
 
-	// a state that comes this long after the one before: the unit stood still between them
+	static bool IsMoving( const KFieldUnitState& kState ) { return kState.m_sSpeedX != 0 || kState.m_sSpeedY != 0; }
+
+	// a state that comes this long after a standing one: the unit stood still between them
 	uint32_t HoldMs() const { return m_kConfig.uiTickMs + m_kConfig.uiTickMs / 2; }
 
 	static bool Before( uint32_t uiTick, uint32_t uiOther ) { return static_cast< int32_t >( uiTick - uiOther ) < 0; }
@@ -172,9 +174,11 @@ private:
 		if( Distance( a.kState.m_vPos, b.kState.m_vPos ) > m_kConfig.fSnapDistance )
 			return a.kState.m_vPos;
 
-		// the server sends nothing while a unit stands, so a long gap is standing still and then one tick of moving
+		// the server sends nothing while a unit stands, so a long gap after a standing state is standing still and then
+		// one tick of moving; after a moving one it is a state that did not reach us (two in one batch), and the unit
+		// went on moving
 		uint32_t uiStart = a.uiTick;
-		if( b.uiTick - a.uiTick > HoldMs() )
+		if( b.uiTick - a.uiTick > HoldMs() && !IsMoving( a.kState ) )
 			uiStart = b.uiTick - m_kConfig.uiTickMs;
 		if( Before( uiRenderTick, uiStart ) )
 			return a.kState.m_vPos;

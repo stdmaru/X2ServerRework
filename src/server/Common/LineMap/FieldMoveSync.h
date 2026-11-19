@@ -76,6 +76,7 @@ public:
 	static VECTOR3 NearestOnLine( const CXSLLineMap* pLineMap, const VECTOR3& vPos );
 
 private:
+	void MarkTick( uint32_t uiServerNow );
 	struct Unit
 	{
 		KVillageMoveValidator		kValidator;
