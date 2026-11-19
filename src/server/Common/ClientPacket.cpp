@@ -6359,6 +6359,92 @@ SERIALIZE_DEFINE_GET( KEGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT, obj, ks )
 		;
 }
 
+#ifdef X2_VILLAGE_SYNC
+SERIALIZE_DEFINE_PUT( KFieldUnitState, obj, ks )
+{
+	return PUT( m_vPos )
+		&& PUT( m_sSpeedX )
+		&& PUT( m_sSpeedY )
+		&& PUT( m_sLineIndex )
+		&& PUT( m_ucStateID )
+		&& PUT( m_ucStateSeq )
+		&& PUT( m_bIsRight )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KFieldUnitState, obj, ks )
+{
+	return GET( m_vPos )
+		&& GET( m_sSpeedX )
+		&& GET( m_sSpeedY )
+		&& GET( m_sLineIndex )
+		&& GET( m_ucStateID )
+		&& GET( m_ucStateSeq )
+		&& GET( m_bIsRight )
+		;
+}
+
+SERIALIZE_DEFINE_PUT( KEGS_FIELD_UNIT_STATE_NOT, obj, ks )
+{
+	return PUT( m_uiTick )
+		&& PUT( m_kState )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KEGS_FIELD_UNIT_STATE_NOT, obj, ks )
+{
+	return GET( m_uiTick )
+		&& GET( m_kState )
+		;
+}
+
+SERIALIZE_DEFINE_PUT( KFieldUnitStateEntry, obj, ks )
+{
+	return PUT( m_UnitUID )
+		&& PUT( m_uiTick )
+		&& PUT( m_kState )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KFieldUnitStateEntry, obj, ks )
+{
+	return GET( m_UnitUID )
+		&& GET( m_uiTick )
+		&& GET( m_kState )
+		;
+}
+
+SERIALIZE_DEFINE_PUT( KEGS_FIELD_UNIT_STATE_BATCH_NOT, obj, ks )
+{
+	return PUT( m_uiTick )
+		&& PUT( m_vecUnit )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KEGS_FIELD_UNIT_STATE_BATCH_NOT, obj, ks )
+{
+	return GET( m_uiTick )
+		&& GET( m_vecUnit )
+		;
+}
+
+SERIALIZE_DEFINE_PUT( KEGS_FIELD_UNIT_CORRECTION_NOT, obj, ks )
+{
+	return PUT( m_uiTick )
+		&& PUT( m_kState )
+		&& PUT( m_ucReason )
+		;
+}
+
+SERIALIZE_DEFINE_GET( KEGS_FIELD_UNIT_CORRECTION_NOT, obj, ks )
+{
+	return GET( m_uiTick )
+		&& GET( m_kState )
+		&& GET( m_ucReason )
+		;
+}
+#endif // X2_VILLAGE_SYNC
+
 //////////////////////////////////////////////////////////////////////////
 SERIALIZE_DEFINE_PUT( KEGS_COMMUNITY_USER_LIST_REQ, obj, ks )
 {

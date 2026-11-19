@@ -4286,6 +4286,97 @@ DECL_PACKET( EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT )
 	bool								m_bIsRight;
 };
 
+#ifdef X2_VILLAGE_SYNC
+// Village movement sync (decision T53; docs/original/village-sync.md): the client sends its unit's state, the server
+// validates it against the world's line map and the unit script's limits, and sends every client, once per tick, the
+// visible units that changed; an update the server rejects is answered with the last valid state.
+
+// A village unit's movement at one moment.
+DECL_DATA( KFieldUnitState )
+{
+	VECTOR3								m_vPos;
+	int16_t								m_sSpeedX;		// units per second, along the facing
+	int16_t								m_sSpeedY;		// units per second, up
+	int16_t								m_sLineIndex;	// the last line the unit touched, -1 for none
+	u_char								m_ucStateID;	// index in the unit script's INIT_STATE (KSquareUnitPhysics)
+	u_char								m_ucStateSeq;	// counts state changes, so a state entered again is seen
+	bool								m_bIsRight;
+
+	KFieldUnitState()
+	{
+		m_sSpeedX		= 0;
+		m_sSpeedY		= 0;
+		m_sLineIndex	= -1;
+		m_ucStateID		= 0;
+		m_ucStateSeq	= 0;
+		m_bIsRight		= true;
+	}
+};
+
+// Client -> server: the own unit's state, about 10 times per second while it changes and rarely while it stands.
+DECL_PACKET( EGS_FIELD_UNIT_STATE_NOT )
+{
+	uint32_t							m_uiTick;		// the client's clock, in ms: identifies the update
+	KFieldUnitState						m_kState;
+
+	KEGS_FIELD_UNIT_STATE_NOT()
+	{
+		m_uiTick = 0;
+	}
+};
+
+DECL_DATA( KFieldUnitStateEntry )
+{
+	UidType								m_UnitUID;
+	uint32_t							m_uiTick;		// the server's clock, in ms, when it accepted the state
+	KFieldUnitState						m_kState;
+
+	KFieldUnitStateEntry()
+	{
+		m_UnitUID	= 0;
+		m_uiTick	= 0;
+	}
+};
+
+// Server -> client, once per field tick: the visible units whose state changed. Units enter and leave the view with
+// EGS_CHANGE_USER_LIST_IN_SECTOR_NOT, as in the original.
+DECL_PACKET( EGS_FIELD_UNIT_STATE_BATCH_NOT )
+{
+	uint32_t							m_uiTick;		// the server's clock, in ms, when it sent the batch
+	std::vector< KFieldUnitStateEntry >	m_vecUnit;
+
+	KEGS_FIELD_UNIT_STATE_BATCH_NOT()
+	{
+		m_uiTick = 0;
+	}
+};
+
+// Server -> sender: an update was rejected; the unit goes back to its last valid state.
+DECL_PACKET( EGS_FIELD_UNIT_CORRECTION_NOT )
+{
+	enum REASON
+	{
+		R_NONE = 0,
+		R_STATE,		// not a state of the unit script
+		R_SPEED,		// moved farther than its states allow in the time
+		R_OFF_LINE,		// away from every line in a state that keeps it on one
+		R_RISE,			// rose higher or longer than a jump
+		R_WALL,			// crossed a wall
+		R_RATE,			// sent more updates than allowed
+	};
+
+	uint32_t							m_uiTick;		// the client's tick of the rejected update
+	KFieldUnitState						m_kState;		// the last valid state
+	u_char								m_ucReason;		// REASON
+
+	KEGS_FIELD_UNIT_CORRECTION_NOT()
+	{
+		m_uiTick	= 0;
+		m_ucReason	= R_NONE;
+	}
+};
+#endif // X2_VILLAGE_SYNC
+
 
 //////////////////////////////////////////////////////////////////////////
 //{{ 2009. 1. 13  최육사	필드 유저 리스트
