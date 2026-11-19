@@ -59,6 +59,9 @@ public:
 		SI_SA_COMMON_AURA_EL_DEFENCE_ACCEL,				///	가호의 문장
 		SI_SA_COMMON_AURA_CRITICAL_ACCEL = 205,			/// 승리의 문장
 		SI_SA_COMMON_AURA_ADDATK_ACCEL,					/// 섬멸의 문장
+#ifdef X2_ADD_3RD_PATH
+		SI_SA_COMMON_CREST_OF_TIME                  = 207,
+#endif
 
 		// 길드, 결혼
 		SI_GP_COMMON_BALANCED_BODY					= 500,		/// 균형잡힌 육체
@@ -535,6 +538,17 @@ public:
 		SI_SA_ALD_HELL_OF_TORNADO,						/// 연환지옥
 		SI_SA_ALD_PRISON_SPEAR = 7015,					/// 나찰 3식 창살감옥
 		SI_SA_AYR_ENERGY_VOID,							/// 초진공장
+#ifdef X2_ARA_3RD_PATH
+		SI_SA_AA_NECROMANCY                         = 7017,
+		SI_SA_AA_SPECTER_OF_THUNDER                 = 7018,
+		SI_SA_ALS_RESTRAINTS_SPECTER                = 7019,
+		SI_SA_ALS_SPECTER_OF_STORM                  = 7020,
+		SI_SA_ALS_SPECTER_OF_BLADE                  = 7021,
+		SI_SA_ALS_SEVER                             = 7022,
+		SI_SA_AA_GET_BLOOD                          = 7023,
+		SI_SA_AA_FIRE_FOX                           = 7024,
+		SI_SA_AA_SUPPRESSION_SPECTER                = 7025,
+#endif
 
 		SI_A_AM_WIND_WEDGE = 7200,						/// 연풍설_바람 쐐기_낭아 2식
 		SI_A_AM_SHADOW_RISING,							/// 벽력뢰_천둥 꽃망울
@@ -556,6 +570,13 @@ public:
 		SI_A_ALD_CONVERSION_MANA,						/// 이기공
 		SI_A_AYR_STEAL_SOUL,							/// 나찰 4식 탈혼
 		SI_A_ALD_REFLECTION,							/// 반탄공
+#ifdef X2_ARA_3RD_PATH
+		SI_A_ALS_VIEW_BETWEEN                       = 7220,
+		SI_A_ALS_SPECTER_WALK                       = 7221,
+		SI_A_ALS_SHAKE_CHAOS                        = 7222,
+		SI_A_AA_RAID                                = 7223,
+		SI_A_ALS_MANA_DRAIN                         = 7224,
+#endif
 
 		SI_P_ALH_QUICK_STAND = 7400,					/// 재빠른 기상
 		SI_P_ALH_VIGOR_ENERGIZE,						/// 기력 활성화
@@ -570,10 +591,20 @@ public:
 		SI_P_AYR_RESURRECTION = 7410,					/// 회광반조
 		SI_P_ALD_ENERGY_REINFORCE,						/// 기력 강화
 		SI_P_AYR_HELL_GATE_OPEN,						/// 지옥 초래
+#ifdef X2_ARA_3RD_PATH
+		SI_P_AA_SPECTER_POWER_RELEASE               = 7413,
+		SI_P_AA_ASSIMILATION                        = 7414,
+		SI_P_AA_SPIRITUAL_EYE                       = 7415,
+		SI_P_AA_REPOSE_OF_SOULS                     = 7416,
+		SI_P_AA_FOX_SMILE                           = 7417,
+#endif
 
 
 		SI_HA_ASD_THOUSANDS_BLOSSOMS = 7600,			/// 분기등천 - 천수화
 		SI_SA_AYR_ENERGY_CANNON,						/// 대규환지옥
+#ifdef X2_ARA_3RD_PATH
+		SI_HA_AA_NINE_TAILED_FOX                    = 7602,
+#endif
 
 
 		// Elesis
@@ -600,6 +631,16 @@ public:
 		SI_SA_SGM_WAR_PRELUDE						= 8018,		/// 워 프렐류드
 		SI_SA_SBH_BLAZE_WING						= 8019,		/// 블레이즈 윙
 		SI_SA_SBH_BLAZING_DANCE						= 8020,		/// 블레이징 댄스
+#ifdef X2_ELESIS_3RD_PATH
+		SI_SA_SDK_BRUTAL_CUTTER                     = 8021,
+		SI_SA_SDK_EJECTION_BUSTER                   = 8022,
+		SI_SA_SDK_BRANDISH_BREAKER                  = 8023,
+		SI_SA_SDK_BURNING_PHANTOM                   = 8024,
+		SI_SA_SCA_CRIMSON_BREAK                     = 8025,
+		SI_SA_SCA_DREAD_WEAPON                      = 8026,
+		SI_SA_SCA_SHADE_THE_ILLUSION                = 8027,
+		SI_SA_SCA_BLOOD_CUTTER                      = 8028,
+#endif
 
 		SI_A_EL_DODGE_AND_SLASH						= 8200,		/// 닷지&슬래시
 		SI_A_EL_LEAP_CRASH							= 8201,		/// 도약
@@ -624,6 +665,13 @@ public:
 		SI_A_SBH_FLAME_SWORD						= 8217,		///	홍련의 검
 		SI_A_SBH_FIREWORKS							= 8218,		/// 불놀이
 		SI_A_SBH_SCALET_ROSE						= 8219,		/// 불꽃 장미
+#ifdef X2_ELESIS_3RD_PATH
+		SI_A_SDK_INJECTION_STIGMA                   = 8220,
+		SI_A_SDK_DARK_WAVE                          = 8221,
+		SI_A_SCA_SHADE_SCRATCH                      = 8222,
+		SI_A_SCA_SHADOW_EDGE                        = 8223,
+		SI_A_SCA_ASSAULT_STRIKE                     = 8224,
+#endif
 
 		SI_P_SSK_AGILITY_MASTERY					= 8400,		/// 순발력 향상
 		SI_P_SSK_CHIVALRY							= 8401,		/// 기사의 숙명
@@ -635,9 +683,20 @@ public:
 		SI_P_SBH_FIRE_BLOSSOMS						= 8407,		/// 불꽃 개화
 		SI_P_SBH_UNEXTINGUISHABLE_FIRE				= 8408,		/// 꺼지지 않는 불꽃
 		SI_P_SBH_STIGMA_OF_FIRE						= 8409,		/// 불꽃의 낙인
+#ifdef X2_ELESIS_3RD_PATH
+		SI_P_SDK_DARK_FORCE                         = 8410,
+		SI_P_SDK_BLOOD_RUNAWAY                      = 8411,
+		SI_P_SDK_MADNESS_RUNAWAY                    = 8412,
+		SI_P_SCA_BLOOD_REVENGE                      = 8413,
+		SI_P_SCA_JUDGMENT                           = 8414,
+		SI_P_SCA_PUNISH                             = 8415,
+#endif
 
 		SI_HA_SGM_SWORD_OF_RELICS					= 8600,		/// 소드 오브 렐릭스
 		SI_HA_SBH_ANCIENT_FIRE						= 8601,		/// 에인션트 파이어
+#ifdef X2_ELESIS_3RD_PATH
+		SI_HA_SCA_FATE_SMASHER                      = 8602,
+#endif
 
 
 		// Add
@@ -658,6 +717,26 @@ public:
 		SI_SA_ALP_QUICKSILVER_FRENZY				= 9012,		/// 퀵실버 프렌지
 		SI_SA_ALP_DUST_ANATOMY						= 9013,		/// 더스트 아나토미
 		SI_SA_ALP_PSYCHIC_STORM						= 9014,		/// 사이킥 스톰
+#ifdef X2_ADD_2ND_PATH
+		SI_SA_AAT_INSTALLATION_DRONE_ACTIVATOR      = 9015,
+		SI_SA_AAT_PANZER_BUSTER                     = 9016,
+		SI_SA_AAT_PSIONIC_GENERATOR                 = 9017,
+		SI_SA_AAT_PHANTOM_SEEKER                    = 9018,
+		SI_SA_AMM_INSTALLATION_PULSE_GATLING        = 9019,
+		SI_SA_AMM_INSTALLATION_SHOOTING_CHASER      = 9020,
+		SI_SA_AMM_INSTALLATION_ULTIMATE_FURY        = 9021,
+		SI_SA_AMM_INSTALLATION_STAR_FALL            = 9022,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_SA_ATT_VOID_IMPACT                       = 9023,
+		SI_SA_ATT_VOID_FIELD                        = 9024,
+		SI_SA_ATT_MAXIMUM_STRIKE                    = 9025,
+		SI_SA_ATT_STARDUST_SHOWER                   = 9026,
+		SI_SA_ADE_REVERSE_CIRCLE                    = 9027,
+		SI_SA_ADE_REVERSE_STIGMA                    = 9028,
+		SI_SA_ADE_MOONLIGHT_RHAPSODY                = 9029,
+		SI_SA_ADE_GRAVITY_BURSTER                   = 9030,
+#endif
 
 
 		SI_A_AN_PULSE_BULLET						= 9200,		/// 입자탄
@@ -670,6 +749,17 @@ public:
 
 		SI_A_ALP_PSIONIC_BEAT						= 9206,		/// 사이오닉 비트
 		SI_A_ALP_TWIRL_RUSH							= 9207,		/// 트월 러시
+#ifdef X2_ADD_2ND_PATH
+		SI_A_AAT_RUSHING_DRONE_DYNAMO               = 9208,
+		SI_A_AMM_DIVIDING_MISSILE_DYNAMO            = 9209,
+		SI_A_AMM_FLICK_DISC_DYNAMO                  = 9210,
+		SI_A_AMM_COUNTDOWN_BOMB_DYNAMO              = 9211,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_A_ATT_SPACE_CRACK                        = 9212,
+		SI_A_ADE_FORCE_NOVA                         = 9213,
+		SI_A_ADE_FORCE_FINGER                       = 9214,
+#endif
 
 
 		SI_P_AN_CHARGED_IMPULSAR					= 9400,		/// 다이너모 구성 - 과충전기
@@ -683,7 +773,27 @@ public:
 		SI_P_ALP_BODY_OF_TRANSCENDENCE				= 9406,		/// 초월자의 신체
 		SI_P_ALP_POWER_EXCHANGER					= 9407,		/// 출력 교환기
 		SI_P_ALP_FANTASY_TRACER						= 9408,		/// 환상 추적자
+#ifdef X2_ADD_2ND_PATH
+		SI_P_AAT_NASOD_ARMOR_MODE                   = 9409,
+		SI_P_AAT_HIDDEN_MEMORY                      = 9410,
+		SI_P_AMM_ENHANCED_DYNAMO_FACTORY_TRANSFORM  = 9411,
+		SI_P_AMM_DYNAMO_FACTORY_MP_RECOVERY         = 9412,
+		SI_P_AMM_TRANSFORM_OFFENSE_MODE             = 9413,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_P_ATT_NASOD_ARMOR_MODE_OVERLIMIT         = 9414,
+		SI_P_ADE_MIND_CONTROL                       = 9415,
+		SI_P_ADE_TIME_CONTROL                       = 9416,
+		SI_P_ADE_MIND_CIRCLE                        = 9417,
+		SI_P_ADE_ESP                                = 9418,
+#endif
 
+#ifdef X2_ADD_2ND_PATH
+		SI_HA_AMM_APOCALYPSE                        = 9601,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		SI_HA_ADE_PARANOIA                          = 9602,
+#endif
 
 		SI_HA_ALP_DOOMS_DAY							= 9600,		/// 둠스 데이
 

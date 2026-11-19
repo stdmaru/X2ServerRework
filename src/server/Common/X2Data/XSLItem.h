@@ -319,6 +319,22 @@ class CXSLItem
 			CI_CHANGE_JOB_PSYCHIC_TRACER	= 272810,			/// 애드 사이킥 트레이서 전직 아이템
 
 			CI_CHANGE_JOB_LUNATIC_PSYKER	= 273232,			/// 애드 루나틱 사이커 전직 아이템
+#ifdef X2_ADD_2ND_PATH
+			CI_CHANGE_JOB_ARC_TRACER        = 273862,
+			CI_CHANGE_JOB_MASTERMIND        = 273861,
+#endif
+#ifdef X2_ARA_3RD_PATH
+			CI_CHANGE_JOB_LITTLE_SPECTER    = 252758,
+			CI_CHANGE_JOB_ASURA             = 252753,
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+			CI_CHANGE_JOB_DARK_KNIGHT       = 276300,
+			CI_CHANGE_JOB_CRIMSON_AVENGER   = 276301,
+#endif
+#ifdef X2_ADD_3RD_PATH
+			CI_CHANGE_JOB_TIME_TRACER       = 276302,
+			CI_CHANGE_JOB_DIABOLIC_ESPER    = 276303,
+#endif
 
 
 			//{{ 2011. 11. 30	최육사	패키지 상품 추가

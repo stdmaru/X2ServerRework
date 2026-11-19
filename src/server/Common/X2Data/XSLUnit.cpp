@@ -240,6 +240,22 @@ CXSLUnit::UNIT_CLASS CXSLUnit::GetUnitClassDownGrade( UNIT_CLASS eUnitClass )
 	case CXSLUnit::UC_ARA_YAMA_RAJA:			return CXSLUnit::UC_ARA_LITTLE_DEVIL;
 	case CXSLUnit::UC_ADD_PSYCHIC_TRACER:		return CXSLUnit::UC_ADD_NASOD_RULER;
 	case CXSLUnit::UC_ADD_LUNATIC_PSYKER:		return CXSLUnit::UC_ADD_PSYCHIC_TRACER;
+#ifdef X2_ADD_2ND_PATH
+	case CXSLUnit::UC_ADD_ARC_TRACER:		return CXSLUnit::UC_ADD_NASOD_RULER;
+	case CXSLUnit::UC_ADD_MASTERMIND:		return CXSLUnit::UC_ADD_ARC_TRACER;
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CXSLUnit::UC_ARA_LITTLE_SPECTER:		return CXSLUnit::UC_ARA_MARTIAL_ARTIST;
+	case CXSLUnit::UC_ARA_ASURA:		return CXSLUnit::UC_ARA_LITTLE_SPECTER;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CXSLUnit::UC_ELESIS_DARK_KNIGHT:		return CXSLUnit::UC_ELESIS_KNIGHT;
+	case CXSLUnit::UC_ELESIS_CRIMSON_AVENGER:		return CXSLUnit::UC_ELESIS_DARK_KNIGHT;
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CXSLUnit::UC_ADD_TIME_TRACER:		return CXSLUnit::UC_ADD_NASOD_RULER;
+	case CXSLUnit::UC_ADD_DIABOLIC_ESPER:		return CXSLUnit::UC_ADD_TIME_TRACER;
+#endif
 	default:
 		break;
 	}
@@ -327,17 +343,33 @@ CXSLUnit::UNIT_CLASS CXSLUnit::GetUnitClassBaseGrade( UNIT_CLASS eUnitClass )
 	case CXSLUnit::UC_ARA_SAKRA_DEVANAM:
 	case CXSLUnit::UC_ARA_LITTLE_DEVIL:
 	case CXSLUnit::UC_ARA_YAMA_RAJA:
+#ifdef X2_ARA_3RD_PATH
+	case CXSLUnit::UC_ARA_LITTLE_SPECTER:
+	case CXSLUnit::UC_ARA_ASURA:
+#endif
 		return CXSLUnit::UC_ARA_MARTIAL_ARTIST;
 	case CXSLUnit::UC_ELESIS_KNIGHT:
 	case CXSLUnit::UC_ELESIS_SABER_KNIGHT:
 	case CXSLUnit::UC_ELESIS_PYRO_KNIGHT:
 	case CXSLUnit::UC_ELESIS_GRAND_MASTER:
 	case CXSLUnit::UC_ELESIS_BLAZING_HEART:
+#ifdef X2_ELESIS_3RD_PATH
+	case CXSLUnit::UC_ELESIS_DARK_KNIGHT:
+	case CXSLUnit::UC_ELESIS_CRIMSON_AVENGER:
+#endif
 		return CXSLUnit::UC_ELESIS_KNIGHT;
 
 	case UC_ADD_NASOD_RULER:
 	case UC_ADD_PSYCHIC_TRACER:
 	case UC_ADD_LUNATIC_PSYKER:
+#ifdef X2_ADD_2ND_PATH
+	case CXSLUnit::UC_ADD_ARC_TRACER:
+	case CXSLUnit::UC_ADD_MASTERMIND:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CXSLUnit::UC_ADD_TIME_TRACER:
+	case CXSLUnit::UC_ADD_DIABOLIC_ESPER:
+#endif
 		return UC_ADD_NASOD_RULER;
 	default:
 		break;
@@ -394,6 +426,18 @@ CXSLUnit::UNIT_CLASS CXSLUnit::GetUnitClassUpGrade( UNIT_CLASS eUnitClass )
 	case CXSLUnit::UC_ELESIS_PYRO_KNIGHT:	return CXSLUnit::UC_ELESIS_BLAZING_HEART;
 
 	case CXSLUnit::UC_ADD_PSYCHIC_TRACER:	return CXSLUnit::UC_ADD_LUNATIC_PSYKER;
+#ifdef X2_ADD_2ND_PATH
+	case CXSLUnit::UC_ADD_ARC_TRACER:	return CXSLUnit::UC_ADD_MASTERMIND;
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CXSLUnit::UC_ARA_LITTLE_SPECTER:	return CXSLUnit::UC_ARA_ASURA;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CXSLUnit::UC_ELESIS_DARK_KNIGHT:	return CXSLUnit::UC_ELESIS_CRIMSON_AVENGER;
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CXSLUnit::UC_ADD_TIME_TRACER:	return CXSLUnit::UC_ADD_DIABOLIC_ESPER;
+#endif
 	default:
 		break;
 	}
@@ -482,17 +526,33 @@ CXSLUnit::UNIT_TYPE CXSLUnit::GetUnitClassToUnitType( UNIT_CLASS eUnitClass )
 	case CXSLUnit::UC_ARA_SAKRA_DEVANAM:
 	case CXSLUnit::UC_ARA_LITTLE_DEVIL:
 	case CXSLUnit::UC_ARA_YAMA_RAJA:
+#ifdef X2_ARA_3RD_PATH
+	case CXSLUnit::UC_ARA_LITTLE_SPECTER:
+	case CXSLUnit::UC_ARA_ASURA:
+#endif
 		return CXSLUnit::UT_ARA;
 	case CXSLUnit::UC_ELESIS_KNIGHT:
 	case CXSLUnit::UC_ELESIS_SABER_KNIGHT:
 	case CXSLUnit::UC_ELESIS_PYRO_KNIGHT:
 	case CXSLUnit::UC_ELESIS_GRAND_MASTER:
 	case CXSLUnit::UC_ELESIS_BLAZING_HEART:
+#ifdef X2_ELESIS_3RD_PATH
+	case CXSLUnit::UC_ELESIS_DARK_KNIGHT:
+	case CXSLUnit::UC_ELESIS_CRIMSON_AVENGER:
+#endif
 		return CXSLUnit::UT_ELESIS;
 
 	case UC_ADD_NASOD_RULER:
 	case UC_ADD_PSYCHIC_TRACER:
 	case UC_ADD_LUNATIC_PSYKER:
+#ifdef X2_ADD_2ND_PATH
+	case CXSLUnit::UC_ADD_ARC_TRACER:
+	case CXSLUnit::UC_ADD_MASTERMIND:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CXSLUnit::UC_ADD_TIME_TRACER:
+	case CXSLUnit::UC_ADD_DIABOLIC_ESPER:
+#endif
 		return UT_ADD;
 	default:
 		break;
@@ -540,6 +600,18 @@ bool CXSLUnit::IsFirstChangeJob( CXSLUnit::UNIT_CLASS unitClass )
 	case CXSLUnit::UC_ELESIS_SABER_KNIGHT:
 	case CXSLUnit::UC_ELESIS_PYRO_KNIGHT:
 	case CXSLUnit::UC_ADD_PSYCHIC_TRACER:
+#ifdef X2_ADD_2ND_PATH
+	case CXSLUnit::UC_ADD_ARC_TRACER:
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CXSLUnit::UC_ARA_LITTLE_SPECTER:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CXSLUnit::UC_ELESIS_DARK_KNIGHT:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CXSLUnit::UC_ADD_TIME_TRACER:
+#endif
 		return true;
 	default:
 		break;
@@ -591,6 +663,18 @@ bool CXSLUnit::IsSecondChangeJob( CXSLUnit::UNIT_CLASS unitClass )
 	case CXSLUnit::UC_ELESIS_BLAZING_HEART:		//블레이징 하트
 
 	case CXSLUnit::UC_ADD_LUNATIC_PSYKER:		//루나틱 사이커
+#ifdef X2_ADD_2ND_PATH
+	case CXSLUnit::UC_ADD_MASTERMIND:
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CXSLUnit::UC_ARA_ASURA:
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CXSLUnit::UC_ELESIS_CRIMSON_AVENGER:
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CXSLUnit::UC_ADD_DIABOLIC_ESPER:
+#endif
 		return true;
 	default:
 		break;

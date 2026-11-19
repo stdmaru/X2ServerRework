@@ -100,6 +100,24 @@ public:
 
 		UC_ADD_LUNATIC_PSYKER		= 122,	// 루나틱 사이커 - 애드 2차 전직
 
+		// Paths the 2014 game did not have (src/define.h)
+#ifdef X2_ADD_2ND_PATH
+		UC_ADD_ARC_TRACER			= 33,
+		UC_ADD_MASTERMIND			= 123,
+#endif
+#ifdef X2_ARA_3RD_PATH
+		UC_ARA_LITTLE_SPECTER		= 34,
+		UC_ARA_ASURA				= 124,
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+		UC_ELESIS_DARK_KNIGHT		= 35,
+		UC_ELESIS_CRIMSON_AVENGER	= 125,
+#endif
+#ifdef X2_ADD_3RD_PATH
+		UC_ADD_TIME_TRACER			= 36,
+		UC_ADD_DIABOLIC_ESPER		= 126,
+#endif
+
 
 		//{{ 2011. 11. 21  김민성	전직 변경 아이템
 		UC_MAX,		// 마지막 값
