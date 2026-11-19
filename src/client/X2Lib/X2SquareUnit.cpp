@@ -2008,6 +2008,8 @@ void CX2SquareUnit::StateFrameMove()
 	}
 
 #ifdef X2_VILLAGE_SYNC
+	if( m_bHaltHorizontal )
+		m_PhysicParam.nowSpeed.x = 0.f;	// dash jumps keep their PASSIVE_SPEED_X without a key
 	if( IsRemoteStateSync() )
 		UpdateDirFromLine();	// UpdateRemotePose placed it
 	else
@@ -2575,14 +2577,18 @@ void CX2SquareUnit::ApplyFieldCorrection( const KFieldUnitState& kState )
 	StateChange( static_cast< char >( GetRidingOn() ? m_StateID.m_iRidingWait : m_StateID.m_Wait ) );
 }
 
-void CX2SquareUnit::StopOnGround()
+void CX2SquareUnit::FrameMoveHidden( double fTime, float fElapsedTime )
 {
-	if( m_bMyUnit == false || m_bStateSync == false )
+	if( m_bMyUnit == false || m_bStateSync == false || m_bInit == false )
 		return;
 
-	KFieldUnitState kState = GetFieldUnitState();
-	kState.m_vPos = VECTOR3( m_LandPosition.x, m_LandPosition.y, m_LandPosition.z );
-	ApplyFieldCorrection( kState );
+	// what OnFrameMove does for the own unit, less what draws it: the state's frame move and physics, then its events
+	// (a landing ends the jump); the keys are off (CX2TFieldGame::InitKey)
+	m_fTime			= static_cast< float >( fTime );
+	m_fElapsedTime	= fElapsedTime;
+	StateFrameMove();
+	if( m_bTFieldUnit == true )
+		StateEventProcess();
 }
 
 const CX2UnitStateSync* CX2SquareUnit::GetStateSyncSource() const

@@ -394,9 +394,10 @@ class CX2SquareUnit : public CKTDGObject
 		void PushFieldUnitState( uint32_t uiServerTick, const KFieldUnitState& kState );
 		// the server rejected an update of the own unit: back to its last valid state
 		void ApplyFieldCorrection( const KFieldUnitState& kState );
-		// The own unit stops on the ground below it, standing: talking to an NPC hides it and stops its physics,
-		// which would leave it in the air where it jumped
-		void StopOnGround();
+		// Talking to an NPC (CX2TFieldGame): the dialog hides every unit and the field stops moving them, but the own
+		// unit still goes on, hidden, without moving sideways, so one that jumped falls and lands as the others see it
+		void SetHaltHorizontal( bool bHalt ) { m_bHaltHorizontal = bHalt; }
+		void FrameMoveHidden( double fTime, float fElapsedTime );
 #endif // X2_VILLAGE_SYNC
 
 		void SetFirstGetPacket(bool val) { m_bFirstGetPacket = val; }
@@ -562,6 +563,7 @@ class CX2SquareUnit : public CKTDGObject
 
 #ifdef X2_VILLAGE_SYNC
 		bool							m_bStateSync = false;
+		bool							m_bHaltHorizontal = false;	// SetHaltHorizontal
 		KFieldUnitSnapshots				m_kSnapshots;			// other units: the states the server accepted
 		bool							m_bAppliedState = false;
 		u_char							m_ucAppliedStateID = 0;	// the last snapshot state entered, and its count
