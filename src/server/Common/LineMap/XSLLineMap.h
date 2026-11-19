@@ -25,25 +25,21 @@ class CXSLLineMap
 			DWORD		color;
 		};
 
+		// Port: the values of the scripts' LINE_TYPE (Enum.lua). The original numbered the last ones by #ifdefs the
+		// servers do not define, so LT_CLIFF was 7 here and 10 in the scripts.
 		enum LINE_TYPE
 		{
 			LT_NORMAL = 0,
-			LT_WALL,
-			LT_POTAL,
-			LT_HOLE,
-			LT_JUMP_UP_REL,
-			LT_JUMP_UP_ABS,
-			LT_BUNGEE,
-#ifdef MONSTER_ROAD
-            LT_MONSTER_ROAD,
-#endif
-#ifdef UNIT_ROAD
-            LT_UNIT_ROAD,
-#endif
-#ifdef OTHER_ROAD
-			LT_OTHER_ROAD,
-#endif
-			LT_CLIFF,
+			LT_WALL = 1,
+			LT_POTAL = 2,
+			LT_HOLE = 3,
+			LT_JUMP_UP_REL = 4,
+			LT_JUMP_UP_ABS = 5,
+			LT_BUNGEE = 6,
+			LT_MONSTER_ROAD = 7,
+			LT_UNIT_ROAD = 8,
+			LT_OTHER_ROAD = 9,
+			LT_CLIFF = 10,
 		};
 
 		enum LINE_DUST_TYPE
