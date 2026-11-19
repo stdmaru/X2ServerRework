@@ -448,8 +448,16 @@ when `CX2InstanceData::GetIsDungeonLounge`); wedding halls (`CX2WeddingGame`) ar
   from there), the reason is logged, and the next update reports it.
 - **Talking to an NPC** (`CX2TFieldGame::TalkNpc`): the field hides every unit and stops their frames while the
   dialog is open, the own unit too, so one that jumped stayed in the air, where the server rejects it, and was rolled
-  back when the dialog closed. Now the own unit first stops on the ground below it, standing
-  (`CX2SquareUnit::StopOnGround`); hidden, the fall is not seen. The keys stay off as before.
+  back when the dialog closed. Since 2026-11-19 the own unit goes on hidden (`CX2SquareUnit::FrameMoveHidden`: its
+  state's frame move, physics and events) with its horizontal speed held at 0 (`SetHaltHorizontal`; dash jumps keep
+  `PASSIVE_SPEED_X` without a key): it falls straight down and lands, and the others see that, instead of walking in
+  place or snapping to the ground (the first fix, `StopOnGround`, put it on the ground at once). The keys stay off
+  as before.
+- **Units far away after an NPC dialog**: the dialog hides them, and only the units within 1500 of the own one were
+  shown again (the farther ones only switch to `SetPlanRender`); a hidden unit skips its frame, where it takes its
+  newest state, so one that came closer during the dialog stayed where it was for the viewer until the viewer came
+  within 1500 of that old place. The far branches now show them again too (2026-11-19). The original placed units
+  when their packets came, so it did not show this.
 - `TCP_NODELAY` on the client's connections to its servers (`KSession::Connect`; the TCP relay already had it).
 
 Not checked in game yet (2026-11-19): riding pets, emotions, invisibility and personal shops with two clients.

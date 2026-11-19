@@ -1211,6 +1211,10 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 
 
 	m_bJoinNpc = GetJoinNpc();
+#ifdef X2_VILLAGE_SYNC
+	if( m_pMyUnit != NULL )
+		m_pMyUnit->SetHaltHorizontal( m_bStateSync && m_bJoinNpc );
+#endif // X2_VILLAGE_SYNC
 
 	// 갈림길 처리
 	m_fOtherLineTime += fElapsedTime;
@@ -1542,6 +1546,11 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 		{
 			// npc join시에 다른 유저들은 보이지 않도록 한다.
 			pCX2SquareUnit->SetShowObject( false );
+#ifdef X2_VILLAGE_SYNC
+			// the own unit still falls, hidden (CX2SquareUnit::FrameMoveHidden)
+			if( m_bStateSync && m_bJoinNpc && pCX2SquareUnit == m_pMyUnit )
+				pCX2SquareUnit->FrameMoveHidden( fTime, fElapsedTime );
+#endif // X2_VILLAGE_SYNC
             if ( m_pTalkBoxManager != NULL )
 			    m_pTalkBoxManager->SetShowTalk(false);
 
@@ -1577,6 +1586,11 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 			if( GetDistance( m_pMyUnit->GetPos(), pCX2SquareUnit->GetPos() ) > 1500 )
 			{
 				//pCX2SquareUnit->SetShowObject( false );
+#ifdef X2_VILLAGE_SYNC
+				// shown again after an NPC dialog hid it: a hidden unit skips its frame, where it takes its newest
+				// state, and stayed where it was until it came within 1500
+				pCX2SquareUnit->SetShowObject( true );
+#endif // X2_VILLAGE_SYNC
 				pCX2SquareUnit->SetPlanRender( true );
 				pCX2SquareUnit->OnFrameMove( fTime, fElapsedTime );
 			}
@@ -1585,6 +1599,9 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 				if( count > m_MaxCount )
 				{
 					//pCX2SquareUnit->SetShowObject( false );
+#ifdef X2_VILLAGE_SYNC
+					pCX2SquareUnit->SetShowObject( true );	// as above
+#endif // X2_VILLAGE_SYNC
 					pCX2SquareUnit->SetPlanRender( true );
 					pCX2SquareUnit->OnFrameMove( fTime, fElapsedTime );
 				}
@@ -3071,9 +3088,6 @@ bool CX2TFieldGame::TalkNpc()
 			m_iJoinNpcIndex = i;
 			pNpcNode->SetNpcTalk(true);
 			m_bJoinNpc = true;
-#ifdef X2_VILLAGE_SYNC
-			m_pMyUnit->StopOnGround();
-#endif // X2_VILLAGE_SYNC
 			g_pData->GetLocationManager()->SetLastPos( m_pMyUnit->GetLandPosition() );
 			g_pData->GetLocationManager()->SetLastPosLineIndex( m_pMyUnit->GetLastTouchLineIndex() );
 
@@ -3153,10 +3167,6 @@ bool CX2TFieldGame::TalkNpc(int iNpc)
 		m_iJoinNpcIndex = iNpc;
 		pNpcNode->SetNpcTalk(true);
 		m_bJoinNpc = true;
-#ifdef X2_VILLAGE_SYNC
-		if( m_pMyUnit != NULL )
-			m_pMyUnit->StopOnGround();
-#endif // X2_VILLAGE_SYNC
 		g_pData->GetLocationManager()->SetLastPos( m_pMyUnit->GetLandPosition() );
 		g_pData->GetLocationManager()->SetLastPosLineIndex( m_pMyUnit->GetLastTouchLineIndex() );
 
