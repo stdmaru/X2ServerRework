@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <cwchar>
+#include <iterator>
 
 namespace
 {
@@ -107,6 +109,10 @@ void KVillageMoveValidator::Reset( const KFieldUnitState& kState, uint32_t uiSer
 
 KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTick, const KFieldUnitState& kState, uint32_t uiServerNow )
 {
+	m_uiCheckTick = uiClientTick;
+	m_kCheckState = kState;
+	m_bCheckRecorded = false;
+
 	// rate: a token bucket on the server's clock
 	m_fTokens = std::min( m_kConfig.fUpdateBurst,
 						  m_fTokens + static_cast<float>( uiServerNow - m_uiTokenServer ) / 1000.f * m_kConfig.fUpdatesPerSecond );
@@ -219,6 +225,7 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 	if( m_pLineMap != nullptr && HitsWall( *m_pLineMap, m_kLast.m_vPos, kState.m_vPos, iGroundLine, iLine >= 0, m_kConfig.fWallRadius ) )
 		return Reject( Reason::R_WALL, uiServerNow );
 
+	float fCheckedHeight = 0.f;
 	if( !bGround )
 	{
 		if( pState->bLandConnect && m_pLineMap != nullptr && !bThrownByLine )
@@ -228,7 +235,11 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 		const float fMaxHeight = MaxHeight( fLaunchSpeedY, m_kPhysics.GetPhysic().fGAccel, std::fabs( m_kPhysics.GetPhysic().fMaxGSpeed ),
 											fTime, static_cast< float >( uiTakeoffWindowMs ) / 1000.f );
 		if( kState.m_vPos.y - fGroundY > fMaxHeight + m_kConfig.fHeightSlack )
+		{
+			Record( uiClientTick, kState, Reason::R_RISE, bAir, fGroundY, iGroundLine, uiGroundTick, fLaunchSpeedY, fMaxHeight );
 			return Reject( Reason::R_RISE, uiServerNow );
+		}
+		fCheckedHeight = fMaxHeight;
 	}
 
 	// accepted
@@ -249,11 +260,15 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Check( uint32_t uiClientTi
 	m_iGroundLine		= iGroundLine;
 	if( bGround )
 		SetGround( kState.m_vPos, iLine, uiClientTick );
+	Record( uiClientTick, kState, Reason::R_NONE, m_bAir, m_fGroundY, m_iGroundLine, m_uiGroundTick, m_fLaunchSpeedY, fCheckedHeight );
 	return Verdict();
 }
 
 KVillageMoveValidator::Verdict KVillageMoveValidator::Reject( u_char ucReason, uint32_t uiServerNow )
 {
+	if( !m_bCheckRecorded )
+		Record( m_uiCheckTick, m_kCheckState, ucReason, m_bAir, m_fGroundY, m_iGroundLine, m_uiGroundTick, m_fLaunchSpeedY, 0.f );
+
 	Verdict kVerdict;
 	kVerdict.ucReason = ucReason;
 	kVerdict.bNewViolation = !m_bCorrected || uiServerNow - m_uiCorrectionServer >= m_kConfig.uiCorrectionGraceMs;
@@ -263,6 +278,43 @@ KVillageMoveValidator::Verdict KVillageMoveValidator::Reject( u_char ucReason, u
 		m_uiCorrectionServer = uiServerNow;
 	}
 	return kVerdict;
+}
+
+void KVillageMoveValidator::Record( uint32_t uiTick, const KFieldUnitState& kState, u_char ucReason, bool bAir, float fGroundY,
+									int iGroundLine, uint32_t uiGroundTick, float fLaunchSpeedY, float fMaxHeight )
+{
+	Sample& kSample = m_arHistory[ m_uiHistoryNext ];
+	kSample.uiTick			= uiTick;
+	kSample.kState			= kState;
+	kSample.ucReason		= ucReason;
+	kSample.bAir			= bAir;
+	kSample.fGroundY		= fGroundY;
+	kSample.iGroundLine		= iGroundLine;
+	kSample.uiGroundTick	= uiGroundTick;
+	kSample.fLaunchSpeedY	= fLaunchSpeedY;
+	kSample.fMaxHeight		= fMaxHeight;
+	m_uiHistoryNext = ( m_uiHistoryNext + 1 ) % m_arHistory.size();
+	m_uiHistorySize = std::min( m_uiHistorySize + 1, m_arHistory.size() );
+	m_bCheckRecorded = true;
+}
+
+std::wstring KVillageMoveValidator::DescribeHistory() const
+{
+	// tick (ms after the oldest) state pos speed reason | air ground(line) since-ground launch max-height
+	std::wstring wstrHistory;
+	const size_t uiFirst = ( m_uiHistoryNext + m_arHistory.size() - m_uiHistorySize ) % m_arHistory.size();
+	const uint32_t uiBase = m_uiHistorySize > 0 ? m_arHistory[ uiFirst ].uiTick : 0;
+	for( size_t i = 0; i < m_uiHistorySize; ++i )
+	{
+		const Sample& k = m_arHistory[ ( uiFirst + i ) % m_arHistory.size() ];
+		wchar_t wszLine[ 256 ];
+		swprintf( wszLine, std::size( wszLine ), L"\n      t=%5u st=%2d pos=(%.1f, %.1f) v=(%d, %d) r=%d | %ls ground=%.1f(%d) +%ums launch=%.0f max=%.1f",
+				  k.uiTick - uiBase, static_cast< int >( k.kState.m_ucStateID ), k.kState.m_vPos.x, k.kState.m_vPos.y,
+				  static_cast< int >( k.kState.m_sSpeedX ), static_cast< int >( k.kState.m_sSpeedY ), static_cast< int >( k.ucReason ),
+				  k.bAir ? L"air" : L"gnd", k.fGroundY, k.iGroundLine, k.uiTick - k.uiGroundTick, k.fLaunchSpeedY, k.fMaxHeight );
+		wstrHistory += wszLine;
+	}
+	return wstrHistory;
 }
 
 void KVillageMoveValidator::SetGround( const VECTOR3& vPos, int iLine, uint32_t uiTick )

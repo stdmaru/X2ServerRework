@@ -490,6 +490,7 @@ _IMPL_ON_FUNC( ERM_FIELD_UNIT_STATE_NOT, KEGS_FIELD_UNIT_STATE_NOT )
 			<< BUILD_LOG( kResult.kCorrection.m_kState.m_vPos.y )
 			<< BUILD_LOG( kResult.kCorrection.m_kState.m_sSpeedY )
 			<< BUILD_LOG( kResult.iViolations )
+			<< BUILD_LOG( kSync.DescribeHistory( FIRST_SENDER_UID ) )
 			<< END_LOG;
 		KERM_FIELD_UNIT_CORRECTION_NOT kNot;
 		kNot.m_kCorrection = kResult.kCorrection;
