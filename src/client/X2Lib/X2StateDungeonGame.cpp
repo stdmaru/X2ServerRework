@@ -431,6 +431,7 @@ void CX2StateDungeonGame::LoadUI()
 		if( pStageBack != NULL && pStageBack->pTexture != NULL )
 			m_wstrStageLoadingBackTex = pStageBack->pTexture->texName;
 	}
+	SetStageLoadingBack( NULL );
 
 
 	m_pDLGLoadingState = new CKTDGUIDialog( this, L"DLG_PVP_Game_Loading_State.lua", 0.0f );
