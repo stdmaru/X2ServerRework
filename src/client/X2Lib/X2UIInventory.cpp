@@ -9048,6 +9048,18 @@ void CX2UIInventory::UpdateUIButton()
 	if( m_bShow == false || m_pDLGUIInventory == NULL )
 		return;
 
+	// Port: the original's non-SERV_UPGRADE_TRADE_SYSTEM block; the shop button works only in the square
+	CKTDGUIButton* pShopButton = static_cast< CKTDGUIButton* >( m_pDLGUIInventory->GetControl( L"shop_open" ) );
+	if ( pShopButton != NULL )
+	{
+		if ( g_pMain->GetNowStateID() != CX2Main::XS_SQUARE_GAME || g_pSquareGame == NULL )
+			pShopButton->SetShowEnable( false, false );
+		else if ( m_pUISocketItem != NULL && m_pUISocketItem->GetShow() == true )
+			pShopButton->SetShowEnable( false, false );
+		else
+			pShopButton->SetShowEnable( true, true );
+	}
+
 
 
 	if( g_pData != NULL && g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetSelectUnit() != NULL )
