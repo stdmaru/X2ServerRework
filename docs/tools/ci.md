@@ -33,7 +33,7 @@ Windows runner (T26). Linux CI includes native x86_64 and ARM64 runners.
 | Job | What it does |
 |---|---|
 | Linux x86_64: Clang Debug, GCC Release (check); Linux ARM64: Clang Debug | Builds `linux-debug` on x86_64 and ARM64 and `linux-gcc` on x86_64 (verification only), then runs `ctest` for each job |
-| clang-cl Debug | `windows-latest` runner (outside Ubuntu image): Visual Studio x64 environment (`ilammy/msvc-dev-cmd`) and runner LLVM clang-cl, `windows-debug` preset (`-k 0`: all errors in one pass), `ctest`. Distributed Windows build (T26) and only place Windows is compiled; LuaJIT via `msvcbuild.bat` (T25). Windows minutes count 2× for private repos |
+| clang-cl Debug | `windows-latest` runner (outside Ubuntu image): Visual Studio x64 environment (`ilammy/msvc-dev-cmd`) and clang-cl from a pinned LLVM (`LLVM_VERSION`, Chocolatey; not Visual Studio's own, which fell behind the STL's minimum Clang on 2026-11-19), `windows-debug` preset (`-k 0`: all errors in one pass), `ctest`. Distributed Windows build (T26) and only place Windows is compiled; LuaJIT via `msvcbuild.bat` (T25). Windows minutes count 2× for private repos |
 | Importer and wiki | `tools/import/tests/test_condres.py`, `test_flagsim.py`, and `tools/docs/check_links.py` |
 
 - **No warnings**: build log is saved and any `warning:` (`cl`/`link`, `warning C####:`/`LNK####:`) fails job (AGENTS.md rule).
