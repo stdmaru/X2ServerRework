@@ -1016,6 +1016,11 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 	}
 
 
+#ifdef X2_VILLAGE_SYNC
+	if( IsRemoteStateSync() )
+		UpdateRemotePose();
+#endif // X2_VILLAGE_SYNC
+
 	StateFrameMove();
 
 
@@ -1030,6 +1035,11 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 			StateEventProcess();
 	}
 
+#ifdef X2_VILLAGE_SYNC
+	// another unit drawn from the server's states: no input to replay, and its own events would change its state
+	if( !IsRemoteStateSync() )
+#endif // X2_VILLAGE_SYNC
+	{
 	if( m_bMyUnit == false && m_bTFieldUnit == true )
 	{
 		SetSyncEventProcess();
@@ -1038,6 +1048,7 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 
 	if( m_bTFieldUnit == true )
 		StateEventProcess();
+	}
 
 	CKTDGParticleSystem::CParticleEventSequence* pSeq_PartyMy	= m_pParticleSystem->GetInstanceSequence( m_hHeadMarkerPartyMy );
 	CKTDGParticleSystem::CParticleEventSequence* pSeq_Party		= m_pParticleSystem->GetInstanceSequence( m_hHeadMarkerParty );
@@ -1996,6 +2007,11 @@ void CX2SquareUnit::StateFrameMove()
 			lua_tinker::call<void>( g_pKTDXApp->GetLuaBinder()->GetLuaState(), m_StateData.m_FuncFrameMove.c_str(), g_pKTDXApp, g_pMain, g_pTFieldGame, this );
 	}
 
+#ifdef X2_VILLAGE_SYNC
+	if( IsRemoteStateSync() )
+		UpdateDirFromLine();	// UpdateRemotePose placed it
+	else
+#endif // X2_VILLAGE_SYNC
 	PhysicProcess();
 
 	if ( true == m_SyncData.m_bRidingOn )
@@ -2515,6 +2531,104 @@ void CX2SquareUnit::RecvTRPacket( KEGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT& kEGS_FIEL
 	m_vecFieldFrame = kEGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT.m_vecFieldFrame;
 
 }
+
+#ifdef X2_VILLAGE_SYNC
+KFieldUnitState CX2SquareUnit::GetFieldUnitState() const
+{
+	const auto ToShort = []( float f ) { return static_cast< int16_t >( std::clamp( f, -32767.f, 32767.f ) ); };
+
+	KFieldUnitState kState;
+	kState.m_vPos		= VECTOR3( m_SyncData.m_Pos.x, m_SyncData.m_Pos.y, m_SyncData.m_Pos.z );
+	kState.m_sSpeedX	= ToShort( m_PhysicParam.nowSpeed.x );
+	kState.m_sSpeedY	= ToShort( m_PhysicParam.nowSpeed.y );
+	kState.m_sLineIndex	= m_SyncData.m_LastTouchLineIndex;
+	kState.m_ucStateID	= m_SyncData.m_StateID;
+	kState.m_ucStateSeq	= static_cast< u_char >( m_SyncData.m_StateChangeNum );
+	kState.m_bIsRight	= m_SyncData.m_bIsRight;
+	return kState;
+}
+
+void CX2SquareUnit::PushFieldUnitState( uint32_t uiServerTick, const KFieldUnitState& kState )
+{
+	if( m_bMyUnit == true )
+		return;
+
+	m_bFirstGetPacket	= true;		// drawn from now on
+	m_bFirstSync		= true;
+	m_kSnapshots.Push( uiServerTick, kState );
+}
+
+void CX2SquareUnit::ApplyFieldCorrection( const KFieldUnitState& kState )
+{
+	if( m_bMyUnit == false )
+		return;
+
+	m_SyncData.m_Pos = D3DXVECTOR3( kState.m_vPos.x, kState.m_vPos.y, kState.m_vPos.z );
+	if( kState.m_sLineIndex >= 0 && kState.m_sLineIndex <= UCHAR_MAX )
+		m_SyncData.m_LastTouchLineIndex = static_cast< unsigned char >( kState.m_sLineIndex );
+	m_SyncData.m_bIsRight		= kState.m_bIsRight;
+	m_PhysicParam.nowSpeed.x	= 0.f;
+	m_PhysicParam.nowSpeed.y	= 0.f;
+	m_LandPosition				= m_SyncData.m_Pos;
+
+	// standing there; in the air, WAIT's event falls from it
+	StateChange( static_cast< char >( GetRidingOn() ? m_StateID.m_iRidingWait : m_StateID.m_Wait ) );
+}
+
+void CX2SquareUnit::UpdateRemotePose()
+{
+	if( g_pTFieldGame == NULL || m_kSnapshots.IsEmpty() )
+		return;
+
+	const uint32_t uiRenderTick = g_pTFieldGame->GetFieldRenderTick();
+	KFieldUnitSnapshots::Pose kPose;
+	if( !m_kSnapshots.Sample( uiRenderTick, kPose ) )
+		return;
+	m_kSnapshots.Prune( uiRenderTick );
+
+	const KFieldUnitState& kState = kPose.kState;
+	m_SyncData.m_Pos		= D3DXVECTOR3( kPose.vPos.x, kPose.vPos.y, kPose.vPos.z );
+	m_SyncData.m_bIsRight	= kState.m_bIsRight;
+	if( kState.m_sLineIndex >= 0 && kState.m_sLineIndex <= UCHAR_MAX )
+		m_SyncData.m_LastTouchLineIndex = static_cast< unsigned char >( kState.m_sLineIndex );
+	m_PhysicParam.nowSpeed.x = kState.m_sSpeedX;
+	m_PhysicParam.nowSpeed.y = kState.m_sSpeedY;
+
+	if( m_bAppliedState && kState.m_ucStateID == m_ucAppliedStateID && kState.m_ucStateSeq == m_ucAppliedStateSeq )
+		return;
+
+	// Enter the state the sender entered; the same state again only when this unit did not change state by itself
+	// since (an animation that ended here first). Emotions come with their own message (chat), which sets their
+	// animation, so a state only leaves them.
+	const map<char,string>::const_iterator it = m_StateNameMap.find( static_cast< char >( kState.m_ucStateID ) );
+	const bool bEmotion = it != m_StateNameMap.end() && it->second.compare( 0, 7, "EMOTION" ) == 0;
+	const bool bSameState = m_SyncData.m_StateID == kState.m_ucStateID;
+	const bool bChangedItself = m_SyncData.m_StateChangeNum != m_cAppliedChangeNum;
+	if( it != m_StateNameMap.end() && !bEmotion && ( !bSameState || ( m_bAppliedState && !bChangedItself ) ) )
+		StateChange( static_cast< char >( kState.m_ucStateID ) );
+
+	m_bAppliedState		= true;
+	m_ucAppliedStateID	= kState.m_ucStateID;
+	m_ucAppliedStateSeq	= kState.m_ucStateSeq;
+	m_cAppliedChangeNum	= m_SyncData.m_StateChangeNum;
+}
+
+void CX2SquareUnit::UpdateDirFromLine()
+{
+	CX2World* pWorld = g_pTFieldGame != NULL ? g_pTFieldGame->GetWorld() : NULL;
+	if( pWorld == NULL || pWorld->GetLineMap() == NULL )
+		return;
+
+	m_LandPosition	= pWorld->GetLineMap()->GetLandPosition( m_SyncData.m_Pos, LINE_RADIUS, static_cast< int* >( NULL ) );
+	m_bFootOnLine	= fabs( m_SyncData.m_Pos.y - m_LandPosition.y ) < 1.0f;
+
+	const CKTDGLineMap::LineData* pLineData = pWorld->GetLineMap()->GetLineData( m_SyncData.m_LastTouchLineIndex );
+	if( pLineData == NULL )
+		return;
+	m_DirVector = pLineData->dirVector;
+	m_DirDegree = D3DXVECTOR3( pLineData->dirDegree.x, pLineData->dirDegree.y + ( m_SyncData.m_bIsRight ? 0.f : 180.f ), 0.f );
+}
+#endif // X2_VILLAGE_SYNC
 
 void CX2SquareUnit::RecvPacket( KEGS_SQUARE_UNIT_SYNC_DATA_NOT& kEGS_SQUARE_UNIT_SYNC_DATA_NOT )
 {

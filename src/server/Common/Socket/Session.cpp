@@ -529,6 +529,10 @@ bool KSession::Connect( const char* szIP_, unsigned short usPort_ )
 
     std::vector< std::pair<int,int> > vecOpt;
     vecOpt.push_back( std::make_pair( SOL_SOCKET, SO_REUSEADDR ) ); // 사용중인 address를 재사용할 수 있게 허용.
+#ifdef X2_VILLAGE_SYNC
+    // no Nagle (decision T53): the client's movement updates go out at once, as the server's batches do
+    vecOpt.push_back( std::make_pair( IPPROTO_TCP, TCP_NODELAY ) );
+#endif // X2_VILLAGE_SYNC
 
     START_LOG( clog, L"Connect To : " << szIP_ << L":" << usPort_ );
 

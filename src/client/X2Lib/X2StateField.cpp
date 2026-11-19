@@ -846,6 +846,13 @@ bool CX2StateField::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		return Handler_EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT( hWnd, uMsg, wParam, lParam );
 		break;
 
+#ifdef X2_VILLAGE_SYNC
+	case EGS_FIELD_UNIT_STATE_BATCH_NOT:
+		return Handler_EGS_FIELD_UNIT_STATE_BATCH_NOT( hWnd, uMsg, wParam, lParam );
+	case EGS_FIELD_UNIT_CORRECTION_NOT:
+		return Handler_EGS_FIELD_UNIT_CORRECTION_NOT( hWnd, uMsg, wParam, lParam );
+#endif // X2_VILLAGE_SYNC
+
 	case EGS_REPAIR_ITEM_NOT:
 	case EGS_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT:
 		{
@@ -1224,6 +1231,30 @@ bool CX2StateField::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND /*hWnd*/, U
 
 	return true;
 }
+
+#ifdef X2_VILLAGE_SYNC
+bool CX2StateField::Handler_EGS_FIELD_UNIT_STATE_BATCH_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
+{
+	KSerBuffer* pBuff = (KSerBuffer*)lParam;
+	KEGS_FIELD_UNIT_STATE_BATCH_NOT kEvent;
+	DeSerialize( pBuff, &kEvent );
+
+	if( g_pTFieldGame != NULL )
+		g_pTFieldGame->ReceiveStateBatch( kEvent );
+	return true;
+}
+
+bool CX2StateField::Handler_EGS_FIELD_UNIT_CORRECTION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
+{
+	KSerBuffer* pBuff = (KSerBuffer*)lParam;
+	KEGS_FIELD_UNIT_CORRECTION_NOT kEvent;
+	DeSerialize( pBuff, &kEvent );
+
+	if( g_pTFieldGame != NULL )
+		g_pTFieldGame->ReceiveCorrection( kEvent );
+	return true;
+}
+#endif // X2_VILLAGE_SYNC
 
 bool CX2StateField::Handler_EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {

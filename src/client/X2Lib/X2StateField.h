@@ -90,6 +90,10 @@ public:
 
 	// 1초 싱크받음
 	bool Handler_EGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+#ifdef X2_VILLAGE_SYNC
+	bool Handler_EGS_FIELD_UNIT_STATE_BATCH_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+	bool Handler_EGS_FIELD_UNIT_CORRECTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+#endif // X2_VILLAGE_SYNC
 
 	bool Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
