@@ -2270,6 +2270,13 @@ enum
 	//}}
 	//=============================================================//
 
+#ifdef X2_VILLAGE_SYNC
+	// village movement sync (T53); at the end, so that turning it off shifts no ID
+	_ENUM( EGS_FIELD_UNIT_STATE_NOT )
+	_ENUM( EGS_FIELD_UNIT_STATE_BATCH_NOT )
+	_ENUM( EGS_FIELD_UNIT_CORRECTION_NOT )
+#endif // X2_VILLAGE_SYNC
+
 	_ENUM( EGS_CLIENT_EVENT_ID_END )
 
 #ifdef __NEVER_DEFINED_MACRO__

@@ -4,7 +4,7 @@
 
 #include "ClientPacket.h"
 
-TEST_CASE("client packets: Put -> Get -> Put round trip (743 types)")
+TEST_CASE("client packets: Put -> Get -> Put round trip (748 types)")
 {
     CheckRoundTrip<KEGS_NEW_USER_JOIN_REQ>("KEGS_NEW_USER_JOIN_REQ");
     CheckRoundTrip<KEGS_NEW_USER_JOIN_ACK>("KEGS_NEW_USER_JOIN_ACK");
@@ -363,6 +363,21 @@ TEST_CASE("client packets: Put -> Get -> Put round trip (743 types)")
     CheckRoundTrip<KEGS_CHANGE_USER_LIST_IN_SECTOR_NOT>("KEGS_CHANGE_USER_LIST_IN_SECTOR_NOT");
     CheckRoundTrip<KEGS_FIELD_UNIT_SYNC_DATA_NOT>("KEGS_FIELD_UNIT_SYNC_DATA_NOT");
     CheckRoundTrip<KEGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT>("KEGS_FIELD_UNIT_SYNC_DATA_BROAD_NOT");
+#if (defined(X2_VILLAGE_SYNC))
+    CheckRoundTrip<KFieldUnitState>("KFieldUnitState");
+#endif
+#if (defined(X2_VILLAGE_SYNC))
+    CheckRoundTrip<KEGS_FIELD_UNIT_STATE_NOT>("KEGS_FIELD_UNIT_STATE_NOT");
+#endif
+#if (defined(X2_VILLAGE_SYNC))
+    CheckRoundTrip<KFieldUnitStateEntry>("KFieldUnitStateEntry");
+#endif
+#if (defined(X2_VILLAGE_SYNC))
+    CheckRoundTrip<KEGS_FIELD_UNIT_STATE_BATCH_NOT>("KEGS_FIELD_UNIT_STATE_BATCH_NOT");
+#endif
+#if (defined(X2_VILLAGE_SYNC))
+    CheckRoundTrip<KEGS_FIELD_UNIT_CORRECTION_NOT>("KEGS_FIELD_UNIT_CORRECTION_NOT");
+#endif
     CheckRoundTrip<KEGS_COMMUNITY_USER_LIST_REQ>("KEGS_COMMUNITY_USER_LIST_REQ");
     CheckRoundTrip<KEGS_COMMUNITY_USER_LIST_ACK>("KEGS_COMMUNITY_USER_LIST_ACK");
     CheckRoundTrip<KEGS_OPTION_UPDATE_REQ>("KEGS_OPTION_UPDATE_REQ");
