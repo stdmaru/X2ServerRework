@@ -451,6 +451,7 @@ IMPL_ON_FUNC( ERM_SQUARE_UNIT_STATE_NOT )
 			<< BUILD_LOG( kResult.kCorrection.m_kState.m_vPos.y )
 			<< BUILD_LOG( kResult.kCorrection.m_kState.m_sSpeedY )
 			<< BUILD_LOG( kResult.iViolations )
+			<< BUILD_LOG( kSync.DescribeHistory( FIRST_SENDER_UID ) )
 			<< END_LOG;
 		SendCorrection( FIRST_SENDER_UID, kResult );
 	}

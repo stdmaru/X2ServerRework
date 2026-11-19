@@ -286,6 +286,90 @@ TEST_CASE( "KVillageMoveValidator: up platforms one after another" )
 	CHECK( kHigh.Reason( State( 1000, 640, DASH_JUMP_UP, 1000 ) ) == Reason::R_RISE );	// "landed" on 500, never that high
 }
 
+TEST_CASE( "KVillageMoveValidator: jumping up the market's platforms" )
+{
+	// Square_Market: one-way platforms 240 apart (0, 240, 480), climbed with plain jumps (apex 281), the jump key
+	// pressed again a few frames after each landing, then jumping in place on the top; the client moves frame by
+	// frame at 60 fps and reports every 0.1 s
+	const fs::path root = fs::temp_directory_path() / "x2_village_move_validator_market";
+	fs::remove_all( root );
+	fs::create_directories( root );
+	std::ofstream( root / "Enum.lua" ) << "LINE_TYPE = { LT_NORMAL = 0 }\n";
+	{
+		std::ofstream kMarket( root / "Market_LineMap.lua" );
+		for( int i = 0; i <= 2; ++i )
+			kMarket << "g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 0, " << 240 * i
+					<< ", 0 ), END_POS = D3DXVECTOR3( 3000, " << 240 * i << ", 0 ) })\n";
+	}
+	const fs::path oldCurrent = fs::current_path();
+	fs::current_path( root );
+	const std::shared_ptr< CXSLLineMap > spMarket = KWorldLineMaps::LoadLineMap( "Market_LineMap.lua" );
+	fs::current_path( oldCurrent );
+	fs::remove_all( root );
+	REQUIRE( spMarket != nullptr );
+
+	for( int iWaitFrames = 0; iWaitFrames <= 4; iWaitFrames += 2 )
+	{
+		for( int iPhaseFrames = 0; iPhaseFrames < 6; ++iPhaseFrames )
+		{
+			CAPTURE( iWaitFrames );
+			CAPTURE( iPhaseFrames );
+			Unit kUnit( State( 1000, 0, WAIT ), KVillageMoveValidator::Config(), spMarket.get() );
+			const float fFrame = 1.f / 60.f;
+			float y = 0.f, v = 0.f;
+			bool bAir = false;
+			int iLanded = 0, iFloor = 0;
+			uint32_t uiLastSend = 0;
+			u_char ucWorst = Reason::R_NONE;
+			for( int iFrame = 1; iFrame < 60 * 8; ++iFrame )
+			{
+				if( !bAir && ++iLanded > iWaitFrames )
+				{
+					bAir = true;
+					v = 1500.f;
+				}
+				if( bAir )
+				{
+					const float yBefore = y;
+					v = std::max( v - 4000.f * fFrame, -2000.f );
+					y += v * fFrame;
+					// lands on the highest line it fell through (one way: passed through going up)
+					for( int iLine = 2; iLine >= 0; --iLine )
+					{
+						const float fLine = 240.f * static_cast< float >( iLine );
+						if( v <= 0.f && yBefore >= fLine && y < fLine )
+						{
+							y = fLine;
+							v = 0.f;
+							bAir = false;
+							iLanded = 0;
+							iFloor = std::max( iFloor, iLine );
+							break;
+						}
+					}
+				}
+				const uint32_t uiNow = static_cast< uint32_t >( std::lround( static_cast< float >( iFrame + iPhaseFrames ) * fFrame * 1000.f ) );
+				if( uiNow - uiLastSend >= 100 )
+				{
+					const u_char ucState = !bAir ? WAIT : v > 0.f ? JUMP_UP : JUMP_DOWN;
+					const u_char ucReason = kUnit.Reason( State( 1000, y, ucState, static_cast< int16_t >( v ) ), uiLastSend == 0 ? 100 : uiNow - uiLastSend );
+					if( ucReason != Reason::R_NONE && ucWorst == Reason::R_NONE )
+					{
+						ucWorst = ucReason;
+						std::string strHistory;
+						for( const wchar_t c : kUnit.kValidator.DescribeHistory() )
+							strHistory += static_cast< char >( c );
+						MESSAGE( "rejected at frame ", iFrame, ": ", strHistory );
+					}
+					uiLastSend = uiNow;
+				}
+			}
+			CHECK( iFloor == 2 );
+			CHECK( ucWorst == Reason::R_NONE );
+		}
+	}
+}
+
 TEST_CASE( "KVillageMoveValidator: platforms" )
 {
 	// a dash jump reaches the platform at 300 and lands on it

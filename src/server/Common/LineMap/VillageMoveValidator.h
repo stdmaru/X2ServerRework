@@ -24,7 +24,9 @@
 
 #include "ClientPacket.h"
 
+#include <array>
 #include <cstdint>
+#include <string>
 
 class CXSLLineMap;
 class KSquareUnitPhysics;
@@ -69,6 +71,10 @@ public:
 
 	const KFieldUnitState& GetLastValid() const { return m_kLast; }
 
+	// The last updates checked, oldest first, one per line, with the ground each was judged from: logged with a
+	// rejection, so a rollback in game can be traced to the update that misled the validator.
+	std::wstring DescribeHistory() const;
+
 	// The highest a unit launched at fSpeedY rises above the ground after fTime seconds, when it left the ground
 	// at any moment of the fWindow seconds before (the last sample on the ground and the first in the air).
 	static float MaxHeight( float fSpeedY, float fGAccel, float fMaxFallSpeed, float fTime, float fWindow );
@@ -93,7 +99,22 @@ public:
 						  float fRadius );
 
 private:
+	struct Sample
+	{
+		uint32_t	uiTick			= 0;
+		KFieldUnitState	kState;
+		u_char		ucReason		= 0;
+		bool		bAir			= false;	// as judged (after a landing between updates was found)
+		float		fGroundY		= 0.f;
+		int			iGroundLine		= -1;
+		uint32_t	uiGroundTick	= 0;
+		float		fLaunchSpeedY	= 0.f;
+		float		fMaxHeight		= 0.f;		// above the ground, R_RISE's limit before the slack; 0 not checked
+	};
+
 	Verdict Reject( u_char ucReason, uint32_t uiServerNow );
+	void Record( uint32_t uiTick, const KFieldUnitState& kState, u_char ucReason, bool bAir, float fGroundY, int iGroundLine,
+				 uint32_t uiGroundTick, float fLaunchSpeedY, float fMaxHeight );
 	void SetGround( const VECTOR3& vPos, int iLine, uint32_t uiTick );
 
 	const CXSLLineMap*			m_pLineMap;
@@ -120,6 +141,14 @@ private:
 	float			m_fLaunchSpeedX		= 0.f;
 	float			m_fLaunchSpeedY		= 0.f;
 	bool			m_bThrownByLine		= false;
+
+	std::array< Sample, 12 >	m_arHistory;
+	size_t			m_uiHistoryNext		= 0;
+	size_t			m_uiHistorySize		= 0;
+	// the update being checked, for Reject to record
+	uint32_t		m_uiCheckTick		= 0;
+	KFieldUnitState	m_kCheckState;
+	bool			m_bCheckRecorded	= false;
 };
 
 #endif // X2_VILLAGE_SYNC

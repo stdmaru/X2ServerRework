@@ -97,6 +97,12 @@ KFieldMoveSync::Result KFieldMoveSync::OnState( UidType iUnitUID, const KEGS_FIE
 	return kResult;
 }
 
+std::wstring KFieldMoveSync::DescribeHistory( UidType iUnitUID ) const
+{
+	auto it = m_mapUnit.find( iUnitUID );
+	return it != m_mapUnit.end() ? it->second.kValidator.DescribeHistory() : std::wstring();
+}
+
 void KFieldMoveSync::ShowTo( UidType iViewer, UidType iUnitUID )
 {
 	if( iViewer != iUnitUID )

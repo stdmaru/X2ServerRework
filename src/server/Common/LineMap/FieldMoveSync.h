@@ -72,6 +72,9 @@ public:
 
 	const KFieldUnitState* GetState( UidType iUnitUID ) const;
 
+	// KVillageMoveValidator::DescribeHistory of a unit, empty if it is not here.
+	std::wstring DescribeHistory( UidType iUnitUID ) const;
+
 	// The nearest point on a walkable line, or vPos without a line map or lines.
 	static VECTOR3 NearestOnLine( const CXSLLineMap* pLineMap, const VECTOR3& vPos );
 
