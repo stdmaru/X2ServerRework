@@ -949,6 +949,7 @@ CX2GUAdd::~CX2GUAdd(void)
 				}
 			}
 		}	// NO break - the V5 DE case falls through to LABEL_157 (the shared TT/DE reads of 9414/9404)
+		[[fallthrough]];
 #endif
 #ifdef X2_ADD_3RD_PATH
 	case CX2Unit::UC_ADD_TIME_TRACER:
@@ -1753,7 +1754,7 @@ CX2GUAdd::~CX2GUAdd(void)
 #endif
 
 #if defined(X2_ARA_3RD_PATH) || defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-#pragma region ADD_3RD_PATH_SKILLS
+//#pragma region ADD_3RD_PATH_SKILLS
 case CX2SkillTree::SI_SA_ATT_VOID_IMPACT:
 	{
 
@@ -1949,7 +1950,7 @@ case CX2SkillTree::SI_A_ADE_FORCE_FINGER:
 		hyperStateData.OnFrameMove	= SET_CB_FUNC( CX2GUAdd, ANSI_A_ADE_FORCE_FINGER_FrameMove );
 		hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 	} break;
-#pragma endregion ADD_3RD_PATH_SKILLS
+//#pragma endregion ADD_3RD_PATH_SKILLS
 #endif
 	}
 }
@@ -3504,6 +3505,7 @@ void CX2GUAdd::InitStateByUnitClass()
 			stateData.StateEnd			= SET_CB_FUNC( CX2GUAdd, ANSI_AAT_CREATE_DYNAMO_FACTORY_StateEnd );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		[[fallthrough]];
 #endif
 
 #ifdef X2_ADD_2ND_PATH
@@ -3596,6 +3598,7 @@ void CX2GUAdd::InitStateByUnitClass()
 			ANSI_ThirdPath_CreateState( m_StateList[ANSI_ADE_COMBO_XXXZ_FORMATION_MODE], ANSI_ADE_COMBO_XXXZ_FORMATION_MODE, "ANSI_ADE_COMBO_XXXZ_FORMATION_MODE" );
 			ANSI_ThirdPath_CreateState( m_StateList[ANSI_ADE_COMBO_XXXZ_NO_FORMATION_MODE], ANSI_ADE_COMBO_XXXZ_NO_FORMATION_MODE, "ANSI_ADE_COMBO_XXXZ_NO_FORMATION_MODE" );
 		}
+		[[fallthrough]];
 #endif
 
 #ifdef X2_ADD_3RD_PATH
