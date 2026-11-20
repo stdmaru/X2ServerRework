@@ -6947,6 +6947,11 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		{
 			if( IsDoubleAttackByBuff() )
 				m_bDoubleAttack = true;
+#ifdef X2_ELESIS_3RD_PATH
+			CX2GameUnit* pDoubleAttacker = pDamageData->optrAttackerGameUnit.GetObservable();
+			if( NULL != pDoubleAttacker && pDoubleAttacker->IsDoubleAttackByOwnBuff() )
+				m_bDoubleAttack = true;
+#endif
 		}
 
 		// ���������� �������� 2��� ������, UI�� ǥ���ϱ�� �������� �ݹݾ� 2�� �����ش�. (UI �и��� �޺κп�..)
@@ -15015,6 +15020,11 @@ void CX2GUUser::CommonCameraMove()
 
 	if( true == GetNoDetonation() )
 		return;
+
+#ifdef X2_ELESIS_3RD_PATH
+	if( true == IsDetonationImpossibleByBuff() )
+		return;
+#endif
 
 	if( m_OrgInputData.pureZ == true || m_OrgInputData.pureX == true )
 	{

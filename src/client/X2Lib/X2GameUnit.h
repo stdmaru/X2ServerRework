@@ -2554,9 +2554,15 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		EnchantAttackRate GetChangeEnchantAttackRate( CX2DamageManager::EXTRA_DAMAGE_TYPE eExtraDamageType );
 
 		/// 더블 어택
-		void CreateAndInsertDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_, float fRate_ );
-		void EraseDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_ );
+		// eType_: BBT_DOUBLE_ATTACK (a debuff: hits taken may count twice) or BBT_DOUBLE_ATTACK_BUFF (a buff: the
+		// owner's hits may count twice)
+		void CreateAndInsertDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_, float fRate_, BUFF_BEHAVIOR_TYPE eType_ );
+		void EraseDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_, BUFF_BEHAVIOR_TYPE eType_ );
 		bool IsDoubleAttackByBuff();
+#ifdef X2_ELESIS_3RD_PATH
+		bool IsDoubleAttackByOwnBuff();
+		bool IsDetonationImpossibleByBuff() const { return !m_vecDetonationImpossiblePtr.empty(); }
+#endif
 
 		void SetKBuffFactorPacketToGameUnit( const vector<KBuffFactor>& vecBuffFactor_ );
 
@@ -3612,6 +3618,10 @@ protected:
 		// Z 공격 불가, X 공격 불가 버프 타입 추가
 		vector<CX2BuffIdentityPtr>		m_vecZImpossiblePtr;			/// Z 공격불가 효과
 		vector<CX2BuffIdentityPtr>		m_vecXImpossiblePtr;			/// X 공격불가 효과
+#ifdef X2_ELESIS_3RD_PATH
+		vector<CX2BuffIdentityPtr>		m_vecDetonationImpossiblePtr;	/// BBT_DETONATION_IMPOSSIBLE
+		vector<CX2DoubleAttackPtr>		m_vecOwnDoubleAttack;			/// BBT_DOUBLE_ATTACK_BUFF
+#endif
 
 		CX2RidingPetPtr		m_ptrRidingPet;		/// 탈 것 포인트
 		bool				m_bPassDash;		/// 패스 대쉬인지 여부, 알파값 처리용

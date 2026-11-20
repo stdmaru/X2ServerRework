@@ -466,6 +466,23 @@ when `CX2InstanceData::GetIsDungeonLounge`); wedding halls (`CX2WeddingGame`) ar
 
 Not checked in game yet (2026-11-19): riding pets, emotions, invisibility and personal shops with two clients.
 
+## The new paths (2026-11-20, `server/third-paths`)
+
+Add's second and third paths and Ara's and Elesis's third paths, merged from V5 (sources and switches on
+[Add character](../project/add-character.md)). Behavior changes in the shared code:
+
+- **Buff factor IDs may leave gaps** (`CX2BuffTempletManager::AddBuffFactor_LUA`). The original required
+  `BattleFieldBuffFactor.lua`'s IDs to come one after another and refused every factor after the first one out of order
+  (a `BUFF_FACTOR_ID invalid` dialog each). The new paths' factors keep V5's IDs, which skip V5's factors we lack, so a
+  factor now goes to its ID's slot in any order; a gap is an empty slot, and `GetBuffFactorPtr` returns null for it. A
+  second factor with a taken ID is refused.
+- **Two buff behaviors V5's data uses** (`X2_ELESIS_3RD_PATH`, V5's values in `BUFF_BEHAVIOR_TYPE`):
+  `BBT_DETONATION_IMPOSSIBLE` (74, Assault Strike's debuff) keeps Z/X from charging MP by detonation, as V5's
+  `DetonationEventProcess` does; `BBT_DOUBLE_ATTACK_BUFF` (75, Brutal Cutter) has no code in V5, so it mirrors
+  `BBT_DOUBLE_ATTACK` on the attacker's side: a normal attack of the buff's owner counts twice with the buff's chance
+  (`CX2GameUnit::IsDoubleAttackByOwnBuff`, checked by `CX2GUUser`/`CX2GUNPC` where they check the victim's debuff).
+  Without them their 4 records had an empty `COMBINATION` and did not load.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

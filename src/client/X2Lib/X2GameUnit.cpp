@@ -2813,6 +2813,9 @@ void CX2GameUnit::Verify()
 				|| VerifyVector<CX2ChangeAttackByTypePtr>( m_AdditionalAttackByType ) == false
 				|| VerifyVector<CX2ChangeEnchantAttackRatePtr>( m_AdditionalChangeEnchantAttackRate ) == false
 				|| VerifyVector<CX2DoubleAttackPtr>( m_vecDoubleAttack ) == false
+#ifdef X2_ELESIS_3RD_PATH
+				|| VerifyVector<CX2DoubleAttackPtr>( m_vecOwnDoubleAttack ) == false
+#endif
 				|| VerifyVector<CX2ChangeUnitScaleByBuffPtr>( m_vecChangeUnitScaleByBuffPtr ) == false
 				|| VerifyVector<CX2AddSkillLevelByBuffPtr>( m_vecAddSkillLevelByBuffPtr ) == false
 				|| VerifyVector<CX2ReflectMagicByBuffPtr>( m_vecReflectMagicByBuffPtr ) == false
@@ -9991,24 +9994,40 @@ CX2GameUnit::EnchantAttackRate CX2GameUnit::GetChangeEnchantAttackRate( CX2Damag
 	@brief : 더블 어택 버프요소를 게임유닛에 적용하는 함수
 	@param : 어떤 버프에 의한 것인지 구분(BuffIdentity_), 흡수시 증가되는 MP량(fAbsorbValue_)
 */
-void CX2GameUnit::CreateAndInsertDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_, float fRate_ )
+void CX2GameUnit::CreateAndInsertDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_, float fRate_, BUFF_BEHAVIOR_TYPE eType_ )
 {
 	CX2DoubleAttackPtr ptrDoubleAttack = CX2DoubleAttackPtr( new CX2DoubleAttack( BuffIdentity_, fRate_ ) );
-	if ( NULL != ptrDoubleAttack )
-		m_vecDoubleAttack.push_back( ptrDoubleAttack );
+	if ( NULL == ptrDoubleAttack )
+		return;
+#ifdef X2_ELESIS_3RD_PATH
+	if ( BBT_DOUBLE_ATTACK_BUFF == eType_ )
+	{
+		m_vecOwnDoubleAttack.push_back( ptrDoubleAttack );
+		return;
+	}
+#else
+	(void)eType_;
+#endif
+	m_vecDoubleAttack.push_back( ptrDoubleAttack );
 }
 
 /** @function : EraseChangeEnchantAttackRate
 	@brief : 더블 어택 버프 요소 해제
 	@param : 더블 어택 버프 요소를구분할 수 있는 정보(BuffIdentity_)
 */
-void CX2GameUnit::EraseDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_ )
+void CX2GameUnit::EraseDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_, BUFF_BEHAVIOR_TYPE eType_ )
 {
+#ifdef X2_ELESIS_3RD_PATH
+	vector<CX2DoubleAttackPtr>& vecDoubleAttack = BBT_DOUBLE_ATTACK_BUFF == eType_ ? m_vecOwnDoubleAttack : m_vecDoubleAttack;
+#else
+	(void)eType_;
+	vector<CX2DoubleAttackPtr>& vecDoubleAttack = m_vecDoubleAttack;
+#endif
 	vector<CX2DoubleAttackPtr>::iterator vItr
-	= FindSameBuffIdentity<vector<CX2DoubleAttackPtr>::iterator, CX2DoubleAttackPtr>( m_vecDoubleAttack, BuffIdentity_ );
+	= FindSameBuffIdentity<vector<CX2DoubleAttackPtr>::iterator, CX2DoubleAttackPtr>( vecDoubleAttack, BuffIdentity_ );
 
-	if ( m_vecDoubleAttack.end() != vItr )
-		m_vecDoubleAttack.erase( vItr );
+	if ( vecDoubleAttack.end() != vItr )
+		vecDoubleAttack.erase( vItr );
 }
 
 /** @function : IsDoubleAttackByBuff
@@ -10025,6 +10044,22 @@ bool CX2GameUnit::IsDoubleAttackByBuff()
 
 	return false;
 }
+
+#ifdef X2_ELESIS_3RD_PATH
+/** @function : IsDoubleAttackByOwnBuff
+	@brief : whether a hit of this unit counts twice, by its BBT_DOUBLE_ATTACK_BUFF buffs (Brutal Cutter)
+*/
+bool CX2GameUnit::IsDoubleAttackByOwnBuff()
+{
+	for ( const CX2DoubleAttackPtr& ptrDoubleAttack : m_vecOwnDoubleAttack )
+	{
+		if( GetRandomFloat() < ptrDoubleAttack->GetRate() )
+			return true;
+	}
+
+	return false;
+}
+#endif
 
 /** @function : InitAdditionalStatOptionValue
 	@brief : 소켓옵션에 의한 추가 스탯 부분 초기화
@@ -10512,6 +10547,11 @@ void CX2GameUnit::CreateAndInsertBuffIdentity( const BUFF_BEHAVIOR_TYPE eType_, 
 		case BBT_X_ATTACK_IMPOSSIBLE:
 			m_vecXImpossiblePtr.push_back( ptrBuffIdentity );
 			break;
+#ifdef X2_ELESIS_3RD_PATH
+		case BBT_DETONATION_IMPOSSIBLE:
+			m_vecDetonationImpossiblePtr.push_back( ptrBuffIdentity );
+			break;
+#endif
 
 		default:
 			break;
@@ -10562,6 +10602,11 @@ void CX2GameUnit::EraseBuffIdentity( const BUFF_BEHAVIOR_TYPE eType_, const KBuf
 	case BBT_X_ATTACK_IMPOSSIBLE:
 		ERASE_BUFF_IDENTITY( m_vecXImpossiblePtr, BuffIdentity_ );
 		break;
+#ifdef X2_ELESIS_3RD_PATH
+	case BBT_DETONATION_IMPOSSIBLE:
+		ERASE_BUFF_IDENTITY( m_vecDetonationImpossiblePtr, BuffIdentity_ );
+		break;
+#endif
 	default:
 		break;
 	}
