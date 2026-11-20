@@ -130,14 +130,23 @@ def load(luajit, scripts, enum_files, shim=True):
     return items, sets, missing
 
 
-def unknown_enum(it):
-    """True when the item names an enum value our Enum.lua lacks (the shim made it -1)."""
-    bad = (-1, 0xFFFFFFFF)
-    if any(it.get(k) in bad for k in kim.ENUM_OF if k.startswith("m_")):
+def end_markers(en):
+    """Per enum, the values of its *_END/*_NUM entries: a source that gives a value as a number (V5's IT_CUSTOM is
+    14, our IT_END) can land on them, and the client refuses them (INVALID_ITEM_TYPE_14)."""
+    return {t: {v for k, v in en.tables[t].items() if k.endswith(("_END", "_NUM"))}
+            for t in set(kim.ENUM_OF.values()) if t in en.tables}
+
+
+def unknown_enum(it, ends):
+    """True when the item names an enum value our Enum.lua lacks (the shim made it -1, or a number that is our end
+    marker)."""
+    def bad(k, v):
+        return v in (-1, 0xFFFFFFFF) or v in ends.get(kim.ENUM_OF[k], ())
+    if any(bad(k, it.get(k)) for k in kim.ENUM_OF if k.startswith("m_")):
         return True
-    if any(sa["TYPE"] in bad for sa in it.get("m_SpecialAbilityList", [])):
+    if any(bad("TYPE", sa["TYPE"]) for sa in it.get("m_SpecialAbilityList", [])):
         return True
-    return any(v in bad for v in it.get("BUFF_FACTOR", []))
+    return any(bad("BUFF_FACTOR", v) for v in it.get("BUFF_FACTOR", []))
 
 
 def id_list(spec):
@@ -163,6 +172,7 @@ def main():
     luajit = kim.find_luajit(args.luajit)
     en = kim.load_enums(luajit, args.enum)
     unit_types = {en.tables["UNIT_TYPE"][u] for u in args.unit_type}
+    ends = end_markers(en)
     wanted = {i for spec in args.ids for i in id_list(spec)}
     item_lua, set_lua = Path(args.items_dir) / "Item.lua", Path(args.items_dir) / "SetItem.lua"
 
@@ -197,7 +207,7 @@ def main():
                 continue
             if iid not in wanted and it["m_UnitType"] not in unit_types:
                 continue
-            if unknown_enum(it):
+            if unknown_enum(it, ends):
                 skipped += 1
                 continue
             for k in TEXT_KEYS:
