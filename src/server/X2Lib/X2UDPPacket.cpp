@@ -190,7 +190,7 @@ void    KDYNAMIC_UNIT_USER_SYNC::Serialize( BYTE*& pbyBuffer, const KDYNAMIC_UNI
 {
     m_usDataFieldFlag = eUnitUserSync_DataField_No;
 	//이전 정보가 없거나 이전 정보와 현재 정보가 다를 경우...
-	if( pPrevSync == NULL || pPrevSync->m_ucNowState != m_ucNowState )
+	if( pPrevSync == NULL || pPrevSync->m_usNowState != m_usNowState )
 		m_usDataFieldFlag |= eUnitUserSync_DataField_nowState;
 	if( pPrevSync == NULL || pPrevSync->m_ucNowAction != m_ucNowAction )
 		m_usDataFieldFlag |= eUnitUserSync_DataField_nowAction;
@@ -232,7 +232,7 @@ void    KDYNAMIC_UNIT_USER_SYNC::Serialize( BYTE*& pbyBuffer, const KDYNAMIC_UNI
 
     _Serialize( pbyBuffer, m_usDataFieldFlag );
     if ( m_usDataFieldFlag & eUnitUserSync_DataField_nowState )
-        _Serialize( pbyBuffer, m_ucNowState );
+        _Serialize( pbyBuffer, m_usNowState );
     if ( m_usDataFieldFlag & eUnitUserSync_DataField_nowAction )
         _Serialize( pbyBuffer, m_ucNowAction );
     if ( m_usDataFieldFlag & eUnitUserSync_DataField_stateChangeNum )
@@ -281,7 +281,7 @@ bool    KDYNAMIC_UNIT_USER_SYNC::Deserialize( const BYTE*& pbyBuffer, const BYTE
 
 	if( usDataFieldFlag & eUnitUserSync_DataField_nowState )
     {
-		if ( false == _Deserialize( pbyBuffer, pbyEnd, m_ucNowState ) )
+		if ( false == _Deserialize( pbyBuffer, pbyEnd, m_usNowState ) )
             return false;
     }
 	if( usDataFieldFlag & eUnitUserSync_DataField_nowAction )
@@ -380,7 +380,7 @@ bool    KDYNAMIC_UNIT_USER_SYNC::Deserialize( const BYTE*& pbyBuffer, const BYTE
 ////------------------------------------------------------------------------------------------------------
 //SERIALIZE_DEFINE_PUT( KXPT_UNIT_USER_SYNC, obj, ks )
 //{
-//	return  PUT( m_ucNowState )
+//	return  PUT( m_usNowState )
 //		&&  PUT( nowAction )
 //		&&	PUT( m_usPosX )
 //		&&	PUT( m_usPosY )
@@ -400,7 +400,7 @@ bool    KDYNAMIC_UNIT_USER_SYNC::Deserialize( const BYTE*& pbyBuffer, const BYTE
 //
 //SERIALIZE_DEFINE_GET( KXPT_UNIT_USER_SYNC, obj, ks )
 //{
-//	return  GET( m_ucNowState )
+//	return  GET( m_usNowState )
 //		&&  GET( nowAction )
 //		&&	GET( m_usPosX )
 //		&&	GET( m_usPosY )

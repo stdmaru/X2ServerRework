@@ -416,6 +416,9 @@ public:
 			UAI_EEP_LINK_OVERCHARGE_ILLUSION,	// 엠프레스 궁극기 - 링크 오버차지 썬더볼트
 			UAI_RELEASE_FORMATION_MODE,		/// 애드 구성 모드 해제
 			UAI_ACTIVE_STASIS_FIELD,		/// 애드 스테이시스 필드 발동
+#ifdef X2_ARA_3RD_PATH
+			UAI_SPECTER_ACTION = 37,		/// Ara Little Specter: Specter Walk (V5's value, synced between clients)
+#endif
 
 		};
 
@@ -682,7 +685,7 @@ public:
 		struct SyncData
 		{
 			DWORD					dwFrameMoveCount;
-			KProtectedType<UCHAR>	nowState;
+			KProtectedType<USHORT>	nowState;
 			KProtectedType<char>	nowSubState;
 			KProtectedType<UCHAR>	nowAction;
 
@@ -806,7 +809,7 @@ public:
 		struct UserUnitStateData
 		{
 //{{ robobeg : 2008-10-28
-			UCHAR				stateID;
+			USHORT				stateID;
 			//wstring				stateTable;
 //}} robobeg : 2008-10-28
 			char				m_SPLevel;
@@ -893,7 +896,7 @@ public:
 				return *this;
 			}
 		};
-		typedef map<UCHAR, UserUnitStateData> UserUnitStateDataMap;
+		typedef map<USHORT, UserUnitStateData> UserUnitStateDataMap;
 
 
 //#ifndef NOT_USE_DICE_ROLL
@@ -1345,7 +1348,7 @@ public:
 		virtual bool				GetIsRight() const							{ return m_FrameDataNow.syncData.bIsRight; }
 		virtual bool				GetIsRightBefore() const					{ return m_FrameDataNowBefore.syncData.bIsRight; }
 
-		virtual GAME_UNIT_STATE_ID	GetGameUnitState() const					{ return (GAME_UNIT_STATE_ID)( (UCHAR) m_FrameDataNow.syncData.nowState); }
+		virtual GAME_UNIT_STATE_ID	GetGameUnitState() const					{ return (GAME_UNIT_STATE_ID)( (USHORT) m_FrameDataNow.syncData.nowState); }
 		virtual bool				GetInvincible()	const					{ return m_FrameDataNow.stateParam.bInvincible; }
 		virtual bool				GetIsFallDownState()
         {
@@ -1362,7 +1365,7 @@ public:
                 return  NULL;
         }
 
-		virtual GAME_UNIT_STATE_ID	GetGameUnitStateFuture() const			{ return (GAME_UNIT_STATE_ID)( (UCHAR) m_FrameDataFuture.syncData.nowState); }
+		virtual GAME_UNIT_STATE_ID	GetGameUnitStateFuture() const			{ return (GAME_UNIT_STATE_ID)( (USHORT) m_FrameDataFuture.syncData.nowState); }
 
 		virtual float				GetUnitWidth( bool bFuture ) const		{ return GetFrameData( bFuture ).unitCondition.fUnitWidth;	}
 		virtual float				GetUnitHeight( bool bFuture ) const		{ return GetFrameData( bFuture ).unitCondition.fUnitHeight; }
@@ -3214,7 +3217,7 @@ private:
 		//10초당 전체 체력의 % 회복 소켓 - 회복 카운트 시간
 		float m_fSocketHPIncreasePerSecondTime;
 
-		UCHAR			m_OldStateId;	// 이전 스테이트를 저장함 (언젠간 써먹을곳이 있지 않을까?)
+		USHORT			m_OldStateId;	// 이전 스테이트를 저장함 (언젠간 써먹을곳이 있지 않을까?)
 
 
 		CKTDXCheckElapsedTime m_ElapsedTimeNotBusyState;	// 현재 바쁜 상태인지 아닌지 체크 용도

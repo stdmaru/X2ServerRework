@@ -278,7 +278,7 @@ struct KDYNAMIC_UNIT_USER_SYNC
 	};
 
     USHORT              m_usDataFieldFlag;
-	UCHAR				m_ucNowState;
+	uint16_t			m_usNowState;		// UCHAR in the original; widened for the classes with more than 255 states (T54)
 	UCHAR				m_ucNowAction;
 	char				m_cStateChangeNum;
 
@@ -312,7 +312,7 @@ struct KDYNAMIC_UNIT_USER_SYNC
     KDYNAMIC_UNIT_USER_SYNC()
     {
         m_usDataFieldFlag = eUnitUserSync_DataField_No;
-        m_ucNowState = 0;
+        m_usNowState = 0;
         m_ucNowAction = 0;
         m_cStateChangeNum = 0;
         m_usPosX = 0;
