@@ -189,6 +189,12 @@ Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture 
   changes it; the key stays when the new texture has it, else its first key) and a list of the texture's keys, each
   with its rectangle. Both are string literals in the call (`SetTexCall`); a call naming them otherwise, through a
   variable, is refused. Pictures set by `SetTex2` (a whole texture) or by code have no line here.
+- **Controls' own textures** (user's request, 2026-11-20): a button's `SetNormalTex` / `SetOverTex` / `SetDownTex` /
+  `SetDisableTex`, a check box's or radio button's `SetCheckedTex`, an edit box's, slider's, list's and combo's
+  `Set...Tex` have no picture, so the inspector lists them in a **Textures** section of the control, with the same
+  texture field, key list and **Edit** (Interactive Select) as a picture's (`TextureKeyEditor`). The client notes each
+  such setter as a `Texture` call with its method name, file and key (`CKTDGUIDialog::NoteScriptCall`), and
+  `ControlInfo::textures` keeps the last call of each setter. Reached by `DLG_Title_Window.lua`'s `TitleGroup0~11`.
 - **UV rectangle**, edited only in **Interactive Select** (user's design, 2026-11-14; the inspector's number fields and
   corners table went, 2026-11-14: numbers without the texture were edited blind): "Edit" opens a dialog with the texture on
   the left and the rectangle's numbers on the right, Apply / Cancel below. The texture is drawn as the game loaded it

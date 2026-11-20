@@ -243,6 +243,9 @@ void CKTDGUICheckBox::ChangeState( CHECKBOX_CONTROL_STATE state )
 
 void CKTDGUICheckBox::SetNormalTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pNormalTex );
 
 	wstring wstrFileName;
@@ -258,6 +261,9 @@ void CKTDGUICheckBox::SetNormalTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUICheckBox::SetOverTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pMouseOverTex );
 
 	wstring wstrFileName;
@@ -271,6 +277,9 @@ void CKTDGUICheckBox::SetOverTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUICheckBox::SetDisableTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pDisableTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -283,6 +292,9 @@ void CKTDGUICheckBox::SetDisableTex_LUA( const char* pFileName, const char* key 
 
 void CKTDGUICheckBox::SetCheckedTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pCheckedTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );

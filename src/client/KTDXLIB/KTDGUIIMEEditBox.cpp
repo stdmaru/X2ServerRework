@@ -2779,6 +2779,9 @@ HRESULT CKTDGUIIMEEditBox::OnFrameRender()
 
 void CKTDGUIIMEEditBox::SetNormalTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pNormalTex );
 
 	wstring wstrFileName;
@@ -2796,6 +2799,9 @@ void CKTDGUIIMEEditBox::SetNormalTex_LUA( const char* pFileName, const char* key
 
 void CKTDGUIIMEEditBox::SetDisableTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pDisableTex );
 
 	wstring wstrFileName;

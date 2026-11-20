@@ -647,6 +647,9 @@ bool CKTDGUIEditBox::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM /*
 
 void CKTDGUIEditBox::SetNormalTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pNormalTex );
 
 	wstring wstrFileName;
@@ -664,6 +667,9 @@ void CKTDGUIEditBox::SetNormalTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUIEditBox::SetDisableTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pDisableTex );
 
 	wstring wstrFileName;

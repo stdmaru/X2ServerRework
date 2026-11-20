@@ -2381,6 +2381,16 @@ void CKTDGUIDialog::NoteScriptCall( ScriptCallKind eKind, int iObject )
 			return;
 		kCall.pObject = pUser->m_p;
 	}
+	if ( eKind == ScriptCallKind::Texture )
+	{
+		lua_Debug kSetter;
+		if ( lua_getstack( L, 0, &kSetter ) != 0 && lua_getinfo( L, "n", &kSetter ) != 0 && kSetter.name != nullptr )
+			kCall.strMethod = kSetter.name;
+		const char* pFile = lua_tostring( L, iObject + 1 );
+		const char* pKey = lua_tostring( L, iObject + 2 );
+		kCall.strTexture = pFile != nullptr ? pFile : "";
+		kCall.strKey = pKey != nullptr ? pKey : "";
+	}
 	pDialog->m_vecScriptCalls.push_back( kCall );
 }
 #endif

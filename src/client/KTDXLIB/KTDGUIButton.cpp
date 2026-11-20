@@ -711,6 +711,9 @@ void CKTDGUIButton::SetDisableTex( const WCHAR* pFileName, const WCHAR* key )
 
 void CKTDGUIButton::SetNormalTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pNormalTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -727,6 +730,9 @@ void CKTDGUIButton::SetNormalTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUIButton::SetOverTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pMouseOverTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -739,6 +745,9 @@ void CKTDGUIButton::SetOverTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUIButton::SetDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pMouseDownTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -755,6 +764,9 @@ void CKTDGUIButton::SetDownTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUIButton::SetDisableTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pDisableTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );

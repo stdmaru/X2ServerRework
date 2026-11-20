@@ -480,6 +480,9 @@ bool CKTDGUIContolList::InsertItem( CKTDGUIControl* pControl, int row, int col, 
 
 void	CKTDGUIContolList::SetXScollBarUpButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pXScollBarUpButtonTex );
@@ -494,6 +497,9 @@ void	CKTDGUIContolList::SetXScollBarUpButtonTex_LUA( const char* pFileName, cons
 
 void	CKTDGUIContolList::SetXScollBarUpButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pXScollBarUpButtonDownTex );
@@ -508,6 +514,9 @@ void	CKTDGUIContolList::SetXScollBarUpButtonDownTex_LUA( const char* pFileName, 
 
 void	CKTDGUIContolList::SetXScollBarDownButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pXScollBarDownButtonTex );
@@ -522,6 +531,9 @@ void	CKTDGUIContolList::SetXScollBarDownButtonTex_LUA( const char* pFileName, co
 
 void	CKTDGUIContolList::SetXScollBarDownButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pXScollBarDownButtonDownTex );
@@ -536,6 +548,9 @@ void	CKTDGUIContolList::SetXScollBarDownButtonDownTex_LUA( const char* pFileName
 
 void	CKTDGUIContolList::SetXScollBarTrackTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pXScollBarTrackTex );
@@ -550,6 +565,9 @@ void	CKTDGUIContolList::SetXScollBarTrackTex_LUA( const char* pFileName, const c
 
 void	CKTDGUIContolList::SetXScollBarThumbTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pXScollBarThumbTex );
@@ -567,6 +585,9 @@ void	CKTDGUIContolList::SetXScollBarThumbTex_LUA( const char* pFileName, const c
 
 void	CKTDGUIContolList::SetYScollBarUpButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pYScollBarUpButtonTex );
@@ -581,6 +602,9 @@ void	CKTDGUIContolList::SetYScollBarUpButtonTex_LUA( const char* pFileName, cons
 
 void	CKTDGUIContolList::SetYScollBarUpButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pYScollBarUpButtonDownTex );
@@ -595,6 +619,9 @@ void	CKTDGUIContolList::SetYScollBarUpButtonDownTex_LUA( const char* pFileName, 
 
 void	CKTDGUIContolList::SetYScollBarDownButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pYScollBarDownButtonTex );
@@ -609,6 +636,9 @@ void	CKTDGUIContolList::SetYScollBarDownButtonTex_LUA( const char* pFileName, co
 
 void	CKTDGUIContolList::SetYScollBarDownButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pYScollBarDownButtonDownTex );
@@ -623,6 +653,9 @@ void	CKTDGUIContolList::SetYScollBarDownButtonDownTex_LUA( const char* pFileName
 
 void	CKTDGUIContolList::SetYScollBarTrackTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pYScollBarTrackTex );
@@ -637,6 +670,9 @@ void	CKTDGUIContolList::SetYScollBarTrackTex_LUA( const char* pFileName, const c
 
 void	CKTDGUIContolList::SetYScollBarThumbTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pYScollBarThumbTex );

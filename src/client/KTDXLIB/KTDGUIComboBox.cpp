@@ -1294,6 +1294,9 @@ void CKTDGUIComboBox::OnHotkey()
 
 void CKTDGUIComboBox::SetDropdownTextTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pDropdownTextTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1307,6 +1310,9 @@ void CKTDGUIComboBox::SetDropdownTextTex_LUA( const char* pFileName, const char*
 
 void CKTDGUIComboBox::SetButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pButtonTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1320,6 +1326,9 @@ void CKTDGUIComboBox::SetButtonTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUIComboBox::SetButtonMouseOverTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pButtonMouseOverTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1333,6 +1342,9 @@ void CKTDGUIComboBox::SetButtonMouseOverTex_LUA( const char* pFileName, const ch
 
 void CKTDGUIComboBox::SetButtonMouseDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pButtonMouseDownTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1346,6 +1358,9 @@ void CKTDGUIComboBox::SetButtonMouseDownTex_LUA( const char* pFileName, const ch
 
 void CKTDGUIComboBox::SetDropdownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pDropdownTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1358,6 +1373,9 @@ void CKTDGUIComboBox::SetDropdownTex_LUA( const char* pFileName, const char* key
 
 void CKTDGUIComboBox::SetTextTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pTextTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1371,6 +1389,9 @@ void CKTDGUIComboBox::SetTextTex_LUA( const char* pFileName, const char* key )
 
 void	CKTDGUIComboBox::SetScollBarUpButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pScollBarUpButtonTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1383,6 +1404,9 @@ void	CKTDGUIComboBox::SetScollBarUpButtonTex_LUA( const char* pFileName, const c
 
 void	CKTDGUIComboBox::SetScollBarUpButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pScollBarUpButtonDownTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1395,6 +1419,9 @@ void	CKTDGUIComboBox::SetScollBarUpButtonDownTex_LUA( const char* pFileName, con
 
 void	CKTDGUIComboBox::SetScollBarDownButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pScollBarDownButtonTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1407,6 +1434,9 @@ void	CKTDGUIComboBox::SetScollBarDownButtonTex_LUA( const char* pFileName, const
 
 void	CKTDGUIComboBox::SetScollBarDownButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pScollBarDownButtonDownTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1419,6 +1449,9 @@ void	CKTDGUIComboBox::SetScollBarDownButtonDownTex_LUA( const char* pFileName, c
 
 void	CKTDGUIComboBox::SetScollBarTrackTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pScollBarTrackTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1431,6 +1464,9 @@ void	CKTDGUIComboBox::SetScollBarTrackTex_LUA( const char* pFileName, const char
 
 void	CKTDGUIComboBox::SetScollBarThumbTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pScollBarThumbTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );

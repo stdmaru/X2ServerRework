@@ -807,6 +807,9 @@ void CKTDGUISlot::SetItemTex( const WCHAR* pFileName, const WCHAR* key )
 
 void CKTDGUISlot::SetItemTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
 
@@ -844,6 +847,9 @@ void CKTDGUISlot::SetMouseOverTex( const WCHAR* pFileName, const WCHAR* key )
 
 void CKTDGUISlot::SetMouseOverTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
 

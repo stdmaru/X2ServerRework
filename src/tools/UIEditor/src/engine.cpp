@@ -1308,6 +1308,19 @@ std::vector<DialogInfo> Engine::Inspect() const
                 for (const Call* call : callsFor(object, Kind::Point)) {
                     c.points.push_back(ref(*call));
                 }
+                // The last call of each setter wins, as in the game.
+                std::vector<const Call*> textures = callsFor(object, Kind::Texture);
+                for (const Call* call : textures) {
+                    const auto same = std::find_if(c.textures.begin(), c.textures.end(), [&](const TextureSlotInfo& t) {
+                        return t.method == call->strMethod;
+                    });
+                    TextureSlotInfo slot{call->strMethod, call->strTexture, call->strKey, ref(*call)};
+                    if (same != c.textures.end()) {
+                        *same = std::move(slot);
+                    } else {
+                        c.textures.push_back(std::move(slot));
+                    }
+                }
                 if (const auto found = callsFor(object, Kind::AddControl); !found.empty() && !c.add.Known()) {
                     c.add = ref(*found.back());
                 }

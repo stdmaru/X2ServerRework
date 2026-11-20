@@ -617,6 +617,38 @@ x2::ui_editor::TetRect Rect(float l, float t, float r, float b)
 
 }  // namespace
 
+TEST_CASE("ui editor: a button's own textures are listed with their lines, texts and keys")
+{
+    TempGame game;
+    std::string error;
+    std::ofstream(game.root / "data" / "ui" / "scripts" / "DLG_Button.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pButton = g_pUIDialog:CreateButton()
+g_pUIDialog:AddControl(g_pButton)
+g_pButton:SetNormalTex("DLG_Test.tga", "NORMAL")
+g_pButton:SetOverTex("DLG_Test.tga", "OVER")
+g_pButton:SetNormalPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
+)lua";
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Button.lua", error) == 0);
+    const auto control = engine->Inspect()[0].controls.at(0);
+    REQUIRE(control.textures.size() == 2);
+    CHECK(control.textures[0].method == "SetNormalTex");
+    CHECK(control.textures[0].texture == "DLG_Test.tga");
+    CHECK(control.textures[0].key == "NORMAL");
+    CHECK(control.textures[0].source.line == 4);
+    CHECK(control.textures[1].method == "SetOverTex");
+    CHECK(control.textures[1].key == "OVER");
+    std::string text;
+    REQUIRE_MESSAGE(engine->ScriptText("DLG_Button.lua", text, error), error);
+    REQUIRE_MESSAGE(x2::ui_editor::SetTexCall(text, 5, "DLG_Test.tga", "OTHER", error), error);
+    CHECK(text.find("SetOverTex(\"DLG_Test.tga\", \"OTHER\")") != std::string::npos);
+}
+
 TEST_CASE("ui editor: a picture's key comes from its texture's .tet, which edits change in its dialogs")
 {
     TempGame game;
