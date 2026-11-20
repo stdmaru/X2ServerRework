@@ -341,10 +341,14 @@
 #include "KSuperAssert.h"
 
 
+#ifdef X2_DEBUG
+	#include "KTDXProfile.h"	// X2_STEP_TRACE: the profiler of slow simulation steps
+#else
 	#define KTDXPROFILE()
 	#define KTDXPROFILE2(name)
 	#define KTDXPROFILE_BEGIN(name)
 	#define KTDXPROFILE_END()
+#endif
 
 #include "../X2/KOGGamePerformanceCheckDefine.h"
 
