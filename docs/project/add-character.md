@@ -67,6 +67,21 @@ per-level text) from BR 2017 by skill ID where BR 2014-08 has none or has it in 
 - Servers read the client_data's scripts when `X2_CLIENT_DATA` points at it (`gen_clientscript.py`,
   [Server package](../tools/runtime.md#clientscript-generated-from-the-client)); from the `.kom` they would not see Add.
 
+**The new paths (2026-11-20, `server/third-paths`)**, from V5, the only source:
+- `StatTable.lua`: classes 33, 34, 35, 36, 123, 124, 125, 126 (80 levels each). V5 copies each from the class it comes
+  from (Little Specter = Ara, Asura = Sakra Devanam, Dark Knight = Elesis, Crimson Avenger = Grand Master, Time Tracer
+  = Add, Diabolic Esper = Lunatic Psyker, Arc Tracer = Psychic Tracer; Mastermind differs from Lunatic Psyker at level
+  1 only), so they are placeholders until a source has the real ones.
+- `ClassChangeTable.lua`: the new classes in their tier's group (71/72 Ara, 81/82 Elesis, 91/92 Add; V5 groups Add by
+  path, 91–93, ours by tier). `ClassChangeSkill.lua`: V5's 40 rows (five slots per class). `ClassChangeItem/Memo.lua`:
+  Dark Knight and Crimson Avenger get 608009/608015, Elesis's memos shared by Saber and Pyro Knight
+  (`SkillNoteTemplet.lua`); V5 has no memo rows for the others, and no `ClassChangeQuest` rows for any.
+- `Game01`: class changes are not limited by class (`gup_update_unit_class`, `P_GUnit_UPT_UnitClassChange`), and units
+  are created only as base classes, so nothing changes for the new classes there; the daily ranking knew no class
+  after Ara's first path ([`20261120_rank_classes.sql`](../tools/database-patches.md#game01)).
+- The GameServer loads all of it with no new error (2026-11-20; the load errors left are the older ones: recipes,
+  random item groups, notices).
+
 ## Also synced on the way (user, 2026-11-15)
 
 What the current game should have but our data lacks or has out of sync is brought in with Add:
