@@ -138,6 +138,8 @@ struct EditorState {
         char name[96] = {};
         std::optional<TetRect> rect;    // the rectangle to give the key once decided (Interactive Select's Apply)
         bool applied = false;           // decided and that rectangle given
+        bool fromSelect = false;        // asked for a key Interactive Select changes: only "in place" or Cancel
+        bool cancelled = false;         // the user cancelled (Interactive Select then stops applying)
     } keyAsk;
     // The pictures of the selected control expanded in the inspector (indexes), green on the screen: set as the
     // inspector draws, so the screen shows the last frame's.
@@ -160,13 +162,21 @@ struct EditorState {
         float rest[2] = {};
     } edgeDrag;
     // Interactive Select (SelectPopup): a key's UV rectangle edited over its texture, given to the key on Apply.
+    // The texture's keys are a draft (`file`) the select changes: rectangles, new, renamed and deleted keys; Apply
+    // gives the .tet the draft and the picture's SetTex the chosen key, as one step of undo.
     struct Select {
         bool request = false, open = false;
         PictureInfo picture;            // as when opened
         std::string dialog;
         x2::ui_editor::Engine::TextureImage image;
-        TetRect original, working;
-        std::vector<TetFile::Entry> others;     // the texture's other keys
+        TetFile file, fileOriginal;     // the draft and the .tet as opened (no keys when it has none)
+        bool hadTet = false;            // the texture had a .tet when opened
+        std::string key;                // the key shown and edited, and given to the picture: empty when it has none
+        TetRect original, working;      // its rectangle as opened (or made) and now (staged into `file` on a switch)
+        char name[96] = {};             // the field New, Rename use
+        std::string note;               // why the last key action was refused
+        bool applying = false;          // Apply waits for the shared-key question
+        std::vector<TetFile::Entry> others;     // the texture's other keys (as drawn)
         float zoom = 0.0f;              // screen pixels per texel; 0: fit when first drawn
         float pan[2] = {};              // where texel 0, 0 is, from the view's corner
         bool dragging = false;
@@ -354,10 +364,24 @@ void ReloadTextureDialogs(x2::ui_editor::Engine& engine, EditorState& state, con
 void SetTet(x2::ui_editor::Engine& engine, EditorState& state, const std::string& texture, const std::string& bytes)
 {
     const std::string key = Key(texture);
-    state.tetBytes[key] = bytes;
     state.tetTextures.try_emplace(key, texture);
     std::string error;
-    if (!engine.SetTet(texture, bytes, error)) {
+    // No bytes: the texture had no .tet (undoing the one Interactive Select made). Not saved yet, it goes; saved, an
+    // empty one takes its place (a file cannot be taken back).
+    std::string shown = bytes;
+    if (bytes.empty()) {
+        shown = TetFile().Bytes();
+        if (state.tetSaved.count(key) != 0) {
+            state.tetBytes[key] = shown;
+        } else {
+            state.tetBytes.erase(key);
+            state.noTet.insert(key);
+        }
+    } else {
+        state.tetBytes[key] = bytes;
+        state.noTet.erase(key);
+    }
+    if (!engine.SetTet(texture, shown, error)) {
         state.message = error;
         return;
     }
@@ -606,10 +630,15 @@ bool SaveTets(EditorState& state)
             continue;
         }
         const std::string name = x2::ui_editor::TetName(state.tetTextures[key]);
-        const std::filesystem::path path = x2::ui_editor::FindLooseScript(state.gameFolder, name);
+        std::filesystem::path path = x2::ui_editor::FindLooseScript(state.gameFolder, name);
         if (path.empty()) {
-            state.message = name + ": not in the client_data (data/)";
-            return false;
+            // A .tet made here: next to its texture (x2_assets records it as a new file on its next sync).
+            const std::filesystem::path texture = x2::ui_editor::FindLooseScript(state.gameFolder, state.tetTextures[key]);
+            if (texture.empty()) {
+                state.message = name + ": its texture is not in the client_data (data/), so there is no folder for it";
+                return false;
+            }
+            path = texture.parent_path() / name;
         }
         std::ofstream out(path, std::ios::binary | std::ios::trunc);
         out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
@@ -1338,7 +1367,10 @@ void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
         close();
     }
     ImGui::Separator();
-    ImGui::BeginDisabled(!ask.texSource.Known());
+    if (ask.fromSelect) {
+        ImGui::TextDisabled("For a key of its own, cancel and use Add in Interactive Select.");
+    }
+    ImGui::BeginDisabled(!ask.texSource.Known() || ask.fromSelect);
     ImGui::SetNextItemWidth(360);
     ImGui::InputText("##name", ask.name, sizeof(ask.name), ImGuiInputTextFlags_CharsUppercase);
     ImGui::SameLine();
@@ -1367,13 +1399,14 @@ void KeyPopup(x2::ui_editor::Engine& engine, EditorState& state)
         }
     }
     ImGui::EndDisabled();
-    if (!ask.texSource.Known()) {
+    if (!ask.texSource.Known() && !ask.fromSelect) {
         ImGui::TextDisabled("No SetTex line the editor follows names it here: only in place.");
     }
     if (!state.message.empty() && ImGui::IsPopupOpen("Shared key")) {
         ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "%s", state.message.c_str());
     }
     if (ImGui::Button("Cancel")) {
+        ask.cancelled = true;
         close();
     }
     ImGui::EndPopup();
@@ -1388,30 +1421,167 @@ void RectBox(const TetRect& rect, float box[4])
     box[3] = std::max({rect.leftTop[1], rect.rightTop[1], rect.leftBottom[1], rect.rightBottom[1]});
 }
 
-// Opens Interactive Select on a picture's key.
-void OpenSelect(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const PictureInfo& picture,
-                const TetFile& tet)
+// Interactive Select's draft ---------------------------------------------------------------------------------------
+
+// Puts the rectangle being edited into the draft of the texture's keys.
+void StageSelect(EditorState& state)
 {
-    const TetRect* rect = tet.Find(picture.key);
+    auto& sel = state.select;
+    if (!sel.key.empty()) {
+        sel.file.Set(sel.key, sel.working);
+    }
+}
+
+// Opens Interactive Select on a picture's texture: its key when the .tet has it, else with no key, to add one. `tet`:
+// the texture's .tet, nullptr when it has none.
+void OpenSelect(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const PictureInfo& picture,
+                const TetFile* tet)
+{
     std::string error;
     auto& sel = state.select;
     sel = {};
-    if (rect == nullptr || !engine.LoadTextureImage(picture.texture, sel.image, error)) {
-        state.message = rect == nullptr ? picture.key + " is not in the texture's .tet" : error;
+    if (picture.texture.empty() || !engine.LoadTextureImage(picture.texture, sel.image, error)) {
+        state.message = picture.texture.empty() ? "the picture has no texture" : error;
         return;
     }
     sel.request = true;
     sel.picture = picture;
     sel.dialog = dialog.script;
-    sel.original = sel.working = *rect;
-    for (const auto& entry : tet.Entries()) {
-        if (LowerText(entry.key) != LowerText(picture.key)) {
-            sel.others.push_back(entry);
-        }
+    sel.hadTet = tet != nullptr;
+    if (tet != nullptr) {
+        sel.file = *tet;
+    }
+    sel.fileOriginal = sel.file;
+    if (const TetRect* rect = sel.file.Find(picture.key)) {
+        sel.key = x2::ui_editor::UpperKey(picture.key);
+        sel.original = sel.working = *rect;
+        return;
+    }
+    // Nothing to edit yet: a first key, named as the picture's SetTex has it when that is a name a key may have.
+    if (x2::ui_editor::ValidKeyName(picture.key)) {
+        std::snprintf(sel.name, sizeof(sel.name), "%s", x2::ui_editor::UpperKey(picture.key).c_str());
+    }
+    sel.note = !sel.hadTet ? "The texture has no .tet: add its first key (Add)."
+                           : (picture.key.empty() ? std::string("The picture has no key") : picture.key) +
+                                 " is not in the texture's .tet: add it, or pick another key.";
+}
+
+// Makes another key the one shown and edited.
+void SwitchSelectKey(EditorState& state, const std::string& key)
+{
+    auto& sel = state.select;
+    StageSelect(state);
+    sel.key = key;
+    sel.note.clear();
+    sel.dragging = false;
+    if (const TetRect* rect = sel.file.Find(key)) {
+        sel.working = *rect;
+        const TetRect* was = sel.fileOriginal.Find(key);
+        sel.original = was != nullptr ? *was : *rect;
     }
 }
 
-// What the engine draws for the edited key: the working rectangle while previewing, else what the edits hold.
+// How many script lines other than the picture's own SetTex name a key of the texture: changing its name or deleting
+// it would break them. A key the .tet did not have when opened has none.
+std::size_t OtherUses(EditorState& state, const std::string& key)
+{
+    const auto& sel = state.select;
+    if (sel.fileOriginal.Find(key) == nullptr) {
+        return 0;
+    }
+    const PictureInfo& picture = sel.picture;
+    const bool own = LowerText(key) == LowerText(picture.key) && picture.texSource.Known();
+    const std::string script = Key(picture.texSource.script);
+    std::size_t others = 0;
+    for (const auto& use : KeyUses(state, picture.texture, key)) {
+        if (!own || Key(use.script.filename().string()) != script || use.line != picture.texSource.line) {
+            ++others;
+        }
+    }
+    return others + (own && picture.texSource.shared > 1 ? 1 : 0);
+}
+
+std::string UsesNote(const std::string& key, std::size_t others, const char* what)
+{
+    return key + " is named by " + std::to_string(others) + " other script line(s): " + what +
+           " would break them. Add a new key instead.";
+}
+
+// Adds the key named in the name field: a copy of the rectangle shown, or the whole texture for a first one.
+void SelectAddKey(EditorState& state)
+{
+    auto& sel = state.select;
+    std::string error;
+    StageSelect(state);
+    const TetRect rect = sel.key.empty() ? x2::ui_editor::UprightRect(0.0f, 0.0f, static_cast<float>(sel.image.width),
+                                                                      static_cast<float>(sel.image.height))
+                                         : sel.working;
+    const std::string name = x2::ui_editor::UpperKey(sel.name);
+    if (!sel.file.Add(name, rect, error)) {
+        sel.note = error;
+        return;
+    }
+    SwitchSelectKey(state, name);
+    sel.original = sel.working = rect;
+    sel.name[0] = '\0';
+}
+
+// Gives the key shown the name in the name field (its rectangle goes with it).
+void SelectRenameKey(EditorState& state)
+{
+    auto& sel = state.select;
+    std::string error;
+    const std::string name = x2::ui_editor::UpperKey(sel.name);
+    if (sel.key.empty() || name == sel.key) {
+        return;
+    }
+    if (const std::size_t others = OtherUses(state, sel.key); others > 0) {
+        sel.note = UsesNote(sel.key, others, "renaming it");
+        return;
+    }
+    StageSelect(state);
+    if (!sel.file.Rename(sel.key, name, error)) {
+        sel.note = error;
+        return;
+    }
+    sel.key = name;
+    sel.note.clear();
+    sel.name[0] = '\0';
+}
+
+// Deletes the key shown; the first one left is shown after.
+void SelectDeleteKey(EditorState& state)
+{
+    auto& sel = state.select;
+    if (sel.key.empty()) {
+        return;
+    }
+    if (const std::size_t others = OtherUses(state, sel.key); others > 0) {
+        sel.note = UsesNote(sel.key, others, "deleting it");
+        return;
+    }
+    sel.file.Remove(sel.key);
+    sel.key.clear();
+    if (sel.file.Entries().empty()) {
+        sel.note = "No keys left: add one (Add), or apply to leave the .tet empty.";
+    } else {
+        SwitchSelectKey(state, sel.file.Entries().front().key);
+    }
+}
+
+// Whether Apply would change anything: the keys' rectangles, names or number, or the key the picture uses.
+bool SelectChanged(EditorState& state)
+{
+    auto& sel = state.select;
+    TetFile staged = sel.file;
+    if (!sel.key.empty()) {
+        staged.Set(sel.key, sel.working);
+    }
+    return staged.Bytes() != sel.fileOriginal.Bytes() ||
+           (!sel.key.empty() && LowerText(sel.key) != LowerText(sel.picture.key));
+}
+
+// What the engine draws for the edited keys: the draft while previewing, else what the edits hold.
 void PreviewSelect(x2::ui_editor::Engine& engine, EditorState& state, bool working)
 {
     auto& sel = state.select;
@@ -1419,13 +1589,19 @@ void PreviewSelect(x2::ui_editor::Engine& engine, EditorState& state, bool worki
         return;
     }
     std::string bytes, error;
-    TetFile file;
-    if (!CurrentTet(engine, state, sel.picture.texture, bytes, file)) {
-        return;
-    }
     if (working) {
-        file.Set(sel.picture.key, sel.working);
-        bytes = file.Bytes();
+        StageSelect(state);
+        bytes = sel.file.Bytes();
+    } else if (const auto it = state.tetBytes.find(Key(sel.picture.texture)); it != state.tetBytes.end()) {
+        bytes = it->second;
+    } else {
+        TetFile file;
+        if (sel.hadTet && !CurrentTet(engine, state, sel.picture.texture, bytes, file)) {
+            return;
+        }
+        if (!sel.hadTet) {
+            bytes = TetFile().Bytes();     // no .tet: no keys
+        }
     }
     if (engine.SetTet(sel.picture.texture, bytes, error)) {
         ReloadTextureDialogs(engine, state, sel.picture.texture);
@@ -1433,6 +1609,63 @@ void PreviewSelect(x2::ui_editor::Engine& engine, EditorState& state, bool worki
         state.message = error;
     }
     sel.previewed = working;
+}
+
+// Gives the .tet the draft and the picture's SetTex the key shown, as one step of undo. False, with nothing done, when
+// it waits for the question about a key others name (KeyPopup): Apply is tried again once it is answered.
+bool ApplySelect(x2::ui_editor::Engine& engine, EditorState& state)
+{
+    auto& sel = state.select;
+    StageSelect(state);
+    DialogInfo dialog;
+    dialog.script = sel.dialog;
+    for (const auto& entry : sel.file.Entries()) {
+        const TetRect* was = sel.fileOriginal.Find(entry.key);
+        if (was == nullptr || *was == entry.rect) {
+            continue;
+        }
+        PictureInfo asked = sel.picture;
+        asked.key = entry.key;
+        if (!MayChangeKey(state, dialog, asked)) {
+            state.keyAsk.fromSelect = true;
+            state.keyAsk.rect.reset();
+            return false;
+        }
+    }
+    std::vector<EditorState::Step::Text> texts;
+    const std::string texture = sel.picture.texture;
+    const std::string after = sel.file.Bytes();
+    if (after != sel.fileOriginal.Bytes()) {
+        std::string before;
+        if (sel.hadTet) {
+            TetFile ignored;
+            if (!CurrentTet(engine, state, texture, before, ignored)) {
+                return true;
+            }
+        }
+        texts.push_back({texture, before, after, true});
+    }
+    if (!sel.key.empty() && LowerText(sel.key) != LowerText(sel.picture.key)) {
+        std::string text, error;
+        if (!sel.picture.texSource.Known()) {
+            state.message = "the .tet changed, but no SetTex line the editor follows names the key: " + sel.key +
+                            " is not given to the picture";
+        } else if (CurrentScript(engine, state, sel.picture.texSource.script, text)) {
+            const std::string was = text;
+            if (x2::ui_editor::SetTexCall(text, sel.picture.texSource.line, texture, sel.key, error)) {
+                texts.push_back({sel.picture.texSource.script, was, text});
+            } else {
+                state.message = sel.picture.texSource.script + ": " + error;
+            }
+        }
+    }
+    if (texts.empty()) {
+        return true;
+    }
+    state.noTet.erase(Key(texture));
+    state.keyUses.clear();
+    ApplyTexts(engine, state, texts, 0);
+    return true;
 }
 
 // A .tet value on the texture's own texels: whole units, or quarter units on a 4x upscaled texture.
@@ -1457,8 +1690,10 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
     if (sel.zoom <= 0.0f && texW > 0 && texH > 0) {
         // Fit the texture, then center on the rectangle.
         sel.zoom = std::min(size.x / texW, size.y / texH) * 0.95f;
-        float box[4];
-        RectBox(sel.working, box);
+        float box[4] = {0.0f, 0.0f, texW, texH};
+        if (!sel.key.empty()) {
+            RectBox(sel.working, box);
+        }
         sel.pan[0] = size.x * 0.5f - (box[0] + box[2]) * 0.5f * sel.zoom;
         sel.pan[1] = size.y * 0.5f - (box[1] + box[3]) * 0.5f * sel.zoom;
     }
@@ -1486,7 +1721,8 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
     const float scale = sel.image.scale;
     sel.pointer[0] = hovered ? std::floor(pointer.x * scale) / scale : -1.0f;
     sel.pointer[1] = hovered ? std::floor(pointer.y * scale) / scale : -1.0f;
-    const bool overBox = hovered && pointer.x >= box[0] && pointer.x < box[2] && pointer.y >= box[1] && pointer.y < box[3];
+    const bool hasKey = !sel.key.empty();
+    const bool overBox = hasKey && hovered && pointer.x >= box[0] && pointer.x < box[2] && pointer.y >= box[1] && pointer.y < box[3];
     bool changed = false;
     if (overBox && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         sel.dragging = true;
@@ -1506,7 +1742,7 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
             }
         }
     }
-    if (hovered && !sel.dragging) {
+    if (hasKey && hovered && !sel.dragging) {
         const float step = io.KeyShift ? 10.0f : 1.0f / scale;
         float dx = 0.0f, dy = 0.0f;
         dx -= ImGui::IsKeyPressed(ImGuiKey_LeftArrow) ? step : 0.0f;
@@ -1565,6 +1801,10 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
         }
     }
     // The texture dimmed around the rectangle, which gets a clear border.
+    if (!hasKey) {
+        draw->PopClipRect();
+        return changed;
+    }
     const ImVec2 b0 = toScreen(box[0], box[1]), b1 = toScreen(box[2], box[3]);
     const ImU32 dim = IM_COL32(0, 0, 0, 120);
     draw->AddRectFilled(t0, ImVec2(t1.x, b0.y), dim);
@@ -1574,13 +1814,14 @@ bool SelectView(EditorState& state, const x2::app::ImGuiLayer& gui, ImVec2 size)
     draw->AddRect(ImVec2(b0.x - 2, b0.y - 2), ImVec2(b1.x + 2, b1.y + 2), IM_COL32(0, 0, 0, 220), 0.0f, 1.0f);
     draw->AddRect(ImVec2(b0.x - 1, b0.y - 1), ImVec2(b1.x + 1, b1.y + 1), IM_COL32(255, 210, 60, 255), 0.0f, 2.0f);
     draw->AddText(ImVec2(b0.x, b0.y - ImGui::GetTextLineHeight() - 4), IM_COL32(255, 210, 60, 255),
-                  sel.picture.key.c_str());
+                  sel.key.c_str());
     draw->PopClipRect();
     return changed;
 }
 
-// Interactive Select: the texture | the rectangle's numbers, then Apply / Cancel. Apply gives the key the rectangle
-// (asking first when other lines name the key: KeyPopup); Cancel leaves it as it was.
+// Interactive Select: the texture | the keys and the rectangle's numbers, then Apply / Cancel. The key shown can be
+// changed, and keys added, renamed and deleted; Apply gives the .tet the draft and the picture the key shown (asking
+// first when other lines name a key whose rectangle changed: KeyPopup); Cancel leaves everything as it was.
 void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::app::ImGuiLayer& gui)
 {
     auto& sel = state.select;
@@ -1601,22 +1842,43 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
         sel.open = false;
         return;
     }
-    const auto close = [&](bool apply) {
-        PreviewSelect(engine, state, false);    // what the edits hold, Apply then adds its step
-        if (apply) {
-            DialogInfo dialog;
-            dialog.script = sel.dialog;
-            if (MayChangeKey(state, dialog, sel.picture)) {
-                ApplyRect(engine, state, sel.picture.texture, sel.picture.key, sel.working);
-            } else {
-                state.keyAsk.rect = sel.working;
-                return;     // KeyPopup decides; the select closes when it has applied
-            }
-        }
+    const auto finish = [&] {
+        sel.applying = false;
         sel.open = false;
         ImGui::CloseCurrentPopup();
     };
+    const auto close = [&](bool apply) {
+        PreviewSelect(engine, state, false);    // what the edits hold, Apply then adds its step
+        if (!apply) {
+            finish();
+        } else if (ApplySelect(engine, state)) {
+            finish();
+        } else {
+            sel.applying = true;    // KeyPopup decides; Apply goes on once it is answered
+        }
+    };
+    // The question about a shared key was answered: in place goes on, cancelling stays in the select.
+    if (sel.applying && !state.keyAsk.open) {
+        if (state.keyAsk.cancelled) {
+            state.keyAsk.cancelled = false;
+            sel.applying = false;
+            if (sel.livePreview) {
+                PreviewSelect(engine, state, true);
+            }
+        } else if (ApplySelect(engine, state)) {
+            finish();
+            ImGui::EndPopup();
+            return;
+        }
+    }
 
+    sel.others.clear();
+    for (const auto& entry : sel.file.Entries()) {
+        if (entry.key != sel.key) {
+            sel.others.push_back(entry);
+        }
+    }
+    const bool hasKey = !sel.key.empty();
     const float footer = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 2;
     const float fields = 300.0f;
     const ImVec2 avail = ImGui::GetContentRegionAvail();
@@ -1636,8 +1898,62 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
         } else {
             ImGui::Text("%u x %u texels", sel.image.width, sel.image.height);
         }
-        ImGui::Text("key: %s", sel.picture.key.c_str());
-        ImGui::Separator();
+        ImGui::TextDisabled("%s", sel.hadTet ? x2::ui_editor::TetName(sel.picture.texture).c_str()
+                                             : "no .tet yet: Apply makes it");
+        ImGui::SeparatorText("Keys");
+        ImGui::SetNextItemWidth(fields - 90.0f);
+        if (ImGui::BeginCombo("key", hasKey ? sel.key.c_str() : "(none)", ImGuiComboFlags_HeightLarge)) {
+            const auto entries = sel.file.Entries();
+            for (const auto& entry : entries) {
+                if (ImGui::Selectable(entry.key.c_str(), entry.key == sel.key)) {
+                    SwitchSelectKey(state, entry.key);
+                    changed = true;
+                }
+            }
+            ImGui::EndCombo();
+        }
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("The key shown, edited and given to the picture's SetTex when applied");
+        }
+        if (hasKey && LowerText(sel.key) != LowerText(sel.picture.key)) {
+            ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "the picture will use %s", sel.key.c_str());
+        }
+        ImGui::SetNextItemWidth(fields - 24.0f);
+        ImGui::InputText("##name", sel.name, sizeof(sel.name),
+                         ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+        const bool named = sel.name[0] != '\0';
+        ImGui::BeginDisabled(!named);
+        if (ImGui::Button("Add")) {
+            SelectAddKey(state);
+            changed = true;
+        }
+        ImGui::EndDisabled();
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+            ImGui::SetTooltip("A new key with that name: a copy of the rectangle shown (the whole texture for a first key)");
+        }
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!named || !hasKey);
+        if (ImGui::Button("Rename")) {
+            SelectRenameKey(state);
+        }
+        ImGui::EndDisabled();
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+            ImGui::SetTooltip("Gives the key shown that name; refused while other script lines name it");
+        }
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!hasKey);
+        if (ImGui::Button("Delete")) {
+            SelectDeleteKey(state);
+            changed = true;
+        }
+        ImGui::EndDisabled();
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+            ImGui::SetTooltip("Deletes the key shown from the .tet; refused while other script lines name it");
+        }
+        if (!sel.note.empty()) {
+            ImGui::TextColored(ImVec4(1, 0.75f, 0.3f, 1), "%s", sel.note.c_str());
+        }
+        ImGui::SeparatorText("Rectangle");
         float box[4];
         RectBox(sel.working, box);
         const bool upright = sel.working.Upright();
@@ -1646,6 +1962,7 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
         const char* format = scale > 1.0f ? "%.2f" : "%.0f";
         float left = SnapTexel(box[0], scale), top = SnapTexel(box[1], scale);
         float width = SnapTexel(box[2] - box[0], scale), height = SnapTexel(box[3] - box[1], scale);
+        ImGui::BeginDisabled(!hasKey);
         ImGui::SetNextItemWidth(140);
         if (ImGui::InputFloat("left", &left, step, 10.0f, format)) {
             sel.working.Move(SnapTexel(left, scale) - box[0], 0.0f);
@@ -1666,7 +1983,8 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
             changed = sel.working.Resize(0.0f, SnapTexel(height, scale) - (box[3] - box[1])) || changed;
         }
         ImGui::EndDisabled();
-        if (!upright) {
+        ImGui::EndDisabled();
+        if (hasKey && !upright) {
             ImGui::TextDisabled("rotated in its .tet: it moves, its size stays");
         }
         RectBox(sel.working, box);
@@ -1675,7 +1993,7 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
         RectBox(sel.original, was);
         ImGui::TextDisabled("was: %g, %g  %g x %g", static_cast<double>(was[0]), static_cast<double>(was[1]),
                             static_cast<double>(was[2] - was[0]), static_cast<double>(was[3] - was[1]));
-        ImGui::BeginDisabled(sel.working == sel.original);
+        ImGui::BeginDisabled(!hasKey || sel.working == sel.original);
         if (ImGui::SmallButton("Back to it")) {
             sel.working = sel.original;
             changed = true;
@@ -1696,9 +2014,8 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
             PreviewSelect(engine, state, sel.livePreview);
         }
         ImGui::Checkbox("Other keys' outlines", &sel.showOthers);
-        ImGui::SeparatorText("Rectangle");
         // The rectangle at its size (smaller to fit), as the texture holds it.
-        if (box[2] > box[0] && box[3] > box[1] && sel.image.width > 0 && sel.image.height > 0) {
+        if (hasKey && box[2] > box[0] && box[3] > box[1] && sel.image.width > 0 && sel.image.height > 0) {
             const float w = box[2] - box[0], h = box[3] - box[1];
             const float scale = std::min({1.0f, (fields - 24.0f) / w, 200.0f / h});
             ImGui::Image(static_cast<ImTextureID>(gui.TextureId(sel.image.texture)), ImVec2(w * scale, h * scale),
@@ -1714,7 +2031,7 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
         PreviewSelect(engine, state, true);
     }
 
-    ImGui::BeginDisabled(sel.working == sel.original);
+    ImGui::BeginDisabled(!SelectChanged(state) || sel.applying);
     if (ImGui::Button("Apply", ImVec2(120, 0))) {
         close(true);
     }
@@ -1723,19 +2040,8 @@ void SelectPopup(x2::ui_editor::Engine& engine, EditorState& state, const x2::ap
     if (ImGui::Button("Cancel", ImVec2(120, 0)) || (!state.keyAsk.open && ImGui::IsKeyPressed(ImGuiKey_Escape))) {
         close(false);
     }
-    // A shared key: asked over the select, which closes once its rectangle was given.
+    // A key others name whose rectangle changed: asked over the select.
     KeyPopup(engine, state);
-    if (state.keyAsk.applied) {
-        state.keyAsk.applied = false;
-        state.keyAsk.rect.reset();
-        sel.open = false;
-        ImGui::CloseCurrentPopup();
-    } else if (!state.keyAsk.open && state.keyAsk.rect) {
-        state.keyAsk.rect.reset();      // the question was cancelled: back to the select
-        if (sel.livePreview) {
-            PreviewSelect(engine, state, true);
-        }
-    }
     ImGui::EndPopup();
 }
 
@@ -2304,16 +2610,21 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
             ImGui::EndDisabled();
 
             // The key's UV rectangle: shown and edited in Interactive Select.
+            // Also for a texture with no .tet, or a key it lacks: Interactive Select makes the first key.
             const TetRect* rect = hasTet ? tet.Find(picture.key) : nullptr;
-            if (rect != nullptr) {
-                if (ImGui::Button("Edit")) {
-                    OpenSelect(engine, state, dialog, picture, tet);
+            if (!picture.texture.empty()) {
+                if (ImGui::Button(rect != nullptr ? "Edit" : "Edit (create the key)")) {
+                    OpenSelect(engine, state, dialog, picture, hasTet ? &tet : nullptr);
                 }
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("The key's rectangle over its texture (Interactive Select)");
+                    ImGui::SetTooltip("%s", rect != nullptr
+                                                ? "The key's rectangle over its texture, and the texture's keys (Interactive Select)"
+                                                : "Interactive Select without a key to start from: add the key there");
                 }
-            } else if (!picture.texture.empty()) {
-                ImGui::TextDisabled(hasTet ? "the key is not in the texture's .tet" : "no .tet: the whole texture");
+                if (rect == nullptr) {
+                    ImGui::SameLine();
+                    ImGui::TextDisabled(hasTet ? "the key is not in the texture's .tet" : "no .tet: the whole texture");
+                }
             }
             ImGui::TreePop();
         }

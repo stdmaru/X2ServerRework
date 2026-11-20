@@ -201,6 +201,20 @@ Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture 
   texture's texels ([D3D9](../porting/client-d3d9.md#upscaled-textures-2026-11-16-clientui-hd-assets)), and the
   texture is shown at that size in its own detail; drags, arrows, fields and the pixel grid follow the file's texels
   (quarter units on a 4× file: `TextureImage::scale`), and the panel says "file 4x". The `.tet` keeps floats.
+- **Keys in Interactive Select** (user's request, 2026-11-19, `tools/ui-editor-tet-keys`): the dialog works on a draft
+  of the texture's keys. The **key** list changes the key shown, edited and, on Apply, given to the picture's `SetTex`
+  ("the picture will use X" says so). **Add** makes a key with the name typed (uppercase, letters, digits and
+  underscores): a copy of the rectangle shown, the whole texture for a first key. **Rename** and **Delete** act on the
+  key shown and are refused while script lines other than the picture's own `SetTex` name it (the same search as
+  below), since they would break; a key made in this dialog has none. Apply gives the `.tet` the draft and the
+  `SetTex` the key as **one step of undo**. A rectangle changed on a key others name asks first as before, but only
+  "change it in place" or Cancel: a key of its own is Add.
+- **No `.tet`, or no such key** (2026-11-19): "Edit" is there for any picture with a texture ("Edit (create the key)"
+  when its key is missing). Interactive Select opens with no key, the name field holding the picture's `SetTex` key,
+  and Add makes it. Apply writes the `.tet` **next to its texture** (`TetName`) on Save; it is a new file in the
+  client_data, which `x2_assets` records at its next sync ([client_data](client-data.md)). A `.tet` with no keys is a
+  valid file (the client's `OpenFile` takes it), so deleting every key leaves one. Undo of a first key takes the
+  `.tet` back (not yet saved) or leaves it empty (saved: a file is not deleted).
 - **A key others use** (user's choice, 2026-11-14): before the first UV change of a key, the editor searches every
   `.lua` under `data/` for lines that name the texture and the key in quotes (the game's code is not searched). The
   client_data's are 177 MB in 4,565 files among 105,000 (2026-11-16): read for every key on the UI thread, the editor
@@ -217,6 +231,15 @@ Slice (c), 2026-11-14 ([T46](../project/decisions.md) (2)): a picture's texture 
 - **Seeing it:** the edited bytes replace the texture's rectangles in the engine (`Engine::SetTet`, KTDXLIB's
   `CKTDXDeviceTexture::ReplaceTET`; the engine holds the texture so it stays loaded with them), and the open dialogs
   with pictures of it are built again. Undo, redo and Save cover the `.tet` files as they do the scripts.
+
+## Reload
+
+2026-11-19 (user's request): the **Reload** button beside Save reads the client_data again: `UIAnchors.lua`, the
+dialog scripts (and the list of them: new and removed files) and the `.tet` files, as they are on disk, and builds every
+open dialog from them, so what was edited outside the editor (by hand, by a tool, by a git checkout) shows up without
+restarting. The edits not saved and their undo are dropped, after asking when there are any (`Engine::ReloadFiles`:
+script overrides cleared, loose files indexed again, each `.tet` the editor changed back to its file's). Textures are
+not read again.
 
 ## Watch game
 

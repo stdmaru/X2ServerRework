@@ -245,6 +245,51 @@ bool TetFile::Add(const std::string& key, const TetRect& rect, std::string& erro
     return true;
 }
 
+TetRect UprightRect(float left, float top, float right, float bottom)
+{
+    TetRect rect;
+    rect.leftTop[0] = left, rect.leftTop[1] = top;
+    rect.rightBottom[0] = right, rect.rightBottom[1] = bottom;
+    rect.leftBottom[0] = left, rect.leftBottom[1] = bottom;
+    rect.rightTop[0] = right, rect.rightTop[1] = top;
+    rect.size[0] = right - left, rect.size[1] = bottom - top;
+    return rect;
+}
+
+bool TetFile::Remove(const std::string& key)
+{
+    const std::string upper = UpperKey(key);
+    const auto found = std::find_if(m_entries.begin(), m_entries.end(), [&](const Entry& e) { return e.key == upper; });
+    if (found == m_entries.end()) {
+        return false;
+    }
+    m_entries.erase(found);
+    return true;
+}
+
+bool TetFile::Rename(const std::string& key, const std::string& name, std::string& error)
+{
+    const TetRect* rect = Find(key);
+    if (rect == nullptr) {
+        error = "the texture has no key " + UpperKey(key);
+        return false;
+    }
+    if (UpperKey(key) == UpperKey(name)) {
+        return true;
+    }
+    const TetRect kept = *rect;
+    if (!ValidKeyName(name)) {
+        error = "a key is letters, digits and underscores";
+        return false;
+    }
+    if (Find(name) != nullptr) {
+        error = "the texture has a key " + UpperKey(name) + " already";
+        return false;
+    }
+    Remove(key);
+    return Add(name, kept, error);
+}
+
 std::string TetName(const std::string& texture)
 {
     return texture.size() > 3 ? texture.substr(0, texture.size() - 3) + "TET" : std::string();
