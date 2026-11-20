@@ -58,3 +58,5 @@ Read from the original `KNCSDK` during the port; tests in `src/kncsdk/tests/test
 In other words, numbers go through `HTON`, while values copied as memory (`wchar_t`, secure header, compression size) remain little-endian.
 The port reproduces this with fixed-width types. Still to confirm against captured packets from the original client
 ([KNCSDK › Pending](../porting/kncsdk.md#pending)).
+
+One intentional departure: the user unit's state in the P2P user sync is 16 bits in the port, not 8 ([T54](../project/decisions.md)).

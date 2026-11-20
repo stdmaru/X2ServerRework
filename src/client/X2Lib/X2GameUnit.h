@@ -663,7 +663,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		struct UnitCondition	//상황을 나타내는 파라메터
 		{
-			char			nextState;
+			int				nextState;		// char in the original: user state IDs pass 255 (T54)
 			char			nextSubState;
 			float			fStateTime;			/// 스테이트 시작으로 부터 경과된 시간
 			float			fStateTimeBack;		/// 스테이트 시작으로 부터 이전 프레임까지 경과된 시간
