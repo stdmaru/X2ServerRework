@@ -301,6 +301,14 @@ tools/assets/merge_items.py <client_data>/items --enum <client_data>/data/Enum.l
 - `define_strings.py <client_data> --refs <file> ... [--code-refs <file> ...] --ess <our general.ess> --strings <their
   General.ess> ...`: defines in `StringID_def.lua` the `STR_ID`s the `--refs` use, and copies the strings of those and of
   `--code-refs` (C++ has its own header) into `general.ess` where ours is a placeholder.
+- `translate_from_br.py <client_data> --items --sets --skills --monsters --source-items <Item.lua> ... --source-sets
+  <SetItem.lua> ... --source-skills <NewSkillTempletVer2.lua> ... [--dry-run] [--report <file>]`: the texts our
+  `Item.lua` (name, description, shop description), `SetItem.lua` (set name) and `NewSkillTempletVer2.lua` (name,
+  description, per-level text) still have in English, Korean or Chinese, by ID, from the first source that has
+  Portuguese for that ID (BR 2017, then BR 2014-08); text already in Portuguese is kept. An item text with no source
+  takes the Portuguese of the same English text on another item (the "(Old)" copies take "(Antigo)"). The language of
+  a text is decided by which words each language alone was seen with, trained on all the texts. NPC names that are the
+  Korean placeholder "not used" become "Não utilizado". `--report` lists what is still foreign.
 - `merge_skills.py --replace-text` takes `--text`'s name and descriptions wherever it has them (BR 2014-08's are
   Portuguese but older wording); `copy_assets.py` also copies sounds (`.ogg`, `.wav`).
 
@@ -381,3 +389,4 @@ is listed here with the step that changed it and why.
 | `_unsorted/**`, `effects/**`, `sound/**`, `items/**` (new) | `server/third-paths` (2026-11-20) | 884 files by `copy_assets.py` over the new data: motions (`Motion_ADD_AT/MM/TT/DE`, `Motion_Ara_LS/AA`, `Motion_EL_DK/CA`, `Motion_AMM_APOCALYPSE`), meshes, effect textures and sounds, and the items' meshes and icons. `ADD_PULSE_GATLING_Dron_Mesh_01.X` is in no source. Our common motions are 2014's: a new state may ask for an animation only newer ones have |
 | `ui/textures/DLG_UI_Common_Texture{77,82,85,86}_NEW.TET` (82, 85, 86 new) | `server/third-paths` (2026-11-20) | V5's `.TET` (a superset of ours: no key of ours moved): the new classes' portraits and icons (`L_SPECTER_*`, `ADD_AAT/AMM/ADE/ATT_*`, `ASURA_*`, `EL_SCA/SDK_*`). Our textures already had the pieces |
 | `ui/textures/DLG_UI_Common_Texture_GUI_character_01.{tga,TET}` | `server/third-paths` (2026-11-20) | V5's `.TET`, and the 8 class list icons it adds (`LIST_ADD_AAT`, ..., `LIST_ELESIS_D_KNIGHT`, empty in ours) pasted from V5's texture, 2× Lanczos, into our upscaled one |
+| `script/item/Item.lua`, `SetItem.lua`, `script/NewSkillTempletVer2.lua`, `script/character/NPCTemplet.lua` | `client/translate-br-text` (2026-11-20) | English and Korean text replaced by Portuguese from BR 2017 by `tools/assets/translate_from_br.py`: 5,448 item names, 4,642 descriptions and 1,550 shop descriptions, about 5,660 set names, 497 skill names, 517 descriptions and 516 per-level texts, 13 NPC names. BR 2017 is after the skill revamp: a skill's per-level numbers are its, not ours. **Still foreign** (no Portuguese in BR 2017 or 2014-08; BR 2017 has them in Korean or Chinese, mostly the "(Old)" equipment and event items): 8,745 item names, 5,209 descriptions, 351 shop descriptions, 796 set names, 236 internal NPC descriptions |
