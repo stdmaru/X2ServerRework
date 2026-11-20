@@ -7,7 +7,7 @@ Usage:
 
 - Skill templets (AddSkillTemplet_LUA) with the --skills IDs are taken from the first --source that has them.
 - Their text (m_wstrName, m_wstrMainDesc, m_EffectiveDesc) is taken from --text by ID where the source's is empty
-  or Korean.
+  or Korean; with --replace-text, wherever --text has it (V5's text is English, BR 2017's Portuguese).
 - Skill tree entries (AddSkillTreeTemplet_LUA) of the --classes are taken from the first of --tree (if given) and
   the sources that has entries for that class.
 - Entries already in our file with the same skill ID or class are replaced, so a second run changes nothing.
@@ -85,11 +85,11 @@ def needs_text(value):
     return value in ('""', "{}", "{\n\t}") or bool(HANGUL.search(value))
 
 
-def with_text(block, text_block):
+def with_text(block, text_block, always=False):
     for name in TEXT_FIELDS:
         ours = field(block, name)
         theirs = field(text_block, name) if text_block else None
-        if ours and theirs and needs_text(ours[2]) and not needs_text(theirs[2]):
+        if ours and theirs and (always or needs_text(ours[2])) and not needs_text(theirs[2]):
             block = block[:ours[0]] + theirs[2] + block[ours[1]:]
     return block
 
@@ -109,6 +109,8 @@ def main():
     ap.add_argument("--classes", default="")
     ap.add_argument("--source", action="append", required=True)
     ap.add_argument("--text")
+    ap.add_argument("--replace-text", action="store_true",
+                    help="take --text's text wherever it has one, not only where the source's is empty or Korean")
     ap.add_argument("--tree", action="append", default=[])
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
@@ -124,7 +126,7 @@ def main():
         for path, bl in sources:
             found = next((b for k, b in bl if k == "templet" and skill_id(b) == sid), None)
             if found:
-                block = with_text(found, text.get(sid))
+                block = with_text(found, text.get(sid), args.replace_text)
                 korean = [n for n in TEXT_FIELDS if field(block, n) and HANGUL.search(field(block, n)[2])]
                 print(f"skill {sid}: {Path(path).parent.name}/{Path(path).name}" + (f" (still Korean: {', '.join(korean)})" if korean else ""))
                 new_templets.append(block)
