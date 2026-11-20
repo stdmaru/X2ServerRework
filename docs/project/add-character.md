@@ -138,10 +138,14 @@ and Elesis's first two (with the sync above) and Add's first (this PR) come next
   (`SI_SA_AAT_INSTALLATION_DRONE_ACTIVATOR`, tagged `[AUG2014]`), none of the third paths. `git diff ae28cbe8 379dc65d`
   isolates what V5 added (415 C++ files, +85,804/−45,687 lines, other systems included: professions, customization,
   random missions, PvE): `X2GUAdd.cpp` +7,044, `X2GUAra.cpp` +3,395, `X2GUEL.cpp` +2,687, `X2GameUnit.cpp` +2,307.
-- **Assets**: the skills' animations live in the characters' KSM motion files (`ELESIS_KNIGHT.lua` plays
-  `SI_SA_SDK_BRUTAL_CUTTER` from `Motion_EL_Common.x`). Ours (2014-03, 1.4 MB) predates them; BR 2017's
-  (`kom_BR/data206_kom`, 6.1 MB) is newer. KSM names are not plain text in the file, so checking which sets a motion
-  file has needs a reader (`KTDXAnimationController::ReadFromMemory`).
+- **Assets**: a character's animations come from every motion file its `UnitTemplet` names (Common, Field, Lobby,
+  Emotion, and `m_GameMotion0..2`). The new classes' lobby poses (`<class>_LobbyWait`/`_LobbyDownLanding`) are in
+  V5's `Motion_<character>_Common.x` and their `_LobbyReadyAction` in its `Motion_<character>_Lobby.x`; our 2014
+  files lacked them (no pose on character select or creation). Checked with `tools/kom/ksm_anims.py` (2026-11-20):
+  V5's Common, Field, Lobby and base files of Add, Ara and Elesis have every set ours have. The per-class files we
+  brought (`Motion_ADD_AT/MM/TT/DE`, `Motion_Ara_LS/AA`, `Motion_EL_DK/CA`) cover the scripts better than V5's (V5's
+  `Motion_EL_DK.x` lacks 10 Dark Knight sets); they lack only `SI_SA_ATT_STARDUST_SHOWER_LOOP`/`_END`, which V5's
+  `Motion_ADD_TT.x` has (and it lacks the `_START` set ours has).
 - **Still to check in PR 83**: packets or structs these classes need (T4: the original `x2.exe` must still connect);
   `Game01` (`gup_create_unit` and the job change procedures for the new classes); the character switches of PR 81.
 
