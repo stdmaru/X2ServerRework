@@ -193,6 +193,10 @@ public:
     // Makes a texture's UV rectangles these, a whole .tet file, in the pictures built after (ReloadDialog builds
     // the open ones again). False with `error` when the bytes are not a .tet or the texture does not load.
     bool SetTet(const std::string& texture, const std::string& bytes, std::string& error);
+    // Reads the client_data again (the user's "Reload"): the script edits not saved are dropped (SetScriptText), the
+    // loose files are indexed again (new and removed ones) and each texture whose .tet was changed here gets its file's
+    // back. Open dialogs are built again by the caller (ReloadDialog). False with `error` when a .tet is refused.
+    bool ReloadFiles(std::string& error);
     // Whether an open dialog has a picture of the texture.
     bool DialogUsesTexture(int index, const std::string& texture) const;
 
