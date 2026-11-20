@@ -1290,6 +1290,9 @@ class CKTDGParticleSystem
 
 				CParticleEventList					m_EventList;
 				map<int,CKTDXDeviceTexture*>		m_TextureMap;
+				// Textures ChangeTexForce replaced, kept open (the newest last) so a sign that blinks between two
+				// textures does not destroy and decode one again on every change (7 ms in the debug build).
+				std::vector<CKTDXDeviceTexture*>	m_vecReplacedTextures;
 				CParticleEventSequence* GetCloneSequence();
 
             private:
