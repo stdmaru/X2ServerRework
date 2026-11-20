@@ -511,6 +511,16 @@ Behavior changes in the shared code:
   them, so they fell back to the default face; their textures (`DLG_UI_Common_Texture77_NEW`/`82_NEW`) have the
   `L_SPECTER_STATE_RAGE`/`ASURA_STATE_RAGE` pieces, which are now used.
 
+## Class vouchers of the later classes (2026-11-20, `client/translate-br-text`)
+
+The cash shop's class-voucher tables (`X2Define.h` `UNIT_CLASS_CHANGE_*_ID`; `GetUnitClassChangeItemLevel`,
+`GetClassNameByUnitClassChangeItem` and the unit-class → item switch in `X2CashShop.cpp`) knew Add's two vouchers under
+placeholder ids (999992, 999993, items that never existed). They are the BR 2017 items now (Psychic Tracer 273863,
+Lunatic Psyker 273233) and the vouchers of the new paths join them: Arc Tracer 273864, Mastermind 288345, Diabolic
+Esper 288346, Ara's Asura 288340 and Elesis's Crimson Avenger 288343. The first-path items (Little Specter,
+Dark Knight, Time Tracer) are job-change items on the server and need no voucher. The server side is
+[XSLItem](server-common.md) (`CI_CLASS_CHANGE_*`, `GetClassChangeCashItem`).
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

@@ -405,8 +405,24 @@ class CXSLItem
 			CI_CLASS_CHANGE_ELESIS_GRAND_MASTER		= 272171,	/// 엘리시스 2차 전직 그랜드 마스터 전직 변경권
 			CI_CLASS_CHANGE_ELESIS_BLAZING_HEART	= 272172,	/// 엘리시스 2차 전직 블레이징 하트 전직 변경권
 
-			CI_CLASS_CHANGE_PSYCHIC_TRACER			= 999992,	/// 애드 1차 전직 사이킥 트레이서 전직 변경권
-			CI_CLASS_CHANGE_LUNATIC_PSYKER			= 999993,	/// 애드 2차 전직 루나틱 사이커 전직 변경권
+			// The BR client ships the class vouchers for the classes added after the original game. The
+			// first-path vouchers of Ara, Elesis and Add (Little Specter, Dark Knight, Arc Tracer, ...) are
+			// also valid job-change items, so the CI_CHANGE_JOB_* list above already serves them.
+			CI_CLASS_CHANGE_PSYCHIC_TRACER			= 273863,	/// 애드 1차 전직 사이킥 트레이서 전직 변경권
+			CI_CLASS_CHANGE_LUNATIC_PSYKER			= 273233,	/// 애드 2차 전직 루나틱 사이커 전직 변경권
+#ifdef X2_ADD_2ND_PATH
+			CI_CLASS_CHANGE_ARC_TRACER				= 273864,	/// Add 1st job, 2nd path voucher
+			CI_CLASS_CHANGE_MASTERMIND				= 288345,	/// Add 2nd job, 2nd path voucher
+#endif
+#ifdef X2_ADD_3RD_PATH
+			CI_CLASS_CHANGE_DIABOLIC_ESPER			= 288346,	/// Add 2nd job, 3rd path voucher
+#endif
+#ifdef X2_ARA_3RD_PATH
+			CI_CLASS_CHANGE_ARA_ASURA				= 288340,	/// Ara 2nd job, 3rd path voucher
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+			CI_CLASS_CHANGE_ELESIS_CRIMSON_AVENGER	= 288343,	/// Elesis 2nd job, 3rd path voucher
+#endif
 
 			//{{ 2012. 02. 22	박세훈	펫 이름 변경권
 			CI_PET_NAME_CHANGE						= 248390,

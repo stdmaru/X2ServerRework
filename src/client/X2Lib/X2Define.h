@@ -1136,8 +1136,13 @@ static const int CLASS_CHANGE_DIABOLIC_ESPER_ID	= 276303;
 	static const int UNIT_CLASS_CHANGE_YAMA_RAJA_ID						= 252752;	/// ??? ????
 	static const int UNIT_CLASS_CHANGE_GRAND_MASTER_ID				= 272171;	/// ??????? ????? ??????
 	static const int UNIT_CLASS_CHANGE_BLAZING_HEART_ID				= 272172;	/// ??????? ???????? ???
-	static const int UNIT_CLASS_CHANGE_PSYCHIC_TRACER_ID			= 999992;	/// ??? ????? ??????
-	static const int UNIT_CLASS_CHANGE_LUNATIC_PSYKER_ID			= 999993;	/// ??? ??? ??????
+	static const int UNIT_CLASS_CHANGE_PSYCHIC_TRACER_ID			= 273863;	/// ??? ????? ??????
+	static const int UNIT_CLASS_CHANGE_LUNATIC_PSYKER_ID			= 273233;	/// ??? ??? ??????
+	static const int UNIT_CLASS_CHANGE_ARC_TRACER_ID				= 273864;	/// Add 1st job, 2nd path
+	static const int UNIT_CLASS_CHANGE_MASTERMIND_ID				= 288345;	/// Add 2nd job, 2nd path
+	static const int UNIT_CLASS_CHANGE_DIABOLIC_ESPER_ID			= 288346;	/// Add 2nd job, 3rd path
+	static const int UNIT_CLASS_CHANGE_ASURA_ID						= 288340;	/// Ara 2nd job, 3rd path
+	static const int UNIT_CLASS_CHANGE_CRIMSON_AVENGER_ID			= 288343;	/// Elesis 2nd job, 3rd path
 ////#pragma endregion
 
 

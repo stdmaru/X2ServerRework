@@ -1040,6 +1040,19 @@ int CXSLItem::GetClassChangeCashItem( const int iItemID )
 ////////// 애드 ////////////////////////////////////////////////////////////////////////
 	case CI_CLASS_CHANGE_PSYCHIC_TRACER:			return CXSLUnit::UC_ADD_PSYCHIC_TRACER;
 	case CI_CLASS_CHANGE_LUNATIC_PSYKER:			return CXSLUnit::UC_ADD_LUNATIC_PSYKER;
+#ifdef X2_ADD_2ND_PATH
+	case CI_CLASS_CHANGE_ARC_TRACER:				return CXSLUnit::UC_ADD_ARC_TRACER;
+	case CI_CLASS_CHANGE_MASTERMIND:				return CXSLUnit::UC_ADD_MASTERMIND;
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CI_CLASS_CHANGE_DIABOLIC_ESPER:			return CXSLUnit::UC_ADD_DIABOLIC_ESPER;
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CI_CLASS_CHANGE_ARA_ASURA:					return CXSLUnit::UC_ARA_ASURA;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CI_CLASS_CHANGE_ELESIS_CRIMSON_AVENGER:	return CXSLUnit::UC_ELESIS_CRIMSON_AVENGER;
+#endif
 
 	}
 
@@ -1118,6 +1131,19 @@ int CXSLItem::GetClassChangeCashItemIDByUnitClass( const int iUnitClass_ )
 		////////// 애드 ////////////////////////////////////////////////////////////////////////
 	case CXSLUnit::UC_ADD_PSYCHIC_TRACER:			return CI_CLASS_CHANGE_PSYCHIC_TRACER;
 	case CXSLUnit::UC_ADD_LUNATIC_PSYKER:			return CI_CLASS_CHANGE_LUNATIC_PSYKER;
+#ifdef X2_ADD_2ND_PATH
+	case CXSLUnit::UC_ADD_ARC_TRACER:				return CI_CLASS_CHANGE_ARC_TRACER;
+	case CXSLUnit::UC_ADD_MASTERMIND:				return CI_CLASS_CHANGE_MASTERMIND;
+#endif
+#ifdef X2_ADD_3RD_PATH
+	case CXSLUnit::UC_ADD_DIABOLIC_ESPER:			return CI_CLASS_CHANGE_DIABOLIC_ESPER;
+#endif
+#ifdef X2_ARA_3RD_PATH
+	case CXSLUnit::UC_ARA_ASURA:					return CI_CLASS_CHANGE_ARA_ASURA;
+#endif
+#ifdef X2_ELESIS_3RD_PATH
+	case CXSLUnit::UC_ELESIS_CRIMSON_AVENGER:		return CI_CLASS_CHANGE_ELESIS_CRIMSON_AVENGER;
+#endif
 	}
 
 	return 0;

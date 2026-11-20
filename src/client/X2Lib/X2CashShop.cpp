@@ -4695,6 +4695,8 @@ int CX2CashShop::GetUnitClassChangeItemLevel( int itemID )
 	case UNIT_CLASS_CHANGE_PYRO_KNIGHT_ID: /// �����ý� ���̷� ����Ʈ
 	case UNIT_CLASS_CHANGE_LITTLE_HSIEN_ID:
 	case UNIT_CLASS_CHANGE_LITTLE_DEVIL_ID:
+	case UNIT_CLASS_CHANGE_PSYCHIC_TRACER_ID:
+	case UNIT_CLASS_CHANGE_ARC_TRACER_ID:
 		{
 			return 1;
 		} break;
@@ -4721,6 +4723,11 @@ int CX2CashShop::GetUnitClassChangeItemLevel( int itemID )
 	case UNIT_CLASS_CHANGE_YAMA_RAJA_ID:
 	case UNIT_CLASS_CHANGE_GRAND_MASTER_ID:
 	case UNIT_CLASS_CHANGE_BLAZING_HEART_ID:
+	case UNIT_CLASS_CHANGE_LUNATIC_PSYKER_ID:
+	case UNIT_CLASS_CHANGE_MASTERMIND_ID:
+	case UNIT_CLASS_CHANGE_DIABOLIC_ESPER_ID:
+	case UNIT_CLASS_CHANGE_ASURA_ID:
+	case UNIT_CLASS_CHANGE_CRIMSON_AVENGER_ID:
 		{
 			return 2;
 		} break;
@@ -4925,6 +4932,36 @@ const wstring CX2CashShop::GetClassNameByUnitClassChangeItem( int itemID )
 	case UNIT_CLASS_CHANGE_LUNATIC_PSYKER_ID:
 		{
 			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_LUNATIC_PSYKER )->m_Description;
+		} break;
+
+	case UNIT_CLASS_CHANGE_PSYCHIC_TRACER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_PSYCHIC_TRACER )->m_Description;
+		} break;
+
+	case UNIT_CLASS_CHANGE_ARC_TRACER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_ARC_TRACER )->m_Description;
+		} break;
+
+	case UNIT_CLASS_CHANGE_MASTERMIND_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_MASTERMIND )->m_Description;
+		} break;
+
+	case UNIT_CLASS_CHANGE_DIABOLIC_ESPER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ADD_DIABOLIC_ESPER )->m_Description;
+		} break;
+
+	case UNIT_CLASS_CHANGE_ASURA_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ARA_ASURA )->m_Description;
+		} break;
+
+	case UNIT_CLASS_CHANGE_CRIMSON_AVENGER_ID:
+		{
+			return g_pData->GetUnitManager()->GetUnitTemplet( CX2Unit::UC_ELESIS_CRIMSON_AVENGER )->m_Description;
 		} break;
 //#pragma endregion
 	}
@@ -8050,6 +8087,42 @@ int CX2CashShop::GetUnitClassChangeItemID( const CX2Unit::UNIT_CLASS eUnitClass_
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 		{
 			ItemId = UNIT_CLASS_CHANGE_LUNATIC_PSYKER_ID;
+		}
+		break;
+
+	case CX2Unit::UC_ADD_PSYCHIC_TRACER:
+		{
+			ItemId = UNIT_CLASS_CHANGE_PSYCHIC_TRACER_ID;
+		}
+		break;
+
+	case CX2Unit::UC_ADD_ARC_TRACER:
+		{
+			ItemId = UNIT_CLASS_CHANGE_ARC_TRACER_ID;
+		}
+		break;
+
+	case CX2Unit::UC_ADD_MASTERMIND:
+		{
+			ItemId = UNIT_CLASS_CHANGE_MASTERMIND_ID;
+		}
+		break;
+
+	case CX2Unit::UC_ADD_DIABOLIC_ESPER:
+		{
+			ItemId = UNIT_CLASS_CHANGE_DIABOLIC_ESPER_ID;
+		}
+		break;
+
+	case CX2Unit::UC_ARA_ASURA:
+		{
+			ItemId = UNIT_CLASS_CHANGE_ASURA_ID;
+		}
+		break;
+
+	case CX2Unit::UC_ELESIS_CRIMSON_AVENGER:
+		{
+			ItemId = UNIT_CLASS_CHANGE_CRIMSON_AVENGER_ID;
 		}
 		break;
 
