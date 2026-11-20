@@ -469,7 +469,32 @@ Not checked in game yet (2026-11-19): riding pets, emotions, invisibility and pe
 ## The new paths (2026-11-20, `server/third-paths`)
 
 Add's second and third paths and Ara's and Elesis's third paths, merged from V5 (sources and switches on
-[Add character](../project/add-character.md)). Behavior changes in the shared code:
+[Add character](../project/add-character.md)).
+
+**How the code came in.** V5's character files were merged 3-way (base: `_reference` resolved with the importer's
+flags; V4 for Elesis and Ara) and only the changes naming the new paths were kept, each behind its switch in
+`src/define.h`; the rest of V5's 2015 changes (other classes' balance, systems we lack) were left out, so **the
+existing classes keep their 2014 behavior**. Where V5 changed shared code for every class of a character, the
+change is limited to the new classes: Add's XXX combo projectile (2 DP, `CX2GUAdd::ComboXXXEventProcess`) fires only
+for Arc Tracer, Mastermind, Time Tracer and Diabolic Esper; Nasod Ruler, Psychic Tracer and Lunatic Psyker keep the
+2014 combo. Add's two switches are tied by `#error`: V5's code for them shares helpers (`ThirdPath_*`) and combo
+changes, so one cannot be built without the other. The switches gate the code only; the client and server data
+have the eight classes either way.
+
+**Cleanup at the review (2026-11-20).** On the lines the merge added, V5's decompiler notes (`official sub_…`,
+`this[6618]`, `0x324…`, `batchN`, the `//}} 2026-…` markers) were removed and its mojibake turned back into the symbols
+it stood for (`->`, `x`, `+/-`) or translated; the code of those files was checked unchanged (comment-free token
+comparison). 37 members V5 wrote but never read (Ara 16, Add 18, `CX2GUUser` 3) were removed with their writes.
+
+**Strings.** `StringID_def14.h` continues the original's string IDs after `StringID_def13.h` (30535–31999): the new
+paths' texts. The IDs must stay contiguous.
+
+Behavior changes in the shared code:
+
+- **Personal shop class filter** (`CX2UIPersonalShopBoard`): the second classes are listed per character from one
+  table (index 0 is "all"). The original listed only Yama Raja's path for Ara, none for Elesis, and a Korean
+  hard-coded entry for Add; now Ara has Sakra Devanam and Yama Raja, Elesis Grand Master and Blazing Heart, Add
+  Lunatic Psyker, plus each new path's second class behind its switch.
 
 - **Buff factor IDs may leave gaps** (`CX2BuffTempletManager::AddBuffFactor_LUA`). The original required
   `BattleFieldBuffFactor.lua`'s IDs to come one after another and refused every factor after the first one out of order
