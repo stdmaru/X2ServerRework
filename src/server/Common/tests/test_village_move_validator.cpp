@@ -454,6 +454,59 @@ TEST_CASE( "KVillageMoveValidator: walls" )
 	CHECK( kOver.Reason( State( 5960, 395, JUMP_DOWN, -100 ) ) == Reason::R_NONE );
 }
 
+TEST_CASE( "KVillageMoveValidator: up the ledge beside a closed end" )
+{
+	// Altera's lines 3, 27 and 28 (LINEMAP_Altera_Village.lua): the ledge 27 (y 720) has a closed start (BEFORE_LINE
+	// -2) under a wall whose top is line 3 (y 960). A dash jump from 27's start, to the left, keeps the unit at that
+	// end while it rises (the client puts it back over 27, the highest line below it) until line 3 is under it; then
+	// it goes on over 3 and lands there. Each such jump was rolled back as R_WALL until 2026-11-20. Line 9 is not
+	// Altera's: a floor under the left side, so that only the closed end can stop a unit there.
+	const fs::path root = fs::temp_directory_path() / "x2_village_move_validator_ledge";
+	fs::remove_all( root );
+	fs::create_directories( root );
+	std::ofstream( root / "Enum.lua" ) << "LINE_TYPE = { LT_NORMAL = 0 }\n";
+	std::ofstream( root / "Ledge_LineMap.lua" ) << R"(
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 34241, 960, 0 ), END_POS = D3DXVECTOR3( 34600, 960, 0 ) })
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 34583, 720, 0 ), END_POS = D3DXVECTOR3( 34960, 720, 0 ),
+	BEFORE_LINE = -2 })
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 34583, 480, 0 ), END_POS = D3DXVECTOR3( 35141, 480, 0 ) })
+)";
+	std::ofstream( root / "Floor_LineMap.lua" ) << R"(
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 34241, 960, 0 ), END_POS = D3DXVECTOR3( 34600, 960, 0 ) })
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 34583, 720, 0 ), END_POS = D3DXVECTOR3( 34960, 720, 0 ),
+	BEFORE_LINE = -2 })
+g_pLineMap:AddLine_LUA({ LINE_TYPE = LINE_TYPE.LT_NORMAL, START_POS = D3DXVECTOR3( 33000, 480, 0 ), END_POS = D3DXVECTOR3( 35141, 480, 0 ) })
+)";
+	const fs::path oldCurrent = fs::current_path();
+	fs::current_path( root );
+	const std::shared_ptr< CXSLLineMap > spLedge = KWorldLineMaps::LoadLineMap( "Ledge_LineMap.lua" );
+	const std::shared_ptr< CXSLLineMap > spFloor = KWorldLineMaps::LoadLineMap( "Floor_LineMap.lua" );
+	fs::current_path( oldCurrent );
+	fs::remove_all( root );
+	REQUIRE( spLedge != nullptr );
+	REQUIRE( spFloor != nullptr );
+
+	// the updates the GameServer logged on 2026-11-19 (map 20003, the third rejection), then the rest of the jump
+	for( const CXSLLineMap* pLineMap : { spLedge.get(), spFloor.get() } )
+	{
+		Unit kUnit( State( 34583, 720, DASH ), KVillageMoveValidator::Config(), pLineMap );
+		CHECK( kUnit.Reason( State( 34583.0f, 720.0f, DASH_JUMP_UP, 1650 ), 104 ) == Reason::R_NONE );
+		CHECK( kUnit.Reason( State( 34583.0f, 861.7f, DASH_JUMP_UP, 1250 ), 98 ) == Reason::R_NONE );
+		CHECK( kUnit.Reason( State( 34549.7f, 963.3f, DASH_JUMP_UP, 850 ), 97 ) == Reason::R_NONE );
+		CHECK( kUnit.Reason( State( 34483.0f, 1025.0f, DASH_JUMP_UP, 450 ), 104 ) == Reason::R_NONE );	// was R_WALL
+		CHECK( kUnit.Reason( State( 34416.3f, 1050.0f, DASH_JUMP_UP, 50 ) ) == Reason::R_NONE );
+		CHECK( kUnit.Reason( State( 34349.6f, 1035.0f, JUMP_DOWN, -350 ) ) == Reason::R_NONE );
+		CHECK( kUnit.Reason( State( 34282.9f, 980.0f, JUMP_DOWN, -750 ) ) == Reason::R_NONE );
+		CHECK( kUnit.Reason( State( 34250.0f, 960.0f, DASH ) ) == Reason::R_NONE );
+		CHECK( kUnit.kValidator.GetLastValid().m_vPos.y == doctest::Approx( 960.f ) );
+	}
+
+	// below line 3, over the floor: the closed end still stops it
+	Unit kLow( State( 34583, 720, DASH ), KVillageMoveValidator::Config(), spFloor.get() );
+	CHECK( kLow.Reason( State( 34583.0f, 820.0f, DASH_JUMP_UP, 1250 ) ) == Reason::R_NONE );
+	CHECK( kLow.Reason( State( 34510.0f, 850.0f, DASH_JUMP_UP, 850 ) ) == Reason::R_WALL );
+}
+
 TEST_CASE( "KVillageMoveValidator: corrections, resets and operators" )
 {
 	Unit kUnit( State( 100, 0, WAIT ) );

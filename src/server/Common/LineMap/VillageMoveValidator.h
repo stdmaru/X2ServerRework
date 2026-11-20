@@ -19,8 +19,10 @@
 //               last update's height and vertical speed bring it down onto within the time);
 //   R_WALL      it went where CX2SquareUnit stops a unit: over no line (the unit cannot move where it has no line
 //               below, on the ground or in the air: the edges of Elder), past an end of the line it last stood on
-//               that is closed (BEFORE_LINE/NEXT_LINE -2: Altera, Besma), or across an LT_WALL line (none in villages
-//               and rooms, 2026-11-19). The path between two updates is sampled, so a narrow gap cannot be skipped.
+//               that is closed (BEFORE_LINE/NEXT_LINE -2: Altera, Besma) unless a line at least as high as that end
+//               came under it on the way (a jump up onto the ledge beside it), or across an LT_WALL line (none in
+//               villages and rooms, 2026-11-19). The path between two updates is sampled, so a narrow gap cannot be
+//               skipped.
 
 #include "ClientPacket.h"
 

@@ -466,28 +466,50 @@ bool KVillageMoveValidator::HitsWall( const CXSLLineMap& kLineMap, const VECTOR3
 		if( pWall->bEnable && SegmentDistance( vFrom, vTo, pWall->startPos, pWall->endPos ) <= 1.f )
 			return true;
 	}
-	// a closed end of the line it last stood on: the client keeps a unit off its line within that end
+	// a closed end of the line it last stood on: the client keeps a unit off its line within that end, putting it back
+	// over the highest line below it (CX2SquareUnit: GetLandPosition), which is that line while no higher one is under
+	// the unit; once one is (a jump up past the end, onto the ledge beside it: Altera's lines 25 and 27, Besma's 21),
+	// the unit stands over that line and is free
+	bool bPastClosedEnd = false;
+	float fClosedEndY = 0.f;
 	const CXSLLineMap::LineData* pLast = bOnLine ? nullptr : kLineMap.GetLineData( iLastLine );
 	if( pLast != nullptr )
 	{
 		const float t = HorizontalParameter( vTo, pLast->startPos, pLast->endPos );
 		const float fLength = std::hypot( pLast->endPos.x - pLast->startPos.x, pLast->endPos.z - pLast->startPos.z );
 		const float fBeyond = fLength > 0.f ? ( t < 0.f ? -t : t - 1.f ) * fLength : 0.f;
-		if( fBeyond > fRadius && ( ( t < 0.f && pLast->beforeLine == -2 ) || ( t > 1.f && pLast->nextLine == -2 ) ) )
-			return true;
+		if( fBeyond > fRadius && t < 0.f && pLast->beforeLine == -2 )
+		{
+			bPastClosedEnd = true;
+			fClosedEndY = pLast->startPos.y;
+		}
+		else if( fBeyond > fRadius && t > 1.f && pLast->nextLine == -2 )
+		{
+			bPastClosedEnd = true;
+			fClosedEndY = pLast->endPos.y;
+		}
 	}
 
-	// no line below somewhere on the way
+	// no line below somewhere on the way; past a closed end, a line at least as high as that end below somewhere
+	bool bFreed = false;
 	const float fDistance = std::hypot( vTo.x - vFrom.x, vTo.z - vFrom.z );
 	const int iSteps = std::max( 1, static_cast< int >( std::ceil( fDistance / fRadius ) ) );
-	for( int iStep = 1; iStep <= iSteps; ++iStep )
+	for( int iStep = 0; iStep <= iSteps; ++iStep )
 	{
 		const float f = static_cast< float >( iStep ) / static_cast< float >( iSteps );
 		const VECTOR3 vPos( vFrom.x + ( vTo.x - vFrom.x ) * f, vFrom.y + ( vTo.y - vFrom.y ) * f, vFrom.z + ( vTo.z - vFrom.z ) * f );
-		if( !HasLineBelow( kLineMap, vPos, fRadius ) )
-			return true;
+		float fY = 0.f;
+		const int iBelow = FindGroundBelow( kLineMap, vPos, fRadius, fY );
+		if( iBelow < 0 )
+		{
+			if( iStep > 0 )
+				return true;
+			continue;	// the start was accepted already
+		}
+		if( iBelow != iLastLine && fY >= fClosedEndY )
+			bFreed = true;
 	}
-	return false;
+	return bPastClosedEnd && !bFreed;
 }
 
 #endif // X2_VILLAGE_SYNC
