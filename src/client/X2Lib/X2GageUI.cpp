@@ -3422,6 +3422,17 @@ void CX2AraMyGageUI::GetBerserkModeMyStateImage( OUT wstring& wstrFileName, OUT 
 		wstrFileName	= L"DLG_UI_Common_Texture77_NEW.tga";
 		wstrPieceName	= L"Y_RAJA_STATE_RAGE";
 		break;
+#ifdef X2_ARA_3RD_PATH
+	// V5 has no case for them; their textures have the pieces (as the portraits of X2Data.cpp's index 57, 58)
+	case CX2Unit::UC_ARA_LITTLE_SPECTER:
+		wstrFileName	= L"DLG_UI_Common_Texture77_NEW.tga";
+		wstrPieceName	= L"L_SPECTER_STATE_RAGE";
+		break;
+	case CX2Unit::UC_ARA_ASURA:
+		wstrFileName	= L"DLG_UI_Common_Texture82_NEW.tga";
+		wstrPieceName	= L"ASURA_STATE_RAGE";
+		break;
+#endif
 	default:
 		break;
 	} // switch

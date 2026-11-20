@@ -482,6 +482,9 @@ Add's second and third paths and Ara's and Elesis's third paths, merged from V5 
   `BBT_DOUBLE_ATTACK` on the attacker's side: a normal attack of the buff's owner counts twice with the buff's chance
   (`CX2GameUnit::IsDoubleAttackByOwnBuff`, checked by `CX2GUUser`/`CX2GUNPC` where they check the victim's debuff).
   Without them their 4 records had an empty `COMBINATION` and did not load.
+- **Rage portraits of Little Specter and Asura** (`CX2GageUI`, `X2_ARA_3RD_PATH`). V5's switch has no case for
+  them, so they fell back to the default face; their textures (`DLG_UI_Common_Texture77_NEW`/`82_NEW`) have the
+  `L_SPECTER_STATE_RAGE`/`ASURA_STATE_RAGE` pieces, which are now used.
 
 ## Status
 
