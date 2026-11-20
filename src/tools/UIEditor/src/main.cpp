@@ -128,6 +128,7 @@ struct EditorState {
     std::shared_future<x2::ui_editor::KeyUseIndex> keyIndex;
     std::set<std::string> keysInPlace;
     std::set<std::string> noTet;    // textures without a .tet the game reads (Key), not looked for again
+    bool reloadAsk = false;         // asking whether "Reload" may drop the unsaved changes (ReloadPopup)
     // A shared key's UV about to change: asks whether in place or in a new key (KeyPopup).
     struct KeyAsk {
         bool open = false;
@@ -871,6 +872,45 @@ void WatchControls(EditorState& state)
     }
 }
 
+// Reads the client_data's scripts again (the Reload button): UIAnchors.lua, the dialog scripts (the list too: new and
+// removed files) and the .tet files, as they are on disk, and builds every open dialog from them. The edits not saved
+// and their undo go.
+void ReloadAll(x2::ui_editor::Engine& engine, EditorState& state)
+{
+    state.scriptTexts.clear();
+    state.scriptSaved.clear();
+    state.scriptNames.clear();
+    state.tetBytes.clear();
+    state.tetSaved.clear();
+    state.tetTextures.clear();
+    state.noTet.clear();
+    state.keysInPlace.clear();
+    state.keyAsk = {};
+    state.select = {};
+    std::string error;
+    const bool tets = engine.ReloadFiles(error);
+    state.message.clear();
+    LoadAnchors(state);     // also clears the undo and redo; sets the message when UIAnchors.lua is bad
+    const std::string anchorsProblem = state.message;
+    state.scripts = x2::ui_editor::FindDialogScripts(state.gameFolder);
+    state.scriptByKey.clear();
+    for (const std::string& script : state.scripts) {
+        state.scriptByKey.emplace(Key(script), script);
+    }
+    IndexKeyUses(state);
+    for (int i = 0; i < static_cast<int>(engine.DialogCount()); ++i) {
+        std::string reloadError;
+        if (!engine.ReloadDialog(i, reloadError) && error.empty()) {
+            error = reloadError;
+        }
+        engine.ApplyAnchors(i, state.anchors.Get(engine.DialogScript(i)), {});
+    }
+    state.message = !error.empty() ? error
+                    : !anchorsProblem.empty() ? anchorsProblem
+                                              : "reloaded the scripts from " + (state.gameFolder / "data").string() +
+                                                    (tets ? "" : " (.tet refused)");
+}
+
 void SaveControls(x2::ui_editor::Engine& engine, EditorState& state)
 {
     const bool typing = ImGui::GetIO().WantTextInput;
@@ -918,7 +958,37 @@ void SaveControls(x2::ui_editor::Engine& engine, EditorState& state)
                           files.c_str());
     }
     ImGui::SameLine();
+    if (ImGui::SmallButton("Reload")) {
+        if (state.Changed()) {
+            state.reloadAsk = true;
+        } else {
+            ReloadAll(engine, state);
+        }
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Reads every .lua again from the client_data (UIAnchors.lua, the dialog scripts and their\n"
+                          "list) and the .tet files, and builds the open dialogs from them: what was edited outside\n"
+                          "the editor shows up. Unsaved changes are dropped (it asks first).");
+    }
+    ImGui::SameLine();
     ImGui::TextDisabled("%s", state.Changed() ? "unsaved changes" : "no changes");
+    if (state.reloadAsk) {
+        ImGui::OpenPopup("Reload");
+    }
+    if (ImGui::BeginPopupModal("Reload", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
+        ImGui::TextUnformatted("There are unsaved changes: reloading drops them and their undo.");
+        if (ImGui::Button("Reload", ImVec2(120, 0))) {
+            state.reloadAsk = false;
+            ImGui::CloseCurrentPopup();
+            ReloadAll(engine, state);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            state.reloadAsk = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
     if (!state.anchors.Problem().empty()) {
         ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "UIAnchors.lua, %s", state.anchors.Problem().c_str());
     }

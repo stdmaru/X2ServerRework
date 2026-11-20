@@ -703,6 +703,62 @@ g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
     CHECK_FALSE(engine->LoadTextureImage("DLG_Missing.tga", image, error));
 }
 
+TEST_CASE("ui editor: reloading the files drops the edits and reads scripts and .tet files as they are on disk")
+{
+    TempGame game;
+    x2::ui_editor::TetFile tet;
+    std::string error;
+    REQUIRE(x2::ui_editor::TetFile::Parse(EmptyTet(), tet, error));
+    REQUIRE(tet.Add("HALF", Rect(0, 0, 2, 4), error));
+    const auto writeScript = [&](const char* key) {
+        std::ofstream(game.root / "data" / "ui" / "scripts" / "DLG_Keyed.lua", std::ios::trunc)
+            << "\xEF\xBB\xBF" << "g_pStatic = g_pUIDialog:CreateStatic()\ng_pUIDialog:AddControl(g_pStatic)\n"
+            << "g_pPicture = g_pUIDialog:CreatePicture()\ng_pStatic:AddPicture(g_pPicture)\n"
+            << "g_pPicture:SetTex(\"DLG_Test.tga\", \"" << key << "\")\n"
+            << "g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })\n";
+    };
+    const auto writeTet = [&](const x2::ui_editor::TetFile& file) {
+        const std::string bytes = file.Bytes();
+        std::ofstream(game.root / "data" / "ui" / "DLG_Test.TET", std::ios::binary | std::ios::trunc)
+            .write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+    };
+    writeTet(tet);
+    writeScript("HALF");
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Keyed.lua", error) == 0);
+
+    // Edits in memory: another key in the script, a wider HALF in the .tet.
+    std::string text;
+    REQUIRE_MESSAGE(engine->ScriptText("DLG_Keyed.lua", text, error), error);
+    text.replace(text.find("HALF"), 4, "ZZZZ");
+    engine->SetScriptText("DLG_Keyed.lua", &text);
+    x2::ui_editor::TetFile wide = tet;
+    REQUIRE(wide.Set("HALF", Rect(0, 0, 4, 4)));
+    REQUIRE_MESSAGE(engine->SetTet("DLG_Test.tga", wide.Bytes(), error), error);
+
+    // The files change on disk: the script names a key the file has, which the .tet got.
+    x2::ui_editor::TetFile onDisk = tet;
+    REQUIRE(onDisk.Add("FROMDISK", Rect(0, 0, 1, 1), error));
+    writeTet(onDisk);
+    writeScript("FROMDISK");
+
+    REQUIRE_MESSAGE(engine->ReloadFiles(error), error);
+    REQUIRE_MESSAGE(engine->ScriptText("DLG_Keyed.lua", text, error), error);
+    CHECK(text.find("FROMDISK") != std::string::npos);
+    std::string bytes;
+    REQUIRE_MESSAGE(engine->TetBytes("DLG_Test.tga", bytes, error), error);
+    CHECK(bytes == onDisk.Bytes());
+    REQUIRE(engine->ReloadDialog(0, error));
+    const auto picture = engine->Inspect()[0].controls[0].pictures.at(0);
+    CHECK(picture.key == "FROMDISK");
+    CHECK(picture.textureSize[0] == 1);
+}
+
 TEST_CASE("ui editor: a key the game's code set takes its edited rectangle, at the size it changed to")
 {
     TempGame game;

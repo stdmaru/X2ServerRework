@@ -252,6 +252,7 @@ struct Engine::State {
     };
     std::vector<Open> dialogs;
     double time = 0.0;
+    std::filesystem::path gameFolder;   // where the client_data's data/ is (ReloadFiles looks again)
     // Script edits not saved (SetScriptText), by ScriptKey.
     std::unordered_map<std::string, std::string> scriptTexts;
     // The Lua globals after start-up: the others are what dialog scripts set (CloseDialog clears their objects).
@@ -263,6 +264,7 @@ struct Engine::State {
     // and those bytes.
     struct Tet {
         std::wstring name;
+        std::string texture;    // as the scripts name it
         CKTDXDeviceTexture* device = nullptr;
         std::string bytes;
         TetFile original, edited;   // the file's rectangles, which the running game drew, and the edits'
@@ -329,6 +331,7 @@ std::unique_ptr<Engine> Engine::Create(render::Device& render, const EngineOptio
 
     SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "x2-none");  // no such driver: the sound manager runs without output
     auto state = std::make_unique<State>(render);
+    state->gameFolder = options.gameFolder;
     state->device = std::make_unique<d3d9::Device>(render, nullptr);
     if (!state->device->Ok()) {
         error = "D3D9 device: " + state->device->LastError();
@@ -665,6 +668,7 @@ bool Engine::SetTet(const std::string& texture, const std::string& bytes, std::s
             TetFile::Parse(original, tet.original, ignored);
         }
         tet.name = Wide(texture);
+        tet.texture = texture;
         tet.device = g_pKTDXApp->GetDeviceManager()->OpenTexture(tet.name);
         if (tet.device == NULL) {
             error = texture + " does not load";
@@ -679,6 +683,41 @@ bool Engine::SetTet(const std::string& texture, const std::string& bytes, std::s
     it->second.bytes = bytes;
     it->second.edited = parsed;
     return true;
+}
+
+bool Engine::ReloadFiles(std::string& error)
+{
+    m_state->scriptTexts.clear();
+    auto* files = g_pKTDXApp->GetDeviceManager()->GetMassFileManager();
+    // The loose files again: scripts and .tet files that appeared or went since the engine started.
+    std::error_code ec;
+    if (std::filesystem::is_directory(m_state->gameFolder / "data", ec)) {
+        files->SetLooseFileFolder(m_state->gameFolder / "data");
+    }
+    // Every .tet the editor changed goes back to its file's (an empty one when the file is gone: no keys).
+    bool ok = true;
+    for (auto& [key, tet] : m_state->tets) {
+        const std::string name = TetName(tet.texture);
+        const auto info = name.empty() ? nullptr : files->LoadDataFile(Wide(name));
+        std::string bytes;
+        if (info != NULL && info->pRealData != NULL && info->size > 0) {
+            bytes.assign(info->pRealData, static_cast<std::size_t>(info->size));
+        }
+        TetFile parsed;
+        std::string ignored;
+        if (bytes.empty() || !TetFile::Parse(bytes, parsed, ignored)) {
+            bytes = TetFile().Bytes();
+            parsed = TetFile();
+        }
+        if (!tet.device->ReplaceTET(reinterpret_cast<const BYTE*>(bytes.data()), static_cast<int>(bytes.size()))) {
+            error = name + ": the client does not take the .tet";
+            ok = false;
+            continue;
+        }
+        tet.bytes = bytes;
+        tet.original = tet.edited = parsed;
+    }
+    return ok;
 }
 
 bool Engine::DialogUsesTexture(int index, const std::string& texture) const
