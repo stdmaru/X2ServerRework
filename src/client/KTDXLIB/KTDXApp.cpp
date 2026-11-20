@@ -447,6 +447,11 @@ void CKTDXApp::FrameProcess()
 	KTDXPROFILE();
 	m_dTime += m_fConstElapsedTime;
 	g_NowTime = m_dTime;
+#ifdef X2_DEBUG
+	// X2_STEP_TRACE (KTDXProfile.h): the call tree of a slow step
+	x2::ktdx::profile::StepBegin();
+	const double fStepStartMs = x2::ktdx::profile::NowMs();
+#endif
 
 
 
@@ -546,7 +551,13 @@ void CKTDXApp::FrameProcess()
 
 		//{{ robobeg : 2008-10-21
 
-		LuaPerFrameGarbageCollection();
+		{
+			KTDXPROFILE2( "LuaPerFrameGarbageCollection" );
+			LuaPerFrameGarbageCollection();
+		}
+#ifdef X2_DEBUG
+		x2::ktdx::profile::StepEnd( m_FrameMoveCount, x2::ktdx::profile::NowMs() - fStepStartMs );
+#endif
 }
 
 /*static*/
