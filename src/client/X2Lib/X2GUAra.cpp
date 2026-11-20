@@ -121,12 +121,10 @@ CX2GUAra::CX2GUAra( int iUnitIndex_, int iTeamNum_, IN lua_State* pScriptLuaStat
 #ifdef X2_ARA_3RD_PATH
 
 
-	m_fFPCapturedPowerRate		= 0.f;
 	m_fFPPowerValue				= -1.f;
 	m_fFPSummonScale			= 1.f;
 	m_iFPBeadsConsumedTotal		= 0;
 	m_hAraFieldDE				= INVALID_DAMAGE_EFFECT_HANDLE;
-	m_hAraEffectSet				= INVALID_EFFECTSET_HANDLE;
 	m_iThunderPhase				= 0;
 	m_fThunderDiveTimer			= 0.f;
 	m_vThunderTargetPos			= D3DXVECTOR3( 0.f, 0.f, 0.f );
@@ -136,10 +134,6 @@ CX2GUAra::CX2GUAra( int iUnitIndex_, int iTeamNum_, IN lua_State* pScriptLuaStat
 	//}}
 
 
-	m_fEnergyWaveChargeTime		= 0.f;
-	m_bFallingDragonMemoRoll	= false;
-	m_iSwallowAssaultAttackCount	= 0;
-	m_hSwallowAssaultFirstES	= -1;
 	m_fHyperActiveTimer			= 0.f;
 	m_iBerserkAdvantageThreshold	= 0;
 	m_iBerserkModeHitCount		= 0;
@@ -147,25 +141,14 @@ CX2GUAra::CX2GUAra( int iUnitIndex_, int iTeamNum_, IN lua_State* pScriptLuaStat
 	m_fBerserkHitTimer			= 0.f;
 	m_bRaidHitContinue			= false;
 	m_fManaDrainAccum			= 0.f;
-	m_vecPromotionItemIDList3.clear();
-	m_vecPromotionEquipList2.clear();
 	m_iSpecterRenderMode		= -1;
 	m_bSpecterWalkFlag			= false;
 	m_fSpecterWalkDuration		= 0.f;
-	m_fThunderDuration			= 0.f;
-	m_fSpecterAlpha0			= 0.f;
-	m_fSpecterAlpha1			= 0.f;
 	m_hSpecterLoopEffect		= INVALID_EFFECTSET_HANDLE;
 	m_fNecromancyFoxCooldown	= 0.f;
 	m_fSpecterSparkleTimer		= 0.f;
-	m_fSpecterSparkleWindow		= 0.f;
-	m_fAssimilationDamageRel	= 1.0f;
-	m_fSpiritualEyeIgnoreDef	= 1.0f;
-	m_fSpecterPowerReleaseMPRetake	= -1.0f;
-	m_fSpecterPowerReleaseForceDown	= 0.f;
 	m_iXXDownXZLoopCount		= 0;
 	m_bXXDownZXZArmed			= false;
-	//}} 2026-09-04 //
 #endif
 }
 //#pragma endregion
@@ -1373,9 +1356,7 @@ void CX2GUAra::InitStateByUnitClass()
 		m_StateList[ASI_COMBO_AA_XXDownXZLoop].OnEventProcess = SET_CB_FUNC( CX2GUAra, ASI_COMBO_AA_XXDownXZLoop_EventProcess );
 		ASI_ThirdPath_CreateState( m_StateList[ASI_COMBO_AA_XXDownXZLoopX], ASI_COMBO_AA_XXDownXZLoopX, "ASI_COMBO_AA_XXDownXZLoopX" );
 		m_StateList[ASI_COMBO_AA_XXDownXZLoopX].OnEventProcess = SET_CB_FUNC( CX2GUAra, ASI_COMBO_AA_XXDownXZLoopX_EventProcess );
-		//}} 2026-09-04 //
 	}
-//}} 2026-08-28 //
 
 #endif
 	switch ( GetUnitClass() )
@@ -1784,7 +1765,6 @@ void CX2GUAra::InitStateByUnitClass()
 				#pragma region Spiritual Eye
 				const int iSkillLevelSpiritualEye = userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AA_SPIRITUAL_EYE, true );
 
-				m_fSpiritualEyeIgnoreDef = 1.0f;	/// official this+25944 init 1.0
 
 				if ( 0 < iSkillLevelSpiritualEye )
 				{
@@ -1792,23 +1772,20 @@ void CX2GUAra::InitStateByUnitClass()
 
 					if( NULL != pSkillTemplet )
 					{
-						m_fSpiritualEyeIgnoreDef = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_UNFIXED_DEFENSE_REL, iSkillLevelSpiritualEye );	/// official type 17
 					}
 				}
 				#pragma endregion
-				/// 7416/7417 (REPOSE_OF_SOULS / FOX_SMILE type 15 reads, official this+25948/+25952) = NOT re-read here - their effects ride the §18c-10 GetPowerRate overrides (DEP_MANIFEST: no new members)
+				/// 7416/7417 (REPOSE_OF_SOULS / FOX_SMILE type 15 reads, V5 this+25948/) = NOT re-read here - their effects ride the §18c-10 GetPowerRate overrides (DEP_MANIFEST: no new members)
 			}
-			/// fall through to the shared LS block (official: AA = own reads + LABEL_63 shared with LS)
+			/// fall through to the shared LS block (V5: AA = own reads + LABEL_63 shared with LS)
 #endif
 #ifdef X2_ARA_3RD_PATH
-		case CX2Unit::UC_ARA_LITTLE_SPECTER:	// Ara 3rd-path 1st job - Little Specter (34); official LABEL_63 (shared LS+AA)
+		case CX2Unit::UC_ARA_LITTLE_SPECTER:	// Ara 3rd-path 1st job - Little Specter (34); V5 LABEL_63 (shared LS+AA)
 #endif
 			{
 				#pragma region Specter Power Release
 				const int iSkillLevelSpecterPowerRelease = userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AA_SPECTER_POWER_RELEASE, true );
 
-				m_fSpecterPowerReleaseForceDown	= 0.f;
-				m_fSpecterPowerReleaseMPRetake	= -1.0f;	/// official this+25932 dead-load default (-1.0, G3a slot_260)
 
 				if ( 0 < iSkillLevelSpecterPowerRelease )
 				{
@@ -1816,8 +1793,6 @@ void CX2GUAra::InitStateByUnitClass()
 
 					if( NULL != pSkillTemplet )
 					{
-						m_fSpecterPowerReleaseForceDown	= pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_FORCE_DOWN_MELEE_REL, iSkillLevelSpecterPowerRelease );	/// official type 40 -> this+25936
-						m_fSpecterPowerReleaseMPRetake	= pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_MP_RETAKE_ABS, iSkillLevelSpecterPowerRelease );			/// official type 66 -> this+25932
 					}
 				}
 				#pragma endregion
@@ -1825,7 +1800,6 @@ void CX2GUAra::InitStateByUnitClass()
 				#pragma region Assimilation
 				const int iSkillLevelAssimilation = userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AA_ASSIMILATION, true );
 
-				m_fAssimilationDamageRel = 1.0f;	/// official this+25940 init 1.0
 
 				if ( 0 < iSkillLevelAssimilation )
 				{
@@ -1833,7 +1807,6 @@ void CX2GUAra::InitStateByUnitClass()
 
 					if( NULL != pSkillTemplet )
 					{
-						m_fAssimilationDamageRel = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_DAMAGE_REL, iSkillLevelAssimilation );	/// official 7414 type 15
 					}
 				}
 				#pragma endregion
@@ -3502,7 +3475,6 @@ void CX2GUAra::CommonStateStart()
 		m_vFPCancel.x = -1.f;
 		m_vFPCancel.y = -1.f;
 	}
-	//}} 2026-09-04 //
 
 #endif
 	ChangeAnimTail();
@@ -3518,33 +3490,32 @@ void CX2GUAra::CommonStateStart()
 #ifdef X2_ARA_3RD_PATH
 
 
-	/// (d) Necromancy fox re-spawn: while the NECROMANCY buff window is live (duration set by buff 423), re-spawn ONE random fox attack (EffectSet_..._FOX_ATTACK%d, carries DamageEffect_AA_NECROMANCY_Add_Damage) at a state start, 1.0s cooldown (fld1->fstp [+25972] byte-verified @0x3258CE94). Gate flag (frameNow+128 byte) identity unresolved -> DESIGN INFERENCE: read as "no skill running at this state start" per the OR-logic of the slot_316 sync block (the no-skill case is the flag's side there). The +25976 float spawn arg = unresolved member, skipped (default spawn)
+	/// (d) Necromancy fox re-spawn: while the NECROMANCY buff window is live (duration set by buff 423), re-spawn ONE random fox attack (EffectSet_..._FOX_ATTACK%d, carries DamageEffect_AA_NECROMANCY_Add_Damage) at a state start, 1.0s cooldown (fld1->fstp [] byte-verified @). Gate flag (frameNow+128 byte) identity unresolved -> DESIGN INFERENCE: read as "no skill running at this state start" per the OR-logic of the sync block (the no-skill case is the flag's side there). The float spawn arg = unresolved member, skipped (default spawn)
 	if ( 0 == (int)m_NowStateData.m_eSkillID
 		&& m_fNecromancyFoxCooldown <= 0.f
 		&& m_pXSkinAnim->GetNowAnimationTime() < m_fSpecterWalkDuration )
 	{
 		wchar_t szFoxAttack[64] = { 0, };
-		swprintf( szFoxAttack, 64, L"EffectSet_SI_SA_AA_NECROMANCY_FOX_ATTACK%d", (int)( GetRandomFloat() * 2.f ) );	// official: vtable+364 random % 2 -> FOX_ATTACK0/1
+		swprintf( szFoxAttack, 64, L"EffectSet_SI_SA_AA_NECROMANCY_FOX_ATTACK%d", (int)( GetRandomFloat() * 2.f ) );	// V5: random % 2 -> FOX_ATTACK0/1
 		if ( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
 			g_pX2Game->GetEffectSet()->PlayEffectSet( szFoxAttack, this );
 		m_fNecromancyFoxCooldown = 1.0f;
 	}
 
-	/// (e) loop-effect cleanup: kill the stored XXDownXZ-chain loop effect when entering any state NOT in {Start..LoopX} (official state range 232-234 = our ASI_COMBO_AA_XXDownXZStart/Loop/LoopX - contiguous); handle has no writer yet (the chain loop-FX spawn is not part of this port) = inert until one lands, structure ported per official
+	/// (e) loop-effect cleanup: kill the stored XXDownXZ-chain loop effect when entering any state NOT in {Start..LoopX} (V5 state range 232-234 = our ASI_COMBO_AA_XXDownXZStart/Loop/LoopX - contiguous); handle has no writer yet (the chain loop-FX spawn is not part of this port) = inert until one lands, structure ported per
 	{
 		const int iNowStateID = m_NowStateData.stateID;
 		if ( ( iNowStateID < ASI_COMBO_AA_XXDownXZStart || iNowStateID > ASI_COMBO_AA_XXDownXZLoopX )
 			&& INVALID_EFFECTSET_HANDLE != m_hSpecterLoopEffect )
 		{
 			if ( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
-				g_pX2Game->GetEffectSet()->StopEffectSet( m_hSpecterLoopEffect );	// official f_31F87910 = StopEffect(effectMgr, &handle)
+				g_pX2Game->GetEffectSet()->StopEffectSet( m_hSpecterLoopEffect );	// V5 = StopEffect(effectMgr, &handle)
 			m_hSpecterLoopEffect = INVALID_EFFECTSET_HANDLE;
 		}
 	}
 
-	/// (f) stealth-cancel re-check at state start (official tail: return f_3256A420(this))
+	/// (f) stealth-cancel re-check at state start (V5 tail: return (this))
 	ThirdPath_SpecterStealthCancel();
-	//}} 2026-09-04 //
 #endif
 }
 //#pragma endregion
@@ -3634,7 +3605,6 @@ void CX2GUAra::CommonFrameMove()
 		m_fNecromancyFoxCooldown -= m_fElapsedTime;
 	if ( m_fSpecterSparkleTimer > 0.f )
 		m_fSpecterSparkleTimer -= m_fElapsedTime;
-	//}} 2026-09-04 //
 
 
 	if ( m_fHyperActiveTimer > 0.f )
@@ -3643,7 +3613,6 @@ void CX2GUAra::CommonFrameMove()
 		if ( m_fHyperActiveTimer < 0.f )
 			m_fHyperActiveTimer = 0.f;
 	}
-	//}} 2026-09-04 //
 #endif
 }
 //#pragma endregion
@@ -4206,8 +4175,7 @@ if( m_pXSkinAnim->EventTimerOneshot( fTimeToShow_ ) == true )
 			EraseBuffTempletFromGameUnit( BTI_BUFF_SPECTER_WALK );
 		} break;
 
-	// NOTE (B18 REFLECTION check, official KOG bug NOT mirrored): official's case 26 reads GetSkillLevel(51) - skill m_eID=51 does NOT exist in the shipped 2015 NewSkillTempletVer2.lua (0 results) -> GetSkillLevel(51)==0 -> official's <=1 floor applies the Reflection buff at level 1 ALWAYS. Ours keeps GetSkillLevel(SI_A_ALD_REFLECTION=7219) = the real Reflection level (more correct; documented KOG-bug candidate, §26b mirroring exception) //
-//}} 2026-09-04 //
+	// NOTE (B18 REFLECTION check, V5 KOG bug NOT mirrored): V5's case 26 reads GetSkillLevel(51) - skill m_eID=51 does NOT exist in the shipped 2015 NewSkillTempletVer2.lua (0 results) -> GetSkillLevel(51)==0 -> V5's <=1 floor applies the Reflection buff at level 1 ALWAYS. Ours keeps GetSkillLevel(SI_A_ALD_REFLECTION=7219) = the real Reflection level (more correct; documented KOG-bug candidate, §26b mirroring exception) //
 #endif
 	}
 }
@@ -5653,13 +5621,13 @@ void CX2GUAra::DeleteMinorParticle()
 #ifdef X2_ARA_3RD_PATH
 
 
-	case BTI_BUFF_SPECTER_WALK:		/// 420 - official: flag byte +25964 = 1, render mode +25920 = 2
+	case BTI_BUFF_SPECTER_WALK:		/// 420 - V5: flag byte = 1, render mode = 2
 		{
 			m_bSpecterWalkFlag = true;
 			m_iSpecterRenderMode = 2;
 		} break;
 
-	case BTI_BUFF_NECROMANCY:		/// 423 - official: member +25968 = skill 105 (SI_P_COMMON_SUPPORT_AURA) SA_EFFECTIVE_RATE at its level (GetSkillLevel(105)>0 gate)
+	case BTI_BUFF_NECROMANCY:		/// 423 - V5: member = skill 105 (SI_P_COMMON_SUPPORT_AURA) SA_EFFECTIVE_RATE at its level (GetSkillLevel(105)>0 gate)
 		{
 			const int iLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_COMMON_SUPPORT_AURA );
 			if ( iLevel > 0 && NULL != g_pData->GetSkillTree() )
@@ -5670,17 +5638,8 @@ void CX2GUAra::DeleteMinorParticle()
 			}
 		} break;
 
-	case BTI_BUFF_SPECTEROFTHUNDER:	/// 424 - official: member +26012 = skill 106 SA_EFFECTIVE_RATE. DEAD-LOAD PARITY (DESIGN INFERENCE): m_eID=106 is ABSENT from the shipped 2015 templet set (NewSkillTempletVer2.lua) -> GetSkillLevel(106)==0 -> the member keeps its default officially too; the KPT cache machinery around the official read (this[6532] index + cached-value path) = skipped (anti-tamper internals, equivalent to the plain read when empty)
-		{
-			const int iLevel = GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( (CX2SkillTree::SKILL_ID)106 );
-			if ( iLevel > 0 && NULL != g_pData->GetSkillTree() )
-			{
-				const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( (CX2SkillTree::SKILL_ID)106 );
-				if ( NULL != pSkillTemplet )
-					m_fThunderDuration = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_RATE, iLevel );
-			}
-		} break;
-	//}} 2026-09-04 //
+	case BTI_BUFF_SPECTEROFTHUNDER:	/// 424 - V5 reads skill 106 here, which no 2015 data has: nothing to set
+		break;
 #endif
 
 	default:
@@ -5698,7 +5657,7 @@ void CX2GUAra::DeleteMinorParticle()
 		return;
 
 	CX2GUUser::RecordCrestSnapshot();	/// shared HP/MP
-	m_iCrestRecordFP = GetForcePower();	/// official: f_3251EB70(gage) — protected-int read of the gage+248/252/256 triple = now Force Power beads
+	m_iCrestRecordFP = GetForcePower();	/// V5: (gage) — protected-int read of the gage+248/252/256 triple = now Force Power beads
 }
 #endif
 #ifdef X2_ADD_3RD_PATH
@@ -5708,7 +5667,7 @@ void CX2GUAra::DeleteMinorParticle()
 	if ( false == IsMyUnit() )
 		return;
 
-	SetForcePower( m_iCrestRecordFP );	/// official: f_3251EB20(gage,1) + f_3251F340(gage, ...) — SetForcePower also sets the changed flag (bead UI refresh)
+	SetForcePower( m_iCrestRecordFP );	/// V5: (gage,1) + (gage, ...) — SetForcePower also sets the changed flag (bead UI refresh)
 	CX2GUUser::RestoreCrestSnapshot();
 }
 #endif
@@ -5729,7 +5688,7 @@ void CX2GUAra::DeleteMinorParticle()
 #ifdef X2_ARA_3RD_PATH
 
 
-	case BTI_BUFF_SPECTER_WALK:		/// 420 - official: alphas +2300/+2284 = 1.0, flag +25964 = 0, mode +25920 = -1, bAlphaBlend +2348 = 0
+	case BTI_BUFF_SPECTER_WALK:		/// 420 - V5: alphas / = 1.0, flag = 0, mode = -1, bAlphaBlend = 0
 		{
 			m_RenderParam.color.a			= 1.0f;
 			m_RenderParam.outLineColor.a	= 1.0f;
@@ -5738,14 +5697,12 @@ void CX2GUAra::DeleteMinorParticle()
 			m_RenderParam.bAlphaBlend		= false;
 		} break;
 
-	case BTI_BUFF_NECROMANCY:		/// 423 - official: +25968 = -1.0 (flt_32D28968)
+	case BTI_BUFF_NECROMANCY:
 		m_fSpecterWalkDuration = -1.f;
 		break;
 
-	case BTI_BUFF_SPECTEROFTHUNDER:	/// 424 - official: +26012 = -1.0
-		m_fThunderDuration = -1.f;
+	case BTI_BUFF_SPECTEROFTHUNDER:
 		break;
-	//}} 2026-09-04 //
 #endif
 
 	default:
@@ -6010,7 +5967,6 @@ void CX2GUAra::ConsumeForcePower( int iCount_ )
 		if( iSPRLevel > 0 )
 			UpNowMp( 0.5f * (float)iSPRLevel * (float)iCount_ );
 	}
-//}} 2026-08-20 MARCH2015 3rd-path //
 #endif
 }
 
@@ -6035,7 +5991,6 @@ void CX2GUAra::ConsumeForcePower( int iCount_ )
 	}
 	return fPowerRate;
 }
-//}} 2026-08-20 MARCH2015 3rd-path //
 
 #endif
 /** @function 	: SetForcePower
@@ -8390,7 +8345,6 @@ void CX2GUAra::ComboXXXloopEventProcess()
 
 	ELSE_IF_STATE_CHANGE_ON_EX_( 1, m_fEventTime[1].keyInputStart, m_fEventTime[1].keyInputEnd, m_fEventTime[1].stateChange,
 		m_InputData.oneZ == true && ( CX2Unit::UC_ARA_LITTLE_SPECTER == GetUnitClass() || CX2Unit::UC_ARA_ASURA == GetUnitClass() ), ASI_COMBO_ALS_XXXLoopZ )
-//}} 2026-09-04 //
 #endif
 	ELSE_IF_STATE_CHANGE_ON_EX_( 0, m_fEventTime[0].keyInputStart, m_fEventTime[0].keyInputEnd, m_fEventTime[0].stateChange,
 		m_InputData.oneX == true && m_uiComboXXXLoopCount < 2, ASI_COMBO_XXXloop )
@@ -8451,7 +8405,6 @@ void CX2GUAra::ComboXXXloopXEventProcess()
 
 	ELSE_IF_STATE_CHANGE_ON_EX_( 0, m_fEventTime[0].keyInputStart, m_fEventTime[0].keyInputEnd, m_fEventTime[0].stateChange,
 		m_InputData.oneZ == true && ( CX2Unit::UC_ARA_LITTLE_SPECTER == GetUnitClass() || CX2Unit::UC_ARA_ASURA == GetUnitClass() ), ASI_COMBO_ALS_XXXLoopZ )
-//}} 2026-09-04 //
 #endif
 	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
 
@@ -8510,7 +8463,6 @@ void CX2GUAra::ComboXXdownXEventProcess()
 
 	ELSE_IF_STATE_CHANGE_ON_EX_( 1, m_fEventTime[1].keyInputStart, m_fEventTime[1].keyInputEnd, m_fEventTime[1].stateChange,
 		m_InputData.oneZ == true && CX2Unit::UC_ARA_ASURA == GetUnitClass(), ASI_COMBO_AA_XXDownXZStart )
-//}} 2026-09-04 //
 #endif
 	ELSE_IF_STATE_CHANGE_ON_EX_( 0, m_fEventTime[0].keyInputStart, m_fEventTime[0].keyInputEnd, m_fEventTime[0].stateChange,
 		m_InputData.oneX == true, ASI_COMBO_XXdownXX )
@@ -8531,7 +8483,7 @@ void CX2GUAra::ComboXXdownXXEventProcess()
 	}
 
 #ifdef X2_ARA_3RD_PATH
-	else if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+	else if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 	else if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -8732,7 +8684,7 @@ void CX2GUAra::ComboDashXEventProcess()
 	}
 
 #ifdef X2_ARA_3RD_PATH
-	else if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+	else if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 	else if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -8788,7 +8740,7 @@ void CX2GUAra::ASI_DASH_JUMP_COMBO_ALS_ZX_EventProcess()
 #ifdef X2_ARA_3RD_PATH
 void CX2GUAra::ASI_COMBO_AA_XXDownXZStart_StateStart()
 {
-	m_iXXDownXZLoopCount = 0;	// official this[6482] = 0 (loop counter reset, @0x32559C90)
+	m_iXXDownXZLoopCount = 0;	// V5 = 0 (loop counter reset, @)
 	m_bXXDownZXZArmed = false;
 	CommonStateStart();
 }
@@ -8796,7 +8748,7 @@ void CX2GUAra::ASI_COMBO_AA_XXDownXZStart_StateStart()
 #ifdef X2_ARA_3RD_PATH
 void CX2GUAra::ASI_COMBO_AA_XXDownXZStart_EventProcess()
 {
-	// official sub_32566AB0: anim-end -> 233 (Loop) + airborne -> 17 + generic cancels
+	// V5: anim-end -> 233 (Loop) + airborne -> 17 + generic cancels
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 		StateChange( ASI_COMBO_AA_XXDownXZLoop );
@@ -8827,7 +8779,7 @@ void CX2GUAra::ASI_COMBO_AA_XXDownXZStart_EventProcess()
 #ifdef X2_ARA_3RD_PATH
 void CX2GUAra::ASI_COMBO_AA_XXDownXZLoop_EventProcess()
 {
-	// official sub_32566D60: input-driven loop
+	// V5: input-driven loop
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 		if ( true == m_bXXDownZXZArmed && m_iXXDownXZLoopCount < 5 )	// X-armed && counter<5 -> repeat Loop (counter++)
@@ -8878,7 +8830,7 @@ void CX2GUAra::ASI_COMBO_AA_XXDownXZLoop_EventProcess()
 #ifdef X2_ARA_3RD_PATH
 void CX2GUAra::ASI_COMBO_AA_XXDownXZLoopX_EventProcess()
 {
-	// official sub_32567050: terminal one-shot (anim-end -> 13 USI_WAIT + airborne -> 17 + generic cancels)
+	// V5: terminal one-shot (anim-end -> 13 USI_WAIT + airborne -> 17 + generic cancels)
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 		StateChange( USI_WAIT );
@@ -8901,11 +8853,10 @@ void CX2GUAra::ASI_COMBO_AA_XXDownXZLoopX_EventProcess()
 }
 #endif
 /** @function 	: JumpAttackZFrameMoveFuture
-	@brief 		: ���� Ű�� ���ǵ� ����
+	@brief : - Ű -ǵ -
 */
 void CX2GUAra::JumpAttackZFrameMoveFuture()
 {
-	// ���� ���� ���� ������ Ű���带 ������ ������ �� �� ���ư�
 	if( ( true == m_InputData.pureRight && true == m_FrameDataFuture.syncData.bIsRight ) ||
 		( true == m_InputData.pureLeft && false == m_FrameDataFuture.syncData.bIsRight ) )
 	{
@@ -8922,7 +8873,7 @@ void CX2GUAra::JumpAttackZFrameMoveFuture()
 }
 
 /** @function	: JumpAttackZEventProecss
-	@brief		: ���º��� ���θ� �Ǵ�, ����
+	@brief : -º- -θ Ǵ, -
 */
 void CX2GUAra::JumpAttackZEventProcess()
 {
@@ -8947,11 +8898,10 @@ void CX2GUAra::JumpAttackZEventProcess()
 
 //#pragma region JumpAttackX
 /** @function 	: JumpAttackXFrameMoveFuture
-	@brief 		: ���� Ű�� ���ǵ� ����
+	@brief : - Ű -ǵ -
 */
 void CX2GUAra::JumpAttackXFrameMoveFuture()
 {
-	// ���� ���� ���� ������ Ű���带 ������ ������ �� �� ���ư�
 	if( ( true == m_InputData.pureRight && true == m_FrameDataFuture.syncData.bIsRight ) ||
 		( true == m_InputData.pureLeft && false == m_FrameDataFuture.syncData.bIsRight ) )
 	{
@@ -8968,7 +8918,7 @@ void CX2GUAra::JumpAttackXFrameMoveFuture()
 }
 
 /** @function 	: JumpAttackXFrameMove
-	@brief 		: Damage Data ����
+	@brief : Damage Data -
 */
 void CX2GUAra::JumpAttackXFrameMove()
 {
@@ -9023,7 +8973,6 @@ void CX2GUAra::DashJumpComboZEventProcess()
 
 	ELSE_IF_STATE_CHANGE_ON_EX_( 3, m_fEventTime[3].keyInputStart, m_fEventTime[3].keyInputEnd, m_fEventTime[3].stateChange,
 		m_InputData.oneX == true && ( CX2Unit::UC_ARA_LITTLE_SPECTER == GetUnitClass() || CX2Unit::UC_ARA_ASURA == GetUnitClass() ), ASI_DASH_JUMP_COMBO_ALS_ZX )
-//}} 2026-09-04 //
 #endif
 	CommonEventProcess();
 }
@@ -9170,7 +9119,7 @@ void CX2GUAra::ASI_SA_ARA_WIND_WEDGE_START_EventProcess()
 	{
 
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -9321,7 +9270,7 @@ void CX2GUAra::ASI_SA_ARA_PULLING_PIERCE_START_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -9587,7 +9536,7 @@ void CX2GUAra::ASI_SA_ARA_SHADOW_RISING_LANDING_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -9753,7 +9702,7 @@ void CX2GUAra::ASI_SA_ARA_TEMPEST_DANCE_START_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -10115,7 +10064,7 @@ void CX2GUAra::ASI_SA_ARA_SHADOW_KNOT_CATCH_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -10842,7 +10791,7 @@ void CX2GUAra::ASI_SA_ALH_SWALLOW_ASSAULT_Attack_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -11102,7 +11051,7 @@ void CX2GUAra::ASI_A_ARA_TIGER_CLAW_START_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -11597,7 +11546,7 @@ void CX2GUAra::ASI_SA_ALH_DOUBLE_COLLISION_START_EventProcess() //�ȱ���
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -11827,7 +11776,7 @@ void CX2GUAra::ASI_SA_ASD_TURBULENT_WAVE_LOOP_EventProcess()// ��ȣ 4�� 
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -12187,7 +12136,7 @@ void CX2GUAra::ASI_SA_ALH_PEERLESSNESS_SLASH_START_EventProcess() // ����
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -12203,7 +12152,7 @@ void CX2GUAra::ASI_SA_ALH_PEERLESSNESS_SLASH_START_EventProcess() // ����
 #ifdef X2_ARA_3RD_PATH
 		&& m_vFPCancel.y > m_pXSkinAnimFuture->GetNowAnimationTime()
 		&& ( ( true == CanUseSpecialAttack() && true == IsOnSomethingFuture() )
-			|| true == CanUseSpecialAttack( CX2SkillTree::ASUT_AIR ) ) ) //�ٴڿ����� ���?ĵ�� �� �� �ֵ��� ����
+			|| true == CanUseSpecialAttack( CX2SkillTree::ASUT_AIR ) ) )
 #else
 		&& m_vFPCancel.y > m_pXSkinAnimFuture->GetNowAnimationTime() && true == CanUseSpecialAttack() && true == IsOnSomethingFuture() ) //�ٴڿ����� ��� ĵ�� �� �� �ֵ��� ����
 #endif
@@ -12443,7 +12392,7 @@ void CX2GUAra::ASI_A_ALH_ROCK_CRASH_START_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -12603,7 +12552,7 @@ void CX2GUAra::ASI_A_ASD_LOW_BRANDISH_SLIDING_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -12914,7 +12863,7 @@ void CX2GUAra::ASI_A_ASD_Falling_Blossom_Start_EventProcess()
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -13402,7 +13351,7 @@ void CX2GUAra::ASI_A_ALD_WOLF_CLAW_EventProcess()
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -13909,7 +13858,7 @@ void CX2GUAra::ASI_SA_ALD_HELL_OF_TORNADO_EventProcess()
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -14036,7 +13985,7 @@ void CX2GUAra::ASI_SA_ALD_WOLF_SPEAR_EventProcess()
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -14160,7 +14109,7 @@ void CX2GUAra::ASI_SA_ALD_FINGER_BULLET_EventProcess()
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -14311,7 +14260,7 @@ void CX2GUAra::ASI_SA_ALD_ENERGY_BEAD_EventProcess()
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -14432,7 +14381,7 @@ void CX2GUAra::ASI_SA_ALD_PRISON_SPEAR_EventProcess()
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -14553,7 +14502,7 @@ void CX2GUAra::ASI_A_AYR_STEAL_SOUL_EventProcess()
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
 #ifdef X2_ARA_3RD_PATH
-		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ���?ĵ�� ����
+		if ( true == GetAvailableFPCancel ( m_eSkillID ) )
 #else
 		if ( true == GetAvailableFPCancel ( m_eSkillID ) )	/// ��� ĵ�� ����
 #endif
@@ -15026,7 +14975,6 @@ void CX2GUAra::ASI_ThirdPath_OneShot_EventProcess()
 	{
 		m_bFPCancel = true;
 	}
-//}} 2026-08-20 MARCH2015 3rd-path //
 
 	CommonEventProcess();
 }
@@ -15058,11 +15006,9 @@ void CX2GUAra::ASI_ThirdPath_Chain_EventProcess()
 	{
 		m_bFPCancel = true;
 	}
-//}} 2026-08-20 MARCH2015 3rd-path //
 
 	CommonEventProcess();
 }
-//}} 2026-08-19 MARCH2015 GU parity //
 
 
 
@@ -15071,7 +15017,7 @@ float CX2GUAra::ThirdPath_GetFPPowerValue( const int iBeads_, const CX2SkillTree
 	if ( NULL == GetUnit() )
 		return -1.f;
 	const int iLevel = max( 1, GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( eSkillID_ ) );
-	return ( (float)iBeads_ * 30.f ) / ( GetActualMPConsume( eSkillID_, iLevel ) + 1.f );	// official f_32560430: N × dbl_32D2B960(30.0) / (vtable+1048 GetActualMPConsume + 1.0)
+	return ( (float)iBeads_ * 30.f ) / ( GetActualMPConsume( eSkillID_, iLevel ) + 1.f );	// V5: N × (30.0) / ( GetActualMPConsume + 1.0)
 }
 
 int CX2GUAra::ThirdPath_CaptureFPBeads( const int iMaxBeads_ )
@@ -15082,7 +15028,7 @@ int CX2GUAra::ThirdPath_CaptureFPBeads( const int iMaxBeads_ )
 	if ( iAvailable <= 0 )
 		return 0;
 	const int iConsume = min( iMaxBeads_, iAvailable );
-	UseForcePower( iConsume );	// official f_3257A890 core (giant-state refund branch skipped — official 7203/7205-7207 skill check)
+	UseForcePower( iConsume );	// V5 core (giant-state refund branch skipped — V5 7203/7205-7207 skill check)
 	m_iFPBeadsConsumedTotal += iConsume;
 	return iConsume;
 }
@@ -15091,7 +15037,7 @@ void CX2GUAra::ThirdPath_ApplyFPPower( CX2DamageEffect::CEffect* pEffect_, const
 {
 	if ( NULL == pEffect_ || fValue_ <= 0.f )
 		return;
-	// official f_32579900: multiply the effect's damage fields by the FP value (>0 gate). DEVIATION documented:
+	// V5: multiply the effect's damage fields by the FP value (>0 gate). DEVIATION documented:
 	// random-variance multiplier + protected-triple anti-tamper re-registration + DamageDataNext-list scaling skipped (engine-internal, no public accessor)
 	pEffect_->GetDamageData().damage.fPhysic *= fValue_;
 	pEffect_->GetDamageData().damage.fMagic *= fValue_;
@@ -15101,13 +15047,13 @@ void CX2GUAra::ASI_ThirdPath_SkillEP( const int iNextStateID_ )
 {
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
 	{
-		StateChange( iNextStateID_ );	// official slot EP anim-end → sub-state (linked-cast FP-restore branch skipped — f_3257A080/f_32585500 subsystem, §43 precedent)
+		StateChange( iNextStateID_ );	// V5 slot EP anim-end → sub-state (linked-cast FP-restore branch skipped — / subsystem, §43 precedent)
 	}
-	else if ( true == GetAvailableFPCancel( m_eSkillID ) )	// official FP-cancel chain (Skill Linking window)
+	else if ( true == GetAvailableFPCancel( m_eSkillID ) )	// V5 FP-cancel chain (Skill Linking window)
 	{
 		StateChangeSpecialAttack( m_eSkillID );
 	}
-	else if ( true == m_InputData.oneZ || true == m_InputData.oneX )	// official window 6125/6124 (X/Z combo cancel → USI_WAIT)
+	else if ( true == m_InputData.oneZ || true == m_InputData.oneX )	// V5 window 6125/6124 (X/Z combo cancel → USI_WAIT)
 	{
 		if ( m_fEventTime[1].keyInputStart >= 0.f && m_pXSkinAnimFuture->GetNowAnimationTime() >= m_fEventTime[1].keyInputStart
 			&& m_pXSkinAnimFuture->GetNowAnimationTime() < m_fEventTime[1].keyInputEnd )
@@ -15153,13 +15099,11 @@ void CX2GUAra::ThirdPath_SpecterStealthCancel()
 	m_RenderParam.outLineColor.a	= 1.0f;
 	m_RenderParam.bAlphaBlend		= false;
 }
-//}} 2026-09-04 //
 
-// === 7017 NECROMANCY (official: StateStart = Common + power capture; §39h FOX_ATTACK spawn retained — lua EffectSets particle-only, official damage source asm-gated) ===
+// === 7017 NECROMANCY (V5: StateStart = Common + power capture; §39h FOX_ATTACK spawn retained — lua EffectSets particle-only, V5 damage source asm-gated) ===
 void CX2GUAra::ASI_SA_AA_NECROMANCY_StateStart()
 {
 	CommonStateStart();
-	m_fFPCapturedPowerRate = GetPowerRate();	// official this[6494]
 
 }
 
@@ -15176,7 +15120,7 @@ void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_StartFuture()
 	m_iThunderPhase = -1;
 	m_fThunderDiveTimer = 0.f;
 
-	m_vThunderTargetPos = GetPos();	// official: this[6500-6502] = own pos first (f_325742B0 head, vtable+256 pos store)
+	m_vThunderTargetPos = GetPos();	// V5: = own pos first ( head, pos store)
 	const float fMaxRangeSq = ( CX2Game::GT_PVP == g_pX2Game->GetGameType() ) ? 422500.f : 1690000.f;	// 650^2 PvP / 1300^2 PvE (our engine has no GT_SQUARE - 2015 GT 4 rides the PvP band there)
 	float fBestDistSq = fMaxRangeSq;
 	bool bCaptured = false;
@@ -15196,26 +15140,24 @@ void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_StartFuture()
 			bCaptured = true;
 		}
 	}
-	m_iThunderPhase = ( bCaptured ? 0 : 1 );	// official: helper sets 0=target-in-range / 1=none; EP dives only on phase 0
-	if ( false == bCaptured )	// official: rise + flip keyed to the capture result (jnz skips both when captured), NOT on airborne
+	m_iThunderPhase = ( bCaptured ? 0 : 1 );	// V5: helper sets 0=target-in-range / 1=none; EP dives only on phase 0
+	if ( false == bCaptured )	// V5: rise + flip keyed to the capture result (jnz skips both when captured), NOT on airborne
 	{
-		m_FrameDataFuture.syncData.position.y += 180.f;	// official dbl_32D213E8 = 180.0 Y-rise
-		m_FrameDataFuture.syncData.bIsRight = !m_FrameDataFuture.syncData.bIsRight;	// official: facing flip (setz/store @21113)
+		m_FrameDataFuture.syncData.position.y += 180.f;	// V5 Y-rise
+		m_FrameDataFuture.syncData.bIsRight = !m_FrameDataFuture.syncData.bIsRight;	// V5: facing flip (setz/store @21113)
 	}
-	//}} 2026-09-04 //
 }
 
 void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_StateStart()
 {
 	CommonStateStart();
-	m_fFPCapturedPowerRate = GetPowerRate();	// official this[6507]
 }
 
 void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_EventProcess()
 {
 	if ( 0 == m_iThunderPhase )
 	{
-		if ( m_pXSkinAnimFuture->GetNowAnimationTime() >= 0.69f )	// official dbl_32D95A88 = 0.69
+		if ( m_pXSkinAnimFuture->GetNowAnimationTime() >= 0.69f )
 			StateChange( ASI_SA_AA_SPECTER_OF_THUNDER_FIND );
 	}
 	else
@@ -15227,12 +15169,12 @@ void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_EventProcess()
 
 void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_FIND_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.001f ) )	// official flt_32D30CA4 = 0.001
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.001f ) )
 	{
-		m_fThunderDiveTimer = 1.0f;	// official this[6504] = 1.0
+		m_fThunderDiveTimer = 1.0f;
 	}
 	if ( m_fThunderDiveTimer > 0.f )
-		m_fThunderDiveTimer -= m_fElapsedTime * 3.f;	// official dbl_32D222C0 = 3.0 dive rate
+		m_fThunderDiveTimer -= m_fElapsedTime * 3.f;	// V5 dive rate
 	CommonFrameMove();
 }
 
@@ -15246,23 +15188,22 @@ void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_FIND_EventProcess()
 void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_StartFuture()
 {
 	CommonStateStartFuture();
-	m_FrameDataFuture.syncData.position = m_vThunderTargetPos;	// official 26000-26008 → 21100-21108 (captured target pos restore)
-	m_iThunderPhase = 0;	// official this[6480] = -1 phase reset
+	m_FrameDataFuture.syncData.position = m_vThunderTargetPos;	// V5 -26008 → 21100-21108 (captured target pos restore)
+	m_iThunderPhase = 0;	// V5 = -1 phase reset
 
 	m_PhysicParam.nowSpeed.y = -700.f;
-	//}} 2026-09-04 //
 }
 
 void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_FrameMove()
 {
 	if ( m_pXSkinAnim->EventTimerOneshot( 0.001f ) )
-		m_iThunderPhase = 0;	// official this[6480] = 0
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.769f ) )	// official flt_32D959F8 = 0.769
+		m_iThunderPhase = 0;
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.769f ) )
 	{
 		m_iThunderPhase = -1;
 		m_fThunderDiveTimer = 0.f;
 	}
-	m_fThunderDiveTimer += m_fElapsedTime * 2.f;	// official this[6504] += elapsed × 2 (landing fall tracker)
+	m_fThunderDiveTimer += m_fElapsedTime * 2.f;	// V5 += elapsed × 2 (landing fall tracker)
 	CommonFrameMove();
 }
 
@@ -15273,7 +15214,7 @@ void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_EventProcess()
 
 void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_StateEnd()
 {
-	m_iThunderPhase = 0;	// official this[6480] = NAN reset
+	m_iThunderPhase = 0;	// V5 = NAN reset
 	m_fThunderDiveTimer = 0.f;
 	CommonStateEnd();
 }
@@ -15281,10 +15222,10 @@ void CX2GUAra::ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_StateEnd()
 // === 7019 RESTRAINTS ===
 void CX2GUAra::ASI_SA_ALS_RESTRAINTS_SPECTER_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.395f ) )	// official flt_32D98A30 = 0.395
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.395f ) )
 	{
 		m_fFPPowerValue = -1.f;
-		const int iBeads = ThirdPath_CaptureFPBeads( 3 );	// official beads ≤ 3
+		const int iBeads = ThirdPath_CaptureFPBeads( 3 );	// V5 beads ≤ 3
 		if ( iBeads > 0 )
 			m_fFPPowerValue = ThirdPath_GetFPPowerValue( iBeads, CX2SkillTree::SI_SA_ALS_RESTRAINTS_SPECTER );
 
@@ -15293,7 +15234,7 @@ void CX2GUAra::ASI_SA_ALS_RESTRAINTS_SPECTER_FrameMove()
 			vBonePos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
 		if ( NULL != pEffect )
-			m_hAraFieldDE = pEffect->GetHandle();	// official this[6513] = handle capture
+			m_hAraFieldDE = pEffect->GetHandle();	// V5 = handle capture
 	}
 	CommonFrameMove();
 }
@@ -15305,14 +15246,14 @@ void CX2GUAra::ASI_SA_ALS_RESTRAINTS_SPECTER_EventProcess()
 
 void CX2GUAra::ASI_SA_ALS_RESTRAINTS_SPECTER_FINISH_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )	// official flt_32D3B708 = 0.2
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.2f ) )
 	{
-		// official: resolve field from handle → per-hit-record finish spawns at each hit position (hit-record iteration simplified to finisher at owner pos — the field's DamageDataChange records are engine-internal)
+		// V5: resolve field from handle → per-hit-record finish spawns at each hit position (hit-record iteration simplified to finisher at owner pos — the field's DamageDataChange records are engine-internal)
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_RESTRAINTS_SPECTER_Finish_Damage", GetPowerRate(),
 			vBonePos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
-		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// official field destroy (f_322CFB70)
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// V5 field destroy
 	}
 	CommonFrameMove();
 }
@@ -15329,16 +15270,15 @@ void CX2GUAra::ASI_SA_ALS_SPECTER_OF_STORM_FrameMove()
 	{
 		m_fFPSummonScale = 1.0f;
 		m_fFPPowerValue = -1.f;
-		const int iBeads = ThirdPath_CaptureFPBeads( 4 );	// official beads ≤ 4
+		const int iBeads = ThirdPath_CaptureFPBeads( 4 );	// V5 beads ≤ 4
 		if ( iBeads > 0 )
 		{
-			m_fFPSummonScale = ( (float)iBeads * 0.1f ) + 1.0f;	// official this[6496] = beads×0.1+1.0 (elwiki: "Size is increased by 1.1 fold if 1 energy is used")
+			m_fFPSummonScale = ( (float)iBeads * 0.1f ) + 1.0f;	// V5 = beads×0.1+1.0 (elwiki: "Size is increased by 1.1 fold if 1 energy is used")
 			m_fFPPowerValue = ThirdPath_GetFPPowerValue( iBeads, CX2SkillTree::SI_SA_ALS_SPECTER_OF_STORM );
 		}
 
 
 		CX2EffectSet::Handle hSummonES = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_ALS_SPECTER_OF_STORM", this, NULL, IsHyperState(), m_fFPSummonScale );
-		//}} 2026-09-04 //
 		if ( INVALID_EFFECTSET_HANDLE != hSummonES )
 		{
 			CX2EffectSet::EffectSetInstance* pESInstance = g_pX2Game->GetEffectSet()->GetEffectSetInstance( hSummonES );
@@ -15353,13 +15293,12 @@ void CX2GUAra::ASI_SA_ALS_SPECTER_OF_STORM_FrameMove()
 		vBonePos.x += ( GetIsRight() ? 100.f : -100.f );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SpecterOfStorm_Damage", GetPowerRate(),
 			vBonePos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
-	//}} 2026-09-04 //
 		if ( NULL != pEffect )
 		{
 			CKTDGXMeshPlayer::CXMeshInstance* pMesh = pEffect->GetMainEffect();
 			if ( NULL != pMesh )
 				pMesh->SetScale( pMesh->GetScale() * m_fFPSummonScale );
-			m_hAraFieldDE = pEffect->GetHandle();	// official this[6498]
+			m_hAraFieldDE = pEffect->GetHandle();
 		}
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
 	}
@@ -15383,7 +15322,7 @@ void CX2GUAra::ASI_SA_ALS_SPECTER_OF_STORM_FINISH_FrameMove()
 				pESInstance->SetEffectScale( D3DXVECTOR3( m_fFPSummonScale, m_fFPSummonScale, m_fFPSummonScale ), true );
 		}
 	}
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.49f ) )	// official flt_32D97C14 = 0.49
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.49f ) )
 	{
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SpecterOfStorm_Finish_Damage", GetPowerRate(),
@@ -15404,7 +15343,7 @@ void CX2GUAra::ASI_SA_ALS_SPECTER_OF_STORM_FINISH_EventProcess()
 
 void CX2GUAra::ASI_SA_ALS_SPECTER_OF_STORM_LANDING_StateStart()
 {
-	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// official sub254 field destroy
+	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// V5 sub254 field destroy
 	CommonStateStart();
 }
 
@@ -15416,7 +15355,7 @@ void CX2GUAra::ASI_SA_ALS_SPECTER_OF_STORM_LANDING_EventProcess()
 // === 7021 SPECTER_OF_BLADE ===
 void CX2GUAra::ASI_SA_ALS_SPECTER_OF_BLADE_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )	// official flt_32D2AF74 = 0.4
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
 	{
 		m_fFPPowerValue = -1.f;
 		const int iBeads = ThirdPath_CaptureFPBeads( 3 );
@@ -15438,7 +15377,7 @@ void CX2GUAra::ASI_SA_ALS_SPECTER_OF_BLADE_EventProcess()
 
 void CX2GUAra::ASI_SA_ALS_SPECTER_OF_BLADE_FINISH_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.001f ) )	// official flt_32D30CA4 = 0.001
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.001f ) )
 	{
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SPECTER_OF_BLADE_Damage_Finish", GetPowerRate(),
@@ -15462,17 +15401,14 @@ void CX2GUAra::ASI_SA_ALS_SPECTER_OF_BLADE_FINISH_EventProcess()
 		}
 	}
 	CommonEventProcess();
-	//}} 2026-09-04 //
 }
 
-// === 7022 SEVER (official StateEnd nearest-hit capture SKIPPED documented — DamageEffect hit-record internals) ===
+// === 7022 SEVER (V5 StateEnd nearest-hit capture SKIPPED documented — DamageEffect hit-record internals) ===
 void CX2GUAra::ASI_SA_ALS_SEVER_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.379f ) )	// official flt_32D96ABC = 0.379
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.379f ) )
 	{
-		CX2EffectSet::Handle hES = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_ALS_SEVER_DAMAGE", this, NULL, IsHyperState(), GetPowerRate() );
-		if ( INVALID_EFFECTSET_HANDLE != hES )
-			m_hAraEffectSet = hES;	// official this[6508]
+		g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_ALS_SEVER_DAMAGE", this, NULL, IsHyperState(), GetPowerRate() );
 	}
 	CommonFrameMove();
 }
@@ -15485,14 +15421,14 @@ void CX2GUAra::ASI_SA_ALS_SEVER_EventProcess()
 // === 7023 GET_BLOOD ===
 void CX2GUAra::ASI_SA_AA_GET_BLOOD_StateStart()
 {
-	m_iFoxFireCount = 0;	// official this[6519] counter reset
-	m_hAraFieldDE = INVALID_DAMAGE_EFFECT_HANDLE;	// official this[6520] = -1
+	m_iFoxFireCount = 0;	// V5 counter reset
+	m_hAraFieldDE = INVALID_DAMAGE_EFFECT_HANDLE;
 	CommonStateStart();
 }
 
 void CX2GUAra::ASI_SA_AA_GET_BLOOD_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )	// official flt_32D2AF74 = 0.4
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
 	{
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01_Footsteps" );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_AAS_Get_Blood", GetPowerRate(),
@@ -15500,11 +15436,11 @@ void CX2GUAra::ASI_SA_AA_GET_BLOOD_FrameMove()
 		if ( NULL != pEffect )
 			m_hAraFieldDE = pEffect->GetHandle();
 	}
-	if ( m_pXSkinAnim->EventTimerOneshot( 1.01f ) )	// official flt_32D97CD0 = 1.01
+	if ( m_pXSkinAnim->EventTimerOneshot( 1.01f ) )
 	{
-		// official FP-restore on skill end: min(counter,2) + FP bead add-back (f_3251EB20/F340 restore)
+		// V5 FP-restore on skill end: min(counter,2) + FP bead add-back (/F340 restore)
 		if ( NULL != GetAraGageData() && m_iFoxFireCount > 0 )
-			UpForcePower( min( m_iFoxFireCount, 2 ) );	// official: v8 = min(this[6519], 2); beads += v8
+			UpForcePower( min( m_iFoxFireCount, 2 ) );	// V5: v8 = min(2); beads += v8
 	}
 	CommonFrameMove();
 }
@@ -15516,13 +15452,13 @@ void CX2GUAra::ASI_SA_AA_GET_BLOOD_EventProcess()
 
 void CX2GUAra::ASI_SA_AA_GET_BLOOD_StateEnd()
 {
-	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// official slot StateEnd field destroy
+	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// V5 slot StateEnd field destroy
 	CommonStateEnd();
 }
 
 void CX2GUAra::ASI_SA_AA_GET_BLOOD_FINISH_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.47f ) )	// official flt_32D62B1C = 0.47
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.47f ) )
 	{
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_AAS_Get_Blood_Finish", GetPowerRate(),
@@ -15540,15 +15476,15 @@ void CX2GUAra::ASI_SA_AA_GET_BLOOD_FINISH_EventProcess()
 
 void CX2GUAra::ASI_SA_AA_GET_BLOOD_FINISH_StateEnd()
 {
-	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// official sub260 StateEnd field destroy
+	g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hAraFieldDE, false );	// V5 sub260 StateEnd field destroy
 	CommonStateEnd();
 }
 
 // === 7024 FIRE_FOX ===
 void CX2GUAra::ASI_SA_AA_FIRE_FOX_StateStart()
 {
-	m_fFoxFireTimer = 0.f;	// official this[6530]
-	m_iFoxFireCount = 0;	// official this[6528]
+	m_fFoxFireTimer = 0.f;
+	m_iFoxFireCount = 0;
 	CommonStateStart();
 }
 
@@ -15556,7 +15492,7 @@ void CX2GUAra::ASI_SA_AA_FIRE_FOX_FrameMove()
 {
 	if ( m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
 	{
-		// official: random 1-of-3 effect name (rand()%3 → DAMAGE_EFFECT_SI_SA_AA_FIRE_FOX_FIRE/_FROZEN/_SHOCK)
+		// V5: random 1-of-3 effect name (rand%3 → DAMAGE_EFFECT_SI_SA_AA_FIRE_FOX_FIRE/_FROZEN/_SHOCK)
 		switch ( GetRandomFloat() * 3.f >= 2.f ? 2 : ( GetRandomFloat() * 3.f >= 1.f ? 1 : 0 ) )
 		{
 		case 0: m_wstrFoxEffectName = L"DAMAGE_EFFECT_SI_SA_AA_FIRE_FOX_FIRE"; break;
@@ -15565,8 +15501,8 @@ void CX2GUAra::ASI_SA_AA_FIRE_FOX_FrameMove()
 		}
 
 		m_fFPPowerValue = -1.f;
-		m_iFoxFireCount = 9;	// official this[6528] = 9 + beads
-		const int iBeads = ThirdPath_CaptureFPBeads( 4 );	// official beads ≤ 4
+		m_iFoxFireCount = 9;	// V5 = 9 + beads
+		const int iBeads = ThirdPath_CaptureFPBeads( 4 );	// V5 beads ≤ 4
 		if ( iBeads > 0 )
 		{
 			m_iFoxFireCount += iBeads;
@@ -15582,14 +15518,13 @@ void CX2GUAra::ASI_SA_AA_FIRE_FOX_FrameMove()
 		D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		vBonePos.y += (float)( iParity * ( (int)( GetRandomFloat() * 20.f ) % 20 ) );
 		vBonePos.z += (float)( iParity * ( (int)( GetRandomFloat() * 20.f ) % 20 ) );
-		//}} 2026-09-04 //
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, m_wstrFoxEffectName.c_str(), GetPowerRate(),
 			vBonePos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
 		--m_iFoxFireCount;
-		m_fFoxFireTimer += 0.035f;	// official dbl_32D98B80 = 0.035 spawn interval
+		m_fFoxFireTimer += 0.035f;	// V5 spawn interval
 	}
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )	// official flt_32D2AF74 = 0.4
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.4f ) )
 	{
 
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
@@ -15597,7 +15532,6 @@ void CX2GUAra::ASI_SA_AA_FIRE_FOX_FrameMove()
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_FIRE_FOX_SCRATCH_Damage", GetPowerRate(),
 			vSpawnPos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
-		//}} 2026-09-04 //
 	}
 	CommonFrameMove();
 }
@@ -15610,11 +15544,10 @@ void CX2GUAra::ASI_SA_AA_FIRE_FOX_EventProcess()
 
 void CX2GUAra::ASI_SA_AA_FIRE_FOX_StateEnd()
 {
-	m_fFoxFireTimer = 0.f;	// official this[6530]
-	m_iFoxFireCount = 0;	// official this[6528]
+	m_fFoxFireTimer = 0.f;
+	m_iFoxFireCount = 0;
 	CommonStateEnd();
 }
-//}} 2026-09-04 //
 
 // === 7025 SUPPRESSION ===
 void CX2GUAra::ASI_SA_AA_SUPPRESSION_SPECTER_EventProcess()
@@ -15625,15 +15558,15 @@ void CX2GUAra::ASI_SA_AA_SUPPRESSION_SPECTER_EventProcess()
 // === 7220 VIEW_BETWEEN ===
 void CX2GUAra::ASI_A_ALS_VIEW_BETWEEN_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.338f ) )	// official flt_32D988E4 = 0.338
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.338f ) )
 	{
 		m_fFPPowerValue = -1.f;
-		if ( ThirdPath_CaptureFPBeads( 1 ) > 0 )	// official 1 bead
+		if ( ThirdPath_CaptureFPBeads( 1 ) > 0 )	// V5 1 bead
 			m_fFPPowerValue = ThirdPath_GetFPPowerValue( 1, CX2SkillTree::SI_A_ALS_VIEW_BETWEEN );
 
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		D3DXVECTOR3 vSpawnPos = vBonePos;
-		vSpawnPos.x += ( GetIsRight() ? 65.f : -65.f );	// official dbl_32D76D60 = 65 direction-gated offset
+		vSpawnPos.x += ( GetIsRight() ? 65.f : -65.f );	// V5 direction-gated offset
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_VIEW_BETWEEN_Damage", GetPowerRate(),
 			vSpawnPos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
@@ -15648,11 +15581,11 @@ void CX2GUAra::ASI_A_ALS_VIEW_BETWEEN_EventProcess()
 
 void CX2GUAra::ASI_A_ALS_VIEW_BETWEEN_FINISH_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.266f ) )	// official flt_32D7D5E4 = 0.266
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.266f ) )
 	{
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		D3DXVECTOR3 vSpawnPos = vBonePos;
-		vSpawnPos.x += ( GetIsRight() ? 220.f : -220.f );	// official dbl_32D7FAF8 = 220
+		vSpawnPos.x += ( GetIsRight() ? 220.f : -220.f );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_VIEW_BETWEEN_FINISH_Damage", GetPowerRate(),
 			vSpawnPos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
@@ -15665,7 +15598,7 @@ void CX2GUAra::ASI_A_ALS_VIEW_BETWEEN_FINISH_EventProcess()
 	ASI_ThirdPath_SkillEP( USI_WAIT );
 }
 
-// === 7221 SPECTER_WALK (official: EP only) ===
+// === 7221 SPECTER_WALK (V5: EP only) ===
 void CX2GUAra::ASI_A_ALS_SPECTER_WALK_EventProcess()
 {
 	ASI_ThirdPath_SkillEP( USI_WAIT );
@@ -15674,7 +15607,7 @@ void CX2GUAra::ASI_A_ALS_SPECTER_WALK_EventProcess()
 // === 7222 SHAKE_CHAOS ===
 void CX2GUAra::ASI_A_ALS_SHAKE_CHAOS_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.135f ) )	// official flt_32D8EAE4 = 0.135
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.135f ) )
 	{
 		m_fFPPowerValue = -1.f;
 		const int iBeads = ThirdPath_CaptureFPBeads( 1 );
@@ -15686,7 +15619,7 @@ void CX2GUAra::ASI_A_ALS_SHAKE_CHAOS_FrameMove()
 			vBonePos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		ThirdPath_ApplyFPPower( pEffect, m_fFPPowerValue );
 	}
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.309f ) )	// official flt_32D9892C = 0.309
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.309f ) )
 	{
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SHAKE_CHAOS_Damage2", GetPowerRate(),
@@ -15724,7 +15657,6 @@ void CX2GUAra::ASI_A_AA_RAID_StartFuture()
 	CommonStateStartFuture();
 
 	m_bRaidHitContinue = false;
-	//}} 2026-09-04 //
 }
 
 void CX2GUAra::ASI_A_AA_RAID_EventProcess()
@@ -15742,7 +15674,7 @@ void CX2GUAra::ASI_A_AA_RAID_StateEnd()
 
 void CX2GUAra::ASI_A_AA_RAID_ATTACK_FrameMove()
 {
-	// official: 3 spawns @0.1 / 0.4 / 0.52 (flt_32D2FF9C / flt_32D2AF74 / flt_32D3C258) at Bip01 ± 150 (dbl_32D3C260)
+	// V5: 3 spawns @0.1 / 0.4 / 0.52 ( / /) at Bip01 ± 150
 	const float afTimings[3] = { 0.1f, 0.4f, 0.52f };
 	for ( int i = 0; i < 3; ++i )
 	{
@@ -15755,7 +15687,6 @@ void CX2GUAra::ASI_A_AA_RAID_ATTACK_FrameMove()
 				const int iBeads = ThirdPath_CaptureFPBeads( 1 );
 				if ( iBeads > 0 )
 					m_fFPPowerValue = ThirdPath_GetFPPowerValue( 1, CX2SkillTree::SI_A_AA_RAID );
-				//}} 2026-09-04 //
 			}
 			const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 			D3DXVECTOR3 vSpawnPos = vBonePos;
@@ -15775,9 +15706,9 @@ void CX2GUAra::ASI_A_AA_RAID_ATTACK_EventProcess()
 
 void CX2GUAra::ASI_A_AA_RAID_ATTACK_FINISH_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.222f ) )	// official flt_32D97B08 = 0.222
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.222f ) )
 	{
-		// official: 2 spawns at pos + Y+180 offset (dbl_32D213E8)
+		// V5: 2 spawns at pos + Y+180 offset
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		for ( int i = 0; i < 2; ++i )
 		{
@@ -15799,16 +15730,15 @@ void CX2GUAra::ASI_A_AA_RAID_ATTACK_FINISH_EventProcess()
 // === 7224 MANA_DRAIN ===
 void CX2GUAra::ASI_A_ALS_MANA_DRAIN_StateStart()
 {
-	m_hAraFieldDE = INVALID_DAMAGE_EFFECT_HANDLE;	// official this[6517] = NAN
+	m_hAraFieldDE = INVALID_DAMAGE_EFFECT_HANDLE;	// V5 = NAN
 
 	m_fManaDrainAccum = 0.f;
-	//}} 2026-09-04 //
 	CommonStateStart();
 }
 
 void CX2GUAra::ASI_A_ALS_MANA_DRAIN_FrameMove()
 {
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )	// official flt_32D3B750 = 0.3
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.3f ) )
 	{
 		const D3DXVECTOR3 vBonePos = GetBonePos( L"Bip01" );
 		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_MANA_DRAIN_MP_Damage", GetPowerRate(),
@@ -15816,7 +15746,7 @@ void CX2GUAra::ASI_A_ALS_MANA_DRAIN_FrameMove()
 		if ( NULL != pEffect )
 			m_hAraFieldDE = pEffect->GetHandle();
 	}
-	if ( m_pXSkinAnim->EventTimerOneshot( 0.65f ) )	// official flt_32D3C150 = 0.65
+	if ( m_pXSkinAnim->EventTimerOneshot( 0.65f ) )
 	{
 
 		if ( m_fManaDrainAccum > 0.f )
@@ -15824,7 +15754,6 @@ void CX2GUAra::ASI_A_ALS_MANA_DRAIN_FrameMove()
 			UpNowMp( m_fManaDrainAccum );
 			m_fManaDrainAccum = 0.f;
 		}
-		//}} 2026-09-04 //
 	}
 	CommonFrameMove();
 }
@@ -15842,10 +15771,8 @@ void CX2GUAra::ASI_A_ALS_MANA_DRAIN_StateEnd()
 		UpNowMp( m_fManaDrainAccum );
 		m_fManaDrainAccum = 0.f;
 	}
-	//}} 2026-09-04 //
 	CommonStateEnd();
 }
-//}} 2026-08-30 MARCH2015 Ara 3rd-path deep-mechanics //
 
 
 
@@ -15855,7 +15782,6 @@ void CX2GUAra::ASI_SA_ALS_VERITABLE_PANDEMONIUM_DamageStateStart()
 	g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_ALS_VERITABLE_PANDEMONIUM_Damage", this, NULL, IsHyperState(), GetPowerRate() );	//{{ secret art: Night Parade main damage + blackhole //
 	g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_ALS_VERITABLE_PANDEMONIUM_BLACKHOLE", this, NULL, IsHyperState(), GetPowerRate() );
 }
-//}} 2026-08-28 //
 #endif
 /** @function	: ASI_SA_AYR_SUPPRESSION_ENERGY_EventProcess
 */
@@ -15878,12 +15804,12 @@ void CX2GUAra::ASI_SA_AYR_SUPPRESSION_ENERGY_EventProcess()
 
 	CommonEventProcess();
 }
-//#pragma endregion ���� - ��
+// #pragma endregion - -
 
 //#pragma region SI_SA_ALD_WOLF_BREAK
 /** @function	: ASI_SA_ALD_WOLF_BREAK_CreateState
-	@brief		: �ش� ��ų ���̵� ���� ������Ʈ ���� ����
-	@param		: State ������, State ���̵�
+	@brief : ش ų -̵ - --Ʈ - -
+	@param : State --, State -̵
 */
 void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_CreateState( UserUnitStateData& stateData_, const int iStateId_ )
 {
@@ -15897,7 +15823,7 @@ void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_CreateState( UserUnitStateData& stateData_,
 }
 
 /** @function	: ASI_SA_ALD_WOLF_BREAK_Init
-	@brief		: �ʿ��� ���ҽ� ���ε�
+	@brief : ʿ- -ҽ -ε
 */
 void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_Init()
 {
@@ -15911,7 +15837,7 @@ void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_Init()
 }
 
 /** @function	: ASI_SA_ALD_WOLF_BREAK_StateStart
-	@brief		: �߻�ü ���� ī��Ʈ �ʱ�ȭ
+	@brief : ߻ü - īƮ ʱȭ
 */
 void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_StateStart()
 {
@@ -15921,7 +15847,7 @@ void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_StateStart()
 }
 
 /** @function	: ASI_SA_ALD_WOLF_BREAK_FrameMove
-	@brief		: �߻�ü ����
+	@brief : ߻ü -
 */
 void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_FrameMove()
 {
@@ -15932,10 +15858,9 @@ void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_FrameMove()
 		 m_pXSkinAnim->EventTimerOneshot( 1.63f ) ||
 		 m_pXSkinAnim->EventTimerOneshot( 2.f ) )
 	{
-		wstring wstrEffectName = L"DamageEffect_SA_ALD_WOLF_Break";		/// �߻�ü �̸� ����
+		wstring wstrEffectName = L"DamageEffect_SA_ALD_WOLF_Break";
 		float fPowerRate = 1.0f;
 
-		/// �߻� Ƚ���� ���� �߻�ü �̸� ����
 		switch ( m_iWolfBreakeCount )
 		{
 		case 1:
@@ -15948,11 +15873,11 @@ void CX2GUAra::ASI_SA_ALD_WOLF_BREAK_FrameMove()
 			} break;
 		}
 
-		/// ���࿡ �нú� ������ ���¢���� �������̶��, Ư�� Ȯ���� Ŀ�ٶ� ���븦 �߻��Ѵ�.
+		/// with the passive, a chance to fire a large wolf instead (the _Special effect)
 		if ( m_fHowlingActiveRate > GetRandomFloat() )
 		{
 			wstrEffectName += L"_Special";
-			fPowerRate = m_fHowlingDamageRel;	/// Ŀ�ٶ� ���뿡�� �нú꿡 ���� ������ ����
+			fPowerRate = m_fHowlingDamageRel;	/// the large wolf's power comes from the passive
 		}
 
 		/// ����Ʈ ����
@@ -16918,16 +16843,16 @@ bool CX2GUAra::IsNoStageChangeSkill( IN const CX2SkillTree::SkillTemplet* pSkill
 #ifdef X2_ARA_3RD_PATH
 
 
-	// (a) Eun "full-hyper advantage" hit counter (official worker f_325836E0, byte-verified disasm b14_decode_out.txt):
-	//     gate = awakening (vtable+144 slot_36 == IsFullHyperMode) && *(dmg+8)==0 (attackType==AT_NORMAL - normal-type hits only)
+	// (a) Eun "full-hyper advantage" hit counter (V5 worker, byte-verified disasm b14_decode_out.txt):
+	// gate = awakening ( == IsFullHyperMode) && *(dmg+8)==0 (attackType==AT_NORMAL - normal-type hits only)
 	//     && *(dmg+36)!=7 (reActType!=RT_DUMMY_DAMAGE - skip dummy/zone ticks; DEC_B map: 2015+36 = reActType, our RT_DUMMY_DAMAGE==7 exactly)
-	//     && !*(byte*)(dmg+1226)  <-- UNIDENTIFIED 2015 field: init-0 in the 2015 DamageData SimpleInit-equivalent (f_31F0ECD0), copied by the copy-assign (f_31D6FF70),
+	// && !*(byte*)(dmg+1226) <-- UNIDENTIFIED 2015 field: init-0 in the 2015 DamageData SimpleInit-equivalent, copied by the copy-assign,
 	//                               and NO writer to non-zero exists anywhere in the shipped 2015 image (flat-image scan b14_decode3_out.txt: only the copy + init + this reader) = inert dead gate.
 	//                               DESIGN INFERENCE: gate always passes; NOT wired to an invented field.
-	//     && interval timer elapsed (+25900 <= 0.0) && !GetRidingOn() (vcall slot 102)
-	//     -> counter++ (+25892), timer = interval (+25896), at threshold (+25888, lua=9): counter=0 + full bonus worker f_3257E360
-	//        (HP + 3% max [dbl_32D2FDE8=0.03, vtable+204=SetNowHp] + FP+1 via overflow->MP conversion [UpForcePower] + EffectSet_KILL_ENEMY_WHEN_FULL_HYPER_MODE).
-	//     Official dead-bonus branch (f_32591A30 gate + (3-min(stacks,3)) x dbl_32D3B1D8 threshold bonus) SKIPPED: dead-load in shipped 2015 data (G3a #12).
+	// && interval timer elapsed ( <= 0.0) && !GetRidingOn (vcall slot 102)
+	// -> counter++, timer = interval, at threshold (lua=9): counter=0 + full bonus worker
+	// (HP + 3% max [, =SetNowHp] + FP+1 via overflow->MP conversion [UpForcePower] + EffectSet_KILL_ENEMY_WHEN_FULL_HYPER_MODE).
+	// Official dead-bonus branch ( gate + (3-min(stacks,3)) x threshold bonus) SKIPPED: dead-load in shipped 2015 data (G3a #12).
 	if( IsFullHyperMode()
 		&& CX2DamageManager::AT_NORMAL == pDamageData.attackType
 		&& CX2DamageManager::RT_DUMMY_DAMAGE != pDamageData.reActType
@@ -16946,7 +16871,7 @@ bool CX2GUAra::IsNoStageChangeSkill( IN const CX2SkillTree::SkillTemplet* pSkill
 		}
 	}
 
-	// (b) 7023 GET_BLOOD hit counter (official: skillID==7023 && storedHandle==effectID && counter<2 -> counter++; feeds the @1.01 FP restore min(counter,2))
+	// (b) 7023 GET_BLOOD hit counter (V5: skillID==7023 && storedHandle==effectID && counter<2 -> counter++; feeds the @1.01 FP restore min(counter,2))
 	if( CX2SkillTree::SI_SA_AA_GET_BLOOD == m_NowStateData.m_eSkillID
 		&& m_hAraFieldDE == pDamageData.hAttackerEffect
 		&& m_iFoxFireCount < 2 )
@@ -16954,13 +16879,13 @@ bool CX2GUAra::IsNoStageChangeSkill( IN const CX2SkillTree::SkillTemplet* pSkill
 		++m_iFoxFireCount;
 	}
 
-	// (c) 7223 RAID hit-continue flag (official: skillID==7223 -> byte@+26056 = 1; NEW dedicated member m_bRaidHitContinue - stop sharing m_iThunderPhase)
+	// (c) 7223 RAID hit-continue flag (V5: skillID==7223 -> byte@ = 1; NEW dedicated member m_bRaidHitContinue - stop sharing m_iThunderPhase)
 	if( CX2SkillTree::SI_A_AA_RAID == m_NowStateData.m_eSkillID )
 		m_bRaidHitContinue = true;
 
-	// (d) 7224 MANA_DRAIN victim-MP drain (official: skillID==7224 && stored handle != -1 && handle match && victim valid ->
-	//     victim MP -= SA_MP_INTAKE_ABS(level) [f_31F05EB0 victim-side] + absorb EffectSet at the victim's Bip01 + ponytail tendril particle at the caster's Bip01_Ponytail1
-	//     + caster accumulator (this[6518]) += amount; the @0.65/StateEnd handler-side restore consumes m_fManaDrainAccum (batch e5 swaps it to MP))
+	// (d) 7224 MANA_DRAIN victim-MP drain (V5: skillID==7224 && stored handle != -1 && handle match && victim valid ->
+	// victim MP -= SA_MP_INTAKE_ABS(level) [ victim-side] + absorb EffectSet at the victim's Bip01 + ponytail tendril particle at the caster's Bip01_Ponytail1
+	// + caster accumulator += amount; the @0.65/StateEnd handler-side restore consumes m_fManaDrainAccum (batch e5 swaps it to MP))
 	if( CX2SkillTree::SI_A_ALS_MANA_DRAIN == m_NowStateData.m_eSkillID
 		&& INVALID_DAMAGE_EFFECT_HANDLE != m_hAraFieldDE
 		&& m_hAraFieldDE == pDamageData.hAttackerEffect )
@@ -16976,16 +16901,15 @@ bool CX2GUAra::IsNoStageChangeSkill( IN const CX2SkillTree::SkillTemplet* pSkill
 				fDrain = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_MP_INTAKE_ABS, iLevel );
 			}
 
-			pVictim->UpNowMp( -fDrain );			/// victim MP drain (official: amount x -1.0 applied to the victim)
-			m_fManaDrainAccum += fDrain;			/// caster-side accumulator (official this[6518])
+			pVictim->UpNowMp( -fDrain );			/// victim MP drain (V5: amount x -1.0 applied to the victim)
+			m_fManaDrainAccum += fDrain;			/// caster-side accumulator ()
 
 			if ( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
-				g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_A_ALS_MANA_DRAIN_HIT", this, NULL, false, -1.f, -1.f, D3DXVECTOR3( 1.f, 1.f, 1.f ), true, pVictim->GetBonePos( L"Bip01" ) );	/// absorb FX at the victim's Bip01 (custom pos, owner = caster - official arg order)
+				g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_A_ALS_MANA_DRAIN_HIT", this, NULL, false, -1.f, -1.f, D3DXVECTOR3( 1.f, 1.f, 1.f ), true, pVictim->GetBonePos( L"Bip01" ) );	/// absorb FX at the victim's Bip01 (custom pos, owner = caster - V5 arg order)
 			if ( NULL != g_pX2Game && NULL != g_pX2Game->GetMajorParticle() )
 				g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*)this, L"SI_A_ALS_MANA_DRAIN_10", GetBonePos( L"Bip01_Ponytail1" ) );	/// ponytail tendril (particle verified in deployed GameMajorParticle26.txt)
 		}
 	}
-//}} 2026-09-04 //
 #endif
 }
 //#endif // FIX_GAIN_FORCE_BUG

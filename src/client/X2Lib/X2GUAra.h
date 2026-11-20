@@ -56,7 +56,7 @@ public:
 	enum ARA_STATE_ID
 	{
 	//#pragma region STATE_ID
-		ASI_BASE,	/// �ƶ� State ID
+		ASI_BASE,	/// ƶ State ID
 
 		ASI_HYPER_WAIT,			/// ������ �� ��� ����
 		ASI_BERSERK_MODE,		/// 3���� ����
@@ -625,7 +625,6 @@ public:
 
 	virtual void	RecordCrestSnapshot();
 	virtual void	RestoreCrestSnapshot();
-	//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
 #endif
 	virtual void	ApplyRenderParam( CKTDGXRenderer::RenderParam* pRenderParam_ );
 	virtual void	ApplyRenderParamOnEmptyRenderParamByBuff( CKTDGXRenderer::RenderParam* pRenderParam_ );
@@ -1168,13 +1167,11 @@ protected:
 void ASI_SA_ALD_ENERGY_WAVE_CHARGE_EventProcess();
 void ASI_SA_ALD_ENERGY_WAVE_FIRE_EventProcess();
 bool IsAraSkillKeyHeld();
-//}} 2026-08-19 MARCH2015 GU parity //
 
 void ASI_SA_ALD_ENERGY_WAVE_StateStartFuture();
 void ASI_SA_ALD_ENERGY_WAVE_StateStart();
 void ASI_SA_ALD_ENERGY_WAVE_CHARGE_FrameMove();
 void ASI_SA_ALD_ENERGY_WAVE_FIRE_FrameMove();
-//}} 2026-09-04 //
 
 
 	void ASI_ThirdPath_CreateState( UserUnitStateData& stateData_, const int iStateId_, const char* pszTableName, const int iSkillID_ = 0 );
@@ -1184,32 +1181,28 @@ void ASI_SA_ALD_ENERGY_WAVE_FIRE_FrameMove();
 	std::map<int,int> m_mapThirdPathChain;
 
 	void ASI_DASH_COMBO_ALS_X_EventProcess();
-//}} 2026-08-20 MARCH2015 3rd-path //
 
 	void ASI_DASH_JUMP_COMBO_ALS_ZX_EventProcess();
-//}} 2026-09-04 //
 
 	void ASI_COMBO_AA_XXDownXZStart_StateStart();
 	void ASI_COMBO_AA_XXDownXZStart_EventProcess();
 	void ASI_COMBO_AA_XXDownXZLoop_EventProcess();
 	void ASI_COMBO_AA_XXDownXZLoopX_EventProcess();
-//}} 2026-09-04 //
 
 	void ThirdPath_SpecterStealthCancel();
-//}} 2026-09-04 //
 
 
 void ASI_SA_ALS_VERITABLE_PANDEMONIUM_DamageStateStart();
 
 
-	float	ThirdPath_GetFPPowerValue( const int iBeads_, const CX2SkillTree::SKILL_ID eSkillID_ );			/// official f_32560430: beads × 30.0 / (GetActualMPConsume(skillID, level) + 1.0)
-	int		ThirdPath_CaptureFPBeads( const int iMaxBeads_ );													/// official f_3257A890: consume up to N beads (giant-state refund path skipped — official 7203/7205-7207 skill check), return consumed count (0 if none)
-	void	ThirdPath_ApplyFPPower( CX2DamageEffect::CEffect* pEffect_, const float fValue_ );					/// official f_32579900: multiply the effect's damage fields by the FP value (>0 gate; main + DamageDataNext)
-	void	ASI_ThirdPath_SkillEP( const int iNextStateID_ );													/// official generic Ara cancel-EP (anim-end → next state + skill-cancel window + FP-cancel chain + X/Z + walk/dash + jump branches — ara_bodies_full.txt 7221_EP shape)
-	/// 7017 NECROMANCY — official: Init(preloads) + StateStart(Common + power capture) + EP(generic); NO code damage spawn (§39h FOX_ATTACK spawn retained — lua EffectSets particle-only, official damage source asm-gated)
+	float	ThirdPath_GetFPPowerValue( const int iBeads_, const CX2SkillTree::SKILL_ID eSkillID_ );			/// V5: beads × 30.0 / (GetActualMPConsume(skillID, level) + 1.0)
+	int		ThirdPath_CaptureFPBeads( const int iMaxBeads_ );													/// V5: consume up to N beads (giant-state refund path skipped — V5 7203/7205-7207 skill check), return consumed count (0 if none)
+	void	ThirdPath_ApplyFPPower( CX2DamageEffect::CEffect* pEffect_, const float fValue_ );					/// V5: multiply the effect's damage fields by the FP value (>0 gate; main + DamageDataNext)
+	void	ASI_ThirdPath_SkillEP( const int iNextStateID_ );													/// V5 generic Ara cancel-EP (anim-end → next state + skill-cancel window + FP-cancel chain + X/Z + walk/dash + jump branches — ara_bodies_full.txt 7221_EP shape)
+	/// 7017 NECROMANCY — V5: Init(preloads) + StateStart(Common + power capture) + EP(generic); NO code damage spawn (§39h FOX_ATTACK spawn retained — lua EffectSets particle-only, V5 damage source asm-gated)
 	void ASI_SA_AA_NECROMANCY_StateStart();
 	void ASI_SA_AA_NECROMANCY_EventProcess();
-	/// 7018 SPECTER_OF_THUNDER — official: slot[StartFuture(pos-capture+f_325742B0 nearest-enemy check+Y-adjust) + StateStart(power capture) + EP(phase-based)] / sub247 FIND[FM dive timer + EP anim-end→LANDING] / sub248 LANDING[Init + SF(pos-restore+Y+dir) + FM(timer) + EP(generic) + SE(reset)]
+	/// 7018 SPECTER_OF_THUNDER — V5: slot[StartFuture(pos-capture+ nearest-enemy check+Y-adjust) + StateStart(power capture) + EP(phase-based)] / sub247 FIND[FM dive timer + EP anim-end→LANDING] / sub248 LANDING[Init + SF(pos-restore+Y+dir) + FM(timer) + EP(generic) + SE(reset)]
 	void ASI_SA_AA_SPECTER_OF_THUNDER_StartFuture();
 	void ASI_SA_AA_SPECTER_OF_THUNDER_StateStart();
 	void ASI_SA_AA_SPECTER_OF_THUNDER_EventProcess();
@@ -1219,27 +1212,27 @@ void ASI_SA_ALS_VERITABLE_PANDEMONIUM_DamageStateStart();
 	void ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_FrameMove();
 	void ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_EventProcess();
 	void ASI_SA_AA_SPECTER_OF_THUNDER_FIND_LANDING_StateEnd();
-	/// 7019 RESTRAINTS — official: slot[StateStart + FM@0.395(FP-capture beads≤3 + field DamageEffect "DamageEffect_RESTRAINTS_SPECTER_Damage" @Bip01 + handle) + EP(anim-end→FINISH)] / sub251 FINISH[FM@0.2(field resolve → per-hit-record spawns "DamageEffect_RESTRAINTS_SPECTER_Finish_Damage" @hit-moveAxis + FP-power apply + field destroy) + EP(generic)]
+	/// 7019 RESTRAINTS — V5: slot[StateStart + FM@0.395(FP-capture beads≤3 + field DamageEffect "DamageEffect_RESTRAINTS_SPECTER_Damage" @Bip01 + handle) + EP(anim-end→FINISH)] / sub251 FINISH[FM@0.2(field resolve → per-hit-record spawns "DamageEffect_RESTRAINTS_SPECTER_Finish_Damage" @hit-moveAxis + FP-power apply + field destroy) + EP(generic)]
 	void ASI_SA_ALS_RESTRAINTS_SPECTER_FrameMove();
 	void ASI_SA_ALS_RESTRAINTS_SPECTER_EventProcess();
 	void ASI_SA_ALS_RESTRAINTS_SPECTER_FINISH_FrameMove();
 	void ASI_SA_ALS_RESTRAINTS_SPECTER_FINISH_EventProcess();
-	/// 7020 SPECTER_OF_STORM — official: slot[StateStart + FM@0.01(FP-capture beads≤4 + scale=beads×0.1+1 + EffectSet "EffectSet_SI_SA_ALS_SPECTER_OF_STORM_FINISH" summon + scale-set) + FM@0.379("DamageEffect_SpecterOfStorm_Damage" @Bip01Footsteps±100 + scale + handle) + EP(anim-end→FINISH)] / sub253[FM@0.01(EffectSet FINISH + scale) + FM@0.49("DamageEffect_SpecterOfStorm_Finish_Damage" + handle) + EP(anim-end→LANDING)] / sub254 LANDING[StateStart(field destroy) + EP(generic)]
+	/// 7020 SPECTER_OF_STORM — V5: slot[StateStart + FM@0.01(FP-capture beads≤4 + scale=beads×0.1+1 + EffectSet "EffectSet_SI_SA_ALS_SPECTER_OF_STORM_FINISH" summon + scale-set) + FM@0.379("DamageEffect_SpecterOfStorm_Damage" @Bip01Footsteps±100 + scale + handle) + EP(anim-end→FINISH)] / sub253[FM@0.01(EffectSet FINISH + scale) + FM@0.49("DamageEffect_SpecterOfStorm_Finish_Damage" + handle) + EP(anim-end→LANDING)] / sub254 LANDING[StateStart(field destroy) + EP(generic)]
 	void ASI_SA_ALS_SPECTER_OF_STORM_FrameMove();
 	void ASI_SA_ALS_SPECTER_OF_STORM_EventProcess();
 	void ASI_SA_ALS_SPECTER_OF_STORM_FINISH_FrameMove();
 	void ASI_SA_ALS_SPECTER_OF_STORM_FINISH_EventProcess();
 	void ASI_SA_ALS_SPECTER_OF_STORM_LANDING_StateStart();
 	void ASI_SA_ALS_SPECTER_OF_STORM_LANDING_EventProcess();
-	/// 7021 SPECTER_OF_BLADE — official: slot[StateStart + FM@0.4(FP-capture beads≤3 + "DamageEffect_SPECTER_OF_BLADE_Damage" @Bip01 + FP-power) + EP(anim-end→FINISH)] / sub256[FM@0.001("DamageEffect_SPECTER_OF_BLADE_Damage_Finish" @Bip01) + EP(simple anim-end)]
+	/// 7021 SPECTER_OF_BLADE — V5: slot[StateStart + FM@0.4(FP-capture beads≤3 + "DamageEffect_SPECTER_OF_BLADE_Damage" @Bip01 + FP-power) + EP(anim-end→FINISH)] / sub256[FM@0.001("DamageEffect_SPECTER_OF_BLADE_Damage_Finish" @Bip01) + EP(simple anim-end)]
 	void ASI_SA_ALS_SPECTER_OF_BLADE_FrameMove();
 	void ASI_SA_ALS_SPECTER_OF_BLADE_EventProcess();
 	void ASI_SA_ALS_SPECTER_OF_BLADE_FINISH_FrameMove();
 	void ASI_SA_ALS_SPECTER_OF_BLADE_FINISH_EventProcess();
-	/// 7022 SEVER — official: Init + FM@0.379(EffectSet "EffectSet_SI_SA_ALS_SEVER_DAMAGE" create → handle) + EP(generic) + StateEnd(nearest-hit-position capture — SKIPPED documented, deep DamageEffect hit-record internals)
+	/// 7022 SEVER — V5: Init + FM@0.379(EffectSet "EffectSet_SI_SA_ALS_SEVER_DAMAGE" create → handle) + EP(generic) + StateEnd(nearest-hit-position capture — SKIPPED documented, deep DamageEffect hit-record internals)
 	void ASI_SA_ALS_SEVER_FrameMove();
 	void ASI_SA_ALS_SEVER_EventProcess();
-	/// 7023 GET_BLOOD — official: slot[StateStart(count=0,handle=-1) + FM@0.4("DamageEffect_AAS_Get_Blood" @Bip01_Footsteps + handle) + FM@1.01(FP-restore: count≤2 + FP add) + EP(anim-end→FINISH) + StateEnd(field destroy)] / sub260[FM@0.47("DamageEffect_AAS_Get_Blood_Finish" @Bip01±75 + handle) + EP(generic) + StateEnd(field destroy)]
+	/// 7023 GET_BLOOD — V5: slot[StateStart(count=0,handle=-1) + FM@0.4("DamageEffect_AAS_Get_Blood" @Bip01_Footsteps + handle) + FM@1.01(FP-restore: count≤2 + FP add) + EP(anim-end→FINISH) + StateEnd(field destroy)] / sub260[FM@0.47("DamageEffect_AAS_Get_Blood_Finish" @Bip01±75 + handle) + EP(generic) + StateEnd(field destroy)]
 	void ASI_SA_AA_GET_BLOOD_StateStart();
 	void ASI_SA_AA_GET_BLOOD_FrameMove();
 	void ASI_SA_AA_GET_BLOOD_EventProcess();
@@ -1247,28 +1240,27 @@ void ASI_SA_ALS_VERITABLE_PANDEMONIUM_DamageStateStart();
 	void ASI_SA_AA_GET_BLOOD_FINISH_FrameMove();
 	void ASI_SA_AA_GET_BLOOD_FINISH_EventProcess();
 	void ASI_SA_AA_GET_BLOOD_FINISH_StateEnd();
-	/// 7024 FIRE_FOX — official: StateStart(timer=0,count=0) + FM@0.01(random 1-of-3 effect name + FP-capture beads≤4 + count=9+beads) + FM-per-frame(spawn while count>0 @0.035s interval from random-named DamageEffect @Bip01+rand-offset) + FM@0.4("DamageEffect_FIRE_FOX_SCRATCH_Damage" @Bip01±330) + EP(generic)
+	/// 7024 FIRE_FOX — V5: StateStart(timer=0,count=0) + FM@0.01(random 1-of-3 effect name + FP-capture beads≤4 + count=9+beads) + FM-per-frame(spawn while count>0 @0.035s interval from random-named DamageEffect @Bip01+rand-offset) + FM@0.4("DamageEffect_FIRE_FOX_SCRATCH_Damage" @Bip01±330) + EP(generic)
 	void ASI_SA_AA_FIRE_FOX_StateStart();
 	void ASI_SA_AA_FIRE_FOX_FrameMove();
 	void ASI_SA_AA_FIRE_FOX_EventProcess();
 
 	void ASI_SA_AA_FIRE_FOX_StateEnd();
-//}} 2026-09-04 //
-	/// 7025 SUPPRESSION — official: Init + EP(generic) only
+	/// 7025 SUPPRESSION — V5: Init + EP(generic) only
 	void ASI_SA_AA_SUPPRESSION_SPECTER_EventProcess();
-	/// 7220 VIEW_BETWEEN — official: slot[StateStart + FM@0.338(FP-capture 1 bead + "DamageEffect_VIEW_BETWEEN_Damage" @Bip01±65) + EP(anim-end→FINISH)] / sub237[FM@0.266("DamageEffect_VIEW_BETWEEN_FINISH_Damage" @Bip01±220) + EP(generic)]
+	/// 7220 VIEW_BETWEEN — V5: slot[StateStart + FM@0.338(FP-capture 1 bead + "DamageEffect_VIEW_BETWEEN_Damage" @Bip01±65) + EP(anim-end→FINISH)] / sub237[FM@0.266("DamageEffect_VIEW_BETWEEN_FINISH_Damage" @Bip01±220) + EP(generic)]
 	void ASI_A_ALS_VIEW_BETWEEN_FrameMove();
 	void ASI_A_ALS_VIEW_BETWEEN_EventProcess();
 	void ASI_A_ALS_VIEW_BETWEEN_FINISH_FrameMove();
 	void ASI_A_ALS_VIEW_BETWEEN_FINISH_EventProcess();
-	/// 7221 SPECTER_WALK — official: Init + EP(generic) only
+	/// 7221 SPECTER_WALK — V5: Init + EP(generic) only
 	void ASI_A_ALS_SPECTER_WALK_EventProcess();
-	/// 7222 SHAKE_CHAOS — official: slot[StateStart + FM@0.135(FP-capture + "DamageEffect_SHAKE_CHAOS_Damage1" @Bip01) + FM@0.309("DamageEffect_SHAKE_CHAOS_Damage2" @Bip01) + EP(anim-end→FINISH)] / sub240[FM@0.01("DamageEffect_SHAKE_CHAOS_FINISH_Damage" @Bip01) + EP(generic)]
+	/// 7222 SHAKE_CHAOS — V5: slot[StateStart + FM@0.135(FP-capture + "DamageEffect_SHAKE_CHAOS_Damage1" @Bip01) + FM@0.309("DamageEffect_SHAKE_CHAOS_Damage2" @Bip01) + EP(anim-end→FINISH)] / sub240[FM@0.01("DamageEffect_SHAKE_CHAOS_FINISH_Damage" @Bip01) + EP(generic)]
 	void ASI_A_ALS_SHAKE_CHAOS_FrameMove();
 	void ASI_A_ALS_SHAKE_CHAOS_EventProcess();
 	void ASI_A_ALS_SHAKE_CHAOS_FINISH_FrameMove();
 	void ASI_A_ALS_SHAKE_CHAOS_FINISH_EventProcess();
-	/// 7223 RAID — official: slot[StartFuture(flag=0) + StateStart + EP(flag||anim-end→ATTACK) + StateEnd(flag=0)] / sub243 ATTACK[FM@0.1/0.4/0.52(3× "DamageEffect_AAS_Raid_Attack" @Bip01±150) + EP(anim-end→FINISH)] / sub244[FM@0.222(2× "DamageEffect_AAS_Raid_Attack_Finish" @Bip01+Y180) + EP(generic)]
+	/// 7223 RAID — V5: slot[StartFuture(flag=0) + StateStart + EP(flag||anim-end→ATTACK) + StateEnd(flag=0)] / sub243 ATTACK[FM@0.1/0.4/0.52(3× "DamageEffect_AAS_Raid_Attack" @Bip01±150) + EP(anim-end→FINISH)] / sub244[FM@0.222(2× "DamageEffect_AAS_Raid_Attack_Finish" @Bip01+Y180) + EP(generic)]
 	void ASI_A_AA_RAID_StartFuture();
 	void ASI_A_AA_RAID_EventProcess();
 	void ASI_A_AA_RAID_StateEnd();
@@ -1276,29 +1268,25 @@ void ASI_SA_ALS_VERITABLE_PANDEMONIUM_DamageStateStart();
 	void ASI_A_AA_RAID_ATTACK_EventProcess();
 	void ASI_A_AA_RAID_ATTACK_FINISH_FrameMove();
 	void ASI_A_AA_RAID_ATTACK_FINISH_EventProcess();
-	/// 7224 MANA_DRAIN — official: StateStart(NAN,0) + FM@0.3("DamageEffect_MANA_DRAIN_MP_Damage" @Bip01 + handle) + FM@0.65(FP-add drained) + EP(generic) + StateEnd(FP-add drained + reset)
+	/// 7224 MANA_DRAIN — V5: StateStart(NAN,0) + FM@0.3("DamageEffect_MANA_DRAIN_MP_Damage" @Bip01 + handle) + FM@0.65(FP-add drained) + EP(generic) + StateEnd(FP-add drained + reset)
 	void ASI_A_ALS_MANA_DRAIN_StateStart();
 	void ASI_A_ALS_MANA_DRAIN_FrameMove();
 	void ASI_A_ALS_MANA_DRAIN_EventProcess();
 	void ASI_A_ALS_MANA_DRAIN_StateEnd();
 
-	/// shared state (official per-skill this[NNNN] — one cast at a time per unit → shared members semantically equivalent)
-	float							m_fFPCapturedPowerRate;		/// official 7017 this[6494] / 7018 this[6507] (StateStart GetPowerRate capture)
-	float							m_fFPPowerValue;			/// official this[6489/6490/6495/6497/6512/6515/6531] (f_32560430 result; -1.0 = no beads)
-	float							m_fFPSummonScale;			/// official 7020 this[6496] (summon scale = beads×0.1+1.0)
-	int								m_iFPBeadsConsumedTotal;	/// official this[6405] running total
-	CX2DamageEffect::CEffectHandle	m_hAraFieldDE;				/// official this[6513/6498/6520] (field DamageEffect handle; sub-state destroy)
-	CX2EffectSet::Handle			m_hAraEffectSet;				/// official this[6508] (SEVER Damage EffectSet handle)
+	/// shared state (V5 per-skill this[NNNN] — one cast at a time per unit → shared members semantically equivalent)
+	float							m_fFPPowerValue;			/// V5 this[6489/6490/6495/6497/6512/6515/6531] ( result; -1.0 = no beads)
+	float							m_fFPSummonScale;			/// V5 7020 (summon scale = beads×0.1+1.0)
+	int								m_iFPBeadsConsumedTotal;	/// V5 running total
+	CX2DamageEffect::CEffectHandle	m_hAraFieldDE;				/// V5 this[6513/6498/6520] (field DamageEffect handle; sub-state destroy)
 	/// 7018 Thunder
-	int								m_iThunderPhase;			/// official this[6499] (0 = cast phase → FIND, else generic)
-	float							m_fThunderDiveTimer;		/// official this[6504] (FIND dive timer / LANDING timer)
-	D3DXVECTOR3						m_vThunderTargetPos;			/// official this[6500-6502] (f_325742B0 nearest-enemy capture)
+	int								m_iThunderPhase;			/// V5 (0 = cast phase → FIND, else generic)
+	float							m_fThunderDiveTimer;		/// V5 (FIND dive timer / LANDING timer)
+	D3DXVECTOR3						m_vThunderTargetPos;			/// V5 ( nearest-enemy capture)
 	/// 7024 Fire Fox
-	std::wstring					m_wstrFoxEffectName;		/// official this[6521..] (random-selected 1-of-3 DamageEffect name)
-	int								m_iFoxFireCount;			/// official this[6528] (9 + beads)
-	float							m_fFoxFireTimer;			/// official this[6530] (spawn interval accumulator)
-//}} 2026-08-30 MARCH2015 Ara 3rd-path deep-mechanics //
-//}} 2026-08-19 MARCH2015 GU parity //
+	std::wstring					m_wstrFoxEffectName;		/// V5 this[6521..] (random-selected 1-of-3 DamageEffect name)
+	int								m_iFoxFireCount;			/// V5 (9 + beads)
+	float							m_fFoxFireTimer;			/// V5 (spawn interval accumulator)
 
 #endif
 	/// ��ȯ����
@@ -1516,36 +1504,21 @@ protected:
 #ifdef X2_ARA_3RD_PATH
 
 
-	float				m_fEnergyWaveChargeTime;			/// A2: ENERGY_WAVE hold-charge accumulator (clamp 2.0, dbl_32D20D80)
-	bool				m_bFallingDragonMemoRoll;			/// D3: FALLING_DRAGON memo 607031 roll (RNG%100 < 10xFP)
-	int					m_iSwallowAssaultAttackCount;		/// D6: official this[6477] first-attack counter
-	int					m_hSwallowAssaultFirstES;			/// D6: official this+25916 first-attack ES handle (-1 = none)
-	float				m_fHyperActiveTimer;				/// B9/B11/B24: official this+25940 hyper-active window timer
+	float				m_fHyperActiveTimer;				/// B9/B11/B24: V5 this+25940 hyper-active window timer
 	int					m_iBerserkAdvantageThreshold;		/// B13: INIT_COMPONENT FULL_HYPER_MODE_ADVANTAGE_COUNT (def 9)
 	int					m_iBerserkModeHitCount;				/// hits counted toward the threshold above
 	float				m_fBerserkHitInterval;				/// B13: INIT_COMPONENT FULL_HYPER_MODE_ADVANTAGE_INTERVAL_TIME
 	float				m_fBerserkHitTimer;					/// B14: Eun interval timer
 	bool				m_bRaidHitContinue;					/// B14: dedicated RAID hit flag (stop sharing m_iThunderPhase)
 	float				m_fManaDrainAccum;					/// B14/E5(c): MANA_DRAIN caster-side accumulator
-	vector<int>			m_vecPromotionItemIDList3;			/// B19: TAIL_TYPE promotion items (official this+25560)
-	vector<CX2EqipPtr>	m_vecPromotionEquipList2;			/// B20/B21/B22: tail-candidate equip list (official this+25576)
 	int					m_iSpecterRenderMode;				/// E10 stealth package: render mode (init -1; buff 420 -> 2)
 	bool				m_bSpecterWalkFlag;					/// E10: SPECTER_WALK active flag
 	float				m_fSpecterWalkDuration;				/// E10: buff 423 NECROMANCY duration
-	float				m_fThunderDuration;					/// E10: buff 424 SPECTEROFTHUNDER duration
-	float				m_fSpecterAlpha0;					/// E10: alpha source 0
-	float				m_fSpecterAlpha1;					/// E10: alpha source 1
 	CX2EffectSet::Handle m_hSpecterLoopEffect;				/// E10: loop effect handle (XXDownXZ chain loop FX, killed when leaving states {Start..LoopX}); INVALID_EFFECTSET_HANDLE = none
 	float				m_fNecromancyFoxCooldown;			/// E10: fox re-spawn cooldown
 	float				m_fSpecterSparkleTimer;				/// E10: sparkle countdown
-	float				m_fSpecterSparkleWindow;			/// E10: sparkle window
-	float				m_fAssimilationDamageRel;			/// E11: passive 7414 type 15 (init 1.0)
-	float				m_fSpiritualEyeIgnoreDef;			/// E11: passive 7415 type 17 (init 1.0)
-	float				m_fSpecterPowerReleaseMPRetake;		/// E11: passive 7413 type 66 (init -1.0 dead-load parity)
-	float				m_fSpecterPowerReleaseForceDown;	/// E11: passive 7413 type 40
-	int					m_iXXDownXZLoopCount;				/// E8: AA XXDownXZ input-driven loop counter (official this[6482])
+	int					m_iXXDownXZLoopCount;				/// E8: AA XXDownXZ input-driven loop counter ()
 	bool				m_bXXDownZXZArmed;					/// E8: AA XXDownXZ X-armed flag
-//}} 2026-09-04 //
 #endif
 };
 //#pragma endregion Ŭ����
