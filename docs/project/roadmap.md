@@ -484,13 +484,6 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       interpolated, the loop's clock is a `double`, and a step profiler (`X2_STEP_TRACE`) times the original's
       `KTDXPROFILE` markers. Confirmed by the user in game ([KTDXLIB](../porting/client-ktdxlib.md#micro-stutter-while-running-2026-11-20-clientframe-timing)).
 
-- [ ] `client/translate-br-text` (user, 2026-11-20; PR #121, draft): Portuguese text for the items, sets, skills,
-      monsters, quests, titles and strings still in English or Korean, taken from BR 2014-08 first and BR 2017 second
-      (`tools/assets/translate_from_br.py`, [client_data](../tools/client-data.md#content-changes-t42)); what neither
-      has stays as it is. Also the cash shop: Add's catalog rebuilt after Ara's and Elesis's and the class vouchers of
-      the later classes added ([ES_BILLING patch](../tools/database-patches.md#es_billing); server and client ids of
-      Add's two vouchers corrected, vouchers of the third paths mapped). Left: the text with no Portuguese source.
-
 ## Phase 5 — Deep cleanup
 
 Real refactoring (remove dead systems, reorganize folders and names), guided by tests/smoke tests

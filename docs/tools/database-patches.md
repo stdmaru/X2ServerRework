@@ -54,26 +54,6 @@ Done: `P_GSkill_BeforeList_INS`, the logs ([Statistics](#statistics)), the event
 Procedures that return nothing while the server reads a result (`P_LServerList_CCU_UPD`, `P_StatsStoneCnt_SET`,
 `gup_update_guild_maxno`) only make the server log that it read no result; they are left as they are.
 
-## ES_BILLING
-
-[`20261120_add_shop_and_class_vouchers.sql`](../../tools/database/patches/ES_BILLING/20261120_add_shop_and_class_vouchers.sql)
-(2026-11-20, `client/translate-br-text`): the cash shop catalog is `EB_Product` (the GameServer loads it at startup with
-`EBP_Product_SEL`; restart it after a patch), one row per item with a category: 11-16 normal gear by slot (weapon, top,
-bottom, hair, gloves, shoes), 17 fashion avatars, 21-25 accessories (weapon, face, body, legs, arm), 32 class tickets,
-oaths and skill memos. The triggers `ItemMallUpdater`/`ItemMallDeleter` keep `EB_ProductAttribute` in step, so a patch
-touches only `EB_Product`.
-
-- **Add's shop rebuilt.** It had ten elite weapons and nothing else. It now follows Ara's and Elesis's: 879 fashion
-  items (category 17, no promotion, `[Cobo]` or `[Velho]` items), 57 weapons and 202 pieces in 11-16 (elite weapons,
-  Bravery, Grendized, the Hamel pair, the three Sparring sets and the rare fashion sets), 69 accessories and the 29
-  tickets, job items and memos of 32.
-- **Class vouchers.** The shop lacked the vouchers of the classes added later: Ara's Little Specter and Asura, Elesis'
-  Dark Knight and Crimson Avenger, and every Add class (vouchers and job items for Psychic Tracer, Arc Tracer, Lunatic
-  Psyker, Mastermind, Time Tracer and Diabolic Esper). Ids are the ones in the BR 2017 client; see
-  [Add, Ara and Elesis class vouchers](client-data.md#content-changes-t42).
-
-Run it again safely (it removes its own rows first; 1,216 rows from `CD_PRODUCTNO` 8194). Prices are the table's 100.
-
 ## Statistics
 
 [`20261115_missing_logs.sql`](../../tools/database/patches/Statistics/20261115_missing_logs.sql) adds the 11 log
