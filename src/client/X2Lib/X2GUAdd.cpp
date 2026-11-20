@@ -4420,10 +4420,10 @@ void CX2GUAdd::ThirdPath_TimeControlCooldownProc( const CX2SkillTree::SKILL_ID e
 
 		ThirdPath_MaxStrikeTeardown( false );
 		//}} 2026-09-04 X2GUAdd leftovers LIFE-7 (maxstrike) //
-		//}} 2026-09-04 X2GUAdd reverify LIFE-7 //
+#endif
 	}
 
-
+#if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 	if ( ThirdPath_IsApocalypseSummonActive() )
 		ThirdPath_ApocalypseFinishSummon();
 #ifdef X2_ADD_2ND_PATH
