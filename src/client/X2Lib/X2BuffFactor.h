@@ -306,6 +306,21 @@ enum BUFF_TEMPLET_ID
 	BTI_BUFF_ANNIHILATION_WAY_OF_SWORD_DARK_KNIGHT	= 434,
 	BTI_BUFF_GALE_WAY_OF_SWORD_DARK_KNIGHT			= 435,
 
+	// The new paths' buffs (values from V5's Enum.lua; the last three are the debuffs Mind Control shortens)
+	BTI_BUFF_BLOOD_RUNAWAY						= 426,	// Elesis
+	BTI_DEBUFF_SHADOW_EDGE						= 432,	// Elesis
+	BTI_BUFF_SPECTER_WALK						= 420,	// Ara
+	BTI_BUFF_NECROMANCY							= 423,	// Ara
+	BTI_BUFF_SPECTEROFTHUNDER					= 424,	// Ara
+	BTI_BUFF_DYNAMO_FACTORY						= 342,	// Add
+	BTI_BUFF_APOCALYPSE							= 345,	// Add Mastermind
+	BTI_BUFF_CREST_OF_TIME						= 436,	// Add
+	BTI_BUFF_MOONLIGHT_RHAPSODY					= 438,	// Add
+	BTI_DEBUFF_REVERSE_STIGMA					= 440,	// Add Diabolic Esper
+	BTI_BUFF_TROCKTA_MAGICATTACKB_STUN			= 172,
+	BTI_STONE_GOD_ANGER							= 184,
+	BTI_DEBUFF_JUDGEMENT_FIRE					= 291,
+
 	BTI_DEBUFF_NEVER_MOVE						= 257,	// 아라 나찰 1식 - 흡혼
 	BTI_DEBUFF_SELF_PROTECTION_FORTITUDE		= 258,	// 회광반조 사용 불가 안내 디버프
 	BTI_BUFF_WATER_SHIELD						= 259,	// 하멜 비던 샤샤, 물의 보호막

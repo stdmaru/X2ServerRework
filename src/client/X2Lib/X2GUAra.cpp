@@ -142,6 +142,7 @@ CX2GUAra::CX2GUAra( int iUnitIndex_, int iTeamNum_, IN lua_State* pScriptLuaStat
 	m_hSwallowAssaultFirstES	= -1;
 	m_fHyperActiveTimer			= 0.f;
 	m_iBerserkAdvantageThreshold	= 0;
+	m_iBerserkModeHitCount		= 0;
 	m_fBerserkHitInterval		= 0.f;
 	m_fBerserkHitTimer			= 0.f;
 	m_bRaidHitContinue			= false;
@@ -3567,7 +3568,7 @@ void CX2GUAra::CommonFrameMoveFuture()
 		m_FutureStateData.m_ptrComboAndSkillChainInfo->SetChaining( true );
 		m_FutureStateData.m_ptrComboAndSkillChainInfo->ResetChainingFromNext();
 		m_ComboAndSkillChainSystem.ResetOtherListChaining( m_FutureStateData.m_ptrComboAndSkillChainInfo );
-
+	}
 
 #ifdef X2_ARA_3RD_PATH
 	if ( true == m_bSpecterWalkFlag
@@ -4205,27 +4206,6 @@ if( m_pXSkinAnim->EventTimerOneshot( fTimeToShow_ ) == true )
 			EraseBuffTempletFromGameUnit( BTI_BUFF_SPECTER_WALK );
 		} break;
 
-	// official nowAction==39 (UAI_AYR_RESURRECTION_ACTION): Yama Raja resurrection visuals - heal FX + green "HP +%d" text (post-heal CURRENT HP via GetNowHp, G7b note) at pos+50Y + BFI 264 at GetSkillLevel(SI_P_AYR_RESURRECTION=7410).
-	// SETTER: official's nowAction=39 rides the pending-kind-39 deferred dispatcher (ProcessSkillAtDie +24792=39 -> slot 319) which ours does NOT implement for Ara (ours does the direct knockdown + INLINE visuals in ProcessResurrection - G7b "net observable equal"). This case = official-structure consumer, dormant until the deferred dispatcher lands; the live visuals/buff stay inline (B17).
-	case UAI_AYR_RESURRECTION_ACTION:
-		{
-			if ( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
-				g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_AYR_HEAL_FX", this );
-
-			if ( NULL != g_pData->GetPicCharGreen() )
-			{
-				D3DXVECTOR3 pos	= GetPos();
-				pos.y += 50.0f;
-
-				WCHAR wszBuf[256] = {0,};
-				StringCchPrintf( wszBuf, 256, L"HP +%d", static_cast<int>( GetNowHp() ) );
-
-				g_pData->GetPicCharGreen()->DrawText( wszBuf, pos, GetDirVector(), CKTDGPicChar::AT_CENTER );
-			}
-
-			if ( NULL != GetUnit() )
-				SetBuffFactorToGameUnitByBuffFactorID( BFI_DEBUFF_SELF_PROTECTION_FORTITUDE, (UINT)GetUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AYR_RESURRECTION ) );
-		} break;
 	// NOTE (B18 REFLECTION check, official KOG bug NOT mirrored): official's case 26 reads GetSkillLevel(51) - skill m_eID=51 does NOT exist in the shipped 2015 NewSkillTempletVer2.lua (0 results) -> GetSkillLevel(51)==0 -> official's <=1 floor applies the Reflection buff at level 1 ALWAYS. Ours keeps GetSkillLevel(SI_A_ALD_REFLECTION=7219) = the real Reflection level (more correct; documented KOG-bug candidate, §26b mirroring exception) //
 //}} 2026-09-04 //
 #endif
@@ -6035,25 +6015,6 @@ void CX2GUAra::ConsumeForcePower( int iCount_ )
 }
 
 #ifdef X2_ARA_3RD_PATH
-
-void CX2GUAra::OnBerserkModeCombatHit( bool bKilled_ )
-{
-
-	if( false == GetAraGageData()->GetBerserkMode() )
-		return;
-
-	if( false == bKilled_ )
-	{
-		++m_iBerserkModeHitCount;
-		if( m_iBerserkModeHitCount >= 6 )
-		{
-			UpForcePower( 1 );
-			m_iBerserkModeHitCount = 0;
-		}
-	}
-	//}} 2026-09-04 //
-}
-//}} 2026-08-20 MARCH2015 3rd-path //
 
 
 /*virtual*/ float CX2GUAra::GetPowerRate()
@@ -15895,12 +15856,8 @@ void CX2GUAra::ASI_SA_ALS_VERITABLE_PANDEMONIUM_DamageStateStart()
 	g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SI_SA_ALS_VERITABLE_PANDEMONIUM_BLACKHOLE", this, NULL, IsHyperState(), GetPowerRate() );
 }
 //}} 2026-08-28 //
-/**
-	@brief		:  º  , 
-#else
-/** @function	: ASI_SA_AYR_SUPPRESSION_ENERGY_EventProcess
-	@brief		: ���º��� ���θ� �Ǵ�, ����
 #endif
+/** @function	: ASI_SA_AYR_SUPPRESSION_ENERGY_EventProcess
 */
 void CX2GUAra::ASI_SA_AYR_SUPPRESSION_ENERGY_EventProcess()
 {

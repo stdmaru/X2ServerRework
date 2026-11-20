@@ -56,7 +56,7 @@ public:
 	enum ARA_STATE_ID
 	{
 	//#pragma region STATE_ID
-		ASI_BASE = USI_END + 1,	/// �ƶ� State ID
+		ASI_BASE,	/// �ƶ� State ID
 
 		ASI_HYPER_WAIT,			/// ������ �� ��� ����
 		ASI_BERSERK_MODE,		/// 3���� ����
@@ -242,16 +242,16 @@ public:
 		ASI_SA_AYR_SUPPRESSION_ENERGY,		/// �ƶ� 2�� ���� ���� - ���� - ��
 	//#pragma endregion 2-1, 2-2�� ����
 #ifdef X2_ARA_3RD_PATH
-		ASI_COMBO_ALS_XXXLoopZ					= USI_END + 130,
-		ASI_DASH_JUMP_COMBO_ALS_ZX				= USI_END + 131,
-		ASI_A_ALS_VIEW_BETWEEN					= USI_END + 136,
-		ASI_A_ALS_SHAKE_CHAOS					= USI_END + 139,
-		ASI_A_AA_RAID							= USI_END + 142,
-		ASI_SA_ALS_SEVER						= USI_END + 149,
-		ASI_SA_ALS_RESTRAINTS_SPECTER			= USI_END + 150,
-		ASI_SA_ALS_VERITABLE_PANDEMONIUM		= USI_END + 157,
-		ASI_SA_AA_GET_BLOOD						= USI_END + 159,
-		ASI_SA_AA_SMASH							= USI_END + 163,
+		ASI_COMBO_ALS_XXXLoopZ,
+		ASI_DASH_JUMP_COMBO_ALS_ZX,
+		ASI_A_ALS_VIEW_BETWEEN,
+		ASI_A_ALS_SHAKE_CHAOS,
+		ASI_A_AA_RAID,
+		ASI_SA_ALS_SEVER,
+		ASI_SA_ALS_RESTRAINTS_SPECTER,
+		ASI_SA_ALS_VERITABLE_PANDEMONIUM,
+		ASI_SA_AA_GET_BLOOD,
+		ASI_SA_AA_SMASH,
 		ASI_A_ALS_VIEW_BETWEEN_FINISH,
 		ASI_A_ALS_SHAKE_CHAOS_FINISH,
 		ASI_A_ALS_MANA_DRAIN,
@@ -495,6 +495,9 @@ protected:
 		= CX2SkillTree::ASUT_GROUND );
 	virtual void	NoStateChangeActionFrameMove();
 	virtual float	GetActualMPConsume( const CX2SkillTree::SKILL_ID eSkillID_, const int iSkillLevel_ ) const;
+#ifdef X2_ARA_3RD_PATH
+	virtual float	GetPowerRate();		/// Little Specter and Asura skills scale with their passives
+#endif
 
 	void			LoadPromotionItemID( IN KLuaManager& luaManager_ );
 
@@ -1519,6 +1522,7 @@ protected:
 	int					m_hSwallowAssaultFirstES;			/// D6: official this+25916 first-attack ES handle (-1 = none)
 	float				m_fHyperActiveTimer;				/// B9/B11/B24: official this+25940 hyper-active window timer
 	int					m_iBerserkAdvantageThreshold;		/// B13: INIT_COMPONENT FULL_HYPER_MODE_ADVANTAGE_COUNT (def 9)
+	int					m_iBerserkModeHitCount;				/// hits counted toward the threshold above
 	float				m_fBerserkHitInterval;				/// B13: INIT_COMPONENT FULL_HYPER_MODE_ADVANTAGE_INTERVAL_TIME
 	float				m_fBerserkHitTimer;					/// B14: Eun interval timer
 	bool				m_bRaidHitContinue;					/// B14: dedicated RAID hit flag (stop sharing m_iThunderPhase)

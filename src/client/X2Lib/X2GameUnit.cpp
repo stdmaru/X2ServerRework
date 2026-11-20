@@ -10964,26 +10964,6 @@ void CX2GameUnit::CreateAndInsertCustomFunctionByBuff( const KBuffIdentity& Buff
 				m_vecCustomFunctionByBuffPtr.push_back( ptrCustomFunctionByBuff );
 		} break;
 
-#if defined(X2_ARA_3RD_PATH) || defined(X2_ADD_3RD_PATH)
-
-		case BTI_DEBUFF_PANDEMONIUM_FEAR:
-			{
-				CX2CustomFunctionByBuffPtr ptrCustomFunctionByBuff( new CX2CustomFunctionByBuffPandemoniumFear( BuffIdentity_, kBehaviorFactor_ ) );
-				if ( NULL != ptrCustomFunctionByBuff )
-					m_vecCustomFunctionByBuffPtr.push_back( ptrCustomFunctionByBuff );
-			} break;
-//}}
-
-
-		case BTI_DEBUFF_MOONLIGHT_RHAPSODY:
-			{
-				CX2CustomFunctionByBuffPtr ptrCustomFunctionByBuff( new CX2CustomFunctionByBuffMoonlightRhapsody( BuffIdentity_, kBehaviorFactor_ ) );
-				if ( NULL != ptrCustomFunctionByBuff )
-					m_vecCustomFunctionByBuffPtr.push_back( ptrCustomFunctionByBuff );
-			} break;
-//}}
-
-#endif
 	default:
 		break;
 	}

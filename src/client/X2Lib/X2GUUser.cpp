@@ -637,21 +637,6 @@ CX2GUUser::CX2GUUser( int unitIndex, int teamNum,
 , m_bIsPlayAvatarEmotionSoundWithoutEmotion ( false )
 {
 
-#ifdef X2_ADD_3RD_PATH
-, m_fCrestRecordHP( 0.f )
-, m_fCrestRecordMP( 0.f )
-, m_fCrestRecordDP( 0.f )
-, m_iCrestRecordMutation( 0 )
-, m_iCrestRecordNF( 0 )
-, m_fCrestRecordWoS( 0.f )
-, m_iCrestRecordFP( 0 )
-, m_iCrestRecordCannonBall( 0 )
-, m_iCrestRecordCannonBallEx( 0 )
-, m_iCrestPendingReviveKind( 0 )
-, m_bCrestRevivePending( false )
-, m_bCrestSuppressDamageWrite( false )
-#endif
-
     m_bFutureCanPassUnit = false;
     m_bFutureApplyAnimMove = true;
     m_bNowFallDown = true;
@@ -968,6 +953,20 @@ CX2GUUser::CX2GUUser( int unitIndex, int teamNum,
 
 CX2GUUser::~CX2GUUser(void)
 {
+#ifdef X2_ADD_3RD_PATH
+	m_fCrestRecordHP = 0.f;
+	m_fCrestRecordMP = 0.f;
+	m_fCrestRecordDP = 0.f;
+	m_iCrestRecordMutation = 0;
+	m_iCrestRecordNF = 0;
+	m_fCrestRecordWoS = 0.f;
+	m_iCrestRecordFP = 0;
+	m_iCrestRecordCannonBall = 0;
+	m_iCrestRecordCannonBallEx = 0;
+	m_iCrestPendingReviveKind = 0;
+	m_bCrestRevivePending = false;
+	m_bCrestSuppressDamageWrite = false;
+#endif
 
 //#ifdef TRANSFORMER_TEST
 //	TransformIntoUser();
@@ -16803,7 +16802,7 @@ void CX2GUUser::SendFrameData()
                 else
                     pSyncData = &m_SendSyncDataList[u-m_LastSendSyncDataList.size()];
                 kXPT_UNIT_USER_SYNC.Reset();
-                kXPT_UNIT_USER_SYNC.m_ucNowState = pSyncData->nowState;
+                kXPT_UNIT_USER_SYNC.m_usNowState = pSyncData->nowState;
                 kXPT_UNIT_USER_SYNC.m_ucNowAction			= pSyncData->nowAction;
                 kXPT_UNIT_USER_SYNC.m_cStateChangeNum			= pSyncData->stateChangeNum;
 //#ifdef  X2OPTIMIZE_USER_USER_PUSH_PASS_SYNC
@@ -16868,7 +16867,7 @@ void CX2GUUser::SendFrameData()
 //
 //#ifdef OPTIMIZED_P2P
 //			SyncData* pSyncData = &m_SendSyncDataList[i];
-//			kXPT_UNIT_USER_SYNC.m_ucNowState = pSyncData->nowState;
+//			kXPT_UNIT_USER_SYNC.m_usNowState = pSyncData->nowState;
 //
 //			kXPT_UNIT_USER_SYNC.nowAction			= pSyncData->nowAction;
 //
@@ -24804,7 +24803,7 @@ void CX2GUUser::SyncData::SetData( const KDYNAMIC_UNIT_USER_SYNC& SyncPacket, DW
 {
 	dwFrameMoveCount	= dwRealFrameMoveCount;
 
-	nowState				= SyncPacket.m_ucNowState;
+	nowState				= SyncPacket.m_usNowState;
 	nowSubState				= -1;
 	nowAction				= SyncPacket.m_ucNowAction;
 	bDirectChange			= SyncPacket.DecodeDirectChange();
@@ -24869,7 +24868,7 @@ void CX2GUUser::SyncData::_DecodeUserSyncPos( D3DXVECTOR3& vPosition, USHORT usP
 //#ifdef OPTIMIZED_P2P
 //void CX2GUUser::SyncData::SetData( KXPT_UNIT_USER_SYNC& SyncPacket, USHORT usHP, USHORT usMP )
 //{
-//    nowState				= SyncPacket.m_ucNowState;
+//    nowState				= SyncPacket.m_usNowState;
 //	nowSubState				= -1;
 //	nowAction				= SyncPacket.nowAction;
 //    bDirectChange			= SyncPacket.DecodeDirectChange();

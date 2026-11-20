@@ -1090,6 +1090,16 @@ public:
 		SA_PROJECTILE_CURVE_SPEED_REL,			/// Ŀ�� ���ǵ带 ���� ���ִ� ����
 		SA_DP_GAIN_REL,							/// DP ȹ�淮 ����
 		SA_DP_USE_REL,							/// DP �Ҹ� ����
+		// the new Add, Ara and Elesis paths (V5)
+		SA_RECOVERY_VALUE_REL,
+		SA_ADD_MP_VALUE_ABS,
+		SA_ADD_DP_VALUE_ABS,
+		SA_MP_CONSUMPTION,
+		SA_WAY_OF_SWORD_POINT_MULTIPLIER,
+		SA_COOLTIME_1,
+		SA_COOLTIME_2,
+		SA_COOLTIME_3,
+		SA_SCOPE_ABS_PVP,
 		// XSLSkillTree.h���� �߰����ּ���~
 	};
 

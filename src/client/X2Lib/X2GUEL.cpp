@@ -62,16 +62,14 @@ static const CX2GUUser::SkillCutInSet s_SkillCutInSet[] =
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SBH.dds"),
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SBH.dds"),
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SBH.dds"),
-#ifdef X2_ELESIS_3RD_PATH
 		},
-
 #ifdef X2_ELESIS_3RD_PATH
 		{
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SCA.dds"),
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SCA.dds"),
 			CX2GUUser::SkillCutIn( L"HQ_CutIn_Elesis_SCA.dds"),
+		},
 #endif
-		}
 };
 
 /*static */CX2GUEL* CX2GUEL::CreateGUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int frameBufferNum, CX2Unit* pUnit )
@@ -139,11 +137,6 @@ CX2GUEL::CX2GUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int 
 , m_hSBHScaletRoseDamageEffect( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_bIsThereBlazingDanceTarget( false )
 , m_bIsBlazingDanceLastAttack( false )
-#ifdef X2_ELESIS_3RD_PATH
-, m_bBloodHitBoost( false ), m_fEJBusterChargeTime( 0.f ), m_fEJBusterChargeStageMark( 0.f )
-, m_wBBLoopCount( 0 ), m_wBPSpinCount( 0 ), m_wDWLoopCount( 0 ), m_hDWLoopES( INVALID_EFFECTSET_HANDLE )
-, m_fBloodRunawayProcTimer( 999.0f ), m_fBBLoopTime( 0.f ), m_fBPLoopTime( 0.f )
-#endif
 , m_bIsFrameSword( false )
 , m_uiSkillLevelFlameSword( 0 )
 
@@ -152,6 +145,18 @@ CX2GUEL::CX2GUEL( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int 
 , m_fDashComboStartDelay( -1.0f )
 , m_fAncientFireRenderTime( -1.0f )
 {
+#ifdef X2_ELESIS_3RD_PATH
+	m_bBloodHitBoost = false;
+	m_fEJBusterChargeTime = 0.f;
+	m_fEJBusterChargeStageMark = 0.f;
+	m_wBBLoopCount = 0;
+	m_wBPSpinCount = 0;
+	m_wDWLoopCount = 0;
+	m_hDWLoopES = INVALID_EFFECTSET_HANDLE;
+	m_fBloodRunawayProcTimer = 999.0f;
+	m_fBBLoopTime = 0.f;
+	m_fBPLoopTime = 0.f;
+#endif
 	m_fThrowStartTime = 0.66f;
 	m_vThrowStartPosOffset = D3DXVECTOR3(40.f, 130.f, 0.f);
 	m_vThrowStartVelocity = D3DXVECTOR3(2000.f, 100.f, 0.f);
@@ -407,13 +412,6 @@ CX2GUEL::~CX2GUEL(void)
 	m_fDarkForceWoSPointMultiplier = 1.f;
 	m_fDarkForceHPIntakeRate = 0.f;
 	m_fDarkForceDamageRate = 1.f;
-//}} 2026-09-03 //
-
-
-	m_fSonicAssaultChargeTime = 0.f;
-	m_fSonicAssaultChargeRatio = 0.f;
-//}} 2026-09-03 //
-
 #endif
 	// �Ҳ��� ���� �ʱ�ȭ
 	m_fStigmaOfFireCoolTime = 0.f;
@@ -2094,7 +2092,7 @@ void CX2GUEL::OnCAAttackHitPassives( const CX2DamageManager::DamageData& damageD
 			bool bRemovedDebuff = false;
 			if( NULL != g_pX2Game )
 			{
-				BOOST_FOREACH( BUFF_TEMPLET_ID eDebuffID, g_pX2Game->GetOfficiallyDebuffList() )
+				for( const BUFF_TEMPLET_ID eDebuffID : g_pX2Game->GetOfficiallyDebuffList() )
 				{
 					auto FindDebuff = [eDebuffID]( CX2BuffTempletPtr ptrBuffTemplet_ ) { return eDebuffID == ptrBuffTemplet_->GetBuffTempletID(); };
 					if( m_vecBuffTempletPtr.end() != std::find_if( m_vecBuffTempletPtr.begin(), m_vecBuffTempletPtr.end(), FindDebuff ) )
@@ -6308,43 +6306,6 @@ void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_EventProcess()
 
 	CommonEventProcess();
 }
-#ifdef X2_ADD_3RD_PATH
-
-void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_BACK_StartFuture()
-{
-	CommonStateStartFuture();
-
-	--m_uiDodgeAndSlashReuseCount;
-}
-
-void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_BACK_EventProcess()
-{
-	m_sCurrentSkillKeyManager.CheckSkillSlotSwap();
-
-	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
-	{
-		StateChange( USI_WAIT );
-	}
-	else if ( m_uiDodgeAndSlashReuseCount > 0 &&
-			  true == m_sCurrentSkillKeyManager.IsPressedCurrentSkillKey(m_InputData) )
-	{
-		StateChange( ESI_SI_A_EL_DODGE_AND_SLASH_SECOND );
-	}
-	else if ( true == m_InputData.oneZ || true == m_InputData.oneX )
-	{
-		StateChange( ESI_SI_A_EL_DODGE_AND_SLASH_ATTACK_Z );
-	}
-	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
-		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
-		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
-		DASH_CANCEL_AFTER( m_fDashCancelAfter )
-		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
-
-	CommonEventProcess();
-}
-//}} 2026-08-19 MARCH2015 GU parity //
-
-#endif
 void CX2GUEL::ESI_SI_A_EL_DODGE_AND_SLASH_SECOND_StartFuture()
 {
 	CommonStateStartFuture();
@@ -6643,192 +6604,6 @@ void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_EventProcess()
 
 
 
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_READY_StartFuture()
-{
-	CommonStateStartFuture();
-
-	m_fSonicAssaultChargeTime = 0.f;
-	m_fSonicAssaultChargeRatio = 0.f;
-}
-//}} 2026-09-03 //
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_READY_EventProcess()
-{
-	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
-		StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_CHARGE );
-
-	CommonEventProcess();
-}
-
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_CHARGE_FrameMove()
-{
-	m_fSonicAssaultChargeTime += g_pKTDXApp->GetElapsedTime();
-	CommonFrameMove();
-}
-//}} 2026-09-03 //
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_CHARGE_EventProcess()
-{
-
-	m_sCurrentSkillKeyManager.CheckSkillSlotSwap();
-
-	if ( m_fSonicAssaultChargeTime >= 2.0f || false == IsElesisMemoSkillKeyHeld() )
-	{
-		if ( m_fSonicAssaultChargeTime <= 1.0f )
-			StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE );
-		else
-			StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE_CHARGED );
-	}
-	//}} 2026-09-03 //
-
-	CommonEventProcess();
-}
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE_EventProcess()
-{
-	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
-	{
-		StateChange( USI_WAIT );
-	}
-
-	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
-		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
-		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
-		DASH_CANCEL_AFTER( m_fDashCancelAfter )
-		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
-	//}} 2026-09-03 //
-
-	CommonEventProcess();
-}
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STAB_MEMO_FIRE_CHARGED_EventProcess()
-{
-	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
-	{
-		StateChange( USI_WAIT );
-	}
-
-	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
-		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
-		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
-		DASH_CANCEL_AFTER( m_fDashCancelAfter )
-		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
-	//}} 2026-09-03 //
-
-	CommonEventProcess();
-}
-
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_READY_StartFuture()
-{
-	CommonStateStartFuture();
-
-	m_fSonicAssaultChargeTime = 0.f;
-	m_fSonicAssaultChargeRatio = 0.f;
-}
-//}} 2026-09-03 //
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_READY_EventProcess()
-{
-	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
-	{
-		StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_CHARGE );
-	}
-
-	CommonEventProcess();
-}
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_CHARGE_FrameMove()
-{
-
-	const float fElapsed = g_pKTDXApp->GetElapsedTime();
-	const float fCost = 50.f * fElapsed;
-	if ( fCost <= GetNowMp() && m_fSonicAssaultChargeRatio < 1.f )
-	{
-		m_fSonicAssaultChargeRatio = min( m_fSonicAssaultChargeRatio + fElapsed, 1.f );
-		UpNowMp( -fCost );
-		if ( m_fSonicAssaultChargeRatio >= 1.f )
-			g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SA_EL_SONIC_ASSAULT_CHARGE", this, this, IsHyperState(), 1.f );
-	}
-	m_fSonicAssaultChargeTime += fElapsed;
-	//}} 2026-09-03 //
-	CommonFrameMove();
-}
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_CHARGE_EventProcess()
-{
-
-	m_sCurrentSkillKeyManager.CheckSkillSlotSwap();
-
-	if ( m_fSonicAssaultChargeTime >= 2.0f || false == IsElesisMemoSkillKeyHeld() )
-		StateChange( ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE );
-	//}} 2026-09-03 //
-
-	CommonEventProcess();
-}
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE_StateStart()
-{
-
-	CommonStateStart();
-	//}} 2026-09-03 //
-}
-
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE_FrameMove()
-{
-	if( true == m_pXSkinAnim->EventTimerOneshot( 0.01f ) )
-	{
-		const float fScale = min( m_fSonicAssaultChargeRatio, 1.f ) * 0.5f + 1.f;
-		m_PhysicParam.nowSpeed.x *= fScale;
-
-		std::vector<TIME_SPEED>& vecSpeedFactor = AccessSpeedFatorVector();
-		if( vecSpeedFactor.empty() == false )
-		{
-			TIME_SPEED timeSpeed;
-			timeSpeed.vSpeed = D3DXVECTOR3( vecSpeedFactor[0].vSpeed.x * fScale, 0.f, 0.11f );
-			timeSpeed.iFlag = 2;
-			vecSpeedFactor.push_back( timeSpeed );
-		}
-	}
-	CommonFrameMove();
-}
-//}} 2026-09-03 //
-
-void CX2GUEL::ESI_SI_A_EL_SONIC_ASSAULT_STING_MEMO_FIRE_EventProcess()
-{
-	if( true == m_pXSkinAnimFuture->IsAnimationEnd() )
-	{
-		StateChange( USI_WAIT );
-	}
-
-	SKILL_CANCEL_AFTER( m_fSkillCancelAfter )
-		WALK_CANCEL_AFTER( m_fWalkCancelAfter )
-		BWALK_CANCEL_AFTER( m_fBWalkCancelAfter )
-		DASH_CANCEL_AFTER( m_fDashCancelAfter )
-		ZX_CANCEL_AFTER_EX( m_fAttackCancelAfterEx )
-	//}} 2026-09-03 //
-
-	CommonEventProcess();
-}
-
-bool CX2GUEL::IsElesisMemoSkillKeyHeld()
-{
-	switch( m_eSpecialAttackKeyPressed )
-	{
-	case SAKP_A: return m_InputData.pureA;
-	case SAKP_S: return m_InputData.pureS;
-	case SAKP_D: return m_InputData.pureD;
-	case SAKP_C: return m_InputData.pureC;
-	case SAKP_Q: return m_InputData.pureQ;
-	case SAKP_W: return m_InputData.pureW;
-	case SAKP_E: return m_InputData.pureE;
-	case SAKP_R: return m_InputData.pureR;
-	default: break;
-	}
-	return false;
-}
 //}} 2026-08-19 MARCH2015 GU parity //
 
 
