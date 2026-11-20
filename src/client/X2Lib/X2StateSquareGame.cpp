@@ -611,7 +611,7 @@ void CX2StateSquareGame::SetShowStateDLG( bool bShow )
 		m_vOldEyePt		= g_pKTDXApp->GetDGManager()->GetCamera().GetEye();
 		m_vOldLookAtPt	= g_pKTDXApp->GetDGManager()->GetCamera().GetLookAt();
 
-		g_pKTDXApp->GetDGManager()->GetCamera().Point( 0,0,-1300, 0,0,0 );
+		g_pKTDXApp->GetDGManager()->GetCamera().Point( 0,-5000,-1300, 0,-5000,0 );
 		g_pKTDXApp->GetDGManager()->SetProjection( g_pKTDXApp->GetDGManager()->GetNear(), g_pKTDXApp->GetDGManager()->GetFar(), false );
 
 		if( NULL != g_pChatBox )
