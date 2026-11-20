@@ -344,14 +344,23 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         Done 2026-11-16: skills, items, quests, drops, crafting, server data and `Game01` patches
         ([Add character](add-character.md)); user checked in game: creation, the tutorial, items, skills, quests.
         Not yet checked in game: Add's two job changes, Elesis's and Ara's 2nd path job changes.
-  - [ ] `server/third-paths` (PR #112; user, 2026-11-15): Add's 2nd and 3rd paths (Arc Tracer 33, Mastermind 123,
-        Time Tracer 36, Diabolic Esper 126), Ara's and Elesis's 3rd (Little Specter 34, Asura 124, Dark Knight 35,
-        Crimson Avenger 125), ported from V5 behind switches ([Add character](add-character.md#toward-three-paths-for-every-class-survey-for-pr-83-2026-11-15)).
-        Done: switches and class enums, client code (builds without warnings), 16-bit state IDs in the P2P sync
-        ([T54](decisions.md)), the client data (2026-11-20, [client_data](../tools/client-data.md#content-changes-t42)),
-        the server data (`StatTable`, `ClassChange*`, the ranking procedure; 2026-11-20).
-        Left: the class change list in the inventory, the server's skill checks, the merge review, and checking it
-        in game.
+  - [x] `server/third-paths` (PR #112, merged 2026-11-20; user, 2026-11-15): Add's 2nd and 3rd paths (Arc Tracer 33,
+        Mastermind 123, Time Tracer 36, Diabolic Esper 126), Ara's and Elesis's 3rd (Little Specter 34, Asura 124,
+        Dark Knight 35, Crimson Avenger 125), ported from V5 behind switches
+        ([Add character](add-character.md#toward-three-paths-for-every-class-survey-for-pr-83-2026-11-15),
+        [client X2Lib](../porting/client-x2lib.md#the-new-paths-2026-11-20-serverthird-paths)): switches and class enums,
+        client code, 16-bit state IDs in the P2P sync ([T54](decisions.md)), the client data
+        ([client_data](../tools/client-data.md#content-changes-t42)), the server data (`StatTable`, `ClassChange*`, the
+        ranking procedure). User checked character select and creation (2026-11-20).
+  - [ ] `server/third-paths-followups`: what PR #112 left.
+        - Check each new class in game (`/uc` 33, 123, 36, 126, 34, 124, 35, 125), their skills and job change quests.
+        - The 2nd-job class change list in the inventory (`X2UIInventory`), the cash shop's class change items and
+          `X2Main`'s debug class change cheat for the new classes.
+        - The server's checks of the new skills (V5's `XSLSkillTree` `SA_*`).
+        - Time Tracer's Stardust Shower: our `Motion_ADD_TT.x` lacks the `_LOOP`/`_END` sets (only in V5's, which lacks
+          our `_START`).
+        - The `Enum.lua` check in `merge_records.py`/`merge_unit_script.py`.
+        - V5's customization items (`IT_CUSTOM`, stances and skill effects) need that system; left out.
   - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
         ratio, ultrawide included, and 16:9 by default. Today the UI's 1024×768 layout is scaled by separate X and Y
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it
