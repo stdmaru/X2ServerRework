@@ -105,6 +105,12 @@ enum BUFF_BEHAVIOR_TYPE
 	BBT_CHANGE_HYPER_CHARGE_SPEED,						/// 각성 충전 속도 증가
 //#endif //SERV_ADD_LUNATIC_PSYKER
 
+
+#ifdef X2_ELESIS_3RD_PATH
+	// V5's values (73, BBT_IGNORE_STATE_GUARD, is not used by our data)
+	BBT_DETONATION_IMPOSSIBLE = 74,					/// no MP charge by Z/X detonation (Assault Strike)
+	BBT_DOUBLE_ATTACK_BUFF = 75,					/// the owner's normal attacks may hit twice (Brutal Cutter)
+#endif
 };
 
 enum BUFF_DURATION_TIME_TYPE

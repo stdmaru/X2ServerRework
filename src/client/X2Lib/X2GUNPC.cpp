@@ -7439,7 +7439,13 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		/// 더블 어택 디버프 발동 여부 연산
 		if(  CX2DamageManager::AT_NORMAL ==  pDamageData->attackType )
 		{
-			if( IsDoubleAttackByBuff() )
+			bool bDoubleAttack = IsDoubleAttackByBuff();
+#ifdef X2_ELESIS_3RD_PATH
+			CX2GameUnit* pDoubleAttacker = pDamageData->optrAttackerGameUnit.GetObservable();
+			if( false == bDoubleAttack && NULL != pDoubleAttacker && pDoubleAttacker->IsDoubleAttackByOwnBuff() )
+				bDoubleAttack = true;
+#endif
+			if( bDoubleAttack )
             {
                 m_eDoubleAttack = ( bAttackedByMe == true ) ? DOUBLE_ATTACK_BY_ME : DOUBLE_ATTACK_BY_OTHER;
             }

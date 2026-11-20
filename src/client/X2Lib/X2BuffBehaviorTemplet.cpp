@@ -108,6 +108,10 @@ case type_: \
 			// Z 키 사용 X 키 사용 불가, 버프 타입 추가
 			CASE_BEHAVIOR_TEMPLET( CX2BuffIdentityBehaviorTemplet, BBT_Z_ATTACK_IMPOSSIBLE )
 			CASE_BEHAVIOR_TEMPLET( CX2BuffIdentityBehaviorTemplet, BBT_X_ATTACK_IMPOSSIBLE )
+#ifdef X2_ELESIS_3RD_PATH
+			CASE_BEHAVIOR_TEMPLET( CX2BuffIdentityBehaviorTemplet, BBT_DETONATION_IMPOSSIBLE )
+			CASE_BEHAVIOR_TEMPLET( CX2BuffDoubleAttackBehaviorTemplet, BBT_DOUBLE_ATTACK_BUFF )
+#endif
 
 			// 각 속성 별 인챈트 확률 증가
 			CASE_BEHAVIOR_TEMPLET( CX2BuffChangeEncahntAttackRateBehaviorTemplet, BBT_CHANGE_ATTRIBUTE_BLAZE_ATTACK_RATE )
@@ -2537,7 +2541,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 				{*/
 					m_fRate = (*pBehaviorFactor)[FO_VALUE];
 
-					pGameUnit_->CreateAndInsertDoubleAttackByBuff( pBuffTemplet_->GetBuffIdentity(), m_fRate );
+					pGameUnit_->CreateAndInsertDoubleAttackByBuff( pBuffTemplet_->GetBuffIdentity(), m_fRate, GetType() );
 
 					return true;
 				//}
@@ -2585,7 +2589,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 		m_eChangeType	= STATIC_CAST_FLOAT_TO_ENUM( BUFF_CHANGE_TYPE, kFactor_.m_vecValues[FO_CHANGE_TYPE] );
 		m_fRate = kFactor_.m_vecValues[FO_VALUE];
 
-		pGameUnit_->CreateAndInsertDoubleAttackByBuff( kBuffFactor_.m_BuffIdentity, m_fRate );
+		pGameUnit_->CreateAndInsertDoubleAttackByBuff( kBuffFactor_.m_BuffIdentity, m_fRate, GetType() );
 	}
 }
 
@@ -2595,7 +2599,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 */
 /*virtual*/ void CX2BuffDoubleAttackBehaviorTemplet::DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_ )
 {
-	pGameUnit_->EraseDoubleAttackByBuff( pBuffTemplet_->GetBuffIdentity() );
+	pGameUnit_->EraseDoubleAttackByBuff( pBuffTemplet_->GetBuffIdentity(), GetType() );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

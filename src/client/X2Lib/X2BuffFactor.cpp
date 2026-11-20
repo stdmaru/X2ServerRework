@@ -174,6 +174,10 @@ bool CX2BuffFactor::ParsingCombinationBehavior( KLuaManager& luaManager_, bool b
 				// Z 공격 불가, X 공격 불가 버프 타입 추가
 				CASE_BEHAVIOR_FACTOR( ParsingEmptyBehavior, BBT_Z_ATTACK_IMPOSSIBLE )
 				CASE_BEHAVIOR_FACTOR( ParsingEmptyBehavior, BBT_X_ATTACK_IMPOSSIBLE )
+#ifdef X2_ELESIS_3RD_PATH
+				CASE_BEHAVIOR_FACTOR( ParsingEmptyBehavior, BBT_DETONATION_IMPOSSIBLE )
+				CASE_BEHAVIOR_FACTOR_SKILL( ParsingDoubleAttackByBuffBehavior, BBT_DOUBLE_ATTACK_BUFF, bIsSkill )
+#endif
 
 				// 각 속성 별 인챈트 확률 증가
 				CASE_BEHAVIOR_FACTOR_SKILL( ParsingChangeEnchantAttackRateBehavior, BBT_CHANGE_ATTRIBUTE_BLAZE_ATTACK_RATE, bIsSkill )
