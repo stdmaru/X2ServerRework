@@ -205,3 +205,8 @@ the key that worked goes to the manifest so `pack` writes the entry with it agai
 2014, 2016 and 2017 `Item.kim` layouts ([Inventory](../original/inventory.md)); `tools/kom/tests/test_kim.py` round-trips each. To **pack** (`pack`/`compile`), tools need KOG's LuaJIT 2.0.2
 (`luajit-kog/luajit` beside script, or `$KOM_LUAJIT`/`--luajit`), currently built from `_reference` sources: pending moving this
 recipe into repository before `_reference` is removed. Extracting and decompiling do not need it.
+
+`ksm_anims.py <file.x>...` lists the animation sets of motion files, in KSM (`KSM `/`KAC ` blocks, as
+`KTDXAnimationController::ReadFromMemory` reads them) and in DirectX `.x` (text, binary and MSZIP `bzip`); `--diff
+<a.x> <b.x>` prints the sets only one of the two has. Animation names are not plain text in a KSM file, so this is how
+to check whether a motion file has the states a script plays (2026-11-20).
