@@ -68,10 +68,13 @@ void CX2BuffTempletManager::AddBuffFactor_LUA()
 {
 	KLuaManager luaManager( g_pKTDXApp->GetLuaBinder()->GetLuaState() );
 
-	UINT uiNum = 0;		/// BUFF_FACTOR_ID 를 order로 사용함
+	UINT uiNum = 0;		/// BUFF_FACTOR_ID is the factor's slot (ID 1 is index 0)
 	LUA_GET_VALUE_RETURN( luaManager, "BUFF_FACTOR_ID", uiNum, 0, DISPLAY_ERROR( L"BUFF_FACTOR_ID doesn't exist" ) );
 
-	if ( m_vecBuffFactorPtr.size() == uiNum - 1 )
+	// The original required the IDs to come one after another (1, 2, 3, ...). The new paths' factors keep V5's IDs,
+	// which the code also uses and which leave gaps (V5's factors we do not have), so any order is taken and a gap is
+	// an empty slot (GetBuffFactorPtr reports it). A factor that fails to parse leaves only its own slot empty.
+	if ( 0 != uiNum && ( m_vecBuffFactorPtr.size() < uiNum || NULL == m_vecBuffFactorPtr[uiNum - 1] ) )
 	{
 		if ( luaManager.BeginTable( "BUFF_FACTOR" ) )
 		{
@@ -79,7 +82,11 @@ void CX2BuffTempletManager::AddBuffFactor_LUA()
 			if ( NULL != ptrBuffFactor )
 			{
 				if ( ptrBuffFactor->ParsingBuffFactor( luaManager ) )
-					m_vecBuffFactorPtr.push_back( ptrBuffFactor );
+				{
+					if ( m_vecBuffFactorPtr.size() < uiNum )
+						m_vecBuffFactorPtr.resize( uiNum );
+					m_vecBuffFactorPtr[uiNum - 1] = ptrBuffFactor;
+				}
 			}
 			else
 			{
@@ -95,7 +102,7 @@ void CX2BuffTempletManager::AddBuffFactor_LUA()
 	}
 	else
 	{
-		DISPLAY_ERROR( L"BUFF_FACTOR_ID invalid" );
+		DISPLAY_ERROR( L"BUFF_FACTOR_ID invalid or already taken" );
 	}
 }
 
@@ -151,7 +158,8 @@ CX2BuffTempletPtr CX2BuffTempletManager::GetBuffTempletPtr( const BUFF_TEMPLET_I
 
 CX2BuffFactorPtr CX2BuffTempletManager::GetBuffFactorPtr( const UINT uiBuffFactorNumber_ ) const
 {
-	if ( uiBuffFactorNumber_ != 0 && uiBuffFactorNumber_ <= m_vecBuffFactorPtr.size() )	/// 작다로 비교 하지 않은 이유는 인덱스 0번이 uiBuffFactorNumber 1로 시작하기 때문
+	if ( uiBuffFactorNumber_ != 0 && uiBuffFactorNumber_ <= m_vecBuffFactorPtr.size()	/// ID 1 is index 0
+		 && NULL != m_vecBuffFactorPtr[uiBuffFactorNumber_ - 1] )	/// a gap in the IDs (AddBuffFactor_LUA)
 	{
 		return m_vecBuffFactorPtr[uiBuffFactorNumber_ - 1];
 	}
