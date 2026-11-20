@@ -559,7 +559,6 @@ public:
 		ANSI_ADE_COMBO_XXXX_NO_FORMATION_MODE,
 		ANSI_ADE_COMBO_XXXZ_FORMATION_MODE,
 		ANSI_ADE_COMBO_XXXZ_NO_FORMATION_MODE,
-//}} 2026-08-19 MARCH2015 GU parity //
 #endif
 	};
 
@@ -1138,7 +1137,7 @@ void AMMComboXXDownXStartStateEnd();
 	void AMMComboXXDownXLoopStateStart();
 	void AMMComboXXDownXLoopStateEnd();		///< destroy the loop beam DE on exit
 	void AMMComboXXDownXEndEventProcess();
-	void AMMComboXXDownXEndStateStart();	///< official END @0.01 (sub_324E7450): spawn DamageEffect_AMM_XXDownX_Finish
+	void AMMComboXXDownXEndStateStart();	///< V5 END @0.01 : spawn DamageEffect_AMM_XXDownX_Finish
 	void AMMDashJumpComboXZEventProcess();
 	void AMMDashJumpComboXZZEventProcess();
 #endif
@@ -1155,7 +1154,6 @@ std::map<int,int> m_mapThirdPathChain;
 
 
 	void ANSI_AddComboChain_EventProcess();
-//}} 2026-08-20 MARCH2015 3rd-path //
 
 	void ATTComboNasodArmorLandingEventProcess();
 	void ATTComboNasodArmorXXXLoopStateStart();
@@ -1164,15 +1162,13 @@ std::map<int,int> m_mapThirdPathChain;
 	void ATTComboNasodArmorZZZZStartEventProcess();
 	void ATTComboNasodArmorZZZZLoopEventProcess();
 	void ATTComboZZXXFrameMove();
-//}} 2026-09-04 X2GUAdd reverify C09 D24 //
 
 
-//}} 2026-08-28 //
 
-	bool	IsAddSkillKeyHeld();																		/// official key-page released check (f_31E93560) — mirror IsELSkillKeyHeld (X2GUEL.cpp:6956)
-	bool	ThirdPath_DPCheckOrConsume( const float fOtherUnitRate_, const float fMyUnitRate_ );		/// official f_324EE2E0 DPCheck: consume DP at rate when affordable (my-unit rate / other-unit rate)
-	int		ThirdPath_ConsumeDPPoints( const int iMaxPoints_ );										/// official f_325042B0: consume up to N DP points (2015 pip system 0-6 @gageData+248; our float DP 0-8000 → 1 point = MAX_DP_GAGE_VALUE/6)
-	void	CreateSpaceCrackField( const bool bSubProjectile_ );										/// official f_32501B70: spawn the crack rupture field (Main projectile; Sub variant costs 200 DP)
+	bool	IsAddSkillKeyHeld();																		/// V5 key-page released check — mirror IsELSkillKeyHeld (X2GUEL.cpp:6956)
+	bool	ThirdPath_DPCheckOrConsume( const float fOtherUnitRate_, const float fMyUnitRate_ );		/// V5 DPCheck: consume DP at rate when affordable (my-unit rate / other-unit rate)
+	int		ThirdPath_ConsumeDPPoints( const int iMaxPoints_ );										/// V5: consume up to N DP points (2015 pip system 0-6 @gageData+248; our float DP 0-8000 → 1 point = MAX_DP_GAGE_VALUE/6)
+	void	CreateSpaceCrackField( const bool bSubProjectile_ );										/// V5: spawn the crack rupture field (Main projectile; Sub variant costs 200 DP)
 	/// 9024 VOID_FIELD — slot[StartFuture + FM@0.01(field DE + loop ES spawn) + EP anim-end→LOOP], LOOP[FM + EP DP-drain end-check ≥1s min / 5s cap / key-release / DP-out], END[FM@0.01 stop ES + destroy field + EP cancel]
 	void ANSI_SA_ATT_VOID_FIELD_StartFuture();
 	void ANSI_SA_ATT_VOID_FIELD_FrameMove();
@@ -1211,111 +1207,94 @@ std::map<int,int> m_mapThirdPathChain;
 
 	void ThirdPath_OnMoonlightWaveFrameMove( const float fElapsedTime_ );
 	//}}
-	/// 9023 VOID_IMPACT — official FM 0x324F5F20 @0.846: scan nearest hostile in front (radius SA_SCOPE_ABS, band ±180) → spawn EffectSet_ATT_Void_Impact_Attack at the target's Bip01 (fallback: my pos + facing×scope, Y+80)
+	/// 9023 VOID_IMPACT — V5 FM @0.846: scan nearest hostile in front (radius SA_SCOPE_ABS, band ±180) → spawn EffectSet_ATT_Void_Impact_Attack at the target's Bip01 (fallback: my pos + facing×scope, Y+80)
 	void ANSI_SA_ATT_VOID_IMPACT_FrameMove();
 	void ANSI_ThirdPath_OneShotGroundPinned_EventProcess();
-	/// 9028 REVERSE_STIGMA — official main FM 0x324F6740 @0.1: scan → mark target (record uid+pos+duration, debuff ES on target) + Attack damage at target; non-transferable target → instant Return damage; RETURN-state FM 0x324F92D0→0x324F8900 @0.1: transfer marked target to the recorded position + Return damage + cleanup
+	/// 9028 REVERSE_STIGMA — V5 main FM @0.1: scan → mark target (record uid+pos+duration, debuff ES on target) + Attack damage at target; non-transferable target → instant Return damage; RETURN-state FM → @0.1: transfer marked target to the recorded position + Return damage + cleanup
 	void ANSI_SA_ADE_REVERSE_STIGMA_FrameMove();
 	void ANSI_SA_ADE_REVERSE_STIGMA_RETURN_FrameMove();
-	void ANSI_SA_ADE_REVERSE_STIGMA_RETURN_EventProcess();	///< shared generic-cancel EP (official main EP 0x3250E010 + sub-212 EP 0x3250E250)
-	bool ThirdPath_StigmaMarkTarget( CX2GameUnit* pTarget_ );			///< official f_324F09E0 (transferable-check + clear old mark + store new)
-	void ThirdPath_StigmaClearMark();									///< official f_324EFB80 (stop debuff ES + reset uid/pos/duration)
-	/// 9030 GRAVITY_BURSTER — official FM 0x3250E840 @1.1: formation+mutation-stacks → consume 1 stack + EffectSet_SA_ADE_GRAVITY_BURSTER_Damage_Mutauion; else normal _Damage
+	void ANSI_SA_ADE_REVERSE_STIGMA_RETURN_EventProcess();	///< shared generic-cancel EP (V5 main EP + sub-212 EP)
+	bool ThirdPath_StigmaMarkTarget( CX2GameUnit* pTarget_ );			///< V5 (transferable-check + clear old mark + store new)
+	void ThirdPath_StigmaClearMark();									///< V5 (stop debuff ES + reset uid/pos/duration)
+	/// 9030 GRAVITY_BURSTER — V5 FM @1.1: formation+mutation-stacks → consume 1 stack + EffectSet_SA_ADE_GRAVITY_BURSTER_Damage_Mutauion; else normal _Damage
 	void ANSI_SA_ADE_GRAVITY_BURSTER_FrameMove();
-	/// 9213 FORCE_NOVA — official FM 0x325023C0 @0.5 (hit-flag armed by DamageEffect_ADE_FORCE_NOVA_Attack landing, official owner-callbacks 0x324F1160/0x324F9E20): formation → DP += SA_MP_RETAKE_ABS×20 + "DP+ %d"; else MP += value + "MP+ %d"
+	/// 9213 FORCE_NOVA — V5 FM @0.5 (hit-flag armed by DamageEffect_ADE_FORCE_NOVA_Attack landing, V5 owner-callbacks /): formation → DP += SA_MP_RETAKE_ABS×20 + "DP+ %d"; else MP += value + "MP+ %d"
 	void ANSI_A_ADE_FORCE_NOVA_StateStart();
 	void ANSI_A_ADE_FORCE_NOVA_FrameMove();
-	/// 9214 FORCE_FINGER — official FM 0x32502580 @0.271: per scanned target (up to 2): EffectSetI self + By_Target + Explosion DE at target + target MP-drain (SA_MP_INTAKE_ABS) + caster MP/DP recovery (SA_MP_RETAKE_ABS) + left-hand beam particle
+	/// 9214 FORCE_FINGER — V5 FM @0.271: per scanned target (up to 2): EffectSetI self + By_Target + Explosion DE at target + target MP-drain (SA_MP_INTAKE_ABS) + caster MP/DP recovery (SA_MP_RETAKE_ABS) + left-hand beam particle
 	void ANSI_A_ADE_FORCE_FINGER_FrameMove();
-	/// shared DE helpers (official 2015 semantics)
-	int ThirdPath_FindScanTargets( const float fRadius_, const float fYBand_, CX2GameUnit** ppOutTargets_, const int iMaxTargets_, const float fDownAngleDeg_ = -9999.f, const float fUpAngleDeg_ = 9999.f );	///< official f_31EBB040 (front cone scan, closest-first; args 5/6 = the elevation-angle window, default-off)
+	/// shared DE helpers (V5 2015 semantics)
+	int ThirdPath_FindScanTargets( const float fRadius_, const float fYBand_, CX2GameUnit** ppOutTargets_, const int iMaxTargets_, const float fDownAngleDeg_ = -9999.f, const float fUpAngleDeg_ = 9999.f );	///< V5 (front cone scan, closest-first; args 5/6 = the elevation-angle window, default-off)
 	CX2GameUnit* ThirdPath_FindScanTarget( const CX2SkillTree::SKILL_ID eSkillID_ );	///< scope from templet (SA_SCOPE_ABS, PvP room → SA_SCOPE_ABS_PVP)
-	float ThirdPath_GetScanScope( const CX2SkillTree::SKILL_ID eSkillID_ );			///< SA_SCOPE_ABS (PvP room → SA_SCOPE_ABS_PVP; official value-type 29/157)
-	void ThirdPath_RecoverMPorDP( const float fValue_ );					///< official FORCE_NOVA/FORCE_FINGER recovery branch (formation → DP ×20 + "DP+ %d"; else → MP + "MP+ %d")
-	void ThirdPath_OnStigmaMarkFrameMove( const float fElapsedTime_ );		///< mark duration tick (official 26576/26596)
+	float ThirdPath_GetScanScope( const CX2SkillTree::SKILL_ID eSkillID_ );			///< SA_SCOPE_ABS (PvP room → SA_SCOPE_ABS_PVP; V5 value-type 29/157)
+	void ThirdPath_RecoverMPorDP( const float fValue_ );					///< V5 FORCE_NOVA/FORCE_FINGER recovery branch (formation → DP ×20 + "DP+ %d"; else → MP + "MP+ %d")
+	void ThirdPath_OnStigmaMarkFrameMove( const float fElapsedTime_ );		///< mark duration tick (V5 /26596)
 
-	bool	ThirdPath_AnchorChaseTarget( const float fRange_, const float pfParams_[3], OUT D3DXVECTOR3* pvAnchorOut_, OUT D3DXVECTOR3* pvEnemyPosOut_);	///< official f_31EAB010 - the AMM XXDownX loop-beam anchor-chase target search (collision-point walk + running-nearest range + line-direction probe + cone gate + elevation slope band; non-const like the official)
-	void	ThirdPath_MaxStrikeRecordTarget( CX2DamageManager::DamageData* pDamageData_ );				///< official f_324EFC30 - record the attack-hit defender into the MaxStrike homing record (gated on the barrage window)
-	void	ThirdPath_MaxStrikeFireOnHit( CX2DamageManager::DamageData* pDamageData_ );					///< DESIGN-INFERENCE fire-on-hit (the official driver = the KPT command-word machine newslot_327 case 38, asm-unresolvable per section 49a/49d)
-	void	ThirdPath_OnMaxStrikeFrameMove( const float fElapsedTime_ );								///< official newslot_317 MaxStrike window branch (tick + the f_324F8DC0 ball follow + the expiry teardown)
-	void	ThirdPath_MaxStrikeTeardown( const bool bRefundUnfired_ );									///< official f_32503980 (queue destroy + window/record/power clear; arg==1 = the expiry refund count x 25.0)
-	//}} 2026-09-04 X2GUAdd leftovers //
+	bool	ThirdPath_AnchorChaseTarget( const float fRange_, const float pfParams_[3], OUT D3DXVECTOR3* pvAnchorOut_, OUT D3DXVECTOR3* pvEnemyPosOut_);	///< V5 - the AMM XXDownX loop-beam anchor-chase target search (collision-point walk + running-nearest range + line-direction probe + cone gate + elevation slope band; non-const like the)
+	void	ThirdPath_MaxStrikeRecordTarget( CX2DamageManager::DamageData* pDamageData_ );				///< V5 - record the attack-hit defender into the MaxStrike homing record (gated on the barrage window)
+	void	ThirdPath_MaxStrikeFireOnHit( CX2DamageManager::DamageData* pDamageData_ );					///< DESIGN-INFERENCE fire-on-hit (the V5 driver = the KPT command-word machine newslot_327 case 38, asm-unresolvable per section 49a/49d)
+	void	ThirdPath_OnMaxStrikeFrameMove( const float fElapsedTime_ );								///< V5 newslot_317 MaxStrike window branch (tick + the ball follow + the expiry teardown)
+	void	ThirdPath_MaxStrikeTeardown( const bool bRefundUnfired_ );									///< V5 (queue destroy + window/record/power clear; arg==1 = the expiry refund count x 25.0)
 
 	UidType							GetStigmaMarkTargetUID() const { return m_uidStigmaTarget; }
 	int								GetStigmaMarkTargetType() const { return m_iStigmaTargetType; }
-	//}} 2026-08-30 MARCH2015 batch4 //
 
-	CX2DamageEffect::CEffectHandle	m_hVoidFieldDE;			/// official this[6626]
-	CX2EffectSet::Handle			m_hVoidFieldLoopES;		/// official this[6627]
-	bool							m_bVoidFieldEndBurst;	/// official byte 26512
-	float							m_fVoidFieldLoopTime;	/// official stateTime this+21016 (LOOP accumulator)
-	std::vector<CX2DamageEffect::CEffectHandle>	m_vecMaxStrikeHandles;	/// official vector this[6614] (the barrage placeholder-ball queue)
-	float							m_fMaxStrikePower;		/// official this[6620] (the captured barrage power, post DP-pip x(1+0.1N))
+	CX2DamageEffect::CEffectHandle	m_hVoidFieldDE;
+	CX2EffectSet::Handle			m_hVoidFieldLoopES;
+	float							m_fVoidFieldLoopTime;	/// V5 stateTime this+21016 (LOOP accumulator)
+	std::vector<CX2DamageEffect::CEffectHandle>	m_vecMaxStrikeHandles;	/// V5 vector (the barrage placeholder-ball queue)
+	float							m_fMaxStrikePower;		/// V5 (the captured barrage power, post DP-pip x(1+0.1N))
 
-	float							m_fMaxStrikeWindowDuration;	/// official this[6619] (the armed window duration = max(SA_EFFECTIVE_TIME, 60))
-	float							m_fMaxStrikeWindowRemain;	/// official this[6618] (the ticking window remaining; cool-time + fire gates read this)
-	UidType							m_uidMaxStrikeTarget;		/// official this[6622-6623] (the homing-target record UID64; 0 = none)
-	int								m_iMaxStrikeTargetType;		/// official this[6624] (the homing-target record GAME_UNIT_TYPE: 0 = user, 1 = NPC)
-	//}} 2026-09-04 X2GUAdd leftovers LOCK-2b //
-	CX2DamageEffect::CEffectHandle	m_hStardustFieldDE;		/// official this[6631]
-	CX2EffectSet::Handle			m_hStardustLoopES;		/// official this[6634]
-	CKTDGXMeshPlayer::CXMeshInstanceHandle	m_hStardustMesh;	/// official this[6632] (Mesh_ATT_Stardust_Shower_Drop = elsword_SA_rageCutter_spwanPoint.X)
+	float							m_fMaxStrikeWindowDuration;	/// V5 (the armed window duration = max(SA_EFFECTIVE_TIME, 60))
+	float							m_fMaxStrikeWindowRemain;	/// V5 (the ticking window remaining; cool-time + fire gates read this)
+	UidType							m_uidMaxStrikeTarget;		/// V5 (the homing-target record UID64; 0 = none)
+	int								m_iMaxStrikeTargetType;		/// V5 (the homing-target record GAME_UNIT_TYPE: 0 = user, 1 = NPC)
+	CX2DamageEffect::CEffectHandle	m_hStardustFieldDE;
+	CX2EffectSet::Handle			m_hStardustLoopES;
+	CKTDGXMeshPlayer::CXMeshInstanceHandle	m_hStardustMesh;	/// V5 (Mesh_ATT_Stardust_Shower_Drop = elsword_SA_rageCutter_spwanPoint.X)
 
 	bool							m_bApocalypseSummoned;		/// summon out this cast
-	bool							m_bApocalypseFinisherDone;	/// official byte 26324 (recast-finisher already triggered)
+	bool							m_bApocalypseFinisherDone;	/// V5 byte 26324 (recast-finisher already triggered)
 	bool							m_bXXDownXUsed;				/// Mastermind's XX down X already used in this combo
 	bool							m_bComboXXXDamageEffectPlayed;	/// COMBO_XXX projectile already fired
-	//}} 2026-08-30 MARCH2015 batch5 //
-	int								m_iStardustDummyCounter;/// official this[6633]
-	float							m_fStardustSpawnAccum;	/// official this[6630]
-	float							m_fStardustDuration;	/// official this[6629]
+	int								m_iStardustDummyCounter;
+	float							m_fStardustSpawnAccum;
+	float							m_fStardustDuration;
 	float							m_fStardustLoopTime;
 
 	D3DXVECTOR2						m_vStardustSavedNowSpeed;
-	//}} 2026-09-04 X2GUAdd leftovers TTDE-7 //
-	CX2EffectSet::Handle			m_hSpaceCrackES;		/// official this[26452]
-	bool							m_bSpaceCrackActive;	/// official this[26442]
-	bool							m_bSpaceCrackFieldOn;	/// official this[26441]
-	float							m_fSpaceCrackPower;		/// official this[26444]
-	bool							m_bMoonlightActive;		/// official 26600
-	float							m_fMoonlightTimer;		/// official 26604
-	float							m_fMoonlightPower;		/// official 26608
-	bool							m_bMoonlightDPConsumed;	/// official 26612
+	CX2EffectSet::Handle			m_hSpaceCrackES;
+	bool							m_bSpaceCrackActive;
+	bool							m_bMoonlightActive;
+	float							m_fMoonlightTimer;
+	float							m_fMoonlightPower;
 	CX2EffectSet::Handle			m_hMoonlightWaveES;
 
-	bool							m_bForceNovaHit;		/// official byte 26620 (armed when DamageEffect_ADE_FORCE_NOVA_Attack lands — official DamageEffect owner-callbacks 0x324F1160/0x324F9E20; reset at 9213 StateStart 0x324E0080)
-	UidType							m_uidStigmaTarget;		/// official this[6638-6639] = 26552-26556 (marked target uid; 0 = none)
-	int								m_iStigmaTargetType;	/// official this[6640] = 26560 (marked target GUT type)
-	D3DXVECTOR3						m_vStigmaMarkPos;		/// official 26580-26588 (recorded mark position)
-	float							m_fStigmaMarkDuration;	/// official 26576 (SA_EFFECTIVE_TIME at level; desc "Use Duration: 3-17.5 secs")
-	float							m_fStigmaMarkTimer;		/// official this+26472 (the mark countdown); (the 26596 cite was a batch-era error - 26596 = a 1.0/0.0 flag per the manifest section7)
-	CX2EffectSet::Handle			m_hStigmaDebuffES;		/// official 26592 (EffectSetI_SA_ADE_REVERSE_STIGMA_Debuff spawned ON the target)
-	//}} 2026-08-30 MARCH2015 batch3 //
+	bool							m_bForceNovaHit;		/// V5 byte 26620 (armed when DamageEffect_ADE_FORCE_NOVA_Attack lands — V5 DamageEffect owner-callbacks /; reset at 9213 StateStart)
+	UidType							m_uidStigmaTarget;		/// V5 = 26552-26556 (marked target uid; 0 = none)
+	int								m_iStigmaTargetType;	/// V5 = 26560 (marked target GUT type)
+	D3DXVECTOR3						m_vStigmaMarkPos;		/// V5 -26588 (recorded mark position)
+	float							m_fStigmaMarkTimer;		/// V5 this+26472 (the mark countdown); (the 26596 cite was a batch-era error - 26596 = a 1.0/0.0 flag per the manifest section7)
+	CX2EffectSet::Handle			m_hStigmaDebuffES;		/// V5 (EffectSetI_SA_ADE_REVERSE_STIGMA_Debuff spawned ON the target)
 
-	int								m_iFactoryMarkedSkillID;	/// official this+26084 (0 = none, else the marked install skill ID)
-	float							m_vFactoryDroneOffset[3];	/// official this+26092/26096/26100 (init -200/150/0)
+	int								m_iFactoryMarkedSkillID;	/// V5 this+26084 (0 = none, else the marked install skill ID)
+	float							m_vFactoryDroneOffset[3];	/// V5 this+26092/26096/26100 (init -200/150/0)
 
-	int								m_iFactoryPhase;			/// official this+26104 (0 = none, 1 = generated/active, 2 = post-attack idle, 3 = attacking)
-	//}} 2026-09-04 X2GUAdd reverify FACT-2 //
-	bool							m_bFactoryFlagWait;			/// official byte 26108 (drone wait-anim flag; default true)
-	bool							m_bFactoryModeEntered;		/// official byte 26109 (mode entered via install cast)
-	float							m_fFactoryDP;				/// official this+25768 (install-switch DP cost; ctor init 0.0 per the official ctor disasm, = 3.0 - passive 9411 SA_EFFECTIVE_TIME at the mode-enter)
-	float							m_fFactoryMP;				/// official this+25772 (install re-create MP rate; init 1.0, = passive 9411 SA_MP_CONSUMPTION multiplier 0.97..0.622)
-	float							m_fInstallDmgScale;			/// official this+25804 (install-skill damage scale; = passive 9413 value-15)
-	float							m_fFactoryDroneSpeed;		/// official this+26136 (drone missile speed; = 9015 SA_REMOTE_SPEED_ABS, default 1250)
-	int								m_iNewUpdateLevel;			/// official this+25800 (passive 9412 "New Update!" level; consumed at factory generate)
-	CX2DamageEffect::CEffectHandle	m_hInstall9015DE;			/// official this[6529] (Dynamo_Factory_Projectile DE)
-	CX2DamageEffect::CEffectHandle	m_hInstall9019DE;			/// official this[6542] (Pulse_Gatling_Drone DE)
-	float							m_fInstall9019Duration;		/// official this[6543] (SA_EFFECTIVE_TIME of 9019)
-	CX2DamageEffect::CEffectHandle	m_hInstall9020DE;			/// official this[6544] (Shooting_Chaser_Attacker DE)
-	float							m_fInstall9020Flag;			/// official this[6549] (init 1.0)
-	float							m_fInstall9020Duration;		/// official this[6550]
-	CX2DamageEffect::CEffectHandle	m_hInstall9022DE;			/// official this[6564] (Star_Fall MESH DE)
-	float							m_fInstall9022Duration;		/// official this[6558] (SA_EFFECTIVE_TIME of 9022, the 8s duration)
-	float							m_fInstall9022Power;		/// official this[6559] (power capture; init 1.0)
-	float							m_fInstall9022Timer;		/// official this[6557] (init 0.5)
+	int								m_iFactoryPhase;			/// V5 this+26104 (0 = none, 1 = generated/active, 2 = post-attack idle, 3 = attacking)
+	bool							m_bFactoryFlagWait;			/// V5 byte 26108 (drone wait-anim flag; default true)
+	bool							m_bFactoryModeEntered;		/// V5 byte 26109 (mode entered via install cast)
+	float							m_fFactoryDP;				/// V5 this+25768 (install-switch DP cost; ctor init 0.0 per the V5 ctor disasm, = 3.0 - passive 9411 SA_EFFECTIVE_TIME at the mode-enter)
+	float							m_fFactoryMP;				/// V5 this+25772 (install re-create MP rate; init 1.0, = passive 9411 SA_MP_CONSUMPTION multiplier 0.97..0.622)
+	float							m_fInstallDmgScale;			/// V5 this+25804 (install-skill damage scale; = passive 9413 value-15)
+	float							m_fFactoryDroneSpeed;		/// V5 this+26136 (drone missile speed; = 9015 SA_REMOTE_SPEED_ABS, default 1250)
+	int								m_iNewUpdateLevel;			/// V5 this+25800 (passive 9412 "New Update!" level; consumed at factory generate)
+	CX2DamageEffect::CEffectHandle	m_hInstall9015DE;			/// V5 (Dynamo_Factory_Projectile DE)
+	CX2DamageEffect::CEffectHandle	m_hInstall9019DE;			/// V5 (Pulse_Gatling_Drone DE)
+	CX2DamageEffect::CEffectHandle	m_hInstall9020DE;			/// V5 (Shooting_Chaser_Attacker DE)
+	CX2DamageEffect::CEffectHandle	m_hInstall9022DE;			/// V5 (Star_Fall MESH DE)
+	float							m_fInstall9022Power;		/// V5 (power capture; init 1.0)
 
-	struct UltimateFuryDroneRec {						// official 56-byte record (the fields the driver uses):
+	struct UltimateFuryDroneRec {						// V5 56-byte record (the fields the driver uses):
 		float								m_fTimer;		// +0  the per-drone timer (decrement; the 0.5s re-acquire cadence)
 		UidType								m_uidTarget;	// +8  the target UID (0 = none)
 		int									m_iTargetType;	// +12 the target unit type (GAME_UNIT_TYPE)
@@ -1326,117 +1305,97 @@ std::map<int,int> m_mapThirdPathChain;
 			: m_fTimer( 0.f ), m_uidTarget( 0 ), m_iTargetType( 0 ), m_bIsNPC( false )
 			, m_hMesh( INVALID_MESH_INSTANCE_HANDLE ), m_hShotDE( INVALID_DAMAGE_EFFECT_HANDLE ) {}
 	};
-	std::vector<UltimateFuryDroneRec>	m_vecUltFuryDrones;	// the official vector at this+26284
+	std::vector<UltimateFuryDroneRec>	m_vecUltFuryDrones;	// the V5 vector at this+26284
 	float							m_fUltFuryElapsed;		// this+26300 - accumulates frameTime per shot-spawner call
 	float							m_fUltFuryInterval;		// this+26304 - SA_DAMAGE_TIME (the per-target hit window, 3s)
 	float							m_fUltFuryDuration;		// this+26308 - SA_EFFECTIVE_TIME (the attack duration, 6s)
 	float							m_fUltFuryPower;		// this+26312 - GetPowerRate() x m_fInstallDmgScale
 	int								m_iUltFurySound;		// this+26316 - the latched fire-sound (0 = none; ours = a one-shot latch, DESIGN INFERENCE per spec RISK-2)
-	//}} 2026-09-06 MARCH2015 Ultimate Fury attack driver (IDA L4) members //
-	CX2EffectSet::Handle			m_hFactoryMiscES;			/// official this[6433] (helper EffectSet handle destroyed on state start — newslot_315)
-	float							m_vFactoryDroneLastPos[3];	/// drone follow smoothing (official tick lerps 0.9×current + 0.1×target per frame)
-	//}} 2026-08-30 MARCH2015 batch6 //
+	CX2EffectSet::Handle			m_hFactoryMiscES;			/// V5 (helper EffectSet handle destroyed on state start — newslot_315)
+	float							m_vFactoryDroneLastPos[3];	/// drone follow smoothing (V5 tick lerps 0.9×current + 0.1×target per frame)
 
 	CX2EqipPtr						m_pDEFormationFaceObj;
-	//}} 2026-09-07 //
 
-	CX2DamageEffect::CEffectHandle	m_hFactoryDroneDE;		/// official this+26088 (the persistent per-skill drone DamageEffect: DAMAGE_EFFECT_<skill>_Generate)
+	CX2DamageEffect::CEffectHandle	m_hFactoryDroneDE;		/// V5 this+26088 (the persistent per-skill drone DamageEffect: DAMAGE_EFFECT_<skill>_Generate)
 	void	ThirdPath_FactorySpawnDrone();					///< the per-skill drone DE spawn by the marked install skill (the CDF mode-enter + the FACT-4 install switch)
-	void	ThirdPath_FactoryDronePlayMotion( const WCHAR* wcMotion_ );	///< play a motion on the drone DE's main mesh (official f_31BD8780: 'A' attack / 'W' wait)
-	void	ANSI_HA_ADE_PARANOIA_FrameMove();				///< official sub_324F2DE0 - the @4.5s Hallucination debuff sweep (C14 D1)
-	//}} 2026-09-04 X2GUAdd reverify W3.4b //
+	void	ThirdPath_FactoryDronePlayMotion( const WCHAR* wcMotion_ );	///< play a motion on the drone DE's main mesh (V5: 'A' attack / 'W' wait)
+	void	ANSI_HA_ADE_PARANOIA_FrameMove();				///< V5 - the @4.5s Hallucination debuff sweep (C14 D1)
 
-	CX2EffectSet::Handle			m_hDynamoLockES;		/// official this+26112 (the lock-indicator EffectSet, spawned OWNED BY THE TARGET at the acquire)
-	UidType							m_uidDynamoLockTarget;	/// official this+26120/26124 (the lock-target UID; 0 = the lock-not-set sentinel)
-	bool							m_bDynamoLockIsNPC;		/// official byte 26128
-	float							m_fDynamoLockRemainTime;/// official this+26132 (the per-frame countdown)
-	bool							m_bDynamoLockArmed;		/// the one-shot latch -- ADAPTATION: the official latches on a 2015 DamageData field (+0x4C4, ==1 -> set to -1) that OUR DamageData does NOT have (verified); ours arms at the marker-DE spawn (the 9015 FM), consumes at the acquire, clears at the teardown -- identical one-shot semantics, zero struct/wire change
-	float							m_fMagnetronStoredPower;/// official this+25892 (the magnetron cast power, captured at the orbit spawn; consumed by the lock re-aim)
+	CX2EffectSet::Handle			m_hDynamoLockES;		/// V5 this+26112 (the lock-indicator EffectSet, spawned OWNED BY THE TARGET at the acquire)
+	UidType							m_uidDynamoLockTarget;	/// V5 this+26120/26124 (the lock-target UID; 0 = the lock-not-set sentinel)
+	bool							m_bDynamoLockIsNPC;		/// V5 byte 26128
+	float							m_fDynamoLockRemainTime;/// V5 this+26132 (the per-frame countdown)
+	bool							m_bDynamoLockArmed;		/// the one-shot latch -- ADAPTATION: the V5 latches on a 2015 DamageData field (==1 -> set to -1) that OUR DamageData does NOT have (verified); ours arms at the marker-DE spawn (the 9015 FM), consumes at the acquire, clears at the teardown -- identical one-shot semantics, zero struct/wire change
+	float							m_fMagnetronStoredPower;/// V5 this+25892 (the magnetron cast power, captured at the orbit spawn; consumed by the lock re-aim)
 
-	/// official helpers (manifest section 3 / chunk16 section 3.1): f_324EEAE0 / f_324EA900 / f_324F0690 / f_324EA940 / f_324F7C20 / f_324EA9C0 / f_32519450
-	CX2GameUnit* ThirdPath_DynamoLockTargetValid();										///< official f_324EEAE0 -- resolve the lock target by the stored UID; NULL unless it is alive AND not invincible
-	void	ThirdPath_DynamoLockClear();												///< official f_324EA900 -- destroy the lock ES + reset the lock members (swap/timeout/invalid teardown)
-	bool	ThirdPath_DynamoLockValidOrClear();											///< official f_324F0690 -- true iff the lock is set AND the target valid; else the teardown + false
-	void	ThirdPath_DynamoLockTimeout( const float fElapsedTime_ );					///< official f_324EA940 -- the per-frame lock-timeout tick (called from CommonFrameMove after the factory tick)
-	void	ThirdPath_DynamoLockReAimOrbits();											///< official f_324F7C20 -- convert the live magnetron orbits into homing projectiles at the lock target (Dummy02 bone -> new Projectile DE -> retarget -> consume the old orbit)
-	void	ThirdPath_DynamoLockRetarget( CX2DamageEffect::CEffect* pEffect );			///< official f_324EA9C0 -- write the DE's lock-on fields at the lock target + curve speed 15 + power x1.2 + mesh dir-speed = m_fFactoryDroneSpeed
-	void	ThirdPath_DynamoLockAcquire( CX2DamageManager::DamageData* pDamageData_ );	///< official f_32519450 -- the AttackResultByType hook: marker-DE hit + the armed latch -> store the lock + spawn the indicator ES on the target + re-aim the orbits
-	//}} 2026-09-04 X2GUAdd reverify LOCK-1 //
+	/// V5 helpers (manifest section 3 / chunk16 section 3.1): / / / / / /
+	CX2GameUnit* ThirdPath_DynamoLockTargetValid();										///< V5 -- resolve the lock target by the stored UID; NULL unless it is alive AND not invincible
+	void	ThirdPath_DynamoLockClear();												///< V5 -- destroy the lock ES + reset the lock members (swap/timeout/invalid teardown)
+	bool	ThirdPath_DynamoLockValidOrClear();											///< V5 -- true iff the lock is set AND the target valid; else the teardown + false
+	void	ThirdPath_DynamoLockTimeout( const float fElapsedTime_ );					///< V5 -- the per-frame lock-timeout tick (called from CommonFrameMove after the factory tick)
+	void	ThirdPath_DynamoLockReAimOrbits();											///< V5 -- convert the live magnetron orbits into homing projectiles at the lock target (Dummy02 bone -> new Projectile DE -> retarget -> consume the old orbit)
+	void	ThirdPath_DynamoLockRetarget( CX2DamageEffect::CEffect* pEffect );			///< V5 -- write the DE's lock-on fields at the lock target + curve speed 15 + power x1.2 + mesh dir-speed = m_fFactoryDroneSpeed
+	void	ThirdPath_DynamoLockAcquire( CX2DamageManager::DamageData* pDamageData_ );	///< V5 -- the AttackResultByType hook: marker-DE hit + the armed latch -> store the lock + spawn the indicator ES on the target + re-aim the orbits
 
-	CX2EffectSet::Handle			m_hPanzerAimBG;			/// official this+26212 (Panzer aiming BG EffectSet)
+	CX2EffectSet::Handle			m_hPanzerAimBG;			/// V5 this+26212 (Panzer aiming BG EffectSet)
 	CX2EffectSet::Handle			m_hATTComboZZXXAttackES;
 	CX2EffectSet::Handle			m_hATTComboZZXXES;
-	CX2DamageEffect::CEffectHandle	m_hPanzerAimDE;			/// official this+26216 (Panzer_Buster_Aiming_REDLINE DE)
-	float							m_fPanzerChargeTime;	/// official this+26204 (aim hold time)
-	float							m_fPanzerAimAngle;		/// official this+26208 (aim angle, ±50°/s, clamp ±30)
+	CX2DamageEffect::CEffectHandle	m_hPanzerAimDE;			/// V5 this+26216 (Panzer_Buster_Aiming_REDLINE DE)
+	float							m_fPanzerChargeTime;	/// V5 this+26204 (aim hold time)
+	float							m_fPanzerAimAngle;		/// V5 this+26208 (aim angle, ±50°/s, clamp ±30)
 	bool							m_bPanzerAimSpawned;	/// once-gate for the AIMING spawns
-	bool							m_bPsionicSpawned;		/// once-gate for the 9017 psionic spawn
-	bool							m_abRushingDroneFlag[2];/// official bytes 26320/26321 (9208 formation/DP-pip flags)
-	float							m_fFlickDiscScaleMul[2];/// official members (9210 disc scale multipliers, init 1.0)
-	float							m_fXXDownXLoopSpawnAccum;/// AMM XXDownX LOOP spawn-interval accumulator (official window: current-last >= 0.05)
-	CX2DamageEffect::CEffectHandle	m_hXXDownXLoopDE;		/// AMM XXDownX LOOP beam DamageEffect handle (official this[6433]; created once, repositioned per interval, destroyed on END)
-	D3DXVECTOR3						m_vXXDownXAnchor;		/// AMM XXDownX LOOP beam tip anchor (official this[6434-6436] = hand+facing*750 default, homed to nearest hostile within reach)
+	bool							m_abRushingDroneFlag[2];/// V5 bytes 26320/26321 (9208 formation/DP-pip flags)
+	float							m_fXXDownXLoopSpawnAccum;/// AMM XXDownX LOOP spawn-interval accumulator (V5 window: current-last >= 0.05)
+	CX2DamageEffect::CEffectHandle	m_hXXDownXLoopDE;		/// AMM XXDownX LOOP beam DamageEffect handle (V5; created once, repositioned per interval, destroyed on END)
+	D3DXVECTOR3						m_vXXDownXAnchor;		/// AMM XXDownX LOOP beam tip anchor (V5 = hand+facing*750 default, homed to nearest hostile within reach)
 
-	float				m_fXXDownXChildSpawnAccum;
-	int					m_iXXDownXChildSpawnCount;
-	//}} 2026-09-06 //
-	//}} 2026-08-30 MARCH2015 batch7 AT/MM //
 
-	void ANSI_SA_AAT_PANZER_BUSTER_START_StateStart();		///< official sub_324ED7A0 (reset prior aim handles + ready sound)
-	void ANSI_SA_AAT_PANZER_BUSTER_AIMING_FrameMove();		///< official sub_324F5640 (spawn REDLINE aim DE + Aiming_BG ES once + charge track)
-	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_UP_FrameMove();	///< official sub_324ED880 (angle += elapsed×50, clamp ≤30)
-	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_DOWN_FrameMove();	///< official sub_324ED940 (angle -= elapsed×50, clamp ≥-30)
-	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_FrameMove();		///< official sub_324F5920 (@0.444 spawn EffectSet_SI_SA_AAT_Panzer_Buster_Fire = the damage set)
-	void ThirdPath_PanzerResetAim();						///< official f_324EAF50 (destroy aim DE + aim BG ES + zero charge/angle)
-	void ANSI_SA_AAT_PSIONIC_GENERATOR_FrameMove();			///< official sub_324F5AF0 (@0.2s unit-count scale + spawn Start ES)
-	void ANSI_A_AAT_RUSHING_DRONE_DYNAMO_StateStart();		///< official sub_32510630 (DP-pip consume + formation flags)
-	void ANSI_A_AAT_RUSHING_DRONE_DYNAMO_FrameMove();		///< official sub_324EE1F0 (drone spawn @0.4s + conditional @0.6s)
-	void ANSI_A_AMM_DIVIDING_MISSILE_DYNAMO_FrameMove();	///< official gap 0x325108D0 (@0.4s spawn + suffix select + formation ×1.2)
-	void ANSI_A_AMM_FLICK_DISC_DYNAMO_FrameMove();			///< official sub_32510E40 (@0.3s disc spawn + retarget + DP-pip)
-	void ANSI_A_AMM_COUNTDOWN_BOMB_DYNAMO_FrameMove();		///< official gap 0x32511570 (@0.3s spawn projectile + retarget)
-	void AMMComboXXDownXLoopFrameMove();					///< official sub_324ECF70 (per-interval spawn DamageEffect_AMM_XXDownX_Loop)
-	void AMMComboXXDownXEndFrameMove();						///< official sub_324E7450 (@0.01s spawn DamageEffect_AMM_XXDownX_Finish)
-	//}} 2026-08-30 MARCH2015 batch7 AT/MM //
+	void ANSI_SA_AAT_PANZER_BUSTER_START_StateStart();		///< V5 (reset prior aim handles + ready sound)
+	void ANSI_SA_AAT_PANZER_BUSTER_AIMING_FrameMove();		///< V5 (spawn REDLINE aim DE + Aiming_BG ES once + charge track)
+	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_UP_FrameMove();	///< V5 (angle += elapsed×50, clamp ≤30)
+	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_DOWN_FrameMove();	///< V5 (angle -= elapsed×50, clamp ≥-30)
+	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_FrameMove();		///< V5 (@0.444 spawn EffectSet_SI_SA_AAT_Panzer_Buster_Fire = the damage set)
+	void ThirdPath_PanzerResetAim();						///< V5 (destroy aim DE + aim BG ES + zero charge/angle)
+	void ANSI_SA_AAT_PSIONIC_GENERATOR_FrameMove();			///< V5 (@0.2s unit-count scale + spawn Start ES)
+	void ANSI_A_AAT_RUSHING_DRONE_DYNAMO_StateStart();		///< V5 (DP-pip consume + formation flags)
+	void ANSI_A_AAT_RUSHING_DRONE_DYNAMO_FrameMove();		///< V5 (drone spawn @0.4s + conditional @0.6s)
+	void ANSI_A_AMM_DIVIDING_MISSILE_DYNAMO_FrameMove();	///< V5 gap (@0.4s spawn + suffix select + formation ×1.2)
+	void ANSI_A_AMM_FLICK_DISC_DYNAMO_FrameMove();			///< V5 (@0.3s disc spawn + retarget + DP-pip)
+	void ANSI_A_AMM_COUNTDOWN_BOMB_DYNAMO_FrameMove();		///< V5 gap (@0.3s spawn projectile + retarget)
+	void AMMComboXXDownXLoopFrameMove();					///< V5 (per-interval spawn DamageEffect_AMM_XXDownX_Loop)
+	void AMMComboXXDownXEndFrameMove();						///< V5 (@0.01s spawn DamageEffect_AMM_XXDownX_Finish)
 
-	int								m_iPAMemoCharge;		/// official this+26332 (SA1-4: the Particle Accelerator memo-609005 hold-to-charge counter)
-	CKTDXDeviceSound*				m_hPanzerReadySound;	/// official this+26220 (ATMM-9: the LOOPED Panzer ready sound handle — freed at the FIRE SSF)
-	void ANSI_SA_AAT_PANZER_BUSTER_START_StateStartFuture();	///< official sub_324DEC00 (arm the key manager + play the ready sound looped)
-	void ANSI_SA_AAT_PANZER_BUSTER_AIMING_StateStart();			///< official sub_324F5640 (spawn the REDLINE aim DE + the aiming-BG ES + the angle mesh-init)
-	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_UP_StateStartFuture();	///< official sub_324ED820 (the aim sound loop-restart at DEG entry)
-	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_DOWN_StateStartFuture();	///< official sub_324ED8E0 (same)
-	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_StateStartFuture();		///< official sub_324E9830 (free the loop sound + the ready-sound handle)
-	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_StateStart();			///< official sub_324ED7C0 (destroy the aim BG ES + the aim DE; the angle survives into the FIRE FM)
-	void ThirdPath_PanzerApplyAimAngle();						///< official f_324EAFB0 (write the aim angle onto the REDLINE DE's main mesh: {0, facing-rotY, angle})
-	//}} 2026-09-04 X2GUAdd reverify W3.4a //
+	int								m_iPAMemoCharge;		/// V5 this+26332 (SA1-4: the Particle Accelerator memo-609005 hold-to-charge counter)
+	CKTDXDeviceSound*				m_hPanzerReadySound;	/// V5 this+26220 (ATMM-9: the LOOPED Panzer ready sound handle — freed at the FIRE SSF)
+	void ANSI_SA_AAT_PANZER_BUSTER_START_StateStartFuture();	///< V5 (arm the key manager + play the ready sound looped)
+	void ANSI_SA_AAT_PANZER_BUSTER_AIMING_StateStart();			///< V5 (spawn the REDLINE aim DE + the aiming-BG ES + the angle mesh-init)
+	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_UP_StateStartFuture();	///< V5 (the aim sound loop-restart at DEG entry)
+	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_DOWN_StateStartFuture();	///< V5 (same)
+	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_StateStartFuture();		///< V5 (free the loop sound + the ready-sound handle)
+	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_StateStart();			///< V5 (destroy the aim BG ES + the aim DE; the angle survives into the FIRE FM)
+	void ThirdPath_PanzerApplyAimAngle();						///< V5 (write the aim angle onto the REDLINE DE's main mesh: {0, facing-rotY, angle})
 
-	float							m_fMindControlDebuffReduceRate;	/// 9415 Mind Control SA_REDUCE_EDT_TIME_REL (official +26400; the debuff-duration scale - Phase-2 slot_130-override consumer)
-	float							m_fMindControlProcRate;			/// 9415 SA_EFFECTIVE_RATE (official +26404; the cast-cost recovery proc rate - Phase 2)
-	float							m_fMindControlRecoveryValue;	/// 9415 SA_RECOVERY_VALUE_REL=154 (official +26408; the recovered cost fraction - Phase 2)
-	float							m_fTimeControlProcRate;			/// 9416 Time Control SA_EFFECTIVE_RATE (official +26412; the cooldown-reduction proc rate - Phase 2; PvP x0.5 at load)
-	float							m_fTimeControlCooldownValue;	/// 9416 SA_COOLTIME_1 (official +26416; the seconds subtracted from the just-cast cooldown - Phase 2; PvP x0.5 at load)
-	float							m_fMindCircleMpValue;			/// 9417 Mind Circle SA_ADD_MP_VALUE_ABS=155 (official +26420; MP back per consumed pip in formation - the ThirdPath_ConsumeDPPoints conversion)
-	float							m_fMindCircleDpValue;			/// 9417 SA_ADD_DP_VALUE_ABS=156 (official +26424; DP back per consumed pip out of formation)
-	int								m_iESPMindBreakCount;			/// 9418 ESP SA_EFFECTIVE_COUNT (official +26428, rounded; ctor default 1 = base Mind Break single-target)
-	float							m_fESPProcRate;					/// 9418 SA_EFFECTIVE_RATE (official +26432; the damage-taken-reduction proc rate - Phase 2)
-	float							m_fESPDamagedRel;				/// 9418 SA_DAMAGED_REL (official +26436; the damage-taken scale - Phase 2)
-	bool							m_bESPMidairPhaseShift;			/// 9418 learned flag (official byte +26440; gates the Phase Shift midair cast condition in GetSkillUseCondition)
-	bool							m_bOverlimitEnabled;			/// 9414 Overlimit learned flag (official byte +26344; Phase-2 gates)
-	float							m_fOverlimitMpGainOnHit;		/// 9414 SA_MP_GAIN_ON_HIT_REL (official +26356; the formation MP-gain-on-hit factor - Phase 2)
-	float							m_fOverlimitMpGainGetHit;		/// 9414 SA_MP_GAIN_GET_HIT_REL (official +26360; dead-official (never read in the binary) - loaded for parity)
-	float							m_fOverlimitDpGain;				/// 9414 SA_DP_GAIN_REL (official +26348; the DP-gain economy factor - the direct-read consumer already lives at X2GUAdd.cpp:11155)
-	float							m_fOverlimitDpUse;				/// 9414 SA_DP_USE_REL (official +26352; the DP-use economy factor - Phase 2)
-	float							m_fOverlimitCooltime;			/// 9414 SA_COOLTIME_1 (official +26364; the per-skill Overlimit cooldown factor - Phase 2)
+	float							m_fMindControlDebuffReduceRate;	/// 9415 Mind Control SA_REDUCE_EDT_TIME_REL (V5; the debuff-duration scale - Phase-2 -override consumer)
+	float							m_fMindControlProcRate;			/// 9415 SA_EFFECTIVE_RATE (V5; the cast-cost recovery proc rate - Phase 2)
+	float							m_fMindControlRecoveryValue;	/// 9415 SA_RECOVERY_VALUE_REL=154 (V5; the recovered cost fraction - Phase 2)
+	float							m_fTimeControlProcRate;			/// 9416 Time Control SA_EFFECTIVE_RATE (V5; the cooldown-reduction proc rate - Phase 2; PvP x0.5 at load)
+	float							m_fTimeControlCooldownValue;	/// 9416 SA_COOLTIME_1 (V5; the seconds subtracted from the just-cast cooldown - Phase 2; PvP x0.5 at load)
+	float							m_fMindCircleMpValue;			/// 9417 Mind Circle SA_ADD_MP_VALUE_ABS=155 (V5; MP back per consumed pip in formation - the ThirdPath_ConsumeDPPoints conversion)
+	float							m_fMindCircleDpValue;			/// 9417 SA_ADD_DP_VALUE_ABS=156 (V5; DP back per consumed pip out of formation)
+	float							m_fESPProcRate;					/// 9418 SA_EFFECTIVE_RATE (V5; the damage-taken-reduction proc rate - Phase 2)
+	float							m_fESPDamagedRel;				/// 9418 SA_DAMAGED_REL (V5; the damage-taken scale - Phase 2)
+	bool							m_bOverlimitEnabled;			/// 9414 Overlimit learned flag (V5 byte; Phase-2 gates)
+	float							m_fOverlimitMpGainOnHit;		/// 9414 SA_MP_GAIN_ON_HIT_REL (V5; the formation MP-gain-on-hit factor - Phase 2)
+	float							m_fOverlimitDpGain;				/// 9414 SA_DP_GAIN_REL (V5; the DP-gain economy factor - the direct-read consumer already lives at X2GUAdd.cpp:11155)
+	float							m_fOverlimitDpUse;				/// 9414 SA_DP_USE_REL (V5; the DP-use economy factor - Phase 2)
+	float							m_fOverlimitCooltime;			/// 9414 SA_COOLTIME_1 (V5; the per-skill Overlimit cooldown factor - Phase 2)
 
-	std::vector<std::pair<int,float>>	m_vecOverlimitCoolList;		/// official vector +26368/+26372/+26376 - the per-skill Overlimit cooldown list {skillID, remainSeconds}; pushed at 180.0f on a formation SA cast, ticked down per frame, pruned at <= 0
-	virtual float						GetMPGainOnHitFactorByFormation();	/// official newslot_298/299 @0x324E09A0/0x324E09D0 (SS2): formation -> m_fOverlimitMpGainOnHit; else 1.0
-	bool								ThirdPath_IsSAFamilyWithCooldown( IN const CX2SkillTree::SkillTemplet* pTemplet_, IN int iSkillLevel_ ) const;	/// official f_31F6B270 type gate {7,14,15,16} + templet has-cooldown gate (+0x164)
-	bool								ThirdPath_IsOverlimitCoolListed( IN int iSkillID_ ) const;	/// official slot_211 list lookup (f_324F0700)
-	void								ThirdPath_OverlimitCoolListRegister( IN const CX2SkillTree::SkillTemplet* pTemplet_, IN int iSkillLevel_ );	/// official f_324FB830 (cast-tail register/refresh/clear)
-	void								ThirdPath_OverlimitCoolListTick( IN float fElapsed_ );	/// official prune f_324F9DB0 + tick helper f_31F90AD0 (per-frame, flag-gated only - ticks down out of formation too)
-	//}} 2026-09-07 Phase 3 //
-	//}} 2026-09-07 //
-//}} 2026-08-30 MARCH2015 Add 3rd-path deep-mechanics //
-//}} 2026-08-19 MARCH2015 GU parity //
+	std::vector<std::pair<int,float>>	m_vecOverlimitCoolList;		/// V5 vector // - the per-skill Overlimit cooldown list {skillID, remainSeconds}; pushed at 180.0f on a formation SA cast, ticked down per frame, pruned at <= 0
+	virtual float						GetMPGainOnHitFactorByFormation();	/// V5 newslot_298/299 @/ (SS2): formation -> m_fOverlimitMpGainOnHit; else 1.0
+	bool								ThirdPath_IsSAFamilyWithCooldown( IN const CX2SkillTree::SkillTemplet* pTemplet_, IN int iSkillLevel_ ) const;	/// V5 type gate {7,14,15,16} + templet has-cooldown gate
+	bool								ThirdPath_IsOverlimitCoolListed( IN int iSkillID_ ) const;	/// V5 list lookup
+	void								ThirdPath_OverlimitCoolListRegister( IN const CX2SkillTree::SkillTemplet* pTemplet_, IN int iSkillLevel_ );	/// V5 (cast-tail register/refresh/clear)
+	void								ThirdPath_OverlimitCoolListTick( IN float fElapsed_ );	/// V5 prune + tick helper (per-frame, flag-gated only - ticks down out of formation too)
 	void ANSI_SA_AAT_INSTALLATION_DRONE_ACTIVATOR_EventProcess();
 	void ANSI_SA_AAT_PANZER_BUSTER_START_Init();
 	void ANSI_SA_AAT_PANZER_BUSTER_START_EventProcess();
@@ -1444,7 +1403,7 @@ std::map<int,int> m_mapThirdPathChain;
 	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_UP_EventProcess();
 	void ANSI_SA_AAT_PANZER_BUSTER_DEGREE_DOWN_EventProcess();
 	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_EventProcess();
-	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_StateEnd();				///< official FIRE SE 0x324DEC60 (C-FACT-1 / RT-3: clear the aim camera offset, my-unit gated; fCameraDistance deliberately NOT cleared = the KOG asymmetry)
+	void ANSI_SA_AAT_PANZER_BUSTER_FIRE_StateEnd();				///< V5 FIRE SE (C-FACT-1 / RT-3: clear the aim camera offset, my-unit gated; fCameraDistance deliberately NOT cleared = the KOG asymmetry)
 void ANSI_SA_AAT_PSIONIC_GENERATOR_Init();
 void ANSI_SA_AAT_PSIONIC_GENERATOR_EventProcess();
 void ANSI_SA_AAT_PHANTOM_SEEKER_Init();
@@ -1465,43 +1424,39 @@ void ANSI_SA_AAT_PHANTOM_SEEKER_Init();
 	void ANSI_A_AMM_DIVIDING_MISSILE_DYNAMO_Init();
 	void ANSI_A_AMM_DIVIDING_MISSILE_DYNAMO_EventProcess();
 	void ANSI_A_AMM_FLICK_DISC_DYNAMO_Init();
-	void ANSI_A_AMM_FLICK_DISC_DYNAMO_StateStart();				///< official newslot_311 case 9210 SS 0x324DFDF0 (ATMM-10: zero the per-cast lock-valid flag + CommonStateStart)
+	void ANSI_A_AMM_FLICK_DISC_DYNAMO_StateStart();				///< V5 newslot_311 case 9210 SS (ATMM-10: zero the per-cast lock-valid flag + CommonStateStart)
 	void ANSI_A_AMM_FLICK_DISC_DYNAMO_EventProcess();
 	void ANSI_A_AMM_COUNTDOWN_BOMB_DYNAMO_Init();
 	void ANSI_A_AMM_COUNTDOWN_BOMB_DYNAMO_EventProcess();
 	void ANSI_HA_AMM_APOCALYPSE_Init();
 	void ANSI_HA_AMM_APOCALYPSE_EventProcess();
 
-	void ANSI_HA_AMM_APOCALYPSE_FrameMove();	///< batch6 fix: official binds OnFrameMove (spawn/dismiss one-shot @0.01s, sub_324F0300), NOT StateStart
-	void ThirdPath_ApocalypseFinishSummon();	///< official f_324EF3D0 — find my alive Apocalypse summon (NPC 1604, owner=me) → force APOCALYPSE_FINISH_ATTACK
-	void ThirdPath_ApocalypseClearMarker();		///< official f_324E08E0 — clear finisher flag + remove buff BTI_BUFF_APOCALYPSE + UpdateSkillSlotUI
-	bool ThirdPath_IsApocalypseSummonActive() const;	///< const-safe buff-templet-345 scan (official f_31FA7710; HaveThisBuff is non-const so the const MP/cooltime overrides use this)
-	//}} 2026-08-30 MARCH2015 batch5 //
+	void ANSI_HA_AMM_APOCALYPSE_FrameMove();	///< fix: V5 binds OnFrameMove (spawn/dismiss one-shot @0.01s), NOT StateStart
+	void ThirdPath_ApocalypseFinishSummon();	///< V5 — find my alive Apocalypse summon (NPC 1604, owner=me) → force APOCALYPSE_FINISH_ATTACK
+	void ThirdPath_ApocalypseClearMarker();		///< V5 — clear finisher flag + remove buff BTI_BUFF_APOCALYPSE + UpdateSkillSlotUI
+	bool ThirdPath_IsApocalypseSummonActive() const;	///< const-safe buff-templet-345 scan (V5; HaveThisBuff is non-const so the const MP/cooltime overrides use this)
 
 	void ANSI_SA_COMMON_CREST_OF_TIME_StateInit();
 	void ANSI_SA_COMMON_CREST_OF_TIME_FrameMove();
-	//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
 
-	void ANSI_AAT_CREATE_DYNAMO_FACTORY_StateStartFuture();		///< official 0x324F6F30 — apply BFI 366 (factory buff BTI 342) at cast-skill level + spawn the drone-generate EffectSet
-	void ANSI_AAT_CREATE_DYNAMO_FACTORY_OnFrameMove();			///< official 0x325103F0 — generic cancel FM (anim-end→WAIT + cancel windows)
-	void ANSI_AAT_CREATE_DYNAMO_FACTORY_StateEnd();				///< officially NO StateEnd bound for state 187 (the registrar binds {SS 324F6F30, EP 325103F0} only; the 0x324F2A40 cite was state-145 NA_LANDING's SE, not CDF's - corrected per C15 D9) - ours = the CommonStateEnd passthrough, net-identical
-	void ANSI_SA_AAT_INSTALLATION_DRONE_ACTIVATOR_FrameMove();	///< official 0x324ED650 — @0.5s spawn DamageEffect_AAT_Dynamo_Factory_Projectile (Bip01_L_Hand, power×m_fInstallDmgScale)
-	void ANSI_SA_AMM_INSTALLATION_PULSE_GATLING_FrameMove();	///< official 0x324ED9B0 — @0.01s spawn DamageEffect_AMM_Pulse_Gatling_Drone (Bip01) + duration track
-	void ANSI_SA_AMM_INSTALLATION_SHOOTING_CHASER_FrameMove();	///< official 0x32500CF0 — @0.4s spawn DamageEffect_AMM_Shooting_Chaser_Attacker + nearest-target capture
-	void ANSI_SA_AMM_INSTALLATION_ULTIMATE_FURY_FrameMove();	///< official 0x32503F10 — @1.064s drone handle valid → phase=3 + drone Attack anim + 3× attack-drone mesh spawn
-	void ANSI_SA_AMM_INSTALLATION_STAR_FALL_FrameMove();		///< official 0x324F2BD0 — @1.2s spawn DAMAGE_EFFECT_Star_Fall_Start_MESH + handle mgmt
+	void ANSI_AAT_CREATE_DYNAMO_FACTORY_StateStartFuture();		///< V5 — apply BFI 366 (factory buff BTI 342) at cast-skill level + spawn the drone-generate EffectSet
+	void ANSI_AAT_CREATE_DYNAMO_FACTORY_OnFrameMove();			///< V5 — generic cancel FM (anim-end→WAIT + cancel windows)
+	void ANSI_AAT_CREATE_DYNAMO_FACTORY_StateEnd();				///< officially NO StateEnd bound for state 187 (the registrar binds {SS, EP } only; the cite was state-145 NA_LANDING's SE, not CDF's - corrected per C15 D9) - ours = the CommonStateEnd passthrough, net-identical
+	void ANSI_SA_AAT_INSTALLATION_DRONE_ACTIVATOR_FrameMove();	///< V5 — @0.5s spawn DamageEffect_AAT_Dynamo_Factory_Projectile (Bip01_L_Hand, power×m_fInstallDmgScale)
+	void ANSI_SA_AMM_INSTALLATION_PULSE_GATLING_FrameMove();	///< V5 — @0.01s spawn DamageEffect_AMM_Pulse_Gatling_Drone (Bip01) + duration track
+	void ANSI_SA_AMM_INSTALLATION_SHOOTING_CHASER_FrameMove();	///< V5 — @0.4s spawn DamageEffect_AMM_Shooting_Chaser_Attacker + nearest-target capture
+	void ANSI_SA_AMM_INSTALLATION_ULTIMATE_FURY_FrameMove();	///< V5 — @1.064s drone handle valid → phase=3 + drone Attack anim + 3× attack-drone mesh spawn
+	void ANSI_SA_AMM_INSTALLATION_STAR_FALL_FrameMove();		///< V5 — @1.2s spawn DAMAGE_EFFECT_Star_Fall_Start_MESH + handle mgmt
 
 	void ThirdPath_UltimateFurySpawnAttack();
 	void ThirdPath_UltimateFuryAttackDriver();
 	void ThirdPath_UltimateFuryAssignTargets();
 	void ThirdPath_UltimateFuryClearSet();
-	//}} 2026-09-06 MARCH2015 Ultimate Fury attack driver (IDA L4) decls //
-	bool ThirdPath_IsInstallFamilySkill( const int iSkillID_ ) const;	///< official f_324E0860 — {9015, 9019, 9020, 9021, 9022}
-	bool ThirdPath_IsMarkedInstallSkill( const int iSkillID_ ) const;	///< official slot_290 — marker==skill
-	void ThirdPath_FactoryModeClear();							///< official f_324EAC50 — marker=0 + phase=2 + flagWait + destroy drone handle + skill-slot UI refresh
-	void ThirdPath_OnFactoryFrameMove( const float fElapsedTime_ );		///< official sub_324EED30 — per-frame drone follow + DP-expiry + mode-kill checks
-	void ThirdPath_FactorySkillValueLoader();					///< official slot_260 — load passive 9411/9412/9413 + 9015 values into the factory members
-	//}} 2026-08-30 MARCH2015 batch6 //
+	bool ThirdPath_IsInstallFamilySkill( const int iSkillID_ ) const;
+	bool ThirdPath_IsMarkedInstallSkill( const int iSkillID_ ) const;	///< V5 — marker==skill
+	void ThirdPath_FactoryModeClear();							///< V5 — marker=0 + phase=2 + flagWait + destroy drone handle + skill-slot UI refresh
+	void ThirdPath_OnFactoryFrameMove( const float fElapsedTime_ );		///< V5 — per-frame drone follow + DP-expiry + mode-kill checks
+	void ThirdPath_FactorySkillValueLoader();					///< V5 — load passive 9411/9412/9413 + 9015 values into the factory members
 #endif
 
 	void ANSI_CAN_NOT_ATTACK_JUMP_DOWN_EventProcess();
@@ -1521,8 +1476,8 @@ public:
 	static void			AppendEffectToDeviceList( CKTDXDeviceDataList& listInOut_, CX2DamageManager::EXTRA_DAMAGE_TYPE eDamageType_ );
 
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-	void SetForceNovaHitFlag() { m_bForceNovaHit = true; }	///< 9213 Force Nova hit-arm, called from CX2GUNPC::DamageReact (official DamageEffect owner-callbacks 0x324F1160/0x324F9E20) [2026-08-30 batch3]
-	int  ThirdPath_GetInstallSlotOverlayIndex( const int iSkillID_ ) const;	///< official slot_290 (0x324E0890) — install-skill slot overlay shows on the slot whose skill IS the marked factory skill (marker==skill, NO phase gate; else -1); called from X2UISkillTreeNew::UpdateSkillSlotOverlay [2026-08-30 batch6]
+	void SetForceNovaHitFlag() { m_bForceNovaHit = true; }	///< 9213 Force Nova hit-arm, called from CX2GUNPC::DamageReact (V5 DamageEffect owner-callbacks /)
+	int  ThirdPath_GetInstallSlotOverlayIndex( const int iSkillID_ ) const;	///< V5 — install-skill slot overlay shows on the slot whose skill IS the marked factory skill (marker==skill, NO phase gate; else -1); called from X2UISkillTreeNew::UpdateSkillSlotOverlay
 
 #endif
 	// Ż ��
@@ -1539,12 +1494,11 @@ public:
 
 
 #ifdef X2_ADD_3RD_PATH
-	void				CreateDEFormationFaceObj();											/// official f_324EF690 -- build the berserk-face CX2Eqip (item 41841) at ReInit, hidden by default, parented to this GU
+	void				CreateDEFormationFaceObj();											/// V5 -- build the berserk-face CX2Eqip (item 41841) at ReInit, hidden by default, parented to this GU
 	void				ReleaseDEFormationFaceObj();										/// refcounted release (chain-remove first) -- the non-DE ReInit path / teardown
-	void				UpdateDEFormationFace();											/// official f_324EF7B0 -- show iff formation-mode ON && unit shown && not transformed
-	virtual void		NotifyDGManagerChanged( CKTDGManager& refInManager_ );				/// official slot_10 -- keep the face in the DGManager chain on scene attach/detach (device reset/lost, world swap)
+	void				UpdateDEFormationFace();											/// V5 -- show iff formation-mode ON && unit shown && not transformed
+	virtual void		NotifyDGManagerChanged( CKTDGManager& refInManager_ );				/// V5 -- keep the face in the DGManager chain on scene attach/detach (device reset/lost, world swap)
 #endif
-	//}} 2026-09-07 //
 #endif
 	virtual void		DamageReact( OUT CX2DamageManager::DamageData* pDamageData_ );
 
@@ -1577,11 +1531,9 @@ public:
 
 	virtual void		RecordCrestSnapshot();
 	virtual void		RestoreCrestSnapshot();
-	//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
 
 
 	virtual bool		IsBlockPacketBuffTemplet( int iBuffTempletID_ );
-	//}} 2026-09-05 //
 
 #endif
 	virtual void		ApplyRenderParam( CKTDGXRenderer::RenderParam* pRenderParam_ );
@@ -1715,11 +1667,10 @@ public:
 
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 
-	virtual float		GetReduceDebuffDurationRate( BUFF_TEMPLET_ID eBuffTempletID_ );	///< official CX2GUAdd::slot_130 @ 0x324E0A80 (9415 Mind Control: the 8-BTI debuff-duration scale; CX2GameUnit base @ X2GameUnit.h = return 1.f)
-	virtual float		GetESPProcDamageTakenScale();										///< official CX2GUAdd::slot_134 @ 0x324E0BC0 (9418 ESP: per-hit damage-taken proc; CX2GameUnit base = return 1.f)
-	void				ThirdPath_MindControlCostRecoveryProc();							///< official f_325034F0 @ 0x325034F0 (9415: roll vs m_fMindControlProcRate -> recover m_fMindControlRecoveryValue x the just-consumed MP/DP cost; formation = DP + "DP+ %d", else MP + "MP+ %d")
-	void				ThirdPath_TimeControlCooldownProc( const CX2SkillTree::SKILL_ID eCastSkillID_, const float fJustSetCoolTime_ );	///< official f_324EB3A0 @ 0x324EB3A0 (9416: roll vs m_fTimeControlProcRate -> subtract m_fTimeControlCooldownValue seconds from the just-cast skill's slot cooldown; guards 9025/9028/9205 = disasm-verified)
-	//}} 2026-09-07 //
+	virtual float		GetReduceDebuffDurationRate( BUFF_TEMPLET_ID eBuffTempletID_ );	///< V5 CX2GUAdd:: @ (9415 Mind Control: the 8-BTI debuff-duration scale; CX2GameUnit base @ X2GameUnit.h = return 1.f)
+	virtual float		GetESPProcDamageTakenScale();										///< V5 CX2GUAdd:: @ (9418 ESP: per-hit damage-taken proc; CX2GameUnit base = return 1.f)
+	void				ThirdPath_MindControlCostRecoveryProc();							///< V5 @ (9415: roll vs m_fMindControlProcRate -> recover m_fMindControlRecoveryValue x the just-consumed MP/DP cost; formation = DP + "DP+ %d", else MP + "MP+ %d")
+	void				ThirdPath_TimeControlCooldownProc( const CX2SkillTree::SKILL_ID eCastSkillID_, const float fJustSetCoolTime_ );	///< V5 @ (9416: roll vs m_fTimeControlProcRate -> subtract m_fTimeControlCooldownValue seconds from the just-cast skill's slot cooldown; guards 9025/9028/9205 = disasm-verified)
 
 #endif
 /// public Function End
@@ -1801,9 +1752,9 @@ protected:
 	float	m_fDustStormRateByDamage;			///  �İݽ� �ߵ� Ȯ��
 #if defined(X2_ARA_3RD_PATH) || defined(X2_ADD_3RD_PATH)
 
-	float	m_fVoidImpactDownAngle;		/// official this+25616 (lua VOID_IMPACT_DOWN_ANGLE, default -60)
-	float	m_fVoidImpactUpAngle;		/// official this+25620 (lua VOID_IMPACT_UP_ANGLE, default +60)
-	// MISC-1 (merged C10 D10 + C11 D6 + C12 D8 + C13 D4 + C14 D2 + C13 section2.0a): the official per-skill StateInit asset-preload bodies — the 3rd-path skills had NO StateInit bound (the ANSI_ThirdPath_CreateState helper never sets StateInit); the lists = reports\misc1_preload_lists.md (349 calls / 167 unique assets / 166 verified present in the deployed koms); normal-state bind only — the official hyper copy gets NO Init //
+	float	m_fVoidImpactDownAngle;		/// V5 this+25616 (lua VOID_IMPACT_DOWN_ANGLE, default -60)
+	float	m_fVoidImpactUpAngle;		/// V5 this+25620 (lua VOID_IMPACT_UP_ANGLE, default +60)
+	// MISC-1 (merged C10 D10 + C11 D6 + C12 D8 + C13 D4 + C14 D2 + C13 section2.0a): the V5 per-skill StateInit asset-preload bodies — the 3rd-path skills had NO StateInit bound (the ANSI_ThirdPath_CreateState helper never sets StateInit); the lists = reports\misc1_preload_lists.md (349 calls / 167 unique assets / 166 verified present in the deployed koms); normal-state bind only — the V5 hyper copy gets NO Init //
 	void ANSI_SA_ATT_VOID_IMPACT_StateInit();
 	void ANSI_SA_ATT_VOID_FIELD_StateInit();
 	void ANSI_SA_ATT_MAXIMUM_STRIKE_StateInit();
@@ -1816,10 +1767,7 @@ protected:
 	void ANSI_A_ADE_FORCE_NOVA_StateInit();
 	void ANSI_A_ADE_FORCE_FINGER_StateInit();
 	void ANSI_HA_ADE_PARANOIA_StateInit();
-	//}} 2026-09-04 X2GUAdd reverify W3.4c //
 
-	float	m_fFormationBuffWatchTime;
-	//}} 2026-09-04 X2GUAdd reverify GAUGE-8 //
 #endif
 	float	m_fDustStormCoolTime;				///  �ߵ� ��Ÿ��
 

@@ -573,7 +573,6 @@ protected:
 	bool ConsumeWayOfSwordPoint( float fConsume_ );
 	float m_fEJBusterChargeTime;
 	float m_fEJBusterChargeStageMark;
-	//}} 2026-08-29 //
 
 
 	void ESI_SA_SCA_CRIMSON_BREAK_DamageFrameMove();
@@ -583,10 +582,10 @@ protected:
 	void ESI_A_SDK_INJECTION_STIGMA_DamageFrameMove();
 
 
-	bool IsAnyELSkillKeyHeld();	/// official BB/BP channel gate = ANY of the 8 skill-slot keys held (input bytes +22386..+22418 stride-4)
-	void ProcShadowLinkEffects( float fAmount );	/// official newslot_296 0x32543690: linked targets take rate x min(selfHP, amount) bonus damage + Bleeding visual on them (NO self-heal - extraction-corrected)
-	void TickShadowLinkEffects();					/// official sub_325453E0 (newslot_317 tail): per-frame timeLeft decrement, expiry = destroy link DE + erase BTI_DEBUFF_SHADOW_EDGE on target + erase entry
-	void ClearShadowLinkEffects();					/// official slot_15 clear + SHADOW_EDGE FM head (stale links die on recast/map-change)
+	bool IsAnyELSkillKeyHeld();	/// V5 BB/BP channel gate = ANY of the 8 skill-slot keys held (input bytes ..+22418 stride-4)
+	void ProcShadowLinkEffects( float fAmount );	/// V5 newslot_296 : linked targets take rate x min(selfHP, amount) bonus damage + Bleeding visual on them (NO self-heal - extraction-corrected)
+	void TickShadowLinkEffects();					/// V5 (newslot_317 tail): per-frame timeLeft decrement, expiry = destroy link DE + erase BTI_DEBUFF_SHADOW_EDGE on target + erase entry
+	void ClearShadowLinkEffects();					/// V5 clear + SHADOW_EDGE FM head (stale links die on recast/map-change)
 	// 7-B BRANDISH_BREAKER (8023) key-hold channel: slot SS resets counter; slot EP anim-end -> key-held ? LOOP : FINISH; LOOP FM spawns LOOP_DUMMY per 0.15s increment (cap 6); LOOP EP counter>=6 || no-key -> FINISH
 	void ESI_SA_SDK_BRANDISH_BREAKER_START_StateStart();
 	void ESI_SA_SDK_BRANDISH_BREAKER_START_EventProcess();
@@ -602,13 +601,13 @@ protected:
 	void ESI_SA_SCA_DREAD_WEAPON_LOOP_StateStartFuture();
 	void ESI_SA_SCA_DREAD_WEAPON_LOOP_EventProcess();
 	void ESI_SA_SCA_DREAD_WEAPON_END_StateStart();
-	// 7-F BLOOD_CUTTER (8028) missing FM: DUMMY DE create @0.01 (official 0x325512E0); the numeric effect-1641 spawn (f_31F36300) = boost::statechart action dispatch - unresolvable to an effect name, DESIGN INFERENCE skip
+	// 7-F BLOOD_CUTTER (8028) missing FM: DUMMY DE create @0.01 (); the numeric effect-1641 spawn = boost::statechart action dispatch - unresolvable to an effect name, DESIGN INFERENCE skip
 	void ESI_SA_SCA_BLOOD_CUTTER_DamageFrameMove();
 	// 7-G SHADE_SCRATCH (8222): chain to ATTACK on chain-key press within the lua EVENT_PROCESS_TIME0 window (was anim-end auto-chain)
 	void ESI_A_SCA_SHADE_SCRATCH_EventProcess();
-	// 7-J: EJ ATTACK EP exits to USI_JUMP_LANDING on ground per official EP 0x3253D270 (was OneShot -> USI_WAIT)
+	// 7-J: EJ ATTACK EP exits to USI_JUMP_LANDING on ground per V5 EP (was OneShot -> USI_WAIT)
 	void ESI_SA_SDK_EJECTION_BUSTER_ATTACK_EventProcess();
-	// 7-A StateInit asset preloads (official SI bodies, asset lists verified against the deployed kom set 2026-09-03)
+	// 7-A StateInit asset preloads (V5 SI bodies, asset lists verified against the deployed kom set 2026-09-03)
 	void ESI_SA_SDK_BRUTAL_CUTTER_StateInit();
 	void ESI_SA_SDK_EJECTION_BUSTER_StateInit();
 	void ESI_SA_SDK_BRANDISH_BREAKER_StateInit();
@@ -948,7 +947,6 @@ public:
 
 	virtual void		RecordCrestSnapshot();
 	virtual void		RestoreCrestSnapshot();
-	//}} 2026-09-01 MARCH2015 Crest of Time (DEC_A) //
 #endif
 
 	virtual void InitEnchantWeaponEffectUnitSpecific();
@@ -1073,7 +1071,7 @@ protected:
 	std::vector<SShadowLinkFx>	m_vecShadowLink;
 	float	m_fBloodRunawayCoolTime[3];
 	float	m_fBloodRunawayProcTimer;
-	float	m_fBBLoopTime;	/// 8023 channel state-time accumulator (the official reads the engine's per-state clock; this adds m_fElapsedTime per frame in the LOOP state)
+	float	m_fBBLoopTime;	/// 8023 channel state-time accumulator (the V5 reads the engine's per-state clock; this adds m_fElapsedTime per frame in the LOOP state)
 	float	m_fBPLoopTime;	/// 8024 same
 #endif
 
