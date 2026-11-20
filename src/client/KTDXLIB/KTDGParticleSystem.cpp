@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "KTDGUIAnchor.h"
 #include "./KTDGParticleSystem.h"
+#include <algorithm>
 
 
 
@@ -2162,6 +2163,11 @@ CKTDGParticleSystem::CParticleEventSequence::~CParticleEventSequence()
 		SAFE_CLOSE( pTex );
 	}
 	m_TextureMap.clear();
+	for( CKTDXDeviceTexture* pTex : m_vecReplacedTextures )
+	{
+		SAFE_CLOSE( pTex );
+	}
+	m_vecReplacedTextures.clear();
 
 	SAFE_CLOSE( m_pChangeTexXET );
 	SAFE_CLOSE( m_pMultiTexXET );
@@ -4620,15 +4626,30 @@ void CKTDGParticleSystem::CParticleEventSequence::ChangeTex( const WCHAR* pTexNa
 
 void CKTDGParticleSystem::CParticleEventSequence::ChangeTexForce( const WCHAR* pTexName )
 {
-	CKTDXDeviceTexture* pNewTex = NULL;
+	// The original closed the replaced texture, so its last reference went and the device manager destroyed it; a
+	// sign blinking between two textures (the market, portal and NPC signs, every 0.5 s) read and decoded one again
+	// on every change, a hitch of a frame. The replaced textures stay open, up to kMaxReplacedTextures.
+	constexpr std::size_t kMaxReplacedTextures = 4;
 
-	map<int,CKTDXDeviceTexture*>::iterator i;
-	for( i = m_TextureMap.begin(); i != m_TextureMap.end(); i++ )
+	for( auto i = m_TextureMap.begin(); i != m_TextureMap.end(); i++ )
 	{
-		pNewTex = g_pKTDXApp->GetDeviceManager()->OpenTexture( pTexName );
-		CKTDXDeviceTexture* pTex = i->second;
-		SAFE_CLOSE( pTex );
+		CKTDXDeviceTexture* pNewTex = g_pKTDXApp->GetDeviceManager()->OpenTexture( pTexName );
+		CKTDXDeviceTexture* pOldTex = i->second;
 		i->second = pNewTex;
+		if( pOldTex == NULL )
+			continue;
+		if( pOldTex == pNewTex ||
+			std::find( m_vecReplacedTextures.begin(), m_vecReplacedTextures.end(), pOldTex ) != m_vecReplacedTextures.end() )
+		{
+			SAFE_CLOSE( pOldTex );	// still referenced: by the sequence or by the textures kept
+			continue;
+		}
+		m_vecReplacedTextures.push_back( pOldTex );
+		if( m_vecReplacedTextures.size() > kMaxReplacedTextures )
+		{
+			SAFE_CLOSE( m_vecReplacedTextures.front() );
+			m_vecReplacedTextures.erase( m_vecReplacedTextures.begin() );
+		}
 	}
 }
 
