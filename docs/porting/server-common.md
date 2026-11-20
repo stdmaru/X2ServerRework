@@ -246,7 +246,6 @@ That remains pending ([KNCSDK › Pending](kncsdk.md#pending)). They also cannot
   (999992, 999993); they are the BR 2017 items (273863, 273233), and the vouchers of the later paths are mapped:
   Arc Tracer 273864, Mastermind 288345, Diabolic Esper 288346, Asura 288340, Crimson Avenger 288343 (under the
   `X2_*_PATH` flags). Elesis's Grand Master and Blazing Heart (272171, 272172) now have their items in the client_data.
-  The cash shop catalog that sells them is the [`ES_BILLING` patch](../tools/database-patches.md#es_billing).
 
 ## Pending
 
