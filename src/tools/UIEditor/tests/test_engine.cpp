@@ -759,6 +759,41 @@ TEST_CASE("ui editor: reloading the files drops the edits and reads scripts and 
     CHECK(picture.textureSize[0] == 1);
 }
 
+TEST_CASE("ui editor: a texture with no .tet gets its first key, and reloading takes the .tet away again")
+{
+    TempGame game;
+    std::string error;
+    std::ofstream(game.root / "data" / "ui" / "scripts" / "DLG_Keyed.lua") << "\xEF\xBB\xBF" << R"lua(
+g_pStatic = g_pUIDialog:CreateStatic()
+g_pUIDialog:AddControl(g_pStatic)
+g_pPicture = g_pUIDialog:CreatePicture()
+g_pStatic:AddPicture(g_pPicture)
+g_pPicture:SetTex("DLG_Test.tga", "FIRST")
+g_pPicture:SetPoint({ LEFT_TOP = D3DXVECTOR2(0, 0) })
+)lua";
+    auto render = NullRender();
+    x2::ui_editor::EngineOptions options;
+    options.gameFolder = game.root;
+    options.mountArchives = false;
+    auto engine = x2::ui_editor::Engine::Create(*render, options, error);
+    REQUIRE_MESSAGE(engine, error);
+    REQUIRE(engine->OpenDialog("DLG_Keyed.lua", error) == 0);
+    std::string bytes;
+    CHECK_FALSE(engine->TetBytes("DLG_Test.tga", bytes, error));
+    const auto whole = engine->Inspect()[0].controls[0].pictures.at(0).textureSize[0];
+
+    x2::ui_editor::TetFile tet;
+    REQUIRE(tet.Add("FIRST", x2::ui_editor::UprightRect(0, 0, 2, 2), error));
+    REQUIRE_MESSAGE(engine->SetTet("DLG_Test.tga", tet.Bytes(), error), error);
+    REQUIRE(engine->ReloadDialog(0, error));
+    CHECK(engine->Inspect()[0].controls[0].pictures.at(0).textureSize[0] == 2);
+
+    // Reload: the file is not there, so the texture has no keys again.
+    REQUIRE_MESSAGE(engine->ReloadFiles(error), error);
+    REQUIRE(engine->ReloadDialog(0, error));
+    CHECK(engine->Inspect()[0].controls[0].pictures.at(0).textureSize[0] == whole);
+}
+
 TEST_CASE("ui editor: a key the game's code set takes its edited rectangle, at the size it changed to")
 {
     TempGame game;

@@ -26,6 +26,9 @@ struct TetRect {
     bool operator==(const TetRect&) const = default;
 };
 
+// An upright rectangle from its left, top, right and bottom, in texels (the corners and size a key holds).
+TetRect UprightRect(float left, float top, float right, float bottom);
+
 class TetFile {
 public:
     struct Entry {
@@ -44,6 +47,12 @@ public:
     bool Set(const std::string& key, const TetRect& rect);
     // Adds a key (made uppercase) with a rectangle; false with `error` when it is there already or not a valid name.
     bool Add(const std::string& key, const TetRect& rect, std::string& error);
+
+    // Removes a key (any case); false when there is no such key.
+    bool Remove(const std::string& key);
+    // Gives a key another name (made uppercase), keeping its rectangle (the keys stay sorted); false with `error` when there
+    // is no such key, the new name is not valid or another key has it.
+    bool Rename(const std::string& key, const std::string& name, std::string& error);
 
 private:
     std::vector<Entry> m_entries;   // sorted by key

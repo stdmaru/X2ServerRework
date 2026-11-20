@@ -103,6 +103,31 @@ TEST_CASE("tet file: rectangles move and grow; keys are added in order")
     CHECK(x2::ui_editor::TetName("DLG_UI_Common_Texture49_NEW.TGA") == "DLG_UI_Common_Texture49_NEW.TET");
 }
 
+TEST_CASE("tet file: keys are removed and renamed; a file with no keys is a .tet")
+{
+    TetFile file;
+    std::string error;
+    REQUIRE(TetFile::Parse(Written({{u"A", Upright(0, 0, 1, 1)}, {u"C", Upright(0, 0, 2, 2)}}), file, error));
+    CHECK_FALSE(file.Remove("B"));
+    REQUIRE(file.Rename("a", "z_key", error));
+    CHECK(file.Entries()[0].key == "C");
+    CHECK(file.Entries()[1].key == "Z_KEY");
+    CHECK(file.Find("z_key")->size[0] == 1);
+    CHECK_FALSE(file.Rename("C", "z_key", error));      // taken
+    CHECK_FALSE(file.Rename("C", "no good", error));
+    CHECK_FALSE(file.Rename("nothing", "x", error));
+    CHECK(file.Rename("c", "C", error));                // the same name: nothing to do
+    REQUIRE(file.Remove("c"));
+    REQUIRE(file.Remove("Z_KEY"));
+    CHECK(file.Entries().empty());
+
+    // The client takes a file with no keys (OpenFile), and it reads back.
+    TetFile again;
+    REQUIRE_MESSAGE(TetFile::Parse(file.Bytes(), again, error), error);
+    CHECK(again.Entries().empty());
+    CHECK(again.Bytes() == file.Bytes());
+}
+
 TEST_CASE("tet file: the scripts that name a texture's key")
 {
     const std::filesystem::path game = std::filesystem::temp_directory_path() / "x2_ui_editor_tet_uses";
