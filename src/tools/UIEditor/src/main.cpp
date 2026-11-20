@@ -2532,6 +2532,66 @@ void PictureAnchorEditor(x2::ui_editor::Engine& engine, EditorState& state, cons
     }
 }
 
+// A picture's, or a control's own, texture and key: the SetTex call's names, and the key's UV rectangle in Interactive
+// Select. Only texture, key and texSource of `picture` are read.
+void TextureKeyEditor(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const PictureInfo& picture)
+{
+    // Texture and key: the SetTex call's names.
+    ImGui::TextDisabled("SetTex: %s", SourceLabel(picture.texSource).c_str());
+    TetFile tet;
+    const bool hasTet = PictureTet(engine, state, picture.texture, tet);
+    ImGui::BeginDisabled(!picture.texSource.Known());
+    char texture[128];
+    std::snprintf(texture, sizeof(texture), "%s", picture.texture.c_str());
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+    if (ImGui::InputText("texture", texture, sizeof(texture), ImGuiInputTextFlags_EnterReturnsTrue) &&
+        picture.texture != texture) {
+        // The same key when the new texture has one, else its first.
+        TetFile other;
+        std::string key = picture.key;
+        if (PictureTet(engine, state, texture, other) && other.Find(key) == nullptr && !other.Entries().empty()) {
+            key = other.Entries().front().key;
+        }
+        ChangeTexture(engine, state, picture, texture, key);
+    }
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("A texture file the game loads (client_data or archives); Enter changes its SetTex");
+    }
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+    if (ImGui::BeginCombo("key", picture.key.c_str(), ImGuiComboFlags_HeightLarge)) {
+        for (const auto& entry : tet.Entries()) {
+            if (ImGui::Selectable(entry.key.c_str(), LowerText(entry.key) == LowerText(picture.key))) {
+                ChangeTexture(engine, state, picture, picture.texture, entry.key);
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("%.0f, %.0f  %.0f x %.0f", static_cast<double>(entry.rect.leftTop[0]),
+                                  static_cast<double>(entry.rect.leftTop[1]),
+                                  static_cast<double>(entry.rect.size[0]), static_cast<double>(entry.rect.size[1]));
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::EndDisabled();
+
+    // The key's UV rectangle: shown and edited in Interactive Select.
+    // Also for a texture with no .tet, or a key it lacks: Interactive Select makes the first key.
+    const TetRect* rect = hasTet ? tet.Find(picture.key) : nullptr;
+    if (!picture.texture.empty()) {
+        if (ImGui::Button(rect != nullptr ? "Edit" : "Edit (create the key)")) {
+            OpenSelect(engine, state, dialog, picture, hasTet ? &tet : nullptr);
+        }
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%s", rect != nullptr
+                                        ? "The key's rectangle over its texture, and the texture's keys (Interactive Select)"
+                                        : "Interactive Select without a key to start from: add the key there");
+        }
+        if (rect == nullptr) {
+            ImGui::SameLine();
+            ImGui::TextDisabled(hasTet ? "the key is not in the texture's .tet" : "no .tet: the whole texture");
+        }
+    }
+}
+
 void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const ControlInfo& control,
                   const std::function<void(float, float)>& addZone, const MoveFunction& move)
 {
@@ -2572,60 +2632,32 @@ void PictureTable(x2::ui_editor::Engine& engine, EditorState& state, const Dialo
                 ImGui::SetTooltip("The dialog's STRETCH controls grow there: a plain middle between end pieces");
             }
 
-            // Texture and key: the SetTex call's names.
-            ImGui::TextDisabled("SetTex: %s", SourceLabel(picture.texSource).c_str());
-            TetFile tet;
-            const bool hasTet = PictureTet(engine, state, picture.texture, tet);
-            ImGui::BeginDisabled(!picture.texSource.Known());
-            char texture[128];
-            std::snprintf(texture, sizeof(texture), "%s", picture.texture.c_str());
-            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
-            if (ImGui::InputText("texture", texture, sizeof(texture), ImGuiInputTextFlags_EnterReturnsTrue) &&
-                picture.texture != texture) {
-                // The same key when the new texture has one, else its first.
-                TetFile other;
-                std::string key = picture.key;
-                if (PictureTet(engine, state, texture, other) && other.Find(key) == nullptr && !other.Entries().empty()) {
-                    key = other.Entries().front().key;
-                }
-                ChangeTexture(engine, state, picture, texture, key);
-            }
-            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-                ImGui::SetTooltip("A texture file the game loads (client_data or archives); Enter changes its SetTex");
-            }
-            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
-            if (ImGui::BeginCombo("key", picture.key.c_str(), ImGuiComboFlags_HeightLarge)) {
-                for (const auto& entry : tet.Entries()) {
-                    if (ImGui::Selectable(entry.key.c_str(), LowerText(entry.key) == LowerText(picture.key))) {
-                        ChangeTexture(engine, state, picture, picture.texture, entry.key);
-                    }
-                    if (ImGui::IsItemHovered()) {
-                        ImGui::SetTooltip("%.0f, %.0f  %.0f x %.0f", static_cast<double>(entry.rect.leftTop[0]),
-                                          static_cast<double>(entry.rect.leftTop[1]),
-                                          static_cast<double>(entry.rect.size[0]), static_cast<double>(entry.rect.size[1]));
-                    }
-                }
-                ImGui::EndCombo();
-            }
-            ImGui::EndDisabled();
+            TextureKeyEditor(engine, state, dialog, picture);
+            ImGui::TreePop();
+        }
+        ImGui::PopID();
+    }
+}
 
-            // The key's UV rectangle: shown and edited in Interactive Select.
-            // Also for a texture with no .tet, or a key it lacks: Interactive Select makes the first key.
-            const TetRect* rect = hasTet ? tet.Find(picture.key) : nullptr;
-            if (!picture.texture.empty()) {
-                if (ImGui::Button(rect != nullptr ? "Edit" : "Edit (create the key)")) {
-                    OpenSelect(engine, state, dialog, picture, hasTet ? &tet : nullptr);
-                }
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("%s", rect != nullptr
-                                                ? "The key's rectangle over its texture, and the texture's keys (Interactive Select)"
-                                                : "Interactive Select without a key to start from: add the key there");
-                }
-                if (rect == nullptr) {
-                    ImGui::SameLine();
-                    ImGui::TextDisabled(hasTet ? "the key is not in the texture's .tet" : "no .tet: the whole texture");
-                }
-            }
+// The textures a control other than a static sets on itself (a button's normal, over and down, ...): the same texture,
+// key and Interactive Select as a picture's, so a key of a .tet is reachable from them too.
+void TextureSlotTable(x2::ui_editor::Engine& engine, EditorState& state, const DialogInfo& dialog, const ControlInfo& control)
+{
+    if (control.textures.empty()) {
+        return;
+    }
+    ImGui::SeparatorText("Textures");
+    for (std::size_t s = 0; s < control.textures.size(); ++s) {
+        const auto& slot = control.textures[s];
+        ImGui::PushID(static_cast<int>(s) + 1000);
+        const std::string label = slot.method + ": " + (slot.texture.empty() ? "(no texture)" : slot.texture) +
+                                  (slot.key.empty() ? "" : " / " + slot.key);
+        if (ImGui::TreeNode(label.c_str())) {
+            PictureInfo picture;
+            picture.texture = slot.texture;
+            picture.key = slot.key;
+            picture.texSource = slot.source;
+            TextureKeyEditor(engine, state, dialog, picture);
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -3173,6 +3205,7 @@ void InspectorPanel(x2::ui_editor::Engine& engine, EditorState& state)
         ImGui::TextDisabled("drew nothing in the last frame");
     }
     StringTable(state, control, move);
+    TextureSlotTable(engine, state, dialog, control);
     PictureTable(engine, state, dialog, control, [&](float lo, float hi) {
         AnchorEntry entry = state.anchors.Get(dialog.script);
         entry.zones.emplace_back(lo, hi);

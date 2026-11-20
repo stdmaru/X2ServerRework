@@ -282,7 +282,9 @@ bool KindMatches(CallKind kind, const std::string& full)
     case CallKind::String:
         return name == "AddString";
     case CallKind::Texture:
-        return name == "SetTex";
+        // A picture's SetTex, or a control's own (SetNormalTex, SetOverTex, SetCheckedTex, SetScollBarThumbTex, ...).
+        return name == "SetTex" || (name.size() > 6 && name.compare(0, 3, "Set") == 0 &&
+                                    name.compare(name.size() - 3, 3, "Tex") == 0);
     case CallKind::AddPicture:
         return name == "AddPicture";
     case CallKind::AddControl:

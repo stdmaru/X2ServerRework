@@ -330,6 +330,9 @@ bool CKTDGUINavigation::SetWindowTex( const WCHAR* pFileName, const WCHAR* key )
 
 void CKTDGUINavigation::SetBGTex_LUA( const char* pFileName, const char* pKey )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	wstring wstrFileName = L"";
 	wstring wstrKeyName = L"";
 
@@ -341,6 +344,9 @@ void CKTDGUINavigation::SetBGTex_LUA( const char* pFileName, const char* pKey )
 
 void CKTDGUINavigation::SetWindowTex_LUA( const char* pFileName, const char* pKey )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	wstring wstrFileName = L"";
 	wstring wstrKeyName = L"";
 

@@ -1681,6 +1681,9 @@ void CKTDGUIListBox::RemoveItemByData( void */*pData*/ )
 
 void CKTDGUIListBox::SetBoundingBoxTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pBoudingBoxTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1693,6 +1696,9 @@ void CKTDGUIListBox::SetBoundingBoxTex_LUA( const char* pFileName, const char* k
 
 void CKTDGUIListBox::SetTextTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pTextTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -1707,6 +1713,9 @@ void CKTDGUIListBox::SetTextTex_LUA( const char* pFileName, const char* key )
 
 void	CKTDGUIListBox::SetScollBarUpButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pScollBarUpButtonTex );
@@ -1721,6 +1730,9 @@ void	CKTDGUIListBox::SetScollBarUpButtonTex_LUA( const char* pFileName, const ch
 
 void	CKTDGUIListBox::SetScollBarUpButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pScollBarUpButtonDownTex );
@@ -1735,6 +1747,9 @@ void	CKTDGUIListBox::SetScollBarUpButtonDownTex_LUA( const char* pFileName, cons
 
 void	CKTDGUIListBox::SetScollBarDownButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pScollBarDownButtonTex );
@@ -1749,6 +1764,9 @@ void	CKTDGUIListBox::SetScollBarDownButtonTex_LUA( const char* pFileName, const 
 
 void	CKTDGUIListBox::SetScollBarDownButtonDownTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pScollBarDownButtonDownTex );
@@ -1763,6 +1781,9 @@ void	CKTDGUIListBox::SetScollBarDownButtonDownTex_LUA( const char* pFileName, co
 
 void	CKTDGUIListBox::SetScollBarTrackTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pScollBarTrackTex );
@@ -1777,6 +1798,9 @@ void	CKTDGUIListBox::SetScollBarTrackTex_LUA( const char* pFileName, const char*
 
 void	CKTDGUIListBox::SetScollBarThumbTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	KTDXPROFILE();
 
 	SAFE_DELETE( m_pScollBarThumbTex );
@@ -1792,6 +1816,9 @@ void	CKTDGUIListBox::SetScollBarThumbTex_LUA( const char* pFileName, const char*
 //{{ 허상형 : [2009/7/21] //	마우스오버 텍스쳐 루아 함수
 void CKTDGUIListBox::SetButtonMouseOverTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pButtonMouseOverTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );

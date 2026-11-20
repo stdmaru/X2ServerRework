@@ -491,6 +491,9 @@ void CKTDGUIRadioButton::ChangeState( RADIOBUTTON_CONTROL_STATE state )
 
 void CKTDGUIRadioButton::SetNormalTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pNormalTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -504,6 +507,9 @@ void CKTDGUIRadioButton::SetNormalTex_LUA( const char* pFileName, const char* ke
 
 void CKTDGUIRadioButton::SetOverTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pMouseOverTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -518,6 +524,9 @@ void CKTDGUIRadioButton::SetOverTex_LUA( const char* pFileName, const char* key 
 
 void CKTDGUIRadioButton::SetDisableTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pDisableTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -532,6 +541,9 @@ void CKTDGUIRadioButton::SetDisableTex_LUA( const char* pFileName, const char* k
 
 void CKTDGUIRadioButton::SetCheckedTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pCheckedTex );
 
 	wstring wstrFileName;

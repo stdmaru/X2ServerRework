@@ -64,6 +64,15 @@ struct PictureInfo {
     GameSets game;
 };
 
+// A texture a control other than a static sets on itself (a button's SetNormalTex, SetOverTex, SetDownTex; a check
+// box's SetCheckedTex; ...): the picture-less counterpart of PictureInfo's texture and key.
+struct TextureSlotInfo {
+    std::string method;         // the setter's name as the script calls it ("SetOverTex")
+    std::string texture;        // the file name the script gave
+    std::string key;            // the .tet key the script gave
+    SourceRef source;           // the call
+};
+
 struct StringInfo {
     std::string text;           // as the dialog holds it now; empty when the game's code fills it at run time
     int stringId = -1;          // the string table index the script named (STR_ID_*), -1 when none
@@ -92,6 +101,7 @@ struct ControlInfo {
     float pixelMin[2] = {}, pixelMax[2] = {};   // the same box in render target pixels (anchors and stretch applied)
     std::vector<PictureInfo> pictures;
     std::vector<StringInfo> strings;
+    std::vector<TextureSlotInfo> textures;  // the control's own SetXTex calls (not a static's pictures)
     std::vector<SourceRef> points;  // the point tables set on the control itself (a button's normal, over, down, ...)
     SourceRef add;                  // the AddControl that put it into the dialog
     GameSets game;

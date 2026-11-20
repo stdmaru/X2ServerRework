@@ -293,6 +293,9 @@ void CKTDGUISlider::SetRange( int nMin, int nMax )
 
 void CKTDGUISlider::SetBGTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pBGTex);
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );
@@ -305,6 +308,9 @@ void CKTDGUISlider::SetBGTex_LUA( const char* pFileName, const char* key )
 
 void CKTDGUISlider::SetButtonTex_LUA( const char* pFileName, const char* key )
 {
+#ifdef X2_DEV_TOOLS
+	CKTDGUIDialog::NoteScriptCall( CKTDGUIDialog::ScriptCallKind::Texture );
+#endif
 	SAFE_DELETE( m_pButtonTex );
 	wstring wstrFileName;
 	ConvertUtf8ToWCHAR( wstrFileName, pFileName );

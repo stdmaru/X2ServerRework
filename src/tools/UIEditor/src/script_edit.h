@@ -12,7 +12,7 @@ enum class CallKind {
     DialogPos,  // g_pUIDialog:SetPos(x, y)
     Point,      // a point table: SetPoint, SetNormalPoint, SetBGPoint_LUA, ... (a method named *Point, or SetRect)
     String,     // AddString's POS
-    Texture,    // a picture's SetTex("file.tga", "KEY")
+    Texture,    // a picture's SetTex("file.tga", "KEY"), or a control's SetNormalTex, SetOverTex, ... (same arguments)
     AddPicture, // a static's AddPicture(picture)
     AddControl, // g_pUIDialog:AddControl(control)
     PicturePos, // a picture's SetPos(D3DXVECTOR2(x, y)), which places it over its SetPoint's LEFT_TOP

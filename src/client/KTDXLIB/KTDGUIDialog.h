@@ -671,6 +671,8 @@ private:
 			ScriptCallKind	eKind = ScriptCallKind::Point;
 			unsigned		uScript = 0;	// index into GetOpenedScripts()
 			int				iLine = 0;		// 1-based, the line of the call's '('
+			// Texture only: the setter's name (SetOverTex, ...) and the file and key it was given.
+			std::string		strMethod, strTexture, strKey;
 		};
 		const std::vector<ScriptCall>& GetScriptCalls() const { return m_vecScriptCalls; }
 		// Called by the setters a script reaches through lua_tinker: notes the running Lua call into the dialog whose
