@@ -1762,7 +1762,7 @@ void CX2GUAra::InitStateByUnitClass()
 #ifdef X2_ARA_3RD_PATH
 		case CX2Unit::UC_ARA_ASURA:	// Ara 3rd-path 2nd job - Asura (124)
 			{
-				#pragma region Spiritual Eye
+				//#pragma region Spiritual Eye
 				const int iSkillLevelSpiritualEye = userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AA_SPIRITUAL_EYE, true );
 
 
@@ -1774,16 +1774,17 @@ void CX2GUAra::InitStateByUnitClass()
 					{
 					}
 				}
-				#pragma endregion
+				//#pragma endregion
 				/// 7416/7417 (REPOSE_OF_SOULS / FOX_SMILE type 15 reads, V5 this+25948/) = NOT re-read here - their effects ride the §18c-10 GetPowerRate overrides (DEP_MANIFEST: no new members)
 			}
 			/// fall through to the shared LS block (V5: AA = own reads + LABEL_63 shared with LS)
+			[[fallthrough]];
 #endif
 #ifdef X2_ARA_3RD_PATH
 		case CX2Unit::UC_ARA_LITTLE_SPECTER:	// Ara 3rd-path 1st job - Little Specter (34); V5 LABEL_63 (shared LS+AA)
 #endif
 			{
-				#pragma region Specter Power Release
+				//#pragma region Specter Power Release
 				const int iSkillLevelSpecterPowerRelease = userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AA_SPECTER_POWER_RELEASE, true );
 
 
@@ -1795,9 +1796,9 @@ void CX2GUAra::InitStateByUnitClass()
 					{
 					}
 				}
-				#pragma endregion
+				//#pragma endregion
 
-				#pragma region Assimilation
+				//#pragma region Assimilation
 				const int iSkillLevelAssimilation = userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_AA_ASSIMILATION, true );
 
 
@@ -1809,7 +1810,7 @@ void CX2GUAra::InitStateByUnitClass()
 					{
 					}
 				}
-				#pragma endregion
+				//#pragma endregion
 			}
 			break;
 #endif
@@ -2807,7 +2808,7 @@ void CX2GUAra::InitStateByUnitClass()
 		} break;
 	case CX2SkillTree::SI_HA_AA_NINE_TAILED_FOX:
 		{ ASI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "ASI_HA_AA_NINE_TAILED_FOX" ); ASI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "ASI_HA_AA_NINE_TAILED_FOX" ); } break;
-#pragma endregion ARA_3RD_PATH_SKILLS
+//#pragma endregion ARA_3RD_PATH_SKILLS
 #endif
 
 	}
@@ -8704,7 +8705,7 @@ void CX2GUAra::ComboDashXEventProcess()
 
 //#pragma region JumpAttackZ
 #ifdef X2_ARA_3RD_PATH
-#pragma region ASI_DASH_COMBO_ALS_X
+//#pragma region ASI_DASH_COMBO_ALS_X
 void CX2GUAra::ASI_DASH_COMBO_ALS_X_EventProcess()
 {
 	if ( true == m_pXSkinAnimFuture->IsAnimationEnd() )
@@ -8717,7 +8718,7 @@ void CX2GUAra::ASI_DASH_COMBO_ALS_X_EventProcess()
 
 	CommonEventProcess();
 }
-#pragma endregion
+//#pragma endregion
 #endif
 #ifdef X2_ARA_3RD_PATH
 void CX2GUAra::ASI_DASH_JUMP_COMBO_ALS_ZX_EventProcess()

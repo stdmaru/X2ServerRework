@@ -1589,7 +1589,7 @@ CX2GUEL::~CX2GUEL(void)
 #ifdef X2_ELESIS_3RD_PATH
 
 
-#pragma region ELESIS_3RD_PATH_SKILLS
+//#pragma region ELESIS_3RD_PATH_SKILLS
 	case CX2SkillTree::SI_SA_SDK_BRUTAL_CUTTER:
 	{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_SA_SDK_BRUTAL_CUTTER" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_SA_SDK_BRUTAL_CUTTER" );
 		normalStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRUTAL_CUTTER_BuffFrameMove ); hyperStateData.OnFrameMove = SET_CB_FUNC( CX2GUEL, ESI_SA_SDK_BRUTAL_CUTTER_BuffFrameMove );
@@ -1706,11 +1706,11 @@ CX2GUEL::~CX2GUEL(void)
 	case CX2SkillTree::SI_A_SCA_ASSAULT_STRIKE:
 		{ ESI_ThirdPath_CreateState( normalStateData, normalStateData.stateID, "SI_A_SCA_ASSAULT_STRIKE" ); ESI_ThirdPath_CreateState( hyperStateData, hyperStateData.stateID, "SI_A_SCA_ASSAULT_STRIKE" );
 			normalStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_ASSAULT_STRIKE_StateInit ); hyperStateData.StateInit = SET_CB_FUNC( CX2GUEL, ESI_A_SCA_ASSAULT_STRIKE_StateInit ); } break;
-#pragma endregion ELESIS_3RD_PATH_SKILLS
+//#pragma endregion ELESIS_3RD_PATH_SKILLS
 
-#pragma region ELESIS_3RD_PATH_COMBOS
+//#pragma region ELESIS_3RD_PATH_COMBOS
 
-#pragma endregion ELESIS_3RD_PATH_COMBOS
+//#pragma endregion ELESIS_3RD_PATH_COMBOS
 #endif
 	default:
 		break;

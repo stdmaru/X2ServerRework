@@ -281,7 +281,7 @@ public:
 #endif
 #ifdef X2_ARA_3RD_PATH
 		ASI_COMBO_AA_XXDownXZLoopX,
-	#pragma endregion 2-1, 2-2�� ����
+	//#pragma endregion
 #endif
 
 	};
