@@ -115,6 +115,14 @@ class CKTDXDeviceManager :
 
         void    CloseDevice( const WCHAR* deviceID );
 
+#ifdef X2_DEV_TOOLS
+        // Opens every texture already loaded once more, and returns their ids for ReleaseTextures. The UI editor
+        // builds a dialog again while the old one still holds its textures: with these held, the last picture to
+        // let go does not destroy a texture the new dialog opens again at once (decoded and uploaded from scratch).
+        std::vector<wstring>    HoldTextures();
+        void                    ReleaseTextures( const std::vector<wstring>& deviceIDs );
+#endif
+
 		KGCMassFileManager* GetMassFileManager(){ return &m_MassFileManager; }
 
         // The size the image `name` was made for, from data/OriginalTextureSizes.txt (docs/porting/client-d3d9.md,

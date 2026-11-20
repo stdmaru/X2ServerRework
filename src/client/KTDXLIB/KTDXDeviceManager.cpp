@@ -341,6 +341,31 @@ void CKTDXDeviceManager::CloseDevice( const WCHAR* deviceID )
     }//if
 
 }
+#ifdef X2_DEV_TOOLS
+std::vector<wstring> CKTDXDeviceManager::HoldTextures()
+{
+    std::vector<wstring> held;
+    CSLock locker( m_DeviceLock );
+    for ( const auto& [deviceID, pDevice] : m_DeviceMap )
+    {
+        if ( pDevice != NULL && pDevice->GetDeviceType() == CKTDXDevice::DT_TEXTURE )
+        {
+            pDevice->RefDevice();
+            held.push_back( deviceID );
+        }
+    }
+    return held;
+}
+
+void CKTDXDeviceManager::ReleaseTextures( const std::vector<wstring>& deviceIDs )
+{
+    for ( const wstring& deviceID : deviceIDs )
+    {
+        CloseDevice( deviceID );
+    }
+}
+#endif
+
 void    CKTDXDeviceManager::LoadAndCloseDevice( CKTDXDevice* pDevice_
 				, bool bBackgroundQueueing
 				)
