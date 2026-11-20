@@ -98,6 +98,11 @@ script itself, the loose file in the client_data ([client_data](client-data.md))
   that script is built again (`ReloadDialog`), where it was drawn and with the game's state last mirrored into it. The
   game, started before the edit, still draws the old numbers, so its state is moved by what the edit moved (the
   difference between what the scripts placed when first loaded and now).
+  Rebuilding is cheap since 2026-11-20 (user's report: each width/height change in Interactive Select took up to a
+  second): `ReloadDialog` holds every loaded texture open while the old dialog goes and the new one is built
+  (`CKTDXDeviceManager::HoldTextures`, `X2_DEV_TOOLS` only), because the old dialog's last reference destroyed each
+  texture and the new script decoded and uploaded it again, which was ~98% of the time (measured headless on the real
+  client_data: 80-340 ms per dialog down to 4-8 ms in the debug build).
 - **After watching the game** (2026-11-16, user's report): a dialog keeps the game's state it last mirrored, also with
   "Watch game" unchecked, and a reload puts it back with each picture's corners moved by what the edits moved, each
   corner by its own change, and with the texture, key and UV rectangle the edited script and `.tet` give when an edit

@@ -792,6 +792,10 @@ bool Engine::ReloadDialog(int index, std::string& error)
         }
     }
     const D3DXVECTOR2 scriptPos = open.layout.pos;
+    // The old dialog's pictures let go of their textures as it is deleted, and the new one opens them again: held,
+    // they are not decoded and uploaded from scratch each time (that was nearly all of the cost of a reload).
+    CKTDXDeviceManager* devices = g_pKTDXApp->GetDeviceManager();
+    const std::vector<std::wstring> held = devices->HoldTextures();
     if (open.dialog != NULL) {
         manager->DeleteDlg(open.dialog);
     }
@@ -815,6 +819,7 @@ bool Engine::ReloadDialog(int index, std::string& error)
     if (!placement.empty()) {
         dialog->ApplyPlacement(placement.c_str());   // where its edited placement puts it now
     }
+    devices->ReleaseTextures(held);
     if (!open.loaded) {
         error = open.script + ": the script failed (ErrorLog.txt in the game folder)";
         return false;
