@@ -220,3 +220,9 @@ ClassChangeTable:SetClassChange_Memo(1,608019, UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT
 ClassChangeTable:SetClassChange_Memo(2,608022, UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"])
 ClassChangeTable:SetClassChange_Memo(1,608019, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])
 ClassChangeTable:SetClassChange_Memo(2,608022, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])
+
+-- Add's, Ara's and Elesis's new paths (from V5; server/third-paths, 2026-11-20)
+ClassChangeTable:SetClassChange_Memo(1,608009, UNIT_CLASS["UC_ELESIS_DARK_KNIGHT"])
+ClassChangeTable:SetClassChange_Memo(2,608015, UNIT_CLASS["UC_ELESIS_DARK_KNIGHT"])
+ClassChangeTable:SetClassChange_Memo(1,608009, UNIT_CLASS["UC_ELESIS_CRIMSON_AVENGER"])
+ClassChangeTable:SetClassChange_Memo(2,608015, UNIT_CLASS["UC_ELESIS_CRIMSON_AVENGER"])
