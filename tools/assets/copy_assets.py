@@ -28,7 +28,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "kom"))
 import kom  # noqa: E402
 
-EXT = rb"\.(?:dds|tga|bmp|png|jpg|x|y|xet|xsk)"
+EXT = rb"\.(?:dds|tga|bmp|png|jpg|x|y|xet|xsk|ogg|wav)"
 NAME = re.compile(rb"[A-Za-z0-9_\-.]{2,}" + EXT + rb"(?![A-Za-z0-9_])", re.I)
 SCANNED = (".x", ".y", ".xet")
 
