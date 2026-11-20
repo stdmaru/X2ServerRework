@@ -71,7 +71,9 @@ def field(block, name):
     if not m:
         return None
     start = m.end()
-    if block[start] == "{":
+    if block[start] == "{" and block[start:block.index("\n", start)].rstrip(",").endswith("}"):
+        end = block.index("\n", start)  # the whole list is on one line
+    elif block[start] == "{":
         end = block.index("\n\t}", start) + 3
     else:
         end = block.index("\n", start)
