@@ -135,7 +135,7 @@ class CKTDXApp
 		{
 			if( m_fConstElapsedTime <= 0.f )
 				return 1.f;
-			const float t = m_RemainTime / m_fConstElapsedTime;
+			const float t = static_cast<float>( m_RemainTime / m_fConstElapsedTime );
 			return t < 0.f ? 0.f : t > 1.f ? 1.f : t;
 		}
 		int					GetRenderCount(){ return m_RenderCount; }
@@ -518,9 +518,10 @@ class CKTDXApp
         //}} seojt // 2009-1-14, 20:49
 		bool					m_bAppDestroy;
 
-		float					m_BeforeFrameTime;
-		float					m_NowFrameTime;
-		float					m_RemainTime;
+		// in double: a float of the seconds since start rounds to 0.12 ms after 17 minutes, 0.5 ms after 68
+		double					m_BeforeFrameTime;
+		double					m_NowFrameTime;
+		double					m_RemainTime;
 
 
 		float					m_fConstElapsedTime;
