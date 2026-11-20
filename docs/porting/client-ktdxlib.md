@@ -362,6 +362,10 @@ over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMa
 - **Attached equipment** (`CX2Eqip`, `UT_ATTACH_NORMAL`: backpacks, accessories): the attach matrix of the step
   before is kept and the mesh is drawn between the two with the body's fraction and jump test. Items with their own
   animation (`UT_ATTACH_ANIM`) and skinned items already go through `CKTDGXSkinAnim`.
+- **Backdrop layers** (`CX2WorldLayer`, `client/frame-timing`, 2026-11-20): the screen-wide layers behind a map
+  scroll their UVs once per step, by their own speed (`SetTexUV`) and by the camera's move (`SetFeedBackUV`, 69 map
+  scripts on 2026-11-20); the UVs before the step are kept and the layer is drawn between the two, unless it was not
+  updated in the last step or its UVs wrapped back.
 - Not interpolated: slash traces and other vertex trails, which are rebuilt every step.
 
 **Diagnostics** (dev tools): `X2_INTERP_STATS=1` logs once a second how many skinned meshes were drawn interpolated and
@@ -406,6 +410,40 @@ steps (audited 2026-11-12):
 - the P2P batches of `CX2Main::GetFrameBufferNum` (7 steps) and the NPC frame-move intervals stay in steps: 117 ms per
   batch instead of 100 ms in dungeons;
 - the non-host NPC position history keeps at least 70 entries, now 1.17 s.
+### Micro stutter while running (2026-11-20, `client/frame-timing`)
+
+The user saw the scenery shake finely all the time while running, at a steady 144 fps with vsync on, with it off at a
+144 limit and uncapped. Measured with `X2_INTERP_TRACE` and `X2_PRESENT_TRACE` in the village (debug build, 144 Hz):
+
+- **Not the camera nor the clock.** The camera's move per step is even (9.00, 9.01, 9.00 units running straight), the
+  view is interpolated on every frame, and with vsync the time each frame is drawn at is within ±0.3 ms of its vblank
+  (3.85 ± 0.2 units of camera move per frame). Reading the clock before the step runs, not when the frame is shown,
+  costs little: with vsync off, frames that run a step are drawn about 0.5 ms staler than those that do not.
+- **A slow step every 0.5 s.** Every 30 or 31 steps one step took about 10 ms; its frame missed a vblank and the
+  camera moved twice as far on screen (7.3 units instead of 3.85), twice a second whatever the present mode. The step
+  profiler (below) put 7 to 9 ms of it in `CX2TFieldGame::ShowJoinMarket`: the market sign blinks by swapping its
+  particle's texture every 0.5 s (`ChangeTexForce`, `Get_In_Up.dds` / `Get_In_Down.dds`), even while hidden, and
+  closing the old texture dropped its last reference, so the device manager destroyed it and the next swap read and
+  decoded it again. The original did the same (its `CloseDevice` also destroys on the last reference); at its
+  once-per-step frames the cost hid in the frame.
+
+**Behavior change:** `CParticleEventSequence::ChangeTexForce` keeps the textures it replaced open, up to 4 per
+sequence, until the sequence is destroyed, so signs that blink between two textures (market, portal, NPC talk and
+one-use signs, the square's exit) load each once. The loop's clock (`m_NowFrameTime`, `m_BeforeFrameTime`,
+`m_RemainTime`) is a `double`: a `float` of the seconds since start rounds to 0.12 ms after 17 minutes and 0.5 ms
+after 68. The user confirmed the shake gone in game (2026-11-20); in the debug build no step but the first load took
+over 7 ms afterwards.
+
+Seen on the way, left as it is: in the village, square and wedding the camera is updated twice per step (the
+`CX2Camera` there drives the same `CKTDGCamera` as `CX2State`, whose single update applies only in a game, see the
+camera fix above); running straight its move per step stays even, the second update only makes it follow faster, as
+the original did.
+
+**Step profiler** (dev tools, `X2_STEP_TRACE=<ms>`): the original's `KTDXPROFILE()`, `KTDXPROFILE2(name)` and
+`KTDXPROFILE_BEGIN(name)`/`KTDXPROFILE_END()` markers (about 1,000, compiled out in the original) time their scopes
+while `FrameProcess` runs a step on the main thread (`KTDXProfile.h`); a step slower than `<ms>` prints
+`step-profile` lines with its call tree, the scopes over a tenth of the limit. Built with `X2_DEBUG` only.
+
 ## Combo box dropdowns (2026-11-12, `client/msaa`)
 
 **Behavior change** (`CKTDGUIComboBox`), fixing the original's layout at 1024×768:

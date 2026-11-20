@@ -478,6 +478,11 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       picture elsewhere); replaces the timed 3 s warp/raid screens, no switch (user's call)
       ([X2Lib](../porting/client-x2lib.md#scene-loading-screen-2026-11-16-clientscene-loading)). Checked by the user
       in game (2026-11-16).
+- [x] `client/frame-timing` (user, 2026-11-20; done 2026-11-20): the scenery shook finely while running at 144 fps, in every present
+      mode. Measured: a ~10 ms step every 0.5 s (the market sign's blinking texture destroyed and decoded again on
+      each swap) missed a vblank twice a second; `ChangeTexForce` keeps the replaced textures, the backdrop layers are
+      interpolated, the loop's clock is a `double`, and a step profiler (`X2_STEP_TRACE`) times the original's
+      `KTDXPROFILE` markers. Confirmed by the user in game ([KTDXLIB](../porting/client-ktdxlib.md#micro-stutter-while-running-2026-11-20-clientframe-timing)).
 
 ## Phase 5 — Deep cleanup
 
