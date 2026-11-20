@@ -86,6 +86,10 @@ HRESULT CX2WorldLayer::OnFrameMove( double fTime, float fElapsedTime )
 
     D3DXVECTOR3 nowPos = g_pKTDXApp->GetDGManager()->GetCamera().GetLookAt(); // GetEye();
 
+    m_prevMinTexUV = m_minTexUV;
+    m_prevMaxTexUV = m_maxTexUV;
+    m_iTexUVStep = g_pKTDXApp->GetFrameMoveCount();
+
 
     float speedU = m_SpeedUV.x * m_fElapsedTime;
     float speedV = m_SpeedUV.y * m_fElapsedTime;
@@ -192,7 +196,17 @@ void    CX2WorldLayer::OnFrameRender_Draw()
 
 	if( NULL != m_pLayerTex1 )
 	{
-		m_pLayerTex1->DrawLayer(m_x, m_y, m_w, m_h, m_color, m_minTexUV, m_maxTexUV, m_BlendType);
+		// T41: the layer scrolls once per step (its own speed and the camera's move); drawn between the last two
+		// steps, unless it was not updated in the last step or its UVs wrapped back.
+		D3DXVECTOR2 minUV = m_minTexUV, maxUV = m_maxTexUV;
+		const D3DXVECTOR2 vMove = m_minTexUV - m_prevMinTexUV;
+		if( m_iTexUVStep == g_pKTDXApp->GetFrameMoveCount() - 1 && fabsf( vMove.x ) < 0.5f && fabsf( vMove.y ) < 0.5f )
+		{
+			const float t = g_pKTDXApp->GetTickInterpolation();
+			minUV = m_prevMinTexUV + ( m_minTexUV - m_prevMinTexUV ) * t;
+			maxUV = m_prevMaxTexUV + ( m_maxTexUV - m_prevMaxTexUV ) * t;
+		}
+		m_pLayerTex1->DrawLayer(m_x, m_y, m_w, m_h, m_color, minUV, maxUV, m_BlendType);
 	}
 //	return S_OK;
 }

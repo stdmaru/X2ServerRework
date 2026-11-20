@@ -42,7 +42,7 @@ class CX2WorldLayer : public CX2WorldObject
 		virtual HRESULT OnResetDevice();
 		virtual HRESULT OnLostDevice();
 
-        void InitTexUV()                                { m_minTexUV = D3DXVECTOR2(0.01f, 0.01f); m_maxTexUV = D3DXVECTOR2(0.99f, 0.99f); }
+        void InitTexUV()                                { m_minTexUV = D3DXVECTOR2(0.01f, 0.01f); m_maxTexUV = D3DXVECTOR2(0.99f, 0.99f); m_iTexUVStep = -1; }
 
 
 		void FadeColor( D3DXCOLOR color, float fFadeTime )
@@ -103,6 +103,9 @@ class CX2WorldLayer : public CX2WorldObject
 		CKTDXDeviceTexture*			m_pLayerTex1;
 
         D3DXVECTOR2                 m_minTexUV, m_maxTexUV;
+        // T41: the UVs before the last step that moved them, and that step, to draw between the two
+        D3DXVECTOR2                 m_prevMinTexUV = D3DXVECTOR2( 0.f, 0.f ), m_prevMaxTexUV = D3DXVECTOR2( 0.f, 0.f );
+        int                         m_iTexUVStep = -1;
 
         D3DXVECTOR3                 m_prePos;
 
