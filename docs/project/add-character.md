@@ -98,6 +98,14 @@ and Elesis's first two (with the sync above) and Add's first (this PR) come next
 - **Client data**: the BR 2014-08 scripts have Add's second path (skills, `UnitTemplet`, `CharacterStatTable`,
   `CorrelateUnitClassTemplet`) but not the third paths; BR 2017 has all of them (and their job change quests in
   `FieldQuest.lua`), after the skill revamp; V5's `ClientScript` has the skills in our format.
+  Brought on 2026-11-20 (`server/third-paths`, every file on [client_data](../tools/client-data.md#content-changes-t42)):
+  states by `merge_unit_script.py`, class tables by `merge_class_tables.py`, skills by `merge_skills.py` (BR 2014-08,
+  V5, text from BR 2017), effects, damage effects, buffs, combo trees and particles by `merge_records.py`, items,
+  quests and strings, the class motions (`Motion_ADD_AT/MM/TT/DE`, `Motion_Ara_LS/AA`, `Motion_EL_DK/CA`) and V5's
+  skill and UI atlases. What BR 2017 has only after the revamp (`AT_COMMAND`, `RNSI_*` passives) and the buff
+  behaviors our code lacks (`BBT_DETONATION_IMPOSSIBLE`, `BBT_DOUBLE_ATTACK_BUFF`, `DTT_MOONLIGHT_RHAPSODY`,
+  `LOT_UID_VECTOR_AFTER_ATTACK_IN_RANGE`, in V5's `X2BuffBehaviorTemplet`, `X2BuffTemplet` and `X2DamageEffect`)
+  were left out: the records naming them load them as nil.
 - **Server data**: V5's `StatTable` has 33–36 and 123–126; `ClassChangeSkill`/`ClassChangeTable` have Add's paths.
 - **Job change quests and their dialogue** (checked 2026-11-16): BR 2017's `FieldQuest.lua` has all of them in PT-BR,
   none in BR 2014-08 or V5: Add 2nd 35540–35543 (Arc Tracer) and 35550–35554 (Mastermind), Add 3rd 35580–35583 and

@@ -344,6 +344,13 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         Done 2026-11-16: skills, items, quests, drops, crafting, server data and `Game01` patches
         ([Add character](add-character.md)); user checked in game: creation, the tutorial, items, skills, quests.
         Not yet checked in game: Add's two job changes, Elesis's and Ara's 2nd path job changes.
+  - [ ] `server/third-paths` (PR #112; user, 2026-11-15): Add's 2nd and 3rd paths (Arc Tracer 33, Mastermind 123,
+        Time Tracer 36, Diabolic Esper 126), Ara's and Elesis's 3rd (Little Specter 34, Asura 124, Dark Knight 35,
+        Crimson Avenger 125), ported from V5 behind switches ([Add character](add-character.md#toward-three-paths-for-every-class-survey-for-pr-83-2026-11-15)).
+        Done: switches and class enums, client code (builds without warnings), 16-bit state IDs in the P2P sync
+        ([T54](decisions.md)), the client data (2026-11-20, [client_data](../tools/client-data.md#content-changes-t42)).
+        Left: server data (`StatTable`, `ClassChange*`, ClientScript, `Game01` patches), the class change list in
+        the inventory, the server's skill checks, and checking it in game.
   - [ ] **Widescreen** ([T44](decisions.md), user, 2026-11-13; moved ahead of audio): no distortion at any aspect
         ratio, ultrawide included, and 16:9 by default. Today the UI's 1024×768 layout is scaled by separate X and Y
         factors (about 290 uses in 63 files, plus about 130 literal 1024/512/384 positions in X2Lib, 2026-11-13), so it
