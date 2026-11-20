@@ -109,9 +109,9 @@ CKTDXApp::CKTDXApp( HWND hWnd, HINSTANCE hInstance, IDirect3DDevice9* pd3dDevice
 	m_fConstElapsedTime	= 1.0f / kSimulationRate;
 
 	m_dTime				= 0.0f;
-	m_BeforeFrameTime	= (float)DXUTGetGlobalTimer()->GetTime();
-	m_NowFrameTime		= 0.0f;
-	m_RemainTime		= 0.0f;
+	m_BeforeFrameTime	= DXUTGetGlobalTimer()->GetTime();
+	m_NowFrameTime		= 0.0;
+	m_RemainTime		= 0.0;
 
 	m_bSkipFrame		= false;
 	m_StopFrame			= 0;
@@ -366,14 +366,14 @@ HRESULT CKTDXApp::OnFrameMove( double /*dTime*/, float fElapsedTime )
 	m_bFirstFrame = true;
 
 
-	m_NowFrameTime = (float)DXUTGetGlobalTimer()->GetTime();
-	float fRealElapsedTime = m_NowFrameTime - m_BeforeFrameTime;
+	m_NowFrameTime = DXUTGetGlobalTimer()->GetTime();
+	double fRealElapsedTime = m_NowFrameTime - m_BeforeFrameTime;
 	fRealElapsedTime += m_RemainTime;
 
 	if( m_bSkipFrame == true )
 	{
 		m_BeforeFrameTime	= m_NowFrameTime;
-		m_RemainTime		= 0.0f;
+		m_RemainTime		= 0.0;
 		m_bSkipFrame		= false;
 		return S_OK;
 	}
@@ -389,10 +389,10 @@ HRESULT CKTDXApp::OnFrameMove( double /*dTime*/, float fElapsedTime )
 			break;
 
 		// A hitch of over a second (loading): drop the backlog instead of catching up.
-		float fActualNowTime = (float)DXUTGetGlobalTimer()->GetTime();
-		if ( fActualNowTime - m_NowFrameTime > 1.f )
+		const double fActualNowTime = DXUTGetGlobalTimer()->GetTime();
+		if ( fActualNowTime - m_NowFrameTime > 1.0 )
 		{
-			fRealElapsedTime = 0.f;
+			fRealElapsedTime = 0.0;
 			m_BeforeFrameTime = m_NowFrameTime = fActualNowTime;
 			break;
 		}
