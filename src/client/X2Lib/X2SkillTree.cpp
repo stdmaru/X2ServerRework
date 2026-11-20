@@ -458,6 +458,15 @@ bool CX2SkillTree::AddSkillTemplet_LUA()
 	if( true == luaManager.BeginTable( "SA_PROJECTILE_CURVE_SPEED_REL" ) )		SetSkillAbilityMap( &luaManager, SA_PROJECTILE_CURVE_SPEED_REL, pSkillTemplet );
 	if( true == luaManager.BeginTable( "SA_DP_GAIN_REL" ) )					SetSkillAbilityMap( &luaManager, SA_DP_GAIN_REL, pSkillTemplet );
 	if( true == luaManager.BeginTable( "SA_DP_USE_REL" ) )						SetSkillAbilityMap( &luaManager, SA_DP_USE_REL, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_RECOVERY_VALUE_REL" ) )	SetSkillAbilityMap( &luaManager, SA_RECOVERY_VALUE_REL, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_ADD_MP_VALUE_ABS" ) )	SetSkillAbilityMap( &luaManager, SA_ADD_MP_VALUE_ABS, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_ADD_DP_VALUE_ABS" ) )	SetSkillAbilityMap( &luaManager, SA_ADD_DP_VALUE_ABS, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_MP_CONSUMPTION" ) )	SetSkillAbilityMap( &luaManager, SA_MP_CONSUMPTION, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_WAY_OF_SWORD_POINT_MULTIPLIER" ) )	SetSkillAbilityMap( &luaManager, SA_WAY_OF_SWORD_POINT_MULTIPLIER, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_COOLTIME_1" ) )	SetSkillAbilityMap( &luaManager, SA_COOLTIME_1, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_COOLTIME_2" ) )	SetSkillAbilityMap( &luaManager, SA_COOLTIME_2, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_COOLTIME_3" ) )	SetSkillAbilityMap( &luaManager, SA_COOLTIME_3, pSkillTemplet );
+	if( true == luaManager.BeginTable( "SA_SCOPE_ABS_PVP" ) )	SetSkillAbilityMap( &luaManager, SA_SCOPE_ABS_PVP, pSkillTemplet );
 
 	CX2BuffTempletManager::GetInstance()->GetBuffFactorPtrFromBuffFactorList( luaManager, pSkillTemplet->m_vecBuffFactorPtr, pSkillTemplet->m_vecBuffFactorID );
 

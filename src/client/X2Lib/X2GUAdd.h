@@ -17,16 +17,19 @@
 	else if( true == m_InputData.oneLCtr && true == GetIsFormationMode() )  \
 	{ m_FrameDataFuture.syncData.nowAction = UAI_RELEASE_FORMATION_MODE; }
 
+// Outside formation mode the new paths pay one DP point for a Nasod armor attack (V5).
+#if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
+#define X2_NASOD_ARMOR_DP_COST( bIsFormationMode ) if ( false == (bool)(bIsFormationMode) ) { ThirdPath_ConsumeDPPoints( 1 ); }
+#else
+#define X2_NASOD_ARMOR_DP_COST( bIsFormationMode )
+#endif
+
 /// �ֵ��� ���ҵ� �尩 ��带 ����� �� �ִ���
 #define ELSE_IF_CAN_NASOD_ARMOR_ATTACK( iEventFlagIndex, fInputTimingStart, fInputTiming, fChangeTiming, bIsFormationMode, uidTargetUID ) \
 	else if( m_FrameDataFuture.stateParam.bEventFlagList[(int)(iEventFlagIndex)] == true && \
 			 m_pXSkinAnimFuture->GetNowAnimationTime() > (float)(fChangeTiming) && (UidType)uidTargetUID > 0 ) \
-#if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-			{ if ( false == (bool)bIsFormationMode ) { ThirdPath_ConsumeDPPoints( 1 ); } \
+			{ X2_NASOD_ARMOR_DP_COST( bIsFormationMode ) \
 			  StateChange( CX2GUAdd::ANSI_COMBO_NASOD_ARMOR_READY ); m_FrameDataFuture.stateParam.bEventFlagList[(int)(iEventFlagIndex)] = false; } \
-#else
-			{ StateChange( CX2GUAdd::ANSI_COMBO_NASOD_ARMOR_READY ); m_FrameDataFuture.stateParam.bEventFlagList[(int)(iEventFlagIndex)] = false; } \
-#endif
 	else if( ( true == m_InputData.oneZ || true == m_InputData.oneX ) && \
 			 m_pXSkinAnimFuture->GetNowAnimationTime() < (float)(fInputTiming) && \
 			 m_pXSkinAnimFuture->GetNowAnimationTime() >= (float)(fInputTimingStart) && \
@@ -1231,15 +1234,15 @@ std::map<int,int> m_mapThirdPathChain;
 	void ThirdPath_RecoverMPorDP( const float fValue_ );					///< official FORCE_NOVA/FORCE_FINGER recovery branch (formation → DP ×20 + "DP+ %d"; else → MP + "MP+ %d")
 	void ThirdPath_OnStigmaMarkFrameMove( const float fElapsedTime_ );		///< mark duration tick (official 26576/26596)
 
-	bool	ThirdPath_AnchorChaseTarget( const float fRange_, const float pfParams_[3], OUT D3DXVECTOR3* pvAnchorOut_, OUT D3DXVECTOR3* pvEnemyPosOut_, const char cMode_ = 0 );	///< official f_31EAB010 - the AMM XXDownX loop-beam anchor-chase target search (collision-point walk + running-nearest range + line-direction probe + cone gate + elevation slope band; non-const like the official)
+	bool	ThirdPath_AnchorChaseTarget( const float fRange_, const float pfParams_[3], OUT D3DXVECTOR3* pvAnchorOut_, OUT D3DXVECTOR3* pvEnemyPosOut_);	///< official f_31EAB010 - the AMM XXDownX loop-beam anchor-chase target search (collision-point walk + running-nearest range + line-direction probe + cone gate + elevation slope band; non-const like the official)
 	void	ThirdPath_MaxStrikeRecordTarget( CX2DamageManager::DamageData* pDamageData_ );				///< official f_324EFC30 - record the attack-hit defender into the MaxStrike homing record (gated on the barrage window)
 	void	ThirdPath_MaxStrikeFireOnHit( CX2DamageManager::DamageData* pDamageData_ );					///< DESIGN-INFERENCE fire-on-hit (the official driver = the KPT command-word machine newslot_327 case 38, asm-unresolvable per section 49a/49d)
 	void	ThirdPath_OnMaxStrikeFrameMove( const float fElapsedTime_ );								///< official newslot_317 MaxStrike window branch (tick + the f_324F8DC0 ball follow + the expiry teardown)
 	void	ThirdPath_MaxStrikeTeardown( const bool bRefundUnfired_ );									///< official f_32503980 (queue destroy + window/record/power clear; arg==1 = the expiry refund count x 25.0)
 	//}} 2026-09-04 X2GUAdd leftovers //
 
-	const UidType						GetStigmaMarkTargetUID() const { return m_uidStigmaTarget; }
-	const int							GetStigmaMarkTargetType() const { return m_iStigmaTargetType; }
+	UidType							GetStigmaMarkTargetUID() const { return m_uidStigmaTarget; }
+	int								GetStigmaMarkTargetType() const { return m_iStigmaTargetType; }
 	//}} 2026-08-30 MARCH2015 batch4 //
 
 	CX2DamageEffect::CEffectHandle	m_hVoidFieldDE;			/// official this[6626]
@@ -1260,6 +1263,8 @@ std::map<int,int> m_mapThirdPathChain;
 
 	bool							m_bApocalypseSummoned;		/// summon out this cast
 	bool							m_bApocalypseFinisherDone;	/// official byte 26324 (recast-finisher already triggered)
+	bool							m_bXXDownXUsed;				/// Mastermind's XX down X already used in this combo
+	bool							m_bComboXXXDamageEffectPlayed;	/// COMBO_XXX projectile already fired
 	//}} 2026-08-30 MARCH2015 batch5 //
 	int								m_iStardustDummyCounter;/// official this[6633]
 	float							m_fStardustSpawnAccum;	/// official this[6630]

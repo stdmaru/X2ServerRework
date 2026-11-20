@@ -831,6 +831,24 @@ public:
 
 	int GetMutationCount() const { return std::min( std::max( m_iMutationCount, 0), MAX_MUTATION_COUNT_VALUE ); }
 	void SetMutationCount( int val_ ) { m_iMutationCount = std::min( std::max( val_, 0), MAX_MUTATION_COUNT_VALUE ); }
+#if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
+	// The new paths' "DP points" are the mutation points (V5 calls these without defining them).
+	int ConsumeDPPoint( int iMax_ )
+	{
+		const int iConsumed = std::min( std::max( iMax_, 0 ), GetMutationCount() );
+		if ( 0 < iConsumed )
+		{
+			SetMutationCount( GetMutationCount() - iConsumed );
+			SetChangedMutationCount( true );
+		}
+		return iConsumed;
+	}
+	void AddDPPoint( int iCount_ )
+	{
+		SetMutationCount( GetMutationCount() + iCount_ );
+		SetChangedMutationCount( true );
+	}
+#endif
 
 	float GetDPValue() const { return std::min( std::max( m_fDPValue, 0.f ), MAX_DP_GAGE_VALUE ); }
 	void SetDPValue( float val_ ) { m_fDPValue = std::min( std::max( val_, 0.f ), MAX_DP_GAGE_VALUE ); }

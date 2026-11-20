@@ -30,6 +30,9 @@ public:
 		SRO_POISON_BURST,
 		SRO_ABSORB_HP,
 		SRO_ACTIVE_BUFF,
+#ifdef X2_ELESIS_3RD_PATH
+		SRO_MADNESS_RUNAWAY_IGNORE_DEFENCE,	// V5 uses it without defining it; last, so the others keep their offsets
+#endif
 	};
 
 

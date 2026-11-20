@@ -93,7 +93,6 @@ static const CX2GUUser::SkillCutInSet s_SkillCutInSet[] =
 		CX2GUUser::SkillCutIn( L"HQ_CutIn_Add_ALP.dds"),
 		CX2GUUser::SkillCutIn( L"HQ_CutIn_Add_ALP.dds"),
 		CX2GUUser::SkillCutIn( L"HQ_CutIn_Add_ALP.dds"),
-#if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 	},
 
 #ifdef X2_ADD_2ND_PATH
@@ -110,11 +109,22 @@ static const CX2GUUser::SkillCutInSet s_SkillCutInSet[] =
 		CX2GUUser::SkillCutIn( L"HQ_CutIn_Add_ADE.dds"),
 	},
 #endif
-//}} 2026-09-04 X2GUAdd reverify LIFE-4 //
-#else
-	}
-#endif
 };
+
+#ifdef X2_ADD_3RD_PATH
+namespace
+{
+	// A game unit from its UID and CX2GameUnit::GAME_UNIT_TYPE.
+	CX2GameUnit* FindUnitByUIDAndType( UidType uid_, int iType_ )
+	{
+		if ( NULL == g_pX2Game )
+			return NULL;
+		if ( CX2GameUnit::GUT_USER == iType_ )
+			return g_pX2Game->GetUserUnitByUID( uid_ );
+		return g_pX2Game->GetNPCUnitByUID( static_cast<int>( uid_ ) );
+	}
+}
+#endif
 
 /*static */CX2GUAdd* CX2GUAdd::CreateGUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int frameBufferNum, CX2Unit* pUnit )
 {
@@ -156,10 +166,6 @@ CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, in
 , m_fUsingDPValueChangeRate( 1.f )
 
 
-#ifdef X2_ADD_3RD_PATH
-, m_fVoidImpactDownAngle( -60.f )
-, m_fVoidImpactUpAngle( 60.f )
-#endif
 , m_fNaCommandDamageRate( 1.f )
 , m_fDPValueRateByActiveFormationMode( 1.f )
 , m_iLibraryOfLimitlessLevel( 0 )
@@ -178,6 +184,10 @@ CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, in
 , m_uiNonstopSummonPylonCount( 0 )
 , m_fQuicksilverFrenzyFlickerTime( 0.f )
 {
+#ifdef X2_ADD_3RD_PATH
+	m_fVoidImpactDownAngle = -60.f;
+	m_fVoidImpactUpAngle = 60.f;
+#endif
 	m_fThrowStartTime		= 0.66f;
 	m_vThrowStartPosOffset	= D3DXVECTOR3(40.f, 130.f, 0.f);
 	m_vThrowStartVelocity	= D3DXVECTOR3(2000.f, 100.f, 0.f);
@@ -2404,23 +2414,8 @@ case CX2SkillTree::SI_A_ADE_FORCE_FINGER:
 {
 	float fMpConsumption = 0.f;
 
-#ifdef X2_ADD_3RD_PATH
-	/// 占쏟각쇽옙占쏙옙 MP占쏙옙 占쏙옙占쏙옙, 占쏙옙占쏙옙占쏙옙 DP占쏙옙 占쏙옙占쏙옙 占쏙옙킬占쏙옙 占싣닐띰옙占쏙옙 MP 占쌀몌옙 占쏙옙占쏙옙
-	float fUseDPSkillAtFormationMode = GetSpecialAbilityValue( CX2SkillTree::SA_DP_USE_REL, eSkillID_ );
-
-
-	if ( 0.f < fUseDPSkillAtFormationMode )
-	{
-		const int iUnitClassGate = ( NULL != GetUnit() ) ? (int)GetUnit()->GetClass() : (int)CX2Unit::UC_ADD_TIME_TRACER;
-		if ( iUnitClassGate != (int)CX2Unit::UC_ADD_TIME_TRACER && iUnitClassGate != (int)CX2Unit::UC_ADD_DIABOLIC_ESPER
-			&& eSkillID_ != CX2SkillTree::SI_SA_APT_PULSE_CANNON )
-			fUseDPSkillAtFormationMode = 0.f;
-	}
-	//}} 2026-09-05 //
-#else
 	/// �񰢼��� MP�� ����, ������ DP�� ���� ��ų�� �ƴҶ��� MP �Ҹ� ����
 	const float fUseDPSkillAtFormationMode = GetSpecialAbilityValue( CX2SkillTree::SA_DP_USE_REL, eSkillID_ );
-#endif
 
 	if ( 0.f >= fUseDPSkillAtFormationMode || false == GetIsFormationMode() )
 	{
@@ -2459,12 +2454,9 @@ case CX2SkillTree::SI_A_ADE_FORCE_FINGER:
 		default:
 			break;
 
-#if defined(X2_ARA_3RD_PATH) || defined(X2_ADD_3RD_PATH)
+#ifdef X2_ADD_3RD_PATH
 		case CX2SkillTree::SI_SA_ADE_REVERSE_STIGMA:
 			{
-#endif
-
-#ifdef X2_ADD_3RD_PATH
 				if ( 0 != m_uidStigmaTarget )
 					fMpConsumption = 20.f;
 			} break;
@@ -2587,14 +2579,6 @@ float CX2GUAdd::GetActualCoolTime( IN const CX2SkillTree::SkillTemplet* pSkillTe
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 
 
-	if( pSkillTemplet_->m_eType == CX2SkillTree::ST_HYPER_ACTIVE_SKILL
-		&& NULL != g_pMain && g_pMain->GetNowStateID() != CX2Main::XS_PVP_GAME
-		&& NULL != g_pData && NULL != g_pData->GetMyUser() && NULL != g_pData->GetMyUser()->GetSelectUnit()
-		&& NULL != g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( CONCENTRATED_EL_ESSENCE_ITEM ) )
-	{
-		fSkillCoolTime = max( 0.f, fSkillCoolTime - 60.f );
-	}
-	//}} 2026-09-01 item 78931 //
 
 
 	if ( true == m_bOverlimitEnabled &&
@@ -4120,13 +4104,8 @@ void CX2GUAdd::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pS
 
 bool CX2GUAdd::ThirdPath_IsSAFamilyWithCooldown( IN const CX2SkillTree::SkillTemplet* pTemplet_, IN int iSkillLevel_ ) const
 {
-	// official f_31F6B270 (Ghidra FREE_31F_1.txt): type == 7 || ( 0xE <= type && type <= 0x10 ) = { ST_SPECIAL_ACTIVE, ST_SPECIAL_ACTIVE_EX1..EX3 }; + the has-cooldown gate templet+0x164 (checked at all four x1.5 sites)
-	if ( NULL == pTemplet_ )
-		return false;
-	if ( CX2SkillTree::ST_SPECIAL_ACTIVE != pTemplet_->m_eType &&
-		 CX2SkillTree::ST_SPECIAL_ACTIVE_EX1 != pTemplet_->m_eType &&
-		 CX2SkillTree::ST_SPECIAL_ACTIVE_EX2 != pTemplet_->m_eType &&
-		 CX2SkillTree::ST_SPECIAL_ACTIVE_EX3 != pTemplet_->m_eType )
+	// Special active skills with a cooldown. V5 also counts ST_SPECIAL_ACTIVE_EX1..3, which our 2014 skill data has not.
+	if ( NULL == pTemplet_ || CX2SkillTree::ST_SPECIAL_ACTIVE != pTemplet_->m_eType )
 		return false;
 	return ( 0.f != pTemplet_->GetSkillCoolTimeValue( iSkillLevel_ ) );
 }
@@ -7887,7 +7866,7 @@ void CX2GUAdd::ANSI_SA_AN_PARTICLE_ACCELERATOR_FrameMove()
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 
 	bool bMemoHyperAccel = false;
-	bMemoHyperAccel = ( true == GetEqippedSkillMemo( CX2SkillTree::SMI_ADD_MEMO05 ) );
+	// V5 sets it from Add's memo 5; the memos are not ported (2014 skill data).
 	if ( true == bMemoHyperAccel &&
 		 0.01f < m_FrameDataNow.unitCondition.fStateTime &&
 		 true == IsAddSkillKeyHeld() )	// official: the per-slot key-held check (f_31E934E0 on the key manager) = our SAKP-poll (C13 DI-4 role-equal)
@@ -10273,8 +10252,6 @@ bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID e
 					g_pX2Game->GetEffectSet()->PlayEffectSet( pszChangeES, this, NULL, false, GetPowerRate() );
 				}
 
-				if ( NULL != g_pData && NULL != g_pData->GetUIManager() && NULL != g_pData->GetUIManager()->GetUISkillTree() )
-					g_pData->GetUIManager()->GetUISkillTree()->UpdateSkillSlotOverlay();
 				//}} 2026-09-06 //
 				return true;	// swallowed - no state change (the official router returns 1 here)
 			}
@@ -10403,9 +10380,6 @@ float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2S
 	default:
 		break;
 
-#ifdef X2_ADD_2ND_PATH
-#ifdef X2_ADD_2ND_PATH
-#endif
 
 #if defined(X2_ARA_3RD_PATH) || defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 	case CX2SkillTree::SI_SA_ADE_REVERSE_STIGMA:
@@ -10420,7 +10394,6 @@ float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2S
 			if ( ThirdPath_IsApocalypseSummonActive() )
 				fCoolTime = -1.f;
 		} break;
-#endif
 #endif
 	}
 
@@ -10849,21 +10822,9 @@ float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pS
 
 		if ( 0.f < fUseDPSkillAtFormationMode )
 		{
-#if defined(X2_ARA_3RD_PATH) || defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-			const int iUnitClassGate = (int)GetUnitClass();
-			if ( iUnitClassGate != (int)CX2Unit::UC_ADD_TIME_TRACER && iUnitClassGate != (int)CX2Unit::UC_ADD_DIABOLIC_ESPER
-				&& pSkillSlotData_->m_eID != CX2SkillTree::SI_SA_APT_PULSE_CANNON )
-				fUseDPSkillAtFormationMode = 0.f;
-		}
-		//}} 2026-09-05 //
-
-		if ( 0.f < fUseDPSkillAtFormationMode )
-		{
-			/// 占쌀몌옙 MP占쏙옙 占쏙옙占쏙옙占쏙옙 DP 占쌀몌옙 ( UI占쏙옙 표占시듸옙 DP占쏙옙 占쏙옙占쏙옙 占쏙옙 DP占쏙옙 20占쏙옙 크占쏙옙 )
-			float fMPConsume = CX2GUUser::GetActualMPConsume( pSkillSlotData_->m_eID, GetSkillLevelValue( pSkillSlotData_->m_eID ) );
-
 #ifdef X2_ADD_2ND_PATH
-
+			/// MP to DP (the DP shown in the UI is 20 times smaller); the new paths' skills change the MP first
+			float fMPConsume = CX2GUUser::GetActualMPConsume( pSkillSlotData_->m_eID, GetSkillLevelValue( pSkillSlotData_->m_eID ) );
 			switch ( pSkillSlotData_->m_eID )
 			{
 			case CX2SkillTree::SI_SA_ATT_MAXIMUM_STRIKE:
@@ -10877,10 +10838,8 @@ float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pS
 			default:
 				break;
 			}
-			//}} 2026-09-05 //
-#endif
 #else
-			/// �Ҹ� MP�� ������ DP �Ҹ� ( UI�� ǥ�õ� DP�� ���� �� DP�� 20�� ũ�� )
+			/// MP to DP (the DP shown in the UI is 20 times smaller)
 			const float fMPConsume = CX2GUUser::GetActualMPConsume( pSkillSlotData_->m_eID, GetSkillLevelValue( pSkillSlotData_->m_eID ) );
 #endif
 
@@ -12956,10 +12915,8 @@ void CX2GUAdd::PsychicStormData::ResetPsychicStormData()
 
 	if ( NULL != g_pX2Game && NULL != g_pX2Game->GetEffectSet() )
 		g_pX2Game->GetEffectSet()->DestroyInstanceHandle( eLoopEffectHandle );
+}
 
-#ifdef X2_ADD_2ND_PATH
-#ifdef X2_ADD_2ND_PATH
-#endif
 #ifdef X2_ADD_2ND_PATH
 void CX2GUAdd::AATComboNasodArmorXEventProcess()
 {
@@ -13221,9 +13178,6 @@ void CX2GUAdd::AATDashComboZXStateEnd()
 }
 #endif
 #ifdef X2_ADD_2ND_PATH
-#ifdef X2_ADD_2ND_PATH
-#endif
-#ifdef X2_ADD_2ND_PATH
 void CX2GUAdd::AMMComboXXDownXStartEventProcess()
 {
 	if( m_pXSkinAnimFuture->IsAnimationEnd() == true )
@@ -13332,9 +13286,9 @@ void CX2GUAdd::AMMComboXXDownXLoopFrameMove()
 				{
 
 					const float fReach = ( CX2Game::GT_PVP == g_pX2Game->GetGameType() ) ? 600.f : 800.f;	// official search radius (PvP/PvE, byte-verified consts flt_32D3B718/flt_32D2FA48)
-					static const float s_afAnchorParams[3] = { 1.0472f, -0.17453f, FLT_32D87830 };	// official v45[] block (60deg rad, 10deg rad x -1, cone base)
+					static const float s_afAnchorParams[3] = { 1.0472f, -0.17453f, 0.17453f };	// official v45[] block (60deg rad, 10deg rad x -1, cone base)
 					D3DXVECTOR3 vEnemyPos( 0.f, 0.f, 0.f );	// official out-param (the found unit's pos), discarded there too
-					if ( false == ThirdPath_AnchorChaseTarget( fReach, s_afAnchorParams, &m_vXXDownXAnchor, &vEnemyPos, 0 ) )
+					if ( false == ThirdPath_AnchorChaseTarget( fReach, s_afAnchorParams, &m_vXXDownXAnchor, &vEnemyPos ) )
 						m_vXXDownXAnchor = vHand + GetDirVector() * ( true == GetIsRight() ? 750.f : -750.f );
 					pDE->SetLinkMainEffectByPos( vHand, m_vXXDownXAnchor );	// stretch the beam hand->anchor (official f_322BB350; scale = distance/800 engine-side)
 
@@ -13442,9 +13396,6 @@ void CX2GUAdd::AMMDashJumpComboXZZEventProcess()
 
 	CommonEventProcess();
 }
-#endif
-#ifdef X2_ADD_2ND_PATH
-#ifdef X2_ADD_2ND_PATH
 #endif
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 void CX2GUAdd::ANSI_ThirdPath_CreateState( UserUnitStateData& stateData_, const int iStateId_, const char* pszTableName )
@@ -13571,9 +13522,6 @@ void CX2GUAdd::ANSI_ThirdPath_Chain_EventProcess()
 	CommonEventProcess();
 }
 #endif
-#ifdef X2_ADD_2ND_PATH
-#ifdef X2_ADD_2ND_PATH
-#endif
 #ifdef X2_ADD_3RD_PATH
 void CX2GUAdd::ANSI_SA_COMMON_CREST_OF_TIME_StateInit()
 {
@@ -13623,7 +13571,6 @@ void CX2GUAdd::ANSI_SA_COMMON_CREST_OF_TIME_FrameMove()
 
 	CommonFrameMove();
 }
-#endif
 #endif
 #ifdef X2_ADD_3RD_PATH
 /*virtual*/ void CX2GUAdd::RecordCrestSnapshot()
@@ -13858,7 +13805,7 @@ float CX2GUAdd::ThirdPath_GetScanScope( const CX2SkillTree::SKILL_ID eSkillID_ )
 }
 #endif
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-int CX2GUAdd::ThirdPath_FindScanTargets( const float fRadius_, const float fYBand_, CX2GameUnit** ppOutTargets_, const int iMaxTargets_, const float fDownAngleDeg_ /*= -9999.f*/, const float fUpAngleDeg_ /*= 9999.f*/ )
+int CX2GUAdd::ThirdPath_FindScanTargets( const float fRadius_, const float /*fYBand_: V5 does not use it*/, CX2GameUnit** ppOutTargets_, const int iMaxTargets_, const float fDownAngleDeg_ /*= -9999.f*/, const float fUpAngleDeg_ /*= 9999.f*/ )
 {
 	// official f_31EBB040: iterate hostile units ��� skip dead/self/friendly-team; facing-cone filter; |dy| band; closest-first by dist2
 	if ( NULL == g_pX2Game || NULL == ppOutTargets_ || iMaxTargets_ <= 0 )
@@ -13946,7 +13893,7 @@ CX2GameUnit* CX2GUAdd::ThirdPath_FindScanTarget( const CX2SkillTree::SKILL_ID eS
 }
 #endif
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-bool CX2GUAdd::ThirdPath_AnchorChaseTarget( const float fRange_, const float pfParams_[3], OUT D3DXVECTOR3* pvAnchorOut_, OUT D3DXVECTOR3* pvEnemyPosOut_, const char cMode_ /*= 0*/ )
+bool CX2GUAdd::ThirdPath_AnchorChaseTarget( const float fRange_, const float pfParams_[3], OUT D3DXVECTOR3* pvAnchorOut_, OUT D3DXVECTOR3* pvEnemyPosOut_)
 {
 	if ( NULL == g_pX2Game || NULL == pvAnchorOut_ )
 		return false;
@@ -13975,11 +13922,11 @@ bool CX2GUAdd::ThirdPath_AnchorChaseTarget( const float fRange_, const float pfP
 		// aim-point refinement: the nearest body-collision point to us across the candidate's whole collision set (the official nested walk == CollisionData::GetPointStart() inlined)
 		D3DXVECTOR3 vPoint( 0.f, 0.f, 0.f );
 		bool bHavePoint = false;
-		BOOST_TEST_FOREACH( const CKTDXCollision::CollisionDataList*, pList, pUnit->GetCollisionListSet() )
+		for ( const CKTDXCollision::CollisionDataList* pList : pUnit->GetCollisionListSet() )
 		{
 			if ( NULL == pList )
 				continue;
-			BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCol, *pList )
+			for ( CKTDXCollision::CollisionData* pCol : *pList )
 			{
 				if ( NULL == pCol )
 					continue;												// official checks m_bEnable NOT AT ALL (KOG quirk - disabled spheres still contribute; kept)
@@ -14002,7 +13949,7 @@ bool CX2GUAdd::ThirdPath_AnchorChaseTarget( const float fRange_, const float pfP
 		if ( NULL == pLine )
 			continue;
 		// spec section 5 R-2: the facing-signed probe step is implemented (the semantic intent). The 2015 decompile dead-stores the second sign write (v75 overwritten before any read, round3a:284-286) - unresolvable whether that is a preserved KOG bug or a Hex-Rays misallocation; the orchestrator's call = the facing-signed form.
-		const float fSign = ( GetIsRight() ? FLT_32D2FF9C : FLT_32D3C998 );	// official vtable+312 facing + the sign constants (+0.1 / -0.1)
+		const float fSign = ( GetIsRight() ? 0.1f : -0.1f );	// official vtable+312 facing + the sign constants (+0.1 / -0.1)
 		const D3DXVECTOR3 vProbe = vMyPos + pLine->dirVector * fSign;		// official: the sign multiplies all 3 components (no magnitude scale)
 		if ( fDistSq <= GetDistance3Sq( vPoint, vProbe ) )
 			continue;														// enter iff the aim point is closer to one line-step ahead (facing) than to us = forward half-space along the line
@@ -14011,11 +13958,6 @@ bool CX2GUAdd::ThirdPath_AnchorChaseTarget( const float fRange_, const float pfP
 		const float fHDistSq = ( vCandPos.x - vMyPos.x ) * ( vCandPos.x - vMyPos.x ) + ( vCandPos.z - vMyPos.z ) * ( vCandPos.z - vMyPos.z );
 		float fUpper = pfParams_[0] * fHDistSq;								// 1.0472 x hDistSq (60deg rad)
 		float fLower = fHDistSq * pfParams_[1];								// -0.17453 x hDistSq (10deg rad, negated at the official call site)
-		if ( 1 == cMode_ )
-		{
-			fUpper += (float)DBL_32D2B940;									// official a8==1 band shift (DEAD for our only caller - a8=0)
-			fLower -= (float)DBL_32D2B960;
-		}
 		// (official dead pre-check: upper >= 0 && lower <= 0 - always true with the shipped constants; comment-only for fidelity)
 		// cone gate: |normalize(facingXZ) . normalize(toCandXZ)| <= params[2] (params[2] = 0.17453 = a REAL narrow band, NOT a no-op)
 		D3DXVECTOR3 vFace( pLine->dirVector.x * fSign, 0.f, pLine->dirVector.z * fSign );
@@ -14158,7 +14100,7 @@ void CX2GUAdd::ThirdPath_StigmaClearMark()
 
 	if ( 0 != m_uidStigmaTarget && NULL != g_pX2Game )
 	{
-		CX2GameUnit* pMarked = g_pX2Game->GetUnitByUIDAndType( m_uidStigmaTarget, m_iStigmaTargetType );
+		CX2GameUnit* pMarked = FindUnitByUIDAndType( m_uidStigmaTarget, m_iStigmaTargetType );
 		if ( NULL != pMarked )
 		{
 			bool bSharedMark = false;
@@ -14267,7 +14209,7 @@ void CX2GUAdd::ANSI_SA_ADE_REVERSE_STIGMA_RETURN_FrameMove()
 	{
 		CX2GameUnit* pTarget = NULL;
 		if ( NULL != g_pX2Game && 0 != m_uidStigmaTarget )
-			pTarget = g_pX2Game->GetUnitByUIDAndType( m_uidStigmaTarget, m_iStigmaTargetType );
+			pTarget = FindUnitByUIDAndType( m_uidStigmaTarget, m_iStigmaTargetType );
 
 
 
@@ -14709,7 +14651,7 @@ void CX2GUAdd::ThirdPath_MaxStrikeRecordTarget( CX2DamageManager::DamageData* pD
 }
 #endif
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-void CX2GUAdd::ThirdPath_MaxStrikeFireOnHit( CX2DamageManager::DamageData* pDamageData_ )
+void CX2GUAdd::ThirdPath_MaxStrikeFireOnHit( CX2DamageManager::DamageData* /*pDamageData_*/ )
 {
 	// DESIGN-INFERENCE (marked): the OFFICIAL fire driver = the KPT command-word machine (newslot_327 case 38, gated on queue-non-empty) - KPT-bound and asm-unresolvable (zero direct/vcall callers recoverable; section 49a/49d settled). Our adaptation = spec option A "fire-on-hit": each attack hit while the barrage window is live pops one placeholder ball -> spawns the REAL damaging homing bullet at it -> attaches the recorded target's lock-on fields -> destroys the placeholder; queue emptied -> the full teardown.
 
@@ -14916,7 +14858,7 @@ void CX2GUAdd::ANSI_SA_ATT_STARDUST_SHOWER_LOOP_FrameMove()
 			if( NULL != pMeshInst )
 			{
 				WCHAR wszDummyName[32] = {0,};
-				_snwprintf( wszDummyName, 31, L"spwan_Dummy0%d", m_iStardustDummyCounter );	// official "spwan_Dummy0%d" (KOG typo 'spwan' preserved)
+				swprintf( wszDummyName, 31, L"spwan_Dummy0%d", m_iStardustDummyCounter );	// official "spwan_Dummy0%d" (KOG typo 'spwan' preserved)
 				wszDummyName[31] = 0;
 				m_iStardustDummyCounter = ( m_iStardustDummyCounter < 10 ) ? ( m_iStardustDummyCounter + 1 ) : 1;	// official cycles 1..10
 
@@ -15929,9 +15871,6 @@ void CX2GUAdd::ANSI_A_AAT_RUSHING_DRONE_DYNAMO_EventProcess()
 	CommonEventProcess();
 }
 #endif
-#ifdef X2_ADD_2ND_PATH
-#ifdef X2_ADD_2ND_PATH
-#endif
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 void CX2GUAdd::ANSI_SA_AMM_INSTALLATION_PULSE_GATLING_Init()
 {
@@ -16173,9 +16112,9 @@ void CX2GUAdd::ANSI_A_AMM_FLICK_DISC_DYNAMO_FrameMove()
 			{
 				WCHAR wszName[128];
 				if ( bMutation )
-					swprintf( wszName, L"EffectSet_SI_A_AMM_Flick_Disc_Fire_Lock_Mutation%d", i );	// official aEffectsetSiAAm_0
+					swprintf( wszName, 128, L"EffectSet_SI_A_AMM_Flick_Disc_Fire_Lock_Mutation%d", i );	// official aEffectsetSiAAm_0
 				else
-					swprintf( wszName, L"EffectSet_SI_A_AMM_Flick_Disc_Fire_Lock" );				// official aEffectsetSiAAm
+					swprintf( wszName, 128, L"EffectSet_SI_A_AMM_Flick_Disc_Fire_Lock" );				// official aEffectsetSiAAm
 				float fPower = GetPowerRate();
 				if ( bLockValid )
 					fPower *= 1.2f;		// official: the spawn power x1.2 when lock-valid (dbl_32D3BCE0)
@@ -16186,12 +16125,12 @@ void CX2GUAdd::ANSI_A_AMM_FLICK_DISC_DYNAMO_FrameMove()
 
 			if ( bLockValid && NULL != g_pX2Game->GetDamageEffect() )
 			{
-				BOOST_TEST_FOREACH( CX2EffectSet::Handle, hDisc, vecDiscES )
+				for ( CX2EffectSet::Handle hDisc : vecDiscES )
 				{
 					CX2EffectSet::EffectSetInstance* pInst = g_pX2Game->GetEffectSet()->GetEffectSetInstance( hDisc );
 					if ( NULL == pInst )
 						continue;
-					BOOST_TEST_FOREACH( CX2EffectSet::EffectInstance*, pElem, pInst->m_vecpEffectInstance )
+					for ( CX2EffectSet::EffectInstance* pElem : pInst->m_vecpEffectInstance )
 					{
 						if ( NULL == pElem || NULL == pElem->m_pEffectData )
 							continue;
@@ -16357,7 +16296,7 @@ void CX2GUAdd::ThirdPath_ApocalypseFinishSummon()
 		if ( NULL == pUnit || CX2GameUnit::GUT_NPC != pUnit->GetGameUnitType() )
 			continue;
 		CX2GUNPC* pNPC = static_cast<CX2GUNPC*>( pUnit );
-		if ( NULL == pNPC->GetNPCUnitInfoPtr() || CX2UnitManager::NUI_SI_HA_APOCALYPSE != pNPC->GetNPCUnitInfoPtr()->m_templet.m_nNPCUnitID )
+		if ( CX2UnitManager::NUI_SI_HA_APOCALYPSE != pNPC->GetNPCTemplet().m_nNPCUnitID )
 			continue;
 		if ( pNPC->GetNowHp() <= 0.f || pNPC->GetGameUnitState() == CX2GameUnit::GUSI_DIE )
 			continue;
@@ -16397,9 +16336,6 @@ bool CX2GUAdd::ThirdPath_IsApocalypseSummonActive() const
 	return false;
 }
 #endif
-#ifdef X2_ADD_2ND_PATH
-#ifdef X2_ADD_2ND_PATH
-#endif
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
 bool CX2GUAdd::ThirdPath_IsInstallFamilySkill( const int iSkillID_ ) const
 {
@@ -16427,8 +16363,6 @@ void CX2GUAdd::ThirdPath_FactoryModeClear()
 	{
 		g_pX2Game->UpdateSkillSlotUI();		// official f_31F25BA0
 
-		if ( NULL != g_pData && NULL != g_pData->GetUIManager() && NULL != g_pData->GetUIManager()->GetUISkillTree() )
-			g_pData->GetUIManager()->GetUISkillTree()->UpdateSkillSlotOverlay();
 
 		if ( NULL != g_pX2Game->GetDamageEffect() && INVALID_DAMAGE_EFFECT_HANDLE != m_hFactoryDroneDE )
 			g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hFactoryDroneDE, false );
@@ -16596,7 +16530,7 @@ void CX2GUAdd::ThirdPath_DynamoLockAcquire( CX2DamageManager::DamageData* pDamag
 }
 #endif
 #if defined(X2_ADD_2ND_PATH) || defined(X2_ADD_3RD_PATH)
-void CX2GUAdd::ThirdPath_OnFactoryFrameMove( const float fElapsedTime_ )
+void CX2GUAdd::ThirdPath_OnFactoryFrameMove( const float /*fElapsedTime_*/ )
 {
 	// official sub_324EED30 (per-frame): (a) mode entered via install cast && drone-out phase && the current cast skill is NOT install-family �넂 end the mode; (b) DP empty �넂 end the mode; (c) while marked �넂 keep the drone glued to the player (facing횞offset, 0.9/0.1 per-frame lerp) + revert its anim to Wait when the attack anim ends
 	if ( NULL == g_pX2Game || NULL == g_pX2Game->GetEffectSet() )
@@ -16768,8 +16702,6 @@ void CX2GUAdd::ANSI_AAT_CREATE_DYNAMO_FACTORY_StateStartFuture()
 	if ( NULL != g_pX2Game )
 		g_pX2Game->UpdateSkillSlotUI( true );
 
-	if ( NULL != g_pData && NULL != g_pData->GetUIManager() && NULL != g_pData->GetUIManager()->GetUISkillTree() )
-		g_pData->GetUIManager()->GetUISkillTree()->UpdateSkillSlotOverlay();
 
 
 
